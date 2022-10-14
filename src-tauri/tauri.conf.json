@@ -58,8 +58,9 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "meshtastic-emergency-response-client",
-        "width": 800
+        "title": "Meshtastic Emergency Response Client",
+        "width": 800,
+        "maximized": true
       }
     ]
   }
