@@ -1,21 +1,21 @@
 .logo {
-  padding: 1.5em !important;
+    padding: 1.5em !important;
 }
 
 span.logos > a > span {
-  overflow: inherit !important;
+    overflow: inherit !important;
 }
 
 .logo.next:hover {
-  filter: drop-shadow(0 0 2em #36373f);
+    filter: drop-shadow(0 0 2em #36373f);
 }
 
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafb);
+    filter: drop-shadow(0 0 2em #61dafb);
 }
 
 @media (prefers-color-scheme: dark) {
-  .logo.next:hover {
-    filter: drop-shadow(0 0 2em #ffff);
-  }
+    .logo.next:hover {
+        filter: drop-shadow(0 0 2em #ffff);
+    }
 }
