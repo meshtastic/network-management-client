@@ -20,6 +20,13 @@
             }
         ],
         "@typescript-eslint/indent": "off",
-        "@typescript-eslint/no-unused-vars": "warn"
+        "@typescript-eslint/no-unused-vars": "warn",
+        "react/function-component-definition": [
+            "error",
+            { "namedComponents": "arrow-function" }
+        ],
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
+        "no-empty-pattern": "warn"
     }
 }

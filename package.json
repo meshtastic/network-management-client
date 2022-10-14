@@ -9,16 +9,19 @@
         "lint": "eslint ./src"
     },
     "dependencies": {
+        "@reduxjs/toolkit": "^1.8.6",
         "@tauri-apps/api": "^1.1.0",
         "next": "^12.2.5",
         "react": "^18.2.0",
-        "react-dom": "^18.2.0"
+        "react-dom": "^18.2.0",
+        "react-redux": "^8.0.4"
     },
     "devDependencies": {
         "@tauri-apps/cli": "^1.1.0",
         "@types/node": "^18.7.11",
         "@types/react": "^18.0.17",
         "@types/react-dom": "^18.0.6",
+        "@types/react-redux": "^7.1.24",
         "@typescript-eslint/eslint-plugin": "^5.40.0",
         "@typescript-eslint/parser": "^5.40.0",
         "eslint": "^7.32.0 || ^8.2.0",
