@@ -3,6 +3,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions as counterActions } from 'features/counter/counterSlice';
+import * as demoAPIActions from 'features/demoAPI/demoAPIActions';
 import { RootState } from 'store';
 
 import reactLogo from '../assets/react.svg';
@@ -90,6 +91,17 @@ const Home = ({ }: IHomeProps) => {
             </div>
 
             <p>{count}</p>
+
+            <div className="row">
+                <div>
+                    <button
+                        type="button"
+                        onClick={() => dispatch(demoAPIActions.requestDemoAPI())}
+                    >
+                        Increment by Random Number
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
