@@ -1,37 +1,35 @@
 {
-    "name": "meshtastic-emergency-response-client",
-    "private": true,
-    "version": "0.0.0",
-    "scripts": {
-        "dev": "next dev -p 1420",
-        "build": "next build && next export -o dist",
-        "tauri": "tauri",
-        "lint": "eslint ./src"
-    },
-    "dependencies": {
-        "@reduxjs/toolkit": "^1.8.6",
-        "@tauri-apps/api": "^1.1.0",
-        "next": "^12.2.5",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "react-redux": "^8.0.4",
-        "redux-saga": "^1.2.1"
-    },
-    "devDependencies": {
-        "@tauri-apps/cli": "^1.1.0",
-        "@types/node": "^18.7.11",
-        "@types/react": "^18.0.17",
-        "@types/react-dom": "^18.0.6",
-        "@types/react-redux": "^7.1.24",
-        "@typescript-eslint/eslint-plugin": "^5.40.0",
-        "@typescript-eslint/parser": "^5.40.0",
-        "eslint": "^7.32.0 || ^8.2.0",
-        "eslint-config-airbnb": "^19.0.4",
-        "eslint-config-airbnb-typescript": "^17.0.0",
-        "eslint-plugin-import": "^2.25.3",
-        "eslint-plugin-jsx-a11y": "^6.5.1",
-        "eslint-plugin-react": "^7.28.0",
-        "eslint-plugin-react-hooks": "^4.3.0",
-        "typescript": "^4.7.4"
-    }
+  "name": "meshtastic-emergency-response-client",
+  "version": "0.0.0",
+  "description": "Meshtastic client for emergency response",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "format": "prettier --write 'src/**/*.{ts,tsx}' && eslint src/*.{ts,tsx}"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.8.6",
+    "@tauri-apps/api": "^1.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.4",
+    "redux-saga": "^1.2.1"
+  },
+  "devDependencies": {
+    "@meshtastic/eslint-config": "^1.0.8",
+    "@tauri-apps/cli": "^1.1.1",
+    "@types/node": "^18.11.2",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@types/react-redux": "^7.1.24",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@vitejs/plugin-react": "^2.1.0",
+    "eslint": "^8.25.0",
+    "prettier": "^2.7.1",
+    "typescript": "^4.6.4",
+    "vite": "^3.1.0"
+  }
 }
