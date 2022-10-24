@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "format": "prettier --write 'src/**/*.{ts,tsx}' && eslint src/*.{ts,tsx}"
+    "format": "prettier --write 'src/**/*.{ts,tsx}' && eslint src/*.{ts,tsx}",
+    "test-rust": "cd ./src-tauri; cargo test"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.6",
