@@ -3,7 +3,6 @@ use std::collections::{HashMap, HashSet};
 #[derive(Debug)]
 pub struct Node {
     pub name: String,
-    //pub neighbors: Vec<Node>,
     pub optimal_weighted_degree: f64,
 }
 
@@ -11,7 +10,6 @@ impl Node {
     pub fn new(name: String) -> Node {
         Node {
             name,
-            //neighbors: Vec::new(),
             optimal_weighted_degree: 0.0,
         }
     }
@@ -22,7 +20,6 @@ impl Clone for Node {
     fn clone(&self) -> Self {
         Node {
             name: self.name.clone(),
-            //neighbors: self.neighbors.clone(),
             optimal_weighted_degree: self.optimal_weighted_degree,
         }
     }
@@ -300,58 +297,21 @@ mod tests {
         // Create a few nodes and edges and add to graph
         let u: Node = Node::new("u".to_string());
         let v: Node = Node::new("v".to_string());
-        // let w: Node = Node::new("w".to_string());
-        // let x: Node = Node::new("x".to_string());
-        // let y: Node = Node::new("y".to_string());
-        // let z: Node = Node::new("z".to_string());
+        let w: Node = Node::new("w".to_string());
 
         G.add_node(&u.clone());
         G.add_node(&v.clone());
-        assert_eq!(G.get_order(), 2);
+        G.add_node(&w.clone());
+
+        assert_eq!(G.get_order(), 3);
         println!("Nodes: {:?}", G.get_nodes());
 
         G.add_edge(&u.clone(), &v.clone(), 1);
         G.add_edge(&u.clone(), &v.clone(), 1);
-        assert_eq!(G.get_size(), 1);
+        G.add_edge(&u.clone(), &w.clone(), 1);
+        assert_eq!(G.get_size(), 2);
+
         // Print the edges and nodes in the graph
         println!("Edges: {:?}", G.get_edges());
-
-        // G.add_node(w.clone());
-        // G.add_node(x.clone());
-        // G.add_node(y.clone());
-        // G.add_node(z.clone());
-
-        /*
-        G.add_edge(u.clone(), v.clone(), 1);
-        G.add_edge(u.clone(), w.clone(), 1);
-        G.add_edge(u.clone(), x.clone(), 1);
-        G.add_edge(u.clone(), y.clone(), 1);
-        G.add_edge(u.clone(), z.clone(), 1);
-        G.add_edge(v.clone(), w.clone(), 1);
-        G.add_edge(v.clone(), x.clone(), 1);
-        G.add_edge(v.clone(), y.clone(), 1);
-        G.add_edge(v.clone(), z.clone(), 1);
-        G.add_edge(w.clone(), x.clone(), 1);
-        G.add_edge(w.clone(), y.clone(), 1);
-        G.add_edge(w.clone(), z.clone(), 1);
-        G.add_edge(x.clone(), y.clone(), 1);
-        G.add_edge(x.clone(), z.clone(), 1);
-        G.add_edge(y.clone(), z.clone(), 1);
-        */
-
-        // Check that the graph has the correct number of nodes and edges
-
-        //assert_eq!(G.get_edges().len(), 15);
-        //assert_eq!(G.get_nodes().len(), 6);
-
-        // Check that the graph has the correct neighbors for each node
-        /*
-        assert_eq!(G.get_neighbors(u.clone()).len(), 5);
-        assert_eq!(G.get_neighbors(v.clone()).len(), 5);
-        assert_eq!(G.get_neighbors(w.clone()).len(), 5);
-        assert_eq!(G.get_neighbors(x.clone()).len(), 5);
-        assert_eq!(G.get_neighbors(y.clone()).len(), 5);
-        assert_eq!(G.get_neighbors(z.clone()).len(), 5);
-        */
     }
 }
