@@ -1,4 +1,3 @@
-mod globalmincut;
 mod graph;
 
 #[cfg_attr(
