@@ -1,4 +1,6 @@
-#![cfg_attr(
+mod graph;
+
+#[cfg_attr(
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
@@ -32,6 +34,7 @@ fn greet(name: &str) -> String {
 }
 
 fn main() {
+    // let mut g = Graph::new();
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
