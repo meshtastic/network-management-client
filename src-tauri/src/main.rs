@@ -1,3 +1,4 @@
+mod globalmincut;
 mod graph;
 
 #[cfg_attr(
@@ -34,7 +35,6 @@ fn greet(name: &str) -> String {
 }
 
 fn main() {
-    // let mut g = Graph::new();
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())
