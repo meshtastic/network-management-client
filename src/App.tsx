@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
+import { listen, Event } from "@tauri-apps/api/event";
 import { useDispatch, useSelector } from "react-redux";
 import { actions as counterActions } from "@features/counter/counterSlice";
 import * as demoAPIActions from "@features/demoAPI/demoAPIActions";
@@ -8,16 +9,19 @@ import reactLogo from "./assets/react.svg";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+  const [messageResult, setMessageResult] = useState("");
 
   const dispatch = useDispatch();
   const count = useSelector((state: RootState) => state.counter.value);
 
-  const greet = async () => {
-    const result: string = await invoke("greet", { name });
-    setGreetMsg(result);
+  const sendMessage = async () => {
+    await invoke("js2rs", { message });
   };
+
+  void listen('rs2js', (event: Event<string>) => {
+    setMessageResult(event.payload);
+  });
 
   return (
     <div className="App">
@@ -43,16 +47,16 @@ function App() {
         <div>
           <input
             id="greet-input"
-            onChange={(e) => setName(e.currentTarget.value)}
-            placeholder="Enter a name..."
+            onChange={(e) => setMessage(e.currentTarget.value)}
+            placeholder="Enter a message..."
           />
-          <button type="button" onClick={() => void greet()}>
-            Greet
+          <button type="button" onClick={() => void sendMessage()}>
+            Send Message
           </button>
         </div>
       </div>
 
-      <p>{greetMsg}</p>
+      <p>{messageResult}</p>
 
       <div>
         <div>
