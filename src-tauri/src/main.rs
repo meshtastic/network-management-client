@@ -1,5 +1,11 @@
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 
+use std::{
+    io::{self, BufReader, Write},
+    str,
+    time::Duration,
+};
+
 use tauri::Manager;
 use tokio::sync::{mpsc, Mutex};
 use tracing::info;
@@ -23,18 +29,42 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![js2rs])
         .setup(|app| {
-            // Spawns worker process pulling and pushing messages from/to these channels
+            // tauri::async_runtime::spawn(async move {
+            //     async_process_model(async_proc_input_rx, async_proc_output_tx).await
+            // });
+
+            let app_handle_serial = app.handle().clone();
+            let app_handle_echo = app.handle().clone();
+
             tauri::async_runtime::spawn(async move {
-                async_process_model(async_proc_input_rx, async_proc_output_tx).await
+                let mut port = serialport::new("COM4", 115_200)
+                    .timeout(Duration::from_millis(6000))
+                    .open()
+                    .expect("Could not open serial port");
+
+                let mut serial_buffer = vec![0; 1024];
+
+                loop {
+                    match port.read(serial_buffer.as_mut_slice()) {
+                        Ok(t) => {
+                            let buffer_output = match str::from_utf8(&serial_buffer) {
+                                Ok(v) => v.to_string(),
+                                Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+                            };
+                            // async_proc_output_tx.send(buffer_output);
+                            rs2js(buffer_output, &app_handle_serial);
+                            io::stdout().write_all(&serial_buffer[..t]).unwrap()
+                        }
+                        Err(ref e) if e.kind() == io::ErrorKind::TimedOut => (),
+                        Err(e) => eprintln!("{:?}", e),
+                    }
+                }
             });
 
-            let app_handle = app.handle();
-
-            // Handles messages sent from the async worker process
             tauri::async_runtime::spawn(async move {
                 loop {
                     if let Some(output) = async_proc_output_rx.recv().await {
-                        rs2js(output, &app_handle);
+                        rs2js(output, &app_handle_echo);
                     }
                 }
             });
