@@ -49,8 +49,9 @@ fn main() {
                         Ok(t) => {
                             let buffer_output = match str::from_utf8(&serial_buffer) {
                                 Ok(v) => v.to_string(),
-                                Err(e) => panic!("Invalid UTF-8 sequence: {}", e),
+                                Err(e) => continue,
                             };
+
                             // async_proc_output_tx.send(buffer_output);
                             rs2js(buffer_output, &app_handle_serial);
                             io::stdout().write_all(&serial_buffer[..t]).unwrap()
