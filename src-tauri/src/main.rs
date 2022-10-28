@@ -1,5 +1,4 @@
-mod globalmincut;
-mod graph;
+mod graph_p;
 
 #[cfg_attr(
     all(not(debug_assertions), target_os = "windows"),
