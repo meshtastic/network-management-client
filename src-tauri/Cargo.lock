@@ -48,6 +48,7 @@ checksum = "98161a4e3e2184da77bb14f02184cdd111e83bbbcc9979dfee3c44b9a85f5602"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "defaultdict",
  "petgraph",
  "rand 0.8.5",
  "serde",
@@ -493,6 +494,12 @@ dependencies = [
  "libdbus-sys",
  "winapi",
 ]
+
+[[package]]
+name = "defaultdict"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33c4cd538d39923f9f66a0e0327562adfdb0964258bdd105caefd2e4f1de6f96"
 
 [[package]]
 name = "deflate"
