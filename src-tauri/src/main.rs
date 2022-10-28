@@ -1,4 +1,4 @@
-//mod articulation_point;
+mod articulation_point;
 //mod globalmincut;
 mod graph_p;
 
