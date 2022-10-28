@@ -109,6 +109,18 @@ impl Graph {
         self.node_idx_map.insert(node.name.clone(), node_idx);
     }
 
+    pub fn remove_node(&mut self, node: petgraph::graph::NodeIndex) {
+        //let node_idx = self.node_idx_map.get(&name).unwrap();
+        let mut node_u = self.g.node_weight_mut(node).unwrap();
+
+        for neighbor_node in self.get_neighbors_idx(node_u.name.clone()) {
+            let node_v = self.g.node_weight(neighbor_node.clone()).unwrap();
+            self.remove_edge(node_u.name.clone(), node_v.name.clone());
+        }
+
+        self.g.remove_node(node.clone());
+    }
+
     pub fn change_node_opt_weight(&mut self, idx: petgraph::graph::NodeIndex, weight: f64) {
         let mut node = self.g.node_weight_mut(idx).unwrap();
         node.optimal_weighted_degree += weight;
