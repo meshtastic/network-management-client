@@ -1,10 +1,5 @@
-//use petgraph::graphmap::UnGraphMap;
-//se petgraph::stable_graph::StableGraph;
 use petgraph::prelude::*;
-
 use std::collections::HashMap;
-
-use std::collections::HashSet;
 
 #[derive(Debug)]
 pub struct Node {
@@ -348,7 +343,6 @@ mod tests {
     #[test]
     fn initialize_graph() {
         // Create a graph
-        /*
         let mut G = Graph::new();
 
         // Create a few nodes and edges and add to graph
@@ -361,17 +355,14 @@ mod tests {
         G.add_node(w.clone());
 
         assert_eq!(G.get_order(), 3);
-        //println!("Nodes: {:?}", G.get_nodes());
 
         G.add_edge(u.clone(), v.clone(), 1 as f64);
         G.add_edge(u.clone(), v.clone(), 2 as f64);
         G.add_edge(u.clone(), w.clone(), 1 as f64);
         G.add_edge(v.clone(), w.clone(), 35 as f64);
-        assert_eq!(G.get_size(), 3);
+        assert_eq!(G.get_size(), 6);
         G.remove_edge(u.clone(), w.clone());
-        // println!("Edges: {:?}", G.get_edges());
 
-        /*
         for edge in G.get_edges() {
             let node_u = G.g.node_weight(edge.u.clone()).unwrap();
             let node_v = G.g.node_weight(edge.v.clone()).unwrap();
@@ -380,16 +371,15 @@ mod tests {
                 node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
             );
         }
-        */
+
         G.update_edge(u.clone(), v.clone(), 11 as f64);
 
         // Print the edges and nodes in the graph
-        //println!("Edges: {:?}", G.get_edges());
+        println!("Edges: {:?}", G.get_edges());
 
-        let cum = G.get_cumulative_edge_weights();
-        //println!("Cumulative edge weights: {:?}", cum);
+        let cum_sum = G.get_cumulative_edge_weights();
+        println!("Cumulative edge weights: {:?}", cum_sum);
 
-        //println!("Degree of {}: {}", u, G.degree_of(u.clone()));
-        */
+        println!("Degree of {}: {}", u, G.degree_of(u.clone()));
     }
 }
