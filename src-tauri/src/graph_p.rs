@@ -167,8 +167,8 @@ impl Graph {
         println!("u_idx: {:?}, v_idx: {:?}", u_idx, v_idx);
         // Check if edge does not exist
         if !self.g.contains_edge(u_idx.clone(), v_idx.clone()) {
-            println!("Edge: ({}, {}) does not exist", u, v);
-            return; //print_error_and_return("Edge does not exist");
+            let error_message = format!("Edge: ({}, {}) does not exist", u, v);
+            return print_error_and_return(&error_message);
         }
 
         let edge_idx = self
@@ -250,19 +250,26 @@ impl Graph {
             return print_error_and_return("Edge does not exist");
         }
 
-        let edge_idx = self
+        let edge_idx_1 = self
             .edge_idx_map
             .get(&(u_idx.clone(), v_idx.clone()))
             .unwrap();
 
-        let weight = self.g.edge_weight(edge_idx.clone()).unwrap().weight;
+        let edge_idx_2 = self
+            .edge_idx_map
+            .get(&(v_idx.clone(), u_idx.clone()))
+            .unwrap();
 
-        self.g.remove_edge(edge_idx.clone());
+        let weight = self.g.edge_weight(edge_idx_1.clone()).unwrap().weight;
+
+        self.g.remove_edge(edge_idx_1.clone());
+        self.g.remove_edge(edge_idx_2.clone());
 
         let u_idx_clone = u_idx.clone();
         let v_idx_clone = v_idx.clone();
 
         self.edge_idx_map.remove(&(u_idx.clone(), v_idx.clone()));
+        self.edge_idx_map.remove(&(v_idx.clone(), u_idx.clone()));
 
         self.change_node_opt_weight(u_idx_clone, -weight);
         self.change_node_opt_weight(v_idx_clone, -weight);
@@ -357,11 +364,12 @@ mod tests {
         assert_eq!(G.get_order(), 3);
 
         G.add_edge(u.clone(), v.clone(), 1 as f64);
+        // This should return an error "Edge already exists"
         G.add_edge(u.clone(), v.clone(), 2 as f64);
         G.add_edge(u.clone(), w.clone(), 1 as f64);
         G.add_edge(v.clone(), w.clone(), 35 as f64);
+        // Since this is an undirected graph, each edge is added twice
         assert_eq!(G.get_size(), 6);
-        G.remove_edge(u.clone(), w.clone());
 
         for edge in G.get_edges() {
             let node_u = G.g.node_weight(edge.u.clone()).unwrap();
@@ -371,8 +379,21 @@ mod tests {
                 node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
             );
         }
+        println!("\n");
 
         G.update_edge(u.clone(), v.clone(), 11 as f64);
+
+        G.remove_edge(u.clone(), w.clone());
+        assert_eq!(G.get_size(), 4);
+        for edge in G.get_edges() {
+            let node_u = G.g.node_weight(edge.u.clone()).unwrap();
+            let node_v = G.g.node_weight(edge.v.clone()).unwrap();
+            println!(
+                "Edge: (Name: {} - Degree Weight: {}) <-> (Name: {} - Degree Weight: {}) with weight {}",
+                node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
+            );
+        }
+        println!("\n");
 
         // Print the edges and nodes in the graph
         println!("Edges: {:?}", G.get_edges());
