@@ -305,6 +305,10 @@ impl Graph {
         self.g.node_weight(idx).unwrap().clone()
     }
 
+    pub fn get_node_idx(&self, node: String) -> petgraph::graph::NodeIndex {
+        self.node_idx_map.get(&node).unwrap().clone()
+    }
+
     // Currently immutable
     pub fn get_edges(&self) -> Vec<Edge> {
         let mut edges = Vec::new();
@@ -312,6 +316,26 @@ impl Graph {
             edges.push(edge.clone());
         }
         edges
+    }
+
+    pub fn get_neighbors(&self, node: String) -> Vec<Node> {
+        let node_weight = self.node_idx_map.get(&node).unwrap();
+        let mut neighbors = Vec::new();
+        for neighbor in self.g.neighbors(node_weight.clone()) {
+            neighbors.push(self.g.node_weight(neighbor).unwrap().clone());
+        }
+
+        neighbors
+    }
+
+    pub fn get_neighbors_idx(&self, node: String) -> Vec<petgraph::graph::NodeIndex> {
+        let node_weight = self.node_idx_map.get(&node).unwrap();
+        let mut neighbors = Vec::new();
+        for neighbor in self.g.neighbors(node_weight.clone()) {
+            neighbors.push(neighbor);
+        }
+
+        neighbors
     }
 
     pub fn degree_of(&self, node: String) -> usize {

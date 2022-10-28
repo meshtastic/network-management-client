@@ -1,3 +1,4 @@
+mod articulation_point;
 mod graph_p;
 
 #[cfg_attr(
