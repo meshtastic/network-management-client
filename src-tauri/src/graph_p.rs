@@ -103,15 +103,16 @@ impl Graph {
         }
     }
 
-    pub fn add_node(&mut self, name: String) {
+    pub fn add_node(&mut self, name: String) -> petgraph::graph::NodeIndex {
         let node = Node::new(name.clone());
         let node_idx = self.g.add_node(node.clone());
         self.node_idx_map.insert(node.name.clone(), node_idx);
+        node_idx
     }
 
     pub fn remove_node(&mut self, node: petgraph::graph::NodeIndex) {
         //let node_idx = self.node_idx_map.get(&name).unwrap();
-        let mut node_u = self.g.node_weight_mut(node).unwrap();
+        let node_u = self.g.node_weight(node).unwrap().clone();
 
         for neighbor_node in self.get_neighbors_idx(node_u.name.clone()) {
             let node_v = self.g.node_weight(neighbor_node.clone()).unwrap();
@@ -393,9 +394,9 @@ mod tests {
         let v: String = "v".to_string();
         let w: String = "w".to_string();
 
-        G.add_node(u.clone());
-        G.add_node(v.clone());
-        G.add_node(w.clone());
+        let u_idx = G.add_node(u.clone());
+        let v_idx = G.add_node(v.clone());
+        let w_idx = G.add_node(w.clone());
 
         assert_eq!(G.get_order(), 3);
 
@@ -438,5 +439,20 @@ mod tests {
         println!("Cumulative edge weights: {:?}", cum_sum);
 
         println!("Degree of {}: {}", u, G.degree_of(u.clone()));
+
+        G.remove_node(u_idx);
+
+        println!("Nodes: {:?}", G.get_nodes());
+        println!("\n");
+        for edge in G.get_edges() {
+            let node_u = G.g.node_weight(edge.u.clone()).unwrap();
+            let node_v = G.g.node_weight(edge.v.clone()).unwrap();
+            println!(
+                "Edge: (Name: {} - Degree Weight: {}) <-> (Name: {} - Degree Weight: {}) with weight {}",
+                node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
+            );
+        }
+        println!("\n");
+        assert_eq!(G.get_order(), 2);
     }
 }
