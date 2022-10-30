@@ -1,6 +1,6 @@
 # Meshtastic Emergency Response Client
 
-> :bangbang: **This applciation is in early alpha development. For the time being, all images shown in this README are Figma designs and are likely not implemented. We will update this README when this functionality is implemented.** :bangbang:
+> :bangbang: **This application is in early alpha development. For the time being, all images shown in this README are Figma designs and are likely not implemented. We will update this README when this functionality is implemented.** :bangbang:
 
 This application is a desktop client for the [Meshtastic](https://meshtastic.org/) mesh networking project intended for use in offline disaster response scenarios (e.g., missing person, fire response, etc...). This client is still in early alpha development, so feedback is very welcome! Feel free to drop an issue :)
 
