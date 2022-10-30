@@ -6,6 +6,7 @@ use std::{
     time::Duration,
 };
 
+use app::protobufs;
 use tauri::Manager;
 use tokio::sync::{mpsc, Mutex};
 use tracing::info;
