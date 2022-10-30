@@ -9,7 +9,7 @@ struct AsyncProcInputTx {
     inner: Mutex<mpsc::Sender<String>>,
 }
 
-mod graph;
+mod graph_p;
 
 fn main() {
     tracing_subscriber::fmt::init();

@@ -1,11 +1,14 @@
 # Meshtastic Emergency Response Client
 
+> :bangbang: **This application is in early alpha development. For the time being, all images shown in this README are Figma designs and are likely not implemented. We will update this README when this functionality is implemented.** :bangbang:
+
 This application is a desktop client for the [Meshtastic](https://meshtastic.org/) mesh networking project intended for use in offline disaster response scenarios (e.g., missing person, fire response, etc...). This client is still in early alpha development, so feedback is very welcome! Feel free to drop an issue :)
 
 This project uses the [Tauri](https://tauri.app/) framework, which uses the native OS webview to render a web UI within a native Rust application window.
 
-![image](https://user-images.githubusercontent.com/46639306/197882383-e993add8-0900-4114-9cb6-9e9cb4d331d4.png)
+> :bangbang: **This image is a conceptual design and is not yet implemented.** :bangbang:
 
+![image](https://user-images.githubusercontent.com/46639306/197882383-e993add8-0900-4114-9cb6-9e9cb4d331d4.png)
 
 ## Development Prerequisites
 
