@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useDispatch, useSelector } from "react-redux";
-import { actions as counterActions } from "@features/counter/counterSlice";
+import { counterActions } from "@features/counter/counterSlice";
 import * as demoAPIActions from "@features/demoAPI/demoAPIActions";
 import type { RootState } from "@store/index";
 import reactLogo from "./assets/react.svg";
