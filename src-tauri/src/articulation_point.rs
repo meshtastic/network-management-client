@@ -1,10 +1,6 @@
-use defaultdict::DefaultHashMap;
-use petgraph::visit::IntoNeighbors;
-
-use crate::graph_p::Edge;
 use crate::graph_p::Graph;
-use crate::graph_p::Node;
 use core::cmp::min;
+use defaultdict::DefaultHashMap;
 
 pub fn articulation_point_helper(
     graph: &Graph,
@@ -59,7 +55,6 @@ pub fn articulation_point_helper(
 }
 
 pub fn articulation_point(graph: Graph) -> Vec<petgraph::graph::NodeIndex> {
-    // hashmap
     let mut disc = DefaultHashMap::<String, i32>::new();
     let mut low = DefaultHashMap::<String, i32>::new();
     let mut visited = DefaultHashMap::<String, bool>::new();
@@ -97,7 +92,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn initialize_graph() {
+    fn graph_with_no_articulation_point() {
         // Create a graph
         let mut G = Graph::new();
 
@@ -127,38 +122,56 @@ mod tests {
         // Test the articulation point function
         let articulation_points = articulation_point(G.clone());
         let len_articulation_points = articulation_points.len();
-        for node in articulation_points {
+        for node in articulation_points.clone() {
             let node = G.g.node_weight(node).unwrap();
             println!("Articulation Point: {}", node.name);
         }
         assert_eq!(len_articulation_points, 0);
 
-        let mut G_2 = Graph::new();
+        // Check if node u is an articulation point
+        assert_eq!(
+            articulation_points.contains(&G.get_node_idx(u.clone())),
+            false
+        );
+        assert_eq!(
+            articulation_points.contains(&G.get_node_idx(x.clone())),
+            false
+        );
+    }
+
+    #[test]
+    fn graph_with_articulation_point() {
+        let mut G = Graph::new();
+
         let v1: String = "1".to_string();
         let v2: String = "2".to_string();
         let v3: String = "3".to_string();
         let v4: String = "4".to_string();
         let v5: String = "5".to_string();
 
-        G_2.add_node(v1.clone());
-        G_2.add_node(v2.clone());
-        G_2.add_node(v3.clone());
-        G_2.add_node(v4.clone());
-        G_2.add_node(v5.clone());
+        let v1_node = G.add_node(v1.clone());
+        G.add_node(v2.clone());
+        G.add_node(v3.clone());
+        let v4_node = G.add_node(v4.clone());
+        let v5_node = G.add_node(v5.clone());
 
-        G_2.add_edge(v2.clone(), v1.clone(), 1.0);
-        G_2.add_edge(v1.clone(), v3.clone(), 1.0);
-        G_2.add_edge(v3.clone(), v2.clone(), 1.0);
-        G_2.add_edge(v1.clone(), v4.clone(), 1.0);
-        G_2.add_edge(v4.clone(), v5.clone(), 1.0);
+        G.add_edge(v2.clone(), v1.clone(), 1.0);
+        G.add_edge(v1.clone(), v3.clone(), 1.0);
+        G.add_edge(v3.clone(), v2.clone(), 1.0);
+        G.add_edge(v1.clone(), v4.clone(), 1.0);
+        G.add_edge(v4.clone(), v5.clone(), 1.0);
 
-        let articulation_points = articulation_point(G_2.clone());
+        let articulation_points = articulation_point(G.clone());
         let len_articulation_points = articulation_points.len();
-        for node in articulation_points {
-            let node = G_2.g.node_weight(node).unwrap();
+        for node in articulation_points.clone() {
+            let node = G.g.node_weight(node).unwrap();
             println!("Articulation Point: {}", node.name);
         }
 
         assert_eq!(len_articulation_points, 2);
+
+        assert_eq!(articulation_points.clone().contains(&v1_node), true);
+        assert_eq!(articulation_points.clone().contains(&v4_node), true);
+        assert_eq!(articulation_points.clone().contains(&v5_node), false);
     }
 }

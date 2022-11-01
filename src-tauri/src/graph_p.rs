@@ -177,11 +177,10 @@ impl Graph {
         let u_idx = self.node_idx_map.get(&u).unwrap();
         let v_idx = self.node_idx_map.get(&v).unwrap();
 
-        println!("u_idx: {:?}, v_idx: {:?}", u_idx, v_idx);
         // Check if edge does not exist
         if !self.g.contains_edge(u_idx.clone(), v_idx.clone()) {
-            let error_message = format!("Edge: ({}, {}) does not exist", u, v);
-            return print_error_and_return(&error_message);
+            self.add_edge(u.clone(), v.clone(), weight);
+            return;
         }
 
         let edge_idx = self
@@ -231,7 +230,6 @@ impl Graph {
 
         // Check if edge does not exist
         if !self.g.contains_edge(u_idx.clone(), v_idx.clone()) {
-            println!("Edge does not exist");
             return 0.0;
         }
 
