@@ -68,3 +68,8 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.Map_Class {
+  width: 100vw;
+  height: 100vh;
+}

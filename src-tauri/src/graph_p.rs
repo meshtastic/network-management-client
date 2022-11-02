@@ -103,10 +103,23 @@ impl Graph {
         }
     }
 
-    pub fn add_node(&mut self, name: String) {
+    pub fn add_node(&mut self, name: String) -> petgraph::graph::NodeIndex {
         let node = Node::new(name.clone());
         let node_idx = self.g.add_node(node.clone());
         self.node_idx_map.insert(node.name.clone(), node_idx);
+        node_idx
+    }
+
+    pub fn remove_node(&mut self, node: petgraph::graph::NodeIndex) {
+        //let node_idx = self.node_idx_map.get(&name).unwrap();
+        let node_u = self.g.node_weight(node).unwrap().clone();
+
+        for neighbor_node in self.get_neighbors_idx(node_u.name.clone()) {
+            let node_v = self.g.node_weight(neighbor_node.clone()).unwrap();
+            self.remove_edge(node_u.name.clone(), node_v.name.clone());
+        }
+
+        self.g.remove_node(node.clone());
     }
 
     pub fn change_node_opt_weight(&mut self, idx: petgraph::graph::NodeIndex, weight: f64) {
@@ -164,11 +177,10 @@ impl Graph {
         let u_idx = self.node_idx_map.get(&u).unwrap();
         let v_idx = self.node_idx_map.get(&v).unwrap();
 
-        println!("u_idx: {:?}, v_idx: {:?}", u_idx, v_idx);
         // Check if edge does not exist
         if !self.g.contains_edge(u_idx.clone(), v_idx.clone()) {
-            let error_message = format!("Edge: ({}, {}) does not exist", u, v);
-            return print_error_and_return(&error_message);
+            self.add_edge(u.clone(), v.clone(), weight);
+            return;
         }
 
         let edge_idx = self
@@ -218,7 +230,6 @@ impl Graph {
 
         // Check if edge does not exist
         if !self.g.contains_edge(u_idx.clone(), v_idx.clone()) {
-            println!("Edge does not exist");
             return 0.0;
         }
 
@@ -305,6 +316,10 @@ impl Graph {
         self.g.node_weight(idx).unwrap().clone()
     }
 
+    pub fn get_node_idx(&self, node: String) -> petgraph::graph::NodeIndex {
+        self.node_idx_map.get(&node).unwrap().clone()
+    }
+
     // Currently immutable
     pub fn get_edges(&self) -> Vec<Edge> {
         let mut edges = Vec::new();
@@ -312,6 +327,26 @@ impl Graph {
             edges.push(edge.clone());
         }
         edges
+    }
+
+    pub fn get_neighbors(&self, node: String) -> Vec<Node> {
+        let node_weight = self.node_idx_map.get(&node).unwrap();
+        let mut neighbors = Vec::new();
+        for neighbor in self.g.neighbors(node_weight.clone()) {
+            neighbors.push(self.g.node_weight(neighbor).unwrap().clone());
+        }
+
+        neighbors
+    }
+
+    pub fn get_neighbors_idx(&self, node: String) -> Vec<petgraph::graph::NodeIndex> {
+        let node_weight = self.node_idx_map.get(&node).unwrap();
+        let mut neighbors = Vec::new();
+        for neighbor in self.g.neighbors(node_weight.clone()) {
+            neighbors.push(neighbor);
+        }
+
+        neighbors
     }
 
     pub fn degree_of(&self, node: String) -> usize {
@@ -357,9 +392,9 @@ mod tests {
         let v: String = "v".to_string();
         let w: String = "w".to_string();
 
-        G.add_node(u.clone());
-        G.add_node(v.clone());
-        G.add_node(w.clone());
+        let u_idx = G.add_node(u.clone());
+        let v_idx = G.add_node(v.clone());
+        let w_idx = G.add_node(w.clone());
 
         assert_eq!(G.get_order(), 3);
 
@@ -402,5 +437,20 @@ mod tests {
         println!("Cumulative edge weights: {:?}", cum_sum);
 
         println!("Degree of {}: {}", u, G.degree_of(u.clone()));
+
+        G.remove_node(u_idx);
+
+        println!("Nodes: {:?}", G.get_nodes());
+        println!("\n");
+        for edge in G.get_edges() {
+            let node_u = G.g.node_weight(edge.u.clone()).unwrap();
+            let node_v = G.g.node_weight(edge.v.clone()).unwrap();
+            println!(
+                "Edge: (Name: {} - Degree Weight: {}) <-> (Name: {} - Degree Weight: {}) with weight {}",
+                node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
+            );
+        }
+        println!("\n");
+        assert_eq!(G.get_order(), 2);
     }
 }

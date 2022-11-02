@@ -70,6 +70,7 @@ name = "app"
 version = "0.1.0"
 dependencies = [
  "bytes",
+ "defaultdict",
  "petgraph",
  "prost",
  "prost-build",
@@ -523,6 +524,12 @@ dependencies = [
  "libdbus-sys",
  "winapi",
 ]
+
+[[package]]
+name = "defaultdict"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33c4cd538d39923f9f66a0e0327562adfdb0964258bdd105caefd2e4f1de6f96"
 
 [[package]]
 name = "deflate"
