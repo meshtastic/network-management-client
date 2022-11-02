@@ -19,7 +19,7 @@ impl Node {
     }
 }
 
-// Add clone trait to Node
+/// Add clone trait to Node
 impl Clone for Node {
     fn clone(&self) -> Self {
         Node {
@@ -29,7 +29,7 @@ impl Clone for Node {
     }
 }
 
-// Add hash to Node so that we can use it as a key in a HashMap
+/// Add hash to Node so that we can use it as a key in a HashMap
 impl std::hash::Hash for Node {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.name.hash(state);
@@ -67,7 +67,7 @@ impl Edge {
     }
 }
 
-// Add clone trait to Edge
+/// Add clone trait to Edge
 impl Clone for Edge {
     fn clone(&self) -> Self {
         Edge {
@@ -78,10 +78,10 @@ impl Clone for Edge {
     }
 }
 
-// Add eq operator to Edge
+/// Add eq operator to Edge
 impl std::cmp::Eq for Edge {}
 
-// Add equality operator to Edge
+/// Add equality operator to Edge
 impl PartialEq for Edge {
     fn eq(&self, other: &Self) -> bool {
         self.u == other.u && self.v == other.v
@@ -101,7 +101,7 @@ impl Graph {
     /// Creates a new graph and returns it.
     pub fn new() -> Graph {
         Graph {
-            g: StableUnGraph::<Node, Edge>::default(), // StableGraph::new(),
+            g: StableUnGraph::<Node, Edge>::default(),
             node_idx_map: HashMap::new(),
             edge_idx_map: HashMap::new(),
         }
@@ -264,6 +264,14 @@ impl Graph {
         self.change_node_opt_weight(v_idx_clone, weight - old_weight);
     }
 
+    /// Returns the weight of the edge between the two nodes.
+    ///
+    /// # Arguments
+    ///
+    /// * `u` - String identifier of the first node
+    /// * `v` - String identifier of the second node
+    /// * `parallel_edge_idx` - Optional usize index of the parallel edge we want to update.
+    /// * `get_all_parallel` - Optional bool flag to get weight sum of all parallel edges.
     pub fn get_edge_weight(
         &self,
         u: String,
