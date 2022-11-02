@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import whiteLogo from "@app/assets/Mesh_Logo_White.png";
+import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
 import {
   ChatBubbleBottomCenterTextIcon,
@@ -19,27 +19,22 @@ const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.MAP);
 
   return (
-    <div className="h-screen flex flex-col justify-between w-14">
+    <div className="h-screen flex flex-col justify-between shadow-lg">
       <div>
-        {/* Logo */}
-        <div className="bg-gray-800 ">
-          <img src={whiteLogo} className="pl-2 pr-2 pt-3 pb-3"></img>{" "}
-          {/* adam will fix svg logo cause its nuts bro */}
+        <div className="flex bg-gray-800 w-14 h-14">
+          <img src={LogoWhiteSVG} className="m-auto pl-2 pr-2 pt-3 pb-3"></img>{" "}
         </div>
         <div className="flex flex-col">
-          {/* Magnifying glass */}
           <SidebarIcon
             isActive={activeTab == ActiveTab.MAP}
             setTabActive={() => setActiveTab(ActiveTab.MAP)}
             renderIcon={() => <MagnifyingGlassIcon className="" />}
           />
-          {/* ChatBubble */}
           <SidebarIcon
             isActive={activeTab == ActiveTab.CHAT}
             setTabActive={() => setActiveTab(ActiveTab.CHAT)}
             renderIcon={() => <ChatBubbleBottomCenterTextIcon className="" />}
           />
-          {/* Document */}
           <SidebarIcon
             isActive={activeTab == ActiveTab.INFO}
             setTabActive={() => setActiveTab(ActiveTab.INFO)}
@@ -47,14 +42,11 @@ const Sidebar = () => {
           />
         </div>
       </div>
-      <div>
-        {/* Settings */}
-        <SidebarIcon
-          isActive={activeTab == ActiveTab.SETTINGS}
-          setTabActive={() => setActiveTab(ActiveTab.SETTINGS)}
-          renderIcon={() => <Cog8ToothIcon className="" />}
-        />
-      </div>
+      <SidebarIcon
+        isActive={activeTab == ActiveTab.SETTINGS}
+        setTabActive={() => setActiveTab(ActiveTab.SETTINGS)}
+        renderIcon={() => <Cog8ToothIcon className="" />}
+      />
     </div>
   );
 };
