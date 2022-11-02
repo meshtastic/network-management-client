@@ -6,6 +6,10 @@ body {
   margin: 0px;
 }
 
+* {
+  @apply font-sans;
+}
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
 

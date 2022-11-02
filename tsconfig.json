@@ -16,12 +16,12 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "@app/*": ["./*"],
-      "@components/*": ["./components/*"],
-      "@features/*": ["./features/*"],
-      "@store/*": ["./store/*"]
+      "@app/*": ["./src/*"],
+      "@components/*": ["src/components/*"],
+      "@features/*": ["./src/features/*"],
+      "@store/*": ["./src/store/*"]
     },
     "importHelpers": true,
     "removeComments": true,
