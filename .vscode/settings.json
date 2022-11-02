@@ -3,9 +3,13 @@
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
   "editor.formatOnSave": true,
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "editor.tabSize": 2
 }

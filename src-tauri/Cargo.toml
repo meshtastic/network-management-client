@@ -12,12 +12,24 @@ rust-version = "1.57"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
+prost-build = "0.11.1"
+protoc-bin-vendored = "3.0.0"
 tauri-build = { version = "1.1.1", features = [] }
+walkdir = "2.3.2"
 
 [dependencies]
+rand = "0.8.5"
+petgraph = "0.6.2"
+defaultdict = "0.13.0"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.1.1", features = ["api-all"] }
+tokio = { version = "1.21.2", features = ["full"] }
+tracing = "0.1.37"
+tracing-subscriber = "0.3.16"
+serialport = "4.2.0"
+prost = "0.11.0"
+bytes = "1.2.1"
 
 [features]
 # by default Tauri runs in production mode

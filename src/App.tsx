@@ -1,6 +1,6 @@
 import React from "react";
 import Sidebar from "@components/Sidebar/Sidebar";
-import Map from "@components/Map/Map";
+import Map from "@components/Map";
 
 const App = () => {
   return (
