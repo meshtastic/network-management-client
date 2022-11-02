@@ -2,6 +2,9 @@ import React from "react";
 import maplibregl from "maplibre-gl";
 import { Map, NavigationControl, ScaleControl } from "react-map-gl";
 
+import 'maplibre-gl/dist/maplibre-gl.css';
+import "./Map.css";
+
 const MapBox = () => {
   return (
     <div className="relative w-full h-full">
