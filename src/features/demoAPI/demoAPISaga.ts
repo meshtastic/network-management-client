@@ -1,6 +1,6 @@
 import { call, put } from "redux-saga/effects";
 
-import { actions as counterActions } from "@features/counter/counterSlice";
+import { counterActions } from "@features/counter/counterSlice";
 
 const callDemoAPI = async (url: string) => (await fetch(url)).json();
 
