@@ -6,6 +6,22 @@ body {
   margin: 0px;
 }
 
+.maplibregl-ctrl-bottom-right {
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 0px 36px 36px 0px;
+  gap: 24px;
+}
+
+.maplibregl-ctrl-bottom-right > div {
+  margin: auto 0px 0px 0px !important;
+}
+
+.maplibregl-ctrl-scale {
+  background-color: transparent !important;
+  text-align: center;
+}
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
 
