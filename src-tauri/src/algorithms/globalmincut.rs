@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-use crate::graph_p::Edge;
-use crate::graph_p::Graph;
+use crate::graph::edge::Edge;
+use crate::graph::graph_ds::Graph;
 
 /// Locate the insertion point for x in a to maintain sorted order.
 /// If x is already present in a, the insertion point will be before
@@ -139,15 +139,6 @@ mod tests {
         G.add_edge(w.clone(), z.clone(), 1.0);
         G.add_edge(x.clone(), a.clone(), 1.0);
         G.add_edge(y.clone(), b.clone(), 1.0);
-
-        for edge in G.get_edges() {
-            let node_u = G.g.node_weight(edge.u.clone()).unwrap();
-            let node_v = G.g.node_weight(edge.v.clone()).unwrap();
-            println!(
-                "Edge: (Name: {} - Degree Weight: {}) <-> (Name: {} - Degree Weight: {}) with weight {}",
-                node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
-            );
-        }
 
         let mut mincut_2 = 0;
         for _ in 0..10000 {
