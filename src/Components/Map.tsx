@@ -1,6 +1,6 @@
 import React from "react";
 import maplibregl from "maplibre-gl";
-import { Map, ScaleControl } from "react-map-gl";
+import { Map, NavigationControl, ScaleControl } from "react-map-gl";
 
 const MapBox = () => {
   return (
@@ -11,6 +11,7 @@ const MapBox = () => {
         attributionControl={false}
       >
         <ScaleControl position="bottom-right" unit="imperial" />
+        <NavigationControl position="bottom-right" showCompass={false} />
       </Map>
     </div>
   );
