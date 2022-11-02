@@ -8,9 +8,10 @@ import "./Map.css";
 
 const MapBox = () => {
   // Start location
-  const start_lat = 43.705621;
-  const start_long = -72.291194;
+  const start_lat = 26.6770745;
+  const start_long = -80.0387182;
   const start_zoom = 14;
+  
 
   return (
     <div className="relative h-full w-full">
