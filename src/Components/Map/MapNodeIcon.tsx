@@ -12,24 +12,25 @@ export interface IMapNodeIconProps {
   size: 'sm' | 'med' | 'lg';
   state: NodeState;
   isBase: boolean;
+  className?: string;
 }
 
-const MapNodeIcon = ({ size, state, isBase, }: IMapNodeIconProps) => {
+const MapNodeIcon = ({ size, state, isBase, className = "" }: IMapNodeIconProps) => {
   if (isBase) return <img src={BaseIcon} />;
 
   switch (state) {
     case 'selected':
-      return <img src={SelectedNodeIcon} />;
+      return <img className={className} src={SelectedNodeIcon} />;
 
     case 'warning':
-      return <img src={WarningNodeIcon} />;
+      return <img className={className} src={WarningNodeIcon} />;
 
     case 'error':
-      return <img src={ErrorNodeIcon} />;
+      return <img className={className} src={ErrorNodeIcon} />;
 
     // Nominal
     default:
-      return <img src={NominalNodeIcon} />;
+      return <img className={className} src={NominalNodeIcon} />;
   }
 };
 

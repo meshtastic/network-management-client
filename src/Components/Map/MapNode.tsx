@@ -9,6 +9,7 @@ export interface ITemporaryNode {
   heading: number; // deg
   latitude: number;
   longitude: number;
+  isBase: boolean;
 }
 
 // TODO these will need to be configurable
@@ -27,7 +28,9 @@ export const getNodeState = (timeSinceLastMessage: number): NodeState => {
   return 'nominal';
 };
 
-export const getHeadingFromNodeState = (nodeState: NodeState): string => {
+export const getHeadingFromNodeState = (nodeState: NodeState, isBase = false): string => {
+  if (isBase) return "Base";
+
   switch (nodeState) {
     case 'selected':
       return "Selected";
@@ -63,10 +66,11 @@ export const getColorClassFromNodeState = (nodeState: NodeState): string => {
 
 const MapNode = ({ node, size = 'med', isBase = false }: IMapNodeProps) => {
   const nodeState = getNodeState(node.timeSinceLastMessage);
-  const headingPrefix = getHeadingFromNodeState(nodeState);
+  const headingPrefix = getHeadingFromNodeState(nodeState, isBase);
 
   const showMessageTime = nodeState === 'warning' || nodeState === 'error';
   const colorClass = getColorClassFromNodeState(nodeState);
+  const iconRotation = !isBase ? node.heading : 0;
 
   return (
     <Marker
@@ -79,11 +83,12 @@ const MapNode = ({ node, size = 'med', isBase = false }: IMapNodeProps) => {
         {showMessageTime && (<span className={`font-normal ${colorClass}`}> ({node.timeSinceLastMessage} min)</span>)}
       </div>
 
-      <div className='shadow-lg' style={{ transform: `rotate(${node.heading}deg)` }}>
+      <div style={{ transform: `rotate(${iconRotation}deg)` }}>
         <MapNodeIcon
           size={size}
           state={nodeState}
           isBase={isBase}
+          className="drop-shadow-lg"
         />
       </div>
     </Marker>
