@@ -10,7 +10,7 @@ const MapBox = () => {
         mapLib={maplibregl}
         attributionControl={false}
       >
-        <ScaleControl position="bottom-right" unit="imperial" />
+        <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
         <NavigationControl position="bottom-right" showCompass={false} />
       </Map>
     </div>

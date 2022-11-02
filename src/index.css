@@ -6,6 +6,7 @@ body {
   margin: 0px;
 }
 
+/* Bottom Right Control Group */
 .maplibregl-ctrl-bottom-right {
   display: flex;
   flex-direction: row-reverse;
@@ -13,13 +14,48 @@ body {
   gap: 24px;
 }
 
+/* All Bottom Right Controls */
 .maplibregl-ctrl-bottom-right > div {
   margin: auto 0px 0px 0px !important;
 }
 
+/* Zoom Buttons Container */
+.maplibregl-ctrl-bottom-right > .maplibregl-ctrl-group {
+  @apply shadow-lg !important;
+  @apply border-gray-100 !important;
+}
+
+/* Distance Scale */
 .maplibregl-ctrl-scale {
   background-color: transparent !important;
   text-align: center;
+  @apply border-gray-500 !important;
+  @apply text-gray-500 !important;
+  @apply text-sm !important;
+}
+
+/* Zoom Control Buttons */
+.maplibregl-ctrl-zoom-in,
+.maplibregl-ctrl-zoom-out {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+/* Zoom Out Button */
+.maplibregl-ctrl-zoom-out {
+  @apply border-t-gray-100 !important;
+}
+
+/* Zoom In Control Icon */
+.maplibregl-ctrl-zoom-in > .maplibregl-ctrl-icon {
+  padding: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 4.5V19.5M19.5 12L4.5 12' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+/* Zoom Out Control Icon */
+.maplibregl-ctrl-zoom-out > .maplibregl-ctrl-icon {
+  padding: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12H19' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
 }
 
 :root {
