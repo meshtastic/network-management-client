@@ -52,67 +52,6 @@ pub fn random_select(G: &Graph) -> Edge {
     return edges[i].clone();
 }
 
-/*
-pub fn contract_edge(G: &mut Graph, edge: &Edge) {
-    {
-        let u_idx = edge.u.clone();
-        let v_idx = edge.v.clone();
-
-        let node_u = G.g.node_weight(u_idx).unwrap();
-        let node_v = G.g.node_weight(v_idx).unwrap();
-
-        let u_weighted_degree = node_u.optimal_weighted_degree;
-        let v_weighted_degree = node_v.optimal_weighted_degree;
-
-        let edge_weight = edge.weight;
-
-        let new_value = u_weighted_degree + v_weighted_degree - 2.0 * edge_weight;
-
-        G.change_node_opt_weight(u_idx, new_value);
-        G.change_node_opt_weight(v_idx, 0 as f64);
-    }
-
-    let u_idx = edge.u.clone();
-    let v_idx = edge.v.clone();
-    let node_u = G.get_node(u_idx.clone());
-    let node_v = G.get_node(v_idx.clone());
-
-    println!("Edge: {:?} {:?}", node_u, node_v);
-
-    G.update_edge(node_u.name.clone(), node_v.name.clone(), 0 as f64);
-    G.update_edge(node_v.name.clone(), node_u.name.clone(), 0 as f64);
-
-    for node in G.get_nodes() {
-        if node != node_u.clone() && node != node_v.clone() {
-            // edge = (u, v)
-            let weight = G.get_edge_weight(node_u.name.clone(), node.name.clone())
-                + G.get_edge_weight(node_v.name.clone(), node.name.clone());
-            G.update_edge(node_u.name.clone(), node.name.clone(), weight);
-            let weight = G.get_edge_weight(node.name.clone(), node_u.name.clone())
-                + G.get_edge_weight(node.name.clone(), node_v.name.clone());
-            G.update_edge(node.name.clone(), node_u.name.clone(), weight);
-            G.update_edge(node_v.name.clone(), node.name.clone(), 0 as f64);
-            G.update_edge(node.name.clone(), node_v.name.clone(), 0 as f64);
-        }
-    }
-}
-
-pub fn contract(G: &Graph, k: usize) -> Graph {
-    let mut g_prime = G.clone();
-    let n = g_prime.get_order();
-    while g_prime.get_order() > k {
-        println!("Order: {}", g_prime.get_order());
-        let e = random_select(&g_prime);
-        contract_edge(&mut g_prime, &e);
-        let node_u = g_prime.g.node_weight(e.u).unwrap();
-        let node_v = g_prime.g.node_weight(e.v).unwrap();
-        g_prime.remove_edge(node_u.name.clone(), node_v.name.clone());
-    }
-    let edges = g_prime.get_edges();
-    g_prime
-}
-*/
-
 pub fn contract(G: &Graph, k: usize) -> Graph {
     let mut G = G.clone();
 

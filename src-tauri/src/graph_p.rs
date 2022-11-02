@@ -540,58 +540,9 @@ mod tests {
 
         assert_eq!(G.get_size(), 3);
 
-        /*
-        for edge in G.get_edges() {
-            let node_u = G.g.node_weight(edge.u.clone()).unwrap();
-            let node_v = G.g.node_weight(edge.v.clone()).unwrap();
-            println!(
-                "Edge: (Name: {} - Degree Weight: {}) <-> (Name: {} - Degree Weight: {}) with weight {}",
-                node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
-            );
-        }
-        println!("\n");
-        */
-
         G.update_edge(u.clone(), v.clone(), 11 as f64, None);
         G.remove_edge(u.clone(), w.clone(), None, Some(true));
 
         assert_eq!(G.get_size(), 2);
-
-        /*
-        for edge in G.get_edges() {
-            let node_u = G.g.node_weight(edge.u.clone()).unwrap();
-            let node_v = G.g.node_weight(edge.v.clone()).unwrap();
-            println!(
-                "Edge: (Name: {} - Degree Weight: {}) <-> (Name: {} - Degree Weight: {}) with weight {}",
-                node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
-            );
-        }
-        println!("\n");
-
-
-        // Print the edges and nodes in the graph
-        println!("Edges: {:?}", G.get_edges());
-
-        let cum_sum = G.get_cumulative_edge_weights();
-        println!("Cumulative edge weights: {:?}", cum_sum);
-
-        println!("Degree of {}: {}", u, G.degree_of(u.clone()));
-        println!("Neighborhood of {}: {:?}", v, G.get_neighbors(v.clone()));
-
-        G.remove_node(u_idx);
-
-        println!("Nodes: {:?}", G.get_nodes());
-        println!("\n");
-        for edge in G.get_edges() {
-            let node_u = G.g.node_weight(edge.u.clone()).unwrap();
-            let node_v = G.g.node_weight(edge.v.clone()).unwrap();
-            println!(
-                "Edge: (Name: {} - Degree Weight: {}) <-> (Name: {} - Degree Weight: {}) with weight {}",
-                node_u.name, node_u.optimal_weighted_degree, node_v.name, node_v.optimal_weighted_degree, edge.weight
-            );
-        }
-        println!("\n");
-        assert_eq!(G.get_order(), 2);
-        */
     }
 }
