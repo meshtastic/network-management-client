@@ -1,4 +1,5 @@
 mod articulation_point;
+mod globalmincut;
 mod graph_p;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 
@@ -10,8 +11,6 @@ use tracing_subscriber;
 struct AsyncProcInputTx {
     inner: Mutex<mpsc::Sender<String>>,
 }
-
-mod graph_p;
 
 fn main() {
     tracing_subscriber::fmt::init();
