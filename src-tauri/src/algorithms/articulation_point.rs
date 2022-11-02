@@ -1,4 +1,4 @@
-use crate::graph_p::Graph;
+use crate::graph::graph_ds::Graph;
 use core::cmp::min;
 use defaultdict::DefaultHashMap;
 

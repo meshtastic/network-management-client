@@ -3,6 +3,7 @@
 **repeat** until $G$ has 2 vertices.
 
 &emsp; **choose** an edge $(v, w)$ with probability proportional to the weight of $(v, w)$
+
 &emsp; **let** $G \leftarrow G / (v, w)$
 
 **return** $G$

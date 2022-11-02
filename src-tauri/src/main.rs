@@ -1,6 +1,5 @@
-mod articulation_point;
-mod globalmincut;
-mod graph_p;
+mod algorithms;
+mod graph;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 
 use tauri::Manager;
