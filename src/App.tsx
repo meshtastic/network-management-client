@@ -1,13 +1,16 @@
 import React from "react";
-import Map from "./Components/Map";
-import "./App.css";
+import Sidebar from "@components/Sidebar/Sidebar";
+import Map from "@components/Map";
 
-function App() {
+const App = () => {
   return (
-    <div>
-      <Map />
+    <div className="flex flex-row">
+      <Sidebar />
+      <div className="h-screen flex-1 bg-gray-100">
+        <Map />
+      </div>
     </div>
   );
-}
+};
 
 export default App;
