@@ -7,7 +7,6 @@ use crate::aux_data_structures::{
 
 pub fn stMinCut(G: &mut StoerWagnerGraph) -> Option<Cut> {
     let mut bheap = BinaryHeap::new(G);
-    //bheap.build_heap();
 
     let uncontracted = G.uncontracted.clone();
     let mut S = Vec::new();
@@ -51,7 +50,7 @@ pub fn StoerWagner(graph: &mut StoerWagnerGraph) -> Cut {
     }
 }
 
-// Create a unit test for the Graph struct
+// Create a unit test for the stoer-wagner algorithm
 #[cfg(test)]
 mod tests {
     use crate::graph::graph_ds::Graph;
@@ -105,7 +104,7 @@ mod tests {
                 .or_insert(0);
             *counter += 1;
         }
-        // print the counter_hashmap
+
         println!("Counter hashmap: {:?}", counter_hashmap);
 
         assert_eq!(counter_hashmap.len(), 1);
