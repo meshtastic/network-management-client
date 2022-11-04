@@ -124,8 +124,8 @@ mod tests {
         let nodes = vec![u, v, w, x, y, z, a, b];
         let (s, t) = recover_mincut(graph_sw, nodes);
 
-        println!("s: {:?}", s);
-        println!("t: {:?}", t);
+        assert!(s.len() + t.len() == 8);
+        assert!(s.iter().all(|x| !t.contains(x)));
 
         for _ in 0..100 {
             let graph_sw = &mut StoerWagnerGraph::new(g.clone());
