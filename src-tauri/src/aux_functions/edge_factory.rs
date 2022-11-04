@@ -73,7 +73,6 @@ pub fn edge_factory(
 }
 
 pub fn scale_rs_quality(radio_s_quality: f64) -> f64 {
-    // return 1 / ln(radio_s_quality + 1)
     return 1.0 / (1.0 + radio_s_quality).ln();
 }
 
