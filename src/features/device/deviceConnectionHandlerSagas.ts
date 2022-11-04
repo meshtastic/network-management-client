@@ -54,7 +54,7 @@ export function* handleDeviceMetadataPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: DeviceMetadataPacket = yield take(channel);
-      console.log("metadataPacket", deviceId, packet);
+      yield put(deviceSliceActions.updateDeviceMetadata({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -135,7 +135,7 @@ export function* handleDeviceStatusPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: DeviceStatusPacket = yield take(channel);
-      console.log("deviceStatus", deviceId, packet);
+      yield put(deviceSliceActions.updateDeviceStatus({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -162,9 +162,7 @@ export function* handlePositionPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: PositionPacket = yield take(channel);
-      yield put(
-        deviceSliceActions.updateDevicePositon({ id: deviceId, packet })
-      );
+      yield put(deviceSliceActions.updateDevicePositon({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -191,7 +189,7 @@ export function* handleWaypointPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: WaypointPacket = yield take(channel);
-      console.log("waypointPacket", deviceId, packet);
+      yield put(deviceSliceActions.addDeviceWaypoint({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -219,8 +217,8 @@ export function* handleUserPacketChannel(
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: UserPacketChannel = yield take(channel);
-      console.log("userPacket", deviceId, packet);
+      const packet: UserPacket = yield take(channel);
+      yield put(deviceSliceActions.updateDeviceUser({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -247,7 +245,7 @@ export function* handleNodeInfoPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: NodeInfoPacket = yield take(channel);
-      console.log("nodeInfoPacket", deviceId, packet);
+      yield put(deviceSliceActions.updateDeviceNodeInfo({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -274,7 +272,7 @@ export function* handleChannelPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: ChannelPacket = yield take(channel);
-      console.log("channelPacket", deviceId, packet);
+      yield put(deviceSliceActions.addDeviceChannel({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -301,7 +299,7 @@ export function* handleConfigPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: ConfigPacket = yield take(channel);
-      console.log("configPacket", deviceId, packet);
+      yield put(deviceSliceActions.updateDeviceConfig({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -328,7 +326,9 @@ export function* handleModuleConfigPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: ModuleConfigPacket = yield take(channel);
-      console.log("moduleConfigPacket", deviceId, packet);
+      yield put(
+        deviceSliceActions.updateDeviceModuleConfig({ deviceId, packet })
+      );
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -355,7 +355,7 @@ export function* handleMessageChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: MessagePacket = yield take(channel);
-      console.log("messagePacket", deviceId, packet);
+      yield put(deviceSliceActions.addDeviceMessage({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);

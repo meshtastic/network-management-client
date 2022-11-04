@@ -165,11 +165,12 @@ function* createDeviceWorker(action: ReturnType<typeof createDeviceAction>) {
     );
     connection.setLogLevel(Protobuf.LogRecord_Level.TRACE);
 
+    // Device needs to be created before subscriptions
+    yield put(deviceSliceActions.createDevice(deviceId));
+
     // Subscribe to device serial events
     yield call(subscribeAll, deviceId, connection);
     yield call(subscribeNotImplemented, connection);
-
-    yield put(deviceSliceActions.createDevice(deviceId));
   } catch (error) {
     yield put({ type: "GENERAL_ERROR", payload: error });
   }
