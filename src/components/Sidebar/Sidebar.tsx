@@ -17,6 +17,7 @@ export enum ActiveTab {
   CHAT,
   INFO,
   SETTINGS,
+  NONE
 }
 
 
@@ -57,7 +58,7 @@ const Sidebar = () => {
             renderIcon={() => <DocumentTextIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeTab == ActiveTab.INFO}
+            isActive={activeTab == ActiveTab.NONE}
             setTabActive={requestDeviceConnection}
             renderIcon={() => <LinkIcon className="" />}
           />
