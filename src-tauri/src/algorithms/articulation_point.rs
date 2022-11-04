@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(non_snake_case)]
+
 use crate::graph::graph_ds::Graph;
 use core::cmp::min;
 use defaultdict::DefaultHashMap;

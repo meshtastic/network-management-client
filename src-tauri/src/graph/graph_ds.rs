@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+#![allow(non_snake_case)]
+
 use crate::graph::edge::Edge;
 use crate::graph::node::Node;
 
@@ -61,7 +63,7 @@ impl Graph {
     /// * `new_weight` - New weight of the node
     pub fn change_node_opt_weight(&mut self, idx: petgraph::graph::NodeIndex, new_weight: f64) {
         let mut node = self.g.node_weight_mut(idx).unwrap();
-        node.optimal_weighted_degree = new_weight * 2.0;
+        node.optimal_weighted_degree = new_weight;
     }
 
     /// Adds the edge to the graph and insert the edge index into the edge_idx_map
@@ -87,6 +89,9 @@ impl Graph {
         let u_idx = self.node_idx_map.get(&u).unwrap().clone();
         let v_idx = self.node_idx_map.get(&v).unwrap().clone();
 
+        let node_u = self.g.node_weight(u_idx).unwrap().clone();
+        let node_v = self.g.node_weight(v_idx).unwrap().clone();
+
         let edge = Edge::new(u_idx.clone(), v_idx.clone(), weight);
 
         let edge_idx = self.g.add_edge(u_idx.clone(), v_idx.clone(), edge);
@@ -107,8 +112,11 @@ impl Graph {
 
         edge_idx_list.push(edge_idx);
 
-        self.change_node_opt_weight(u_idx.clone(), weight);
-        self.change_node_opt_weight(v_idx.clone(), weight);
+        let updated_weight_u = node_u.optimal_weighted_degree + weight;
+        let updated_weight_v = node_v.optimal_weighted_degree + weight;
+
+        self.change_node_opt_weight(u_idx.clone(), updated_weight_u);
+        self.change_node_opt_weight(v_idx.clone(), updated_weight_v);
     }
 
     /// Updates the weight of the edge. Does not return anything.
@@ -157,8 +165,24 @@ impl Graph {
             .unwrap()
             .weight;
 
-        self.change_node_opt_weight(u_idx.clone(), weight - old_weight);
-        self.change_node_opt_weight(v_idx.clone(), weight - old_weight);
+        let updated_weight_u = self
+            .g
+            .node_weight(u_idx.clone())
+            .unwrap()
+            .optimal_weighted_degree
+            + weight
+            - old_weight;
+
+        let updated_weight_v = self
+            .g
+            .node_weight(v_idx.clone())
+            .unwrap()
+            .optimal_weighted_degree
+            + weight
+            - old_weight;
+
+        self.change_node_opt_weight(u_idx.clone(), updated_weight_u);
+        self.change_node_opt_weight(v_idx.clone(), updated_weight_v);
 
         if !update_all_parallel.unwrap_or(false) {
             let edge = Edge::new(u_idx.clone(), v_idx.clone(), weight);
@@ -235,7 +259,9 @@ impl Graph {
         let v_idx = self.node_idx_map.get(&v).unwrap();
 
         // Check if edge does not exist
-        if !self.g.contains_edge(u_idx.clone(), v_idx.clone()) {
+        if !self.g.contains_edge(u_idx.clone(), v_idx.clone())
+            && !self.g.contains_edge(v_idx.clone(), u_idx.clone())
+        {
             return 0.0;
         }
 
@@ -308,6 +334,12 @@ impl Graph {
                 .unwrap()
                 .weight;
 
+            let node_u = self.g.node_weight(u_idx.clone()).unwrap();
+            let node_v = self.g.node_weight(v_idx.clone()).unwrap();
+
+            let u_weight = node_u.optimal_weighted_degree - weight;
+            let v_weight = node_v.optimal_weighted_degree - weight;
+
             self.g
                 .remove_edge(edge_idx_list.clone()[parallel_edge_idx.unwrap_or(0)]);
 
@@ -325,17 +357,23 @@ impl Graph {
 
             edge_idx_list_mut.swap_remove(parallel_edge_idx.unwrap_or(0));
 
-            self.change_node_opt_weight(u_idx.clone(), -weight);
-            self.change_node_opt_weight(v_idx.clone(), -weight);
+            self.change_node_opt_weight(u_idx.clone(), u_weight);
+            self.change_node_opt_weight(v_idx.clone(), v_weight);
         } else {
+            let node_u = self.g.node_weight(u_idx.clone()).unwrap();
+            let node_v = self.g.node_weight(v_idx.clone()).unwrap();
+
+            let u_weight = node_u.optimal_weighted_degree;
+            let v_weight = node_v.optimal_weighted_degree;
+
             // If remove_all_parallel is true, then remove all edges in the list.
             for edge_idx in edge_idx_list.clone() {
                 let weight = self.g.edge_weight(edge_idx.clone()).unwrap().weight;
 
                 self.g.remove_edge(edge_idx.clone());
 
-                self.change_node_opt_weight(u_idx.clone(), -weight);
-                self.change_node_opt_weight(v_idx.clone(), -weight);
+                self.change_node_opt_weight(u_idx.clone(), u_weight - weight);
+                self.change_node_opt_weight(v_idx.clone(), v_weight - weight);
             }
 
             self.edge_idx_map.remove(&(u_idx.clone(), v_idx.clone()));
@@ -378,6 +416,15 @@ impl Graph {
     /// * `node_idx` - NodeIndex of the node we want to get.
     pub fn get_node(&self, idx: petgraph::graph::NodeIndex) -> Node {
         self.g.node_weight(idx).unwrap().clone()
+    }
+
+    /// Returns the node associated with the given node index.
+    ///
+    /// # Arguments
+    ///
+    /// * `node_idx` - NodeIndex of the node we want to get.
+    pub fn get_node_mut(&mut self, idx: petgraph::graph::NodeIndex) -> &mut Node {
+        self.g.node_weight_mut(idx).unwrap()
     }
 
     /// Returns the node index associated with the given node identifier.
@@ -433,15 +480,21 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node` - String identifier of the node we want to get the degree of.
-    pub fn degree_of(&self, node: String) -> usize {
+    pub fn degree_of(&self, node: String) -> f64 {
         if !self.node_idx_map.contains_key(&node) {
             let error_message = format!("Node {} does not exist", node);
             println!("{}", error_message);
-            return 0;
+            return 0.0;
         }
 
+        let mut degree = 0.0;
         let node_idx = self.node_idx_map.get(&node).unwrap();
-        self.g.neighbors_undirected(node_idx.clone()).count()
+
+        for edge in self.g.edges(node_idx.clone()) {
+            degree += self.g.edge_weight(edge.id()).unwrap().weight;
+        }
+
+        return degree;
     }
 
     /// Returns a list of cumulative edge weights.
@@ -477,9 +530,9 @@ mod tests {
         let v: String = "v".to_string();
         let w: String = "w".to_string();
 
-        let u_idx = G.add_node(u.clone());
-        let v_idx = G.add_node(v.clone());
-        let w_idx = G.add_node(w.clone());
+        let _u_idx = G.add_node(u.clone());
+        let _v_idx = G.add_node(v.clone());
+        let _w_idx = G.add_node(w.clone());
 
         assert_eq!(G.get_order(), 3);
 
@@ -502,24 +555,15 @@ mod tests {
         let u: String = "u".to_string();
         let v: String = "v".to_string();
 
-        let u_idx = G.add_node(u.clone());
-        let v_idx = G.add_node(v.clone());
+        let _u_idx = G.add_node(u.clone());
+        let _v_idx = G.add_node(v.clone());
 
         G.add_edge(u.clone(), v.clone(), 1 as f64);
         G.add_edge(u.clone(), v.clone(), 2 as f64);
-
-        // print the edges
-        for edge in G.get_edges() {
-            println!("{:?}", edge);
-        }
 
         assert_eq!(G.get_size(), 2);
 
         // update edge
         G.update_edge(u.clone(), v.clone(), 11 as f64, Some(0), None);
-
-        for edge in G.get_edges() {
-            println!("{:?}", edge);
-        }
     }
 }

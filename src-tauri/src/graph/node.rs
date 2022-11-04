@@ -39,3 +39,20 @@ impl std::cmp::PartialEq for Node {
         self.name == other.name
     }
 }
+
+// Add partial ordering operator to Node using optimal_weighted_degree
+impl std::cmp::PartialOrd for Node {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.optimal_weighted_degree
+            .partial_cmp(&other.optimal_weighted_degree)
+    }
+}
+
+// Add Ord trait to Node using optimal_weighted_degree
+impl std::cmp::Ord for Node {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.optimal_weighted_degree
+            .partial_cmp(&other.optimal_weighted_degree)
+            .unwrap()
+    }
+}
