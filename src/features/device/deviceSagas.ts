@@ -1,11 +1,42 @@
-import { call, put, takeEvery } from "redux-saga/effects";
+import { all, call, put, take, takeEvery } from "redux-saga/effects";
 import { Types, Protobuf, ISerialConnection } from "@meshtastic/meshtasticjs";
 
 import { createDeviceAction } from "@features/device/deviceActions";
-import { deviceActions } from "@features/device/deviceSlice";
+import { deviceSliceActions } from "@features/device/deviceSlice";
+import { EventChannel, eventChannel } from "redux-saga";
 
-let serialPort: SerialPort | null = null;
-const deviceConnections: Record<number, ISerialConnection> = {}; // device id -> connection
+export type PositionMessageData = Types.PositionPacket["data"];
+type PostionMessageChannel = EventChannel<PositionMessageData>;
+
+const createPositionMessageChannel = (
+  connection: Types.ConnectionType
+): PostionMessageChannel => {
+  return eventChannel((emitter) => {
+    connection.onPositionPacket.subscribe((position) => {
+      console.log("initial position message", position);
+      emitter(position.data);
+    });
+
+    return () => null;
+  });
+};
+
+function* handlePositionMessageChannel(
+  deviceId: number,
+  channel: PostionMessageChannel
+) {
+  try {
+    while (true) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const message: PositionMessageData = yield take(channel);
+      yield put(
+        deviceSliceActions.updateDevicePositon({ id: deviceId, data: message })
+      );
+    }
+  } catch (error) {
+    yield put({ type: "GENERAL_ERROR", payload: error });
+  }
+}
 
 const subscribeAll = (connection: Types.ConnectionType) => {
   connection.setLogLevel(Protobuf.LogRecord_Level.TRACE);
@@ -38,10 +69,6 @@ const subscribeAll = (connection: Types.ConnectionType) => {
     console.log("user", user);
   });
 
-  connection.onPositionPacket.subscribe((position) => {
-    console.log("position", position);
-  });
-
   connection.onNodeInfoPacket.subscribe((nodeInfo) => {
     console.log("nodeInfoPacket", nodeInfo);
   });
@@ -65,7 +92,7 @@ const subscribeAll = (connection: Types.ConnectionType) => {
 
 const createConnection = async (id: number): Promise<ISerialConnection> => {
   const connection = new ISerialConnection(id);
-  serialPort = await navigator.serial.requestPort();
+  const serialPort = await navigator.serial.requestPort();
 
   await connection.connect({
     port: serialPort,
@@ -83,16 +110,21 @@ function* createDeviceWorker(action: ReturnType<typeof createDeviceAction>) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const connection: ISerialConnection = yield call(createConnection, id);
 
-    // * Always adds connection, overwrites existing
-    deviceConnections[id] = connection;
-
     yield call(subscribeAll, connection);
-    yield put(deviceActions.createDevice(id));
+    yield put(deviceSliceActions.createDevice(id));
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const positionChannel: PostionMessageChannel = yield call(
+      createPositionMessageChannel,
+      connection
+    );
+
+    yield all([call(handlePositionMessageChannel, id, positionChannel)]);
   } catch (error) {
     yield put({ type: "GENERAL_ERROR", payload: error });
   }
 }
 
 export function* watchCreateDevice() {
-  yield takeEvery(createDeviceAction.type, createDeviceWorker);
+  yield all([takeEvery(createDeviceAction.type, createDeviceWorker)]);
 }

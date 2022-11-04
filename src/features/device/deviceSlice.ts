@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Protobuf, Types } from "@meshtastic/meshtasticjs";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { PositionMessageData } from "./deviceSagas";
 
 export interface MessageWithAck extends Types.MessagePacket {
   ack: boolean;
@@ -39,6 +40,8 @@ export interface IDevice {
   waypoints: Protobuf.Waypoint[];
   regionUnset: boolean;
   currentMetrics: Protobuf.DeviceMetrics;
+
+  position: Types.PositionPacket["data"] | null;
 }
 
 export interface IDeviceState {
@@ -70,6 +73,7 @@ export const deviceSlice = createSlice({
         waypoints: [],
         regionUnset: false,
         currentMetrics: Protobuf.DeviceMetrics.create(),
+        position: null,
       };
 
       state.devices[id] = newDevice;
@@ -78,7 +82,16 @@ export const deviceSlice = createSlice({
       const id = action.payload;
       delete state.devices[id];
     },
+    updateDevicePositon: (
+      state,
+      action: PayloadAction<{ id: number; data: PositionMessageData }>
+    ) => {
+      const { id, data } = action.payload;
+      if (!state.devices[id]) return;
+      state.devices[id].position = data;
+    },
   },
 });
 
-export const { actions: deviceActions, reducer: deviceReducer } = deviceSlice;
+export const { actions: deviceSliceActions, reducer: deviceReducer } =
+  deviceSlice;
