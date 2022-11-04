@@ -1,11 +1,26 @@
 use crate::graph::edge::Edge;
 use petgraph::graph::NodeIndex;
 
+/// Returns a list of edges
+///
+/// # Arguments
+///
+/// * `a` - List of first endpoints of edges
+/// * `b` - List of second endpoints of edges
+/// * `distances` - List of distances between nodes
+/// * `radio_s_quality` - List of radio signal qualities between nodes
+/// * `distance_weight` - Weight of distance in edge weight
+/// * `radio_s_quality_weight` - Weight of radio signal quality in edge weight
+///
+/// a, b, distance and radio_s_quality must have the same length and provide
+/// one-to-one mapping.
 pub fn edge_factory(
     a: Vec<NodeIndex>,
     b: Vec<NodeIndex>,
     distance: Vec<f64>,
     radio_s_quality: Vec<f64>,
+    distance_weight: Option<f64>,
+    radio_s_quality_weight: Option<f64>,
 ) -> Vec<Edge> {
     let distance_min = distance.iter().fold(f64::INFINITY, |acc, &x| acc.min(x));
     let distance_max = distance
@@ -21,6 +36,10 @@ pub fn edge_factory(
     // create a vector of edges
     let mut edges: Vec<Edge> = Vec::new();
 
+    // unwrap the weights
+    let distance_weight = distance_weight.unwrap_or(0.5);
+    let radio_s_quality_weight = radio_s_quality_weight.unwrap_or(0.5);
+
     for i in 0..a.len() {
         let a = a[i].clone();
         let b = b[i].clone();
@@ -31,14 +50,14 @@ pub fn edge_factory(
         let weight = normalize_weight(
             distance,
             (distance_min, distance_max),
+            distance_weight,
             radio_s_quality,
             (radio_s_quality_min, radio_s_quality_max),
+            radio_s_quality_weight,
         );
 
-        // create an edge
         let edge = Edge::new(a, b, weight);
 
-        // add the edge to the vector
         edges.push(edge);
     }
 
@@ -48,13 +67,16 @@ pub fn edge_factory(
 pub fn normalize_weight(
     distance: f64,
     distance_minmax: (f64, f64),
+    distance_weight: f64,
     radio_s_quality: f64,
     radio_s_quality_minmax: (f64, f64),
+    radio_s_quality_weight: f64,
 ) -> f64 {
     let distance_norm = (distance - distance_minmax.0) / (distance_minmax.1 - distance_minmax.0);
     let radio_s_quality_norm = (radio_s_quality - radio_s_quality_minmax.0)
         / (radio_s_quality_minmax.1 - radio_s_quality_minmax.0);
-    let weight = (0.5 * distance_norm) + (0.5 * radio_s_quality_norm);
+    let weight =
+        (distance_weight * distance_norm) + (radio_s_quality_weight * radio_s_quality_norm);
     return weight;
 }
 
@@ -76,11 +98,10 @@ mod tests {
         let distance = vec![0.45, 0.67, 0.23, 1.2];
         let radio_s_quality = vec![5.5, 3.12, 10.3, 2.7];
 
-        let edges = edge_factory(a, b, distance, radio_s_quality);
+        let edges = edge_factory(a, b, distance, radio_s_quality, None, None);
 
         for edge in edges {
             assert!(edge.weight != 0.0);
-            println!("{:?}", edge);
         }
     }
 }
