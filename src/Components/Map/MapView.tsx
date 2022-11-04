@@ -5,11 +5,11 @@ import MapNode from "@components/Map/MapNode";
 
 import "./MapView.css";
 import { useSelector } from "react-redux";
-import { selectAllDevices } from "@app/features/device/deviceSelectors";
+import { selectAllNodes } from "@app/features/device/deviceSelectors";
 
 
 export const MapView = () => {
-  const devices = useSelector(selectAllDevices());
+  const nodes = useSelector(selectAllNodes());
 
   return (
     <div className="relative w-full h-full">
@@ -21,7 +21,7 @@ export const MapView = () => {
         <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
         <NavigationControl position="bottom-right" showCompass={false} />
 
-        {devices.map(node => (<MapNode key={node.id} device={node} isBase={false} />))}
+        {nodes.map(node => (<MapNode key={node.data.num} node={node} isBase={false} />))}
       </Map>
     </div>
   );
