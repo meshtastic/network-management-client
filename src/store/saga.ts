@@ -1,7 +1,11 @@
-import { takeLatest } from "redux-saga/effects";
+import { all, call, takeLatest } from "redux-saga/effects";
 import { requestDemoAPI } from "@features/demoAPI/demoAPIActions";
 import { fetchNumberWorkerSaga } from "@features/demoAPI/demoAPISaga";
+import { watchCreateDevice } from "@features/device/deviceSagas";
 
 export default function* rootSaga() {
-  yield takeLatest(requestDemoAPI.type, fetchNumberWorkerSaga);
+  yield all([
+    takeLatest(requestDemoAPI.type, fetchNumberWorkerSaga),
+    call(watchCreateDevice),
+  ]);
 }

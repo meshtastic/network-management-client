@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
 import {
@@ -6,17 +6,34 @@ import {
   MagnifyingGlassIcon,
   DocumentTextIcon,
   Cog8ToothIcon,
+  LinkIcon,
 } from "@heroicons/react/24/outline";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAllDevices } from "@app/features/device/deviceSelectors";
+import { createDeviceAction } from "@features/device/deviceActions";
 
 export enum ActiveTab {
   MAP,
   CHAT,
   INFO,
   SETTINGS,
+  NONE
 }
+
 
 const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.MAP);
+
+  const dispatch = useDispatch();
+  const devices = useSelector(selectAllDevices());
+
+  // Logging only, no necessary functionality
+  useEffect(() => { console.log(devices); }, [devices]);
+
+  const requestDeviceConnection = () => {
+    const id = 1;
+    dispatch(createDeviceAction(id));
+  };
 
   return (
     <div className="h-screen flex flex-col justify-between shadow-lg">
@@ -39,6 +56,11 @@ const Sidebar = () => {
             isActive={activeTab == ActiveTab.INFO}
             setTabActive={() => setActiveTab(ActiveTab.INFO)}
             renderIcon={() => <DocumentTextIcon className="" />}
+          />
+          <SidebarIcon
+            isActive={activeTab == ActiveTab.NONE}
+            setTabActive={requestDeviceConnection}
+            renderIcon={() => <LinkIcon className="" />}
           />
         </div>
       </div>
