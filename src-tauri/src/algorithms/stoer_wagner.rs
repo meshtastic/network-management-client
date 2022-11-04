@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use std::collections::HashMap;
+
 use crate::aux_data_structures::{
     binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
 };
@@ -49,6 +51,29 @@ pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Cut {
     }
 }
 
+pub fn recover_mincut(
+    graph: &mut StoerWagnerGraph,
+    all_nodes: Vec<String>,
+) -> (Vec<String>, Vec<String>) {
+    let mut parent_map = HashMap::new();
+
+    for node in all_nodes {
+        let parent = graph.uf.find(node.clone());
+        let children = parent_map.entry(parent.clone()).or_insert(Vec::new());
+        children.push(node.clone());
+    }
+
+    // get the two keys in parent_map
+    let keys = Vec::from_iter(parent_map.keys());
+    let s = keys[0];
+    let t = keys[1];
+
+    return (
+        (*parent_map.get(s).unwrap().clone()).to_vec(),
+        (*parent_map.get(t).unwrap().clone()).to_vec(),
+    );
+}
+
 // Create a unit test for the stoer-wagner algorithm
 #[cfg(test)]
 mod tests {
@@ -92,6 +117,15 @@ mod tests {
         g.add_edge(y.clone(), b.clone(), 1.0);
 
         let mut correct_mincut_weight_count = 0;
+
+        let graph_sw = &mut StoerWagnerGraph::new(g.clone());
+        let _mincut = stoer_wagner(graph_sw);
+
+        let nodes = vec![u, v, w, x, y, z, a, b];
+        let (s, t) = recover_mincut(graph_sw, nodes);
+
+        println!("s: {:?}", s);
+        println!("t: {:?}", t);
 
         for _ in 0..100 {
             let graph_sw = &mut StoerWagnerGraph::new(g.clone());
