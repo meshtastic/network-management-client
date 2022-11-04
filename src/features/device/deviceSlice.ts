@@ -35,7 +35,6 @@ export interface IDevice {
   moduleConfig: Protobuf.LocalModuleConfig;
   hardware: Protobuf.MyNodeInfo;
   nodes: INode[];
-  connection?: Types.ConnectionType;
   activePeer: number;
   waypoints: Protobuf.Waypoint[];
   regionUnset: boolean;
@@ -67,7 +66,6 @@ export const deviceSlice = createSlice({
         moduleConfig: Protobuf.LocalConfig.create(),
         hardware: Protobuf.MyNodeInfo.create(),
         nodes: [],
-        connection: undefined,
         activePeer: 0,
         waypoints: [],
         regionUnset: false,

@@ -11,6 +11,7 @@ export const store = configureStore({
   reducer: { counter: counterSliceReducer, devices: deviceReducer },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(middleware),
+  devTools: true,
 });
 
 sagaMiddleware.run(rootSaga);

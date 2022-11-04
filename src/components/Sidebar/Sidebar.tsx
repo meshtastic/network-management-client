@@ -6,11 +6,11 @@ import {
   MagnifyingGlassIcon,
   DocumentTextIcon,
   Cog8ToothIcon,
+  LinkIcon,
 } from "@heroicons/react/24/outline";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllDevices } from "@app/features/device/deviceSelectors";
-import { deviceActions } from "@app/features/device/deviceSlice";
-import { ISerialConnection, Types, Protobuf } from "@meshtastic/meshtasticjs";
+import { createDeviceAction } from "@features/device/deviceActions";
 
 export enum ActiveTab {
   MAP,
@@ -20,77 +20,19 @@ export enum ActiveTab {
 }
 
 
-
-export const subscribeAll = (
-  connection: Types.ConnectionType
-) => {
-  connection.setLogLevel(Protobuf.LogRecord_Level.TRACE);
-
-  // onLogEvent
-  // onMeshHeartbeat
-
-  connection.onDeviceMetadataPacket.subscribe((metadataPacket) => {
-    console.log('metadataPacket', metadataPacket);
-  });
-
-  connection.onRoutingPacket.subscribe((routingPacket) => {
-    console.log('routingPacket', routingPacket);
-  });
-
-  connection.onTelemetryPacket.subscribe((telemetryPacket) => {
-    console.log('telemetryPacket', telemetryPacket);
-  });
-
-  connection.onDeviceStatus.subscribe((status) => {
-    console.log('status', status);
-  });
-
-  connection.onWaypointPacket.subscribe((waypoint) => {
-    console.log('waypoint', waypoint);
-  });
-
-  connection.onMyNodeInfo.subscribe((nodeInfo) => {
-    console.log('myNodeInfo', nodeInfo);
-  });
-
-  connection.onUserPacket.subscribe((user) => {
-    console.log('user', user);
-  });
-
-  connection.onPositionPacket.subscribe((position) => {
-    console.log('position', position);
-  });
-
-
-  connection.onNodeInfoPacket.subscribe((nodeInfo) => {
-    console.log('nodeInfoPacket', nodeInfo);
-  });
-
-  connection.onChannelPacket.subscribe((channel) => {
-    console.log('channel', channel);
-  });
-
-  connection.onConfigPacket.subscribe((config) => {
-    console.log('configPacket', config);
-  });
-
-  connection.onModuleConfigPacket.subscribe((moduleConfig) => {
-    console.log('moduleConfigPacket', moduleConfig);
-  });
-
-  connection.onMessagePacket.subscribe((messagePacket) => {
-    console.log('messagePacket', messagePacket);
-  });
-};
-
 const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.MAP);
-  const [serialConnection, setSerialConnection] = useState<ISerialConnection | null>(null);
 
   const dispatch = useDispatch();
   const devices = useSelector(selectAllDevices());
 
-  useEffect(() => { console.log(devices); }, [devices])
+  // Logging only, no necessary functionality
+  useEffect(() => { console.log(devices); }, [devices]);
+
+  const requestDeviceConnection = () => {
+    const id = 1;
+    dispatch(createDeviceAction(id));
+  };
 
   return (
     <div className="h-screen flex flex-col justify-between shadow-lg">
@@ -116,18 +58,8 @@ const Sidebar = () => {
           />
           <SidebarIcon
             isActive={activeTab == ActiveTab.INFO}
-            setTabActive={() => {
-              void navigator.serial.requestPort().then((port) => {
-                const id = 1;
-                dispatch(deviceActions.createDevice(id));
-                const connection = new ISerialConnection(id);
-                connection.connect({ port, baudRate: undefined, concurrentLogOutput: true }).then(() => {
-                  setSerialConnection(connection);
-                  subscribeAll(connection);
-                }).catch(console.error)
-              });
-            }}
-            renderIcon={() => <DocumentTextIcon className="" />}
+            setTabActive={requestDeviceConnection}
+            renderIcon={() => <LinkIcon className="" />}
           />
         </div>
       </div>
