@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Protobuf, Types } from "@meshtastic/meshtasticjs";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { PositionMessageData } from "./deviceSagas";
+import type { PositionPacket } from "./deviceConnectionHandlerSagas";
 
 export interface MessageWithAck extends Types.MessagePacket {
   ack: boolean;
@@ -84,11 +84,11 @@ export const deviceSlice = createSlice({
     },
     updateDevicePositon: (
       state,
-      action: PayloadAction<{ id: number; data: PositionMessageData }>
+      action: PayloadAction<{ id: number; packet: PositionPacket }>
     ) => {
-      const { id, data } = action.payload;
+      const { id, packet } = action.payload;
       if (!state.devices[id]) return;
-      state.devices[id].position = data;
+      state.devices[id].position = packet.data;
     },
   },
 });
