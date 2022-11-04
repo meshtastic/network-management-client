@@ -1,23 +1,15 @@
 import React from 'react';
-import MapNodeIcon, { NodeState } from './MapNodeIcon';
 import { Marker } from 'react-map-gl';
 
-// ! This is a temporary interface, this should not be used in prod
-export interface ITemporaryNode {
-  name: string;
-  timeSinceLastMessage: number; // min
-  heading: number; // deg
-  latitude: number;
-  longitude: number;
-  isBase: boolean;
-}
+import MapNodeIcon, { NodeState } from './MapNodeIcon';
+import type { IDevice } from '@features/device/deviceSlice';
 
 // TODO these will need to be configurable
 export const NODE_WARNING_THRESHOLD = 15;
 export const NODE_ERROR_THRESHOLD = 30;
 
 export interface IMapNodeProps {
-  node: ITemporaryNode;
+  device: IDevice;
   size?: 'sm' | 'med' | 'lg'
   isBase?: boolean;
 }
@@ -64,32 +56,35 @@ export const getColorClassFromNodeState = (nodeState: NodeState): string => {
   }
 }
 
-const MapNode = ({ node, size = 'med', isBase = false }: IMapNodeProps) => {
-  const nodeState = getNodeState(node.timeSinceLastMessage);
+const MapNode = ({ device, size = 'med', isBase = false }: IMapNodeProps) => {
+  const timeSinceLastMessage = 4; // TODO make this live data
+  const nodeState = getNodeState(timeSinceLastMessage);
   const headingPrefix = getHeadingFromNodeState(nodeState, isBase);
 
   const showMessageTime = nodeState === 'warning' || nodeState === 'error';
   const colorClass = getColorClassFromNodeState(nodeState);
-  const iconRotation = !isBase ? node.heading : 0;
+  const iconRotation = !isBase ? device.position?.groundTrack ?? 0 : 0;
 
   return (
     <Marker
-      latitude={node.latitude}
-      longitude={node.longitude}
+      latitude={(device.position?.latitudeI ?? 0) / 1e7}
+      longitude={(device.position?.longitudeI ?? 0) / 1e7}
     >
-      <div className="absolute whitespace-nowrap px-2 py-1 bg-white border border-gray-100 rounded-lg shadow-lg text-xs" style={{ transform: "translate(-40%, -120%)" }}>
-        {headingPrefix && <span className={`font-bold ${colorClass}`}>{headingPrefix} </span>}
-        <span className={`font-normal ${colorClass}`}>{node.name}</span>
-        {showMessageTime && (<span className={`font-normal ${colorClass}`}> ({node.timeSinceLastMessage} min)</span>)}
-      </div>
+      <div className='relative'>
+        <div className="absolute left-2/4 text-center whitespace-nowrap px-2 py-1 bg-white border border-gray-100 rounded-lg shadow-lg text-xs" style={{ transform: "translate(-50%, -120%)" }}>
+          {headingPrefix && <span className={`font-bold ${colorClass}`}>{headingPrefix} </span>}
+          <span className={`font-normal ${colorClass}`}>{device.id}</span>
+          {showMessageTime && (<span className={`font-normal ${colorClass}`}> ({timeSinceLastMessage} min)</span>)}
+        </div>
 
-      <div style={{ transform: `rotate(${iconRotation}deg)` }}>
-        <MapNodeIcon
-          size={size}
-          state={nodeState}
-          isBase={isBase}
-          className="drop-shadow-lg"
-        />
+        <div style={{ transform: `rotate(${iconRotation}deg)` }}>
+          <MapNodeIcon
+            size={size}
+            state={nodeState}
+            isBase={isBase}
+            className="drop-shadow-lg"
+          />
+        </div>
       </div>
     </Marker>
   );
