@@ -57,9 +57,9 @@ export const getColorClassFromNodeState = (nodeState: NodeState): string => {
 }
 
 const MapNode = ({ node, size = 'med', isBase = false }: IMapNodeProps) => {
-  const lastHeard = node.data.lastHeard !== 0 ? new Date() : new Date(node.data.lastHeard);
-  const now = new Date();
-  const timeSinceLastMessage = Math.abs(now.valueOf() - lastHeard.valueOf()) / 1000 / 60; // ms to min
+  const lastHeard = node.data.lastHeard !== 0 ? node.data.lastHeard : Date.now(); // sec, 0 means not set
+  const now = Date.now() / 1000; // sec
+  const timeSinceLastMessage = Math.abs(now - lastHeard) / 60; // s to min
 
   const nodeState = getNodeState(timeSinceLastMessage);
   const headingPrefix = getHeadingFromNodeState(nodeState, isBase);
