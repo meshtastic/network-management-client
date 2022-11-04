@@ -26,10 +26,18 @@ pub fn edge_factory(
     let distance_max = distance
         .iter()
         .fold(f64::NEG_INFINITY, |acc, &x| acc.max(x));
-    let radio_s_quality_min = radio_s_quality
+
+    let mut scaled_rs_quality_vec: Vec<f64> = Vec::new();
+
+    for rs_q in radio_s_quality {
+        let scaled_rs_q = scale_rs_quality(rs_q);
+        scaled_rs_quality_vec.push(scaled_rs_q);
+    }
+
+    let scaled_radio_s_quality_min = scaled_rs_quality_vec
         .iter()
         .fold(f64::INFINITY, |acc, &x| acc.min(x));
-    let radio_s_quality_max = radio_s_quality
+    let scaled_radio_s_quality_max = scaled_rs_quality_vec
         .iter()
         .fold(f64::NEG_INFINITY, |acc, &x| acc.max(x));
 
@@ -44,7 +52,7 @@ pub fn edge_factory(
         let a = a[i].clone();
         let b = b[i].clone();
         let distance = distance[i];
-        let radio_s_quality = radio_s_quality[i];
+        let radio_s_quality = scaled_rs_quality_vec[i];
 
         // normalize the values
         let weight = normalize_weight(
@@ -52,7 +60,7 @@ pub fn edge_factory(
             (distance_min, distance_max),
             distance_weight,
             radio_s_quality,
-            (radio_s_quality_min, radio_s_quality_max),
+            (scaled_radio_s_quality_min, scaled_radio_s_quality_max),
             radio_s_quality_weight,
         );
 
@@ -64,6 +72,11 @@ pub fn edge_factory(
     return edges;
 }
 
+pub fn scale_rs_quality(radio_s_quality: f64) -> f64 {
+    // return 1 / ln(radio_s_quality + 1)
+    return 1.0 / (1.0 + radio_s_quality).ln();
+}
+
 pub fn normalize_weight(
     distance: f64,
     distance_minmax: (f64, f64),
@@ -72,8 +85,9 @@ pub fn normalize_weight(
     radio_s_quality_minmax: (f64, f64),
     radio_s_quality_weight: f64,
 ) -> f64 {
-    let distance_norm = (distance - distance_minmax.0) / (distance_minmax.1 - distance_minmax.0);
-    let radio_s_quality_norm = (radio_s_quality - radio_s_quality_minmax.0)
+    let distance_norm =
+        (distance - distance_minmax.0 + 0.001) / (distance_minmax.1 - distance_minmax.0);
+    let radio_s_quality_norm = (radio_s_quality - radio_s_quality_minmax.0 + 0.001)
         / (radio_s_quality_minmax.1 - radio_s_quality_minmax.0);
     let weight =
         (distance_weight * distance_norm) + (radio_s_quality_weight * radio_s_quality_norm);
@@ -101,7 +115,7 @@ mod tests {
         let edges = edge_factory(a, b, distance, radio_s_quality, None, None);
 
         for edge in edges {
-            assert!(edge.weight != 0.0);
+            assert!(edge.weight >= 0.0 && edge.weight <= 1.1);
         }
     }
 }
