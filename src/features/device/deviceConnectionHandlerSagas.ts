@@ -162,7 +162,7 @@ export function* handlePositionPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: PositionPacket = yield take(channel);
-      yield put(deviceSliceActions.updateDevicePositon({ deviceId, packet }));
+      yield put(deviceSliceActions.updateNodePosition({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -218,7 +218,7 @@ export function* handleUserPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: UserPacket = yield take(channel);
-      yield put(deviceSliceActions.updateDeviceUser({ deviceId, packet }));
+      yield put(deviceSliceActions.updateNodeUser({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -245,7 +245,7 @@ export function* handleNodeInfoPacketChannel(
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const packet: NodeInfoPacket = yield take(channel);
-      yield put(deviceSliceActions.updateDeviceNodeInfo({ deviceId, packet }));
+      yield put(deviceSliceActions.updateNodeInfo({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
