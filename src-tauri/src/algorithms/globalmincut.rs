@@ -19,12 +19,6 @@ pub fn bisect_left<T: PartialOrd>(a: &[T], x: T) -> usize {
     let mut lo = 0;
     let mut hi = a.len();
 
-    if lo < 0 {
-        panic!("lo must be non-negative");
-    }
-    if hi == 0 {
-        hi = a.len();
-    }
     while lo < hi {
         let mid = (lo + hi) / 2;
         if a[mid] < x {

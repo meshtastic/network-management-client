@@ -1,4 +1,6 @@
 mod algorithms;
+mod aux_data_structures;
+mod aux_functions;
 mod graph;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 
