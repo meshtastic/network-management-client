@@ -18,11 +18,13 @@
     "@reduxjs/toolkit": "^1.8.6",
     "@tauri-apps/api": "^1.1.0",
     "maplibre-gl": "^2.4.0",
+    "node": "^14.21.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-map-gl": "^7.0.19",
     "react-redux": "^8.0.4",
-    "redux-saga": "^1.2.1"
+    "redux-saga": "^1.2.1",
+    "tileserver-gl-light": "^4.1.2"
   },
   "devDependencies": {
     "@meshtastic/eslint-config": "^1.0.8",
@@ -40,8 +42,8 @@
     "jest": "^29.2.2",
     "postcss": "^8.4.18",
     "prettier": "^2.7.1",
-    "ts-jest": "^29.0.3",
     "tailwindcss": "^3.2.1",
+    "ts-jest": "^29.0.3",
     "typescript": "^4.6.4",
     "vite": "^3.1.0"
   }

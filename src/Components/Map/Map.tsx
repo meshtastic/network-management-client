@@ -8,27 +8,31 @@ import "./Map.css";
 
 const MapBox = () => {
   // Start location
-  const start_lat = 26.6770745;
-  const start_long = -80.0387182;
+  const start_lat = 44.270384;
+  const start_long = -71.303365;
   const start_zoom = 14;
-  
+
+  // Sherry Map key
+  const api_key = "E2zc32QIleYbvvlOblEa";
 
   return (
     <div className="relative h-full w-full">
       <Map
-        // MapStyle stolen from the Meshtastic Web map. Will change style later
-        // mapStyle="https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
-        mapStyle="https://raw.githubusercontent.com/openmaptiles/maptiler-terrain-gl-style/master/style.json"
         // Allows for overwriting Mapbox with Maplibre
         mapLib={maplibregl}
-        // Deletes credits at bottom of map
-        attributionControl={false}
+        // MapStyle from Maptiler - Outdoors  https://cloud.maptiler.com/maps/outdoor/
+        mapStyle={
+          // "https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
+          "https://api.maptiler.com/maps/outdoor/style.json?key=" + api_key
+        }
         // Starting position
         initialViewState={{
           latitude: start_lat,
           longitude: start_long,
           zoom: start_zoom,
         }}
+        // Deletes credits at bottom of map
+        attributionControl={false}
       >
         {/* Prevents Scrollbar */}
         <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
