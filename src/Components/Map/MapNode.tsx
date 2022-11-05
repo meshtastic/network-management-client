@@ -2,14 +2,14 @@ import React from 'react';
 import { Marker } from 'react-map-gl';
 
 import MapNodeIcon, { NodeState } from './MapNodeIcon';
-import type { IDevice } from '@features/device/deviceSlice';
+import type { INode } from '@features/device/deviceSlice';
 
 // TODO these will need to be configurable
 export const NODE_WARNING_THRESHOLD = 15;
 export const NODE_ERROR_THRESHOLD = 30;
 
 export interface IMapNodeProps {
-  device: IDevice;
+  node: INode;
   size?: 'sm' | 'med' | 'lg'
   isBase?: boolean;
 }
@@ -56,24 +56,27 @@ export const getColorClassFromNodeState = (nodeState: NodeState): string => {
   }
 }
 
-const MapNode = ({ device, size = 'med', isBase = false }: IMapNodeProps) => {
-  const timeSinceLastMessage = 4; // TODO make this live data
+const MapNode = ({ node, size = 'med', isBase = false }: IMapNodeProps) => {
+  const lastHeard = node.data.lastHeard !== 0 ? node.data.lastHeard : Date.now(); // sec, 0 means not set
+  const now = Date.now() / 1000; // sec
+  const timeSinceLastMessage = Math.abs(now - lastHeard) / 60; // s to min
+
   const nodeState = getNodeState(timeSinceLastMessage);
   const headingPrefix = getHeadingFromNodeState(nodeState, isBase);
 
   const showMessageTime = nodeState === 'warning' || nodeState === 'error';
   const colorClass = getColorClassFromNodeState(nodeState);
-  const iconRotation = !isBase ? device.position?.groundTrack ?? 0 : 0;
+  const iconRotation = !isBase ? node.data.position?.groundTrack ?? 0 : 0;
 
   return (
     <Marker
-      latitude={(device.position?.latitudeI ?? 0) / 1e7}
-      longitude={(device.position?.longitudeI ?? 0) / 1e7}
+      latitude={(node.data.position?.latitudeI ?? 0) / 1e7}
+      longitude={(node.data.position?.longitudeI ?? 0) / 1e7}
     >
       <div className='relative'>
         <div className="absolute left-2/4 text-center whitespace-nowrap px-2 py-1 bg-white border border-gray-100 rounded-lg shadow-lg text-xs" style={{ transform: "translate(-50%, -120%)" }}>
           {headingPrefix && <span className={`font-bold ${colorClass}`}>{headingPrefix} </span>}
-          <span className={`font-normal ${colorClass}`}>{device.user?.longName ?? device.id}</span>
+          <span className={`font-normal ${colorClass}`}>{node.data.user?.longName ?? node.data.num}</span>
           {showMessageTime && (<span className={`font-normal ${colorClass}`}> ({timeSinceLastMessage} min)</span>)}
         </div>
 

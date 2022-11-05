@@ -10,6 +10,7 @@ import type {
   ModuleConfigPacket,
   NodeInfoPacket,
   PositionPacket,
+  TelemetryPacket,
   UserPacket,
   WaypointPacket,
 } from "@features/device/deviceConnectionHandlerSagas";
@@ -41,17 +42,16 @@ export interface INode {
 export interface IDevice {
   id: number;
   // hardware: Protobuf.MyNodeInfo;
-  nodes: INode[];
+  nodes: Record<number, INode>;
   activePeer: number;
   regionUnset: boolean;
   currentMetrics: Protobuf.DeviceMetrics;
 
-  deviceMetadata: DeviceMetadataPacket["data"] | null;
+  // deviceMetadata: DeviceMetadataPacket["data"] | null; // external
   deviceStatus: DeviceStatusPacket;
-  position: PositionPacket["data"] | null;
   waypoints: Record<string, WaypointPacket["data"]>;
-  user: UserPacket["data"] | null;
-  nodeInfo: NodeInfoPacket["data"] | null;
+  // user: UserPacket["data"] | null;
+  // nodeInfo: NodeInfoPacket["data"] | null; // external
   channels: Record<number, ChannelPacket["data"]>;
   config: ConfigPacket["data"] | null;
   moduleConfig: ModuleConfigPacket["data"] | null;
@@ -78,16 +78,15 @@ export const deviceSlice = createSlice({
       const newDevice: IDevice = {
         id: deviceId,
         // hardware: Protobuf.MyNodeInfo.create(),
-        nodes: [],
+        nodes: {},
         activePeer: 0,
         regionUnset: false,
         currentMetrics: Protobuf.DeviceMetrics.create(),
-        deviceMetadata: null,
+        // deviceMetadata: null,
         deviceStatus: 0,
-        position: null,
         waypoints: {},
-        user: null,
-        nodeInfo: null,
+        // user: null,
+        // nodeInfo: null,
         channels: {},
         config: null,
         moduleConfig: null,
@@ -105,8 +104,88 @@ export const deviceSlice = createSlice({
       action: PayloadAction<{ deviceId: number; packet: DeviceMetadataPacket }>
     ) => {
       const { deviceId, packet } = action.payload;
-      if (!state.devices[deviceId]) return;
-      state.devices[deviceId].deviceMetadata = packet.data;
+      const device = state.devices[deviceId];
+      if (!device) return;
+
+      const foundNode = device.nodes[packet.packet.from];
+
+      if (foundNode) {
+        foundNode.metadata = packet.data;
+        return;
+      }
+
+      console.warn("Node not found!");
+    },
+    updateNodeMetrics: (
+      state,
+      action: PayloadAction<{ deviceId: number; packet: TelemetryPacket }>
+    ) => {
+      const { deviceId, packet } = action.payload;
+      const device = state.devices[deviceId];
+      if (!device) return;
+
+      let foundNode = device.nodes[packet.packet.from];
+
+      if (foundNode && !foundNode) {
+        foundNode = {
+          data: Protobuf.NodeInfo.create({
+            num: packet.packet.from,
+            snr: packet.packet.rxSnr,
+            lastHeard: new Date().getSeconds(),
+          }),
+          metadata: undefined,
+          deviceMetrics: [],
+          environmentMetrics: [],
+        };
+
+        device.nodes[packet.packet.from] = foundNode;
+      }
+
+      if (foundNode) {
+        switch (packet.data.variant.oneofKind) {
+          case "deviceMetrics":
+            if (device) {
+              if (packet.data.variant.deviceMetrics.batteryLevel) {
+                device.currentMetrics.batteryLevel =
+                  packet.data.variant.deviceMetrics.batteryLevel;
+              }
+              if (packet.data.variant.deviceMetrics.voltage) {
+                device.currentMetrics.voltage =
+                  packet.data.variant.deviceMetrics.voltage;
+              }
+              if (packet.data.variant.deviceMetrics.airUtilTx) {
+                device.currentMetrics.airUtilTx =
+                  packet.data.variant.deviceMetrics.airUtilTx;
+              }
+              if (packet.data.variant.deviceMetrics.channelUtilization) {
+                device.currentMetrics.channelUtilization =
+                  packet.data.variant.deviceMetrics.channelUtilization;
+              }
+            }
+
+            foundNode.deviceMetrics.push({
+              ...packet.data.variant.deviceMetrics,
+              timestamp:
+                packet.packet.rxTime === 0
+                  ? new Date()
+                  : new Date(packet.packet.rxTime * 1000),
+            });
+            break;
+
+          case "environmentMetrics":
+            foundNode.environmentMetrics.push({
+              ...packet.data.variant.environmentMetrics,
+              timestamp:
+                packet.packet.rxTime === 0
+                  ? new Date()
+                  : new Date(packet.packet.rxTime * 1000),
+            });
+            break;
+
+          default:
+            break;
+        }
+      }
     },
     updateDeviceStatus: (
       state,
@@ -116,13 +195,30 @@ export const deviceSlice = createSlice({
       if (!state.devices[deviceId]) return;
       state.devices[deviceId].deviceStatus = packet;
     },
-    updateDevicePositon: (
+    updateNodePosition: (
       state,
       action: PayloadAction<{ deviceId: number; packet: PositionPacket }>
     ) => {
       const { deviceId, packet } = action.payload;
-      if (!state.devices[deviceId]) return;
-      state.devices[deviceId].position = packet.data;
+      const device = state.devices[deviceId];
+      if (!device) return;
+
+      const foundNode = device.nodes[packet.packet.from];
+
+      if (foundNode) {
+        foundNode.data.position = packet.data;
+        return;
+      }
+
+      device.nodes[packet.packet.from] = {
+        data: Protobuf.NodeInfo.create({
+          num: packet.packet.from,
+          position: packet.data,
+        }),
+        metadata: undefined,
+        deviceMetrics: [],
+        environmentMetrics: [],
+      };
     },
     addDeviceWaypoint: (
       state,
@@ -132,21 +228,53 @@ export const deviceSlice = createSlice({
       if (!state.devices[deviceId]) return;
       state.devices[deviceId].waypoints[packet.data.id] = packet.data;
     },
-    updateDeviceUser: (
+    updateNodeUser: (
       state,
       action: PayloadAction<{ deviceId: number; packet: UserPacket }>
     ) => {
       const { deviceId, packet } = action.payload;
-      if (!state.devices[deviceId]) return;
-      state.devices[deviceId].user = packet.data;
+      const device = state.devices[deviceId];
+      if (!device) return;
+
+      const foundNode = device.nodes[packet.packet.from];
+
+      if (foundNode) {
+        foundNode.data.user = packet.data;
+        return;
+      }
+
+      device.nodes[packet.packet.from] = {
+        data: Protobuf.NodeInfo.create({
+          num: packet.packet.from,
+          snr: packet.packet.rxSnr,
+          user: packet.data,
+        }),
+        metadata: undefined,
+        deviceMetrics: [],
+        environmentMetrics: [],
+      };
     },
-    updateDeviceNodeInfo: (
+    updateNodeInfo: (
       state,
       action: PayloadAction<{ deviceId: number; packet: NodeInfoPacket }>
     ) => {
       const { deviceId, packet } = action.payload;
-      if (!state.devices[deviceId]) return;
-      state.devices[deviceId].nodeInfo = packet.data;
+      const device = state.devices[deviceId];
+      if (!device) return;
+
+      const foundNode = device.nodes[packet.data.num];
+
+      if (foundNode) {
+        foundNode.data = packet.data;
+        return;
+      }
+
+      device.nodes[packet.data.num] = {
+        data: Protobuf.NodeInfo.create(packet.data),
+        metadata: undefined,
+        deviceMetrics: [],
+        environmentMetrics: [],
+      };
     },
     addDeviceChannel: (
       state,
