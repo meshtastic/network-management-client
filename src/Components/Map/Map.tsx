@@ -12,18 +12,13 @@ const MapBox = () => {
   const start_long = -71.303365;
   const start_zoom = 14;
 
-  // Sherry Map key
-  const api_key = "E2zc32QIleYbvvlOblEa";
-
   return (
     <div className="relative h-full w-full">
       <Map
         // Allows for overwriting Mapbox with Maplibre
         mapLib={maplibregl}
-        // MapStyle from Maptiler - Outdoors  https://cloud.maptiler.com/maps/outdoor/
         mapStyle={
-          // "https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
-          "https://api.maptiler.com/maps/outdoor/style.json?key=" + api_key
+          "https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
         }
         // Starting position
         initialViewState={{
