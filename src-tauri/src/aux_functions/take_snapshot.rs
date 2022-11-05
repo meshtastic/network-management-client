@@ -57,14 +57,13 @@ fn save_relative_ordering(graph: &Graph, file: &mut File) -> Result<(), Box<dyn 
     ordering.push_str("\n");
 
     for node in nodes {
+        ordering.push_str("O: ");
         ordering.push_str(&node.name);
         ordering.push_str(" ");
         ordering.push_str(ordering_counter.to_string().as_str());
         ordering_counter += 1;
         ordering.push_str("\n");
     }
-
-    ordering.push_str("\n");
 
     file.write_all(ordering.as_bytes())
         .expect("Unable to write data");
@@ -118,6 +117,7 @@ pub fn save_graph_to_txt_file(graph: &Graph, file_name: &str) -> Result<(), Box<
     let mut edges_rep: String = "".to_owned();
 
     for edge in graph.get_edges() {
+        edges_rep.push_str("E: ");
         let u_idx = edge.get_u();
         let node_u = graph.get_node(u_idx);
         edges_rep.push_str(&node_u.name);
