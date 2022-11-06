@@ -1,12 +1,35 @@
-//use crate::serde::serde_protobuf;
-use app::protobufs::{Data, PortNum};
-// use serde::serde_protobuf::{Deserialize, Serialize};
-//use app::protobufs::mesh::{Data, HardwareModel, Position};
+use crate::graph::edge::Edge;
+use crate::graph::graph_ds::Graph;
+use crate::graph::node::Node;
+use app::protobufs::Data;
+use petgraph::graph::NodeIndex;
 
 // Take in data from the frontend in protobuf form, parse it, run algorithms on it, and
 // send it back.
 
 #[tauri::command]
+pub fn run_algorithm(data: Data) -> Result<Data, String> {
+    Ok(data)
+}
+
+/*
+* When we create a graph, we need a list of all nodes and each of their neighbor lists.
+* This means we need N protobufs, where N is the number of nodes.
+* Each protobuf will contain node ID, list of neighbors, GPS coords, and measurement of radio signal quality.
+*
+* We will use it to calculate the pythagorean distance between nodes, and use this to create their edge weights.
+ */
+pub fn create_graph(data: Data) -> Graph {
+    let mut graph = Graph::new();
+    for node in data.nodes {
+        graph.add_node(node.id);
+    }
+    for edge in data.edges {
+        graph.add_edge(edge.source, edge.target, edge.weight);
+    }
+    return graph;
+}
+
 // pass in protobufs and do things with them; e.g. run different algorithms with different data
 pub fn print_protobuf(data: Data) -> Result<Data, String> {
     // let mut data = serde_protobuf::from_bytes::<Data>(&data).unwrap();
@@ -23,7 +46,6 @@ mod tests {
         println!("here goes nothing");
         let mut data = vec![1u8, 2, 3];
         //let portnum = PortNum::UNKNOWN_APP;
-        let portnum = PortNum::default();
         let mut payload = Data {
             portnum: 0, //portnum,
             payload: data,
@@ -34,25 +56,26 @@ mod tests {
             reply_id: 1,
             emoji: 0,
         };
-        //   protobuf.portnum = 0;
-        //   protobuf.payload = "Hi".to_string();
-        //   protobuf.want_response = true;
-        //   protobuf.dest = 1;
-        //   protobuf.source = 2;
-        //   protobuf.request_id = 0;
-        //   protobuf.reply_id = 0;
-        //   protobuf.emoji = false;
-        // );
         print_protobuf(payload);
-        // let mut data = Data::new();`
-        // let mut hardware_model = HardwareModel::new();
-        // let mut position = Position::new();
-        // position.set_x(1.0);
-        // position.set_y(1.0);
-        // position.set_z(1.0);
-        // hardware_model.set_position(position);
-        // data.set_hardware_model(hardware_model);
-        // let data = serde_protobuf::to_vec(&data).unwrap();
-        // print_protobuf(data).unwrap();
+    }
+
+    #[test]
+    fn test_edge_factory() {
+        let u = NodeIndex::new(0);
+        let v = NodeIndex::new(1);
+        let w = NodeIndex::new(2);
+        let x = NodeIndex::new(3);
+
+        let a = vec![u.clone(), u.clone(), w.clone(), v.clone()];
+        let b = vec![v.clone(), w.clone(), x.clone(), x.clone()];
+
+        let distance = vec![0.45, 0.67, 0.23, 1.2];
+        let radio_s_quality = vec![5.5, 3.12, 10.3, 2.7];
+
+        let edges = edge_factory(a, b, distance, radio_s_quality, None, None);
+
+        for edge in edges {
+            assert!(edge.weight >= 0.0 && edge.weight <= 1.1);
+        }
     }
 }
