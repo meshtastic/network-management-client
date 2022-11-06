@@ -1,15 +1,71 @@
 use crate::graph::edge::Edge;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
-use app::protobufs::{Data, Position};
+use app::protobufs::{Data, NeighborInfo, Position, User};
 use petgraph::graph::NodeIndex;
 
 // Take in data from the frontend in protobuf form, parse it, run algorithms on it, and
 // send it back.
 
 #[tauri::command]
-pub fn run_algorithm(data: Data) -> Result<Data, String> {
-    Ok(data)
+pub fn run_algorithm(data: Vec<Data>) -> Result<Data, String> {
+    // Create a graph
+    // Run the specified algorithm on the graph
+    // Return the result of the algorithm to the frontend in the specified data structure
+
+    // We need to define the data fields of the response values (simply a point cloud?)
+
+    // let mut graph = Graph::new();
+
+    // // Add nodes
+    // for node in data {
+    //     let node_name = node.name;
+    //     let node_position = node.position.unwrap();
+    //     let node_position_x = node_position.x;
+    //     let node_position_y = node_position.y;
+    //     let node_position_z = node_position.z;
+    //     let node_position = Position {
+    //         x: node_position_x,
+    //         y: node_position_y,
+    //         z: node_position_z,
+    //     };
+    //     let node_position = Some(node_position);
+    //     let node = Node {
+    //         name: node_name,
+    //         position: node_position,
+    //     };
+    //     graph.add_node(node);
+    // }
+
+    // // Add edges
+    // for node in data {
+    //     let node_name = node.name;
+    //     let node_neighbors = node.neighbors.unwrap();
+    //     for neighbor in node_neighbors {
+    //         let neighbor_name = neighbor.name;
+    //         let neighbor_weight = neighbor.weight;
+    //         let edge = Edge {
+    //             name: neighbor_name,
+    //             weight: neighbor_weight,
+    //         };
+    //         graph.add_edge(node_name.clone(), edge);
+    //     }
+    // }
+
+    // // Run the algorithm
+    // let result = articulation_point(graph);
+
+    // // Convert the result to protobuf form
+    // let mut result_data = Data::new();
+    // let mut result_data_neighbors = Vec::new();
+    // for node in result {
+    //     let mut result_data_neighbor = NeighborInfo::new();
+    //     result_data_neighbor.name = node.name;
+    //     result_data_neighbors.push(result_data_neighbor);
+    // }
+    // result_data.neighbors = Some(result_data_neighbors);
+
+    // Ok(result_data)
 }
 
 /*
