@@ -8,6 +8,7 @@ fn main() -> std::io::Result<()> {
 
     let protobufs_dir = "protobufs";
     let mut protos = vec![];
+    println!("Compiling protobufs to rust...\n");
 
     for entry in WalkDir::new("protobufs")
         .into_iter()
