@@ -1,7 +1,7 @@
 use crate::graph::edge::Edge;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
-use app::protobufs::Data;
+use app::protobufs::{Data, Position};
 use petgraph::graph::NodeIndex;
 
 // Take in data from the frontend in protobuf form, parse it, run algorithms on it, and
