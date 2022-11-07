@@ -1,3 +1,10 @@
+/*
+* Take in data from the frontend in protobuf form, parse it, run algorithms on it, and
+* send it back.
+* NOTE: This currently implements a NeighborInfo struct protobuf, which is just a list of users and positions.
+* This can easily be migrated to a Rust struct so we don't have to make protobuf changes.
+*/
+
 use super::edge_factory::edge_factory;
 use crate::algorithms::articulation_point::articulation_point;
 use crate::graph::edge::Edge;
@@ -11,8 +18,6 @@ pub struct Point {
     y: i32,
 }
 
-// Take in data from the frontend in protobuf form, parse it, run algorithms on it, and
-// send it back.
 #[tauri::command]
 pub fn run_algorithm(data: Vec<NeighborInfo>, algorithm: String) -> Result<Vec<Point>, String> {
     // Create a graph
@@ -50,7 +55,7 @@ pub fn populate_graph(data: Vec<NeighborInfo>) -> Graph {
     let mut edge_left_endpoints = Vec::<NodeIndex>::new();
     let mut edge_right_endpoints = Vec::<NodeIndex>::new();
     let mut distances = Vec::<f64>::new();
-    let radio_quality = Vec::<f64>::new();
+    let mut radio_quality = Vec::<f64>::new();
     // for each node we have info on, add it and all its neighbors to the graph
     for mut neighbor_info in data {
         println!("Node Info: {:?}\n\n", neighbor_info);
@@ -92,6 +97,7 @@ pub fn populate_graph(data: Vec<NeighborInfo>) -> Graph {
             edge_right_endpoints.push(graph.get_node_idx(neighbor_id.clone()));
             distances.push(distance_between);
             //TODO: radio quality
+            radio_quality.push(0.0);
         }
     }
 
@@ -117,7 +123,7 @@ mod tests {
     fn test_protobuf_initialization() {
         println!("here goes nothing"); //REMOVE
 
-        let mut coord_user = User {
+        let coord_user = User {
             id: "coordinator".to_string(),
             long_name: "Coordinator Node".to_string(),
             short_name: "CN".to_string(),
@@ -126,7 +132,7 @@ mod tests {
             is_licensed: false,
         };
 
-        let mut coord_position = Position {
+        let coord_position = Position {
             latitude_i: 1,
             longitude_i: 2,
             altitude: 0,
@@ -151,7 +157,7 @@ mod tests {
             seq_number: 0,
         };
 
-        let mut nbr_user = User {
+        let nbr_user = User {
             id: "responder".to_string(),
             long_name: "Responder Node".to_string(),
             short_name: "RN".to_string(),
@@ -160,7 +166,7 @@ mod tests {
             is_licensed: false,
         };
 
-        let mut nbr_position = Position {
+        let nbr_position = Position {
             latitude_i: 5,
             longitude_i: 6,
             altitude: 0,
@@ -185,7 +191,7 @@ mod tests {
             seq_number: 0,
         };
 
-        let mut neighbor_info = NeighborInfo {
+        let neighbor_info = NeighborInfo {
             user: Some(coord_user),
             position: Some(coord_position),
             num_neighbors: 1,
@@ -196,7 +202,7 @@ mod tests {
         let graph = populate_graph(vec![neighbor_info]);
         // println!("Graph: {:?}", graph);
         let expected_dist = 4_f64 * 2_f64.sqrt();
-        // assert_eq!(graph.get_edges(), expected_dist);
+        assert_eq!(graph.get_edges(), expected_dist);
         // assert_eq!(graph.get_size(), 2);
     }
 }
