@@ -202,7 +202,13 @@ mod tests {
         let graph = populate_graph(vec![neighbor_info]);
         // println!("Graph: {:?}", graph);
         let expected_dist = 4_f64 * 2_f64.sqrt();
-        assert_eq!(graph.get_edges(), expected_dist);
+        // We should have one edge with corresp weight
+        assert_eq!(graph.edge_idx_list[0].unwrap().weight, expected_dist);
+        // let edge_idx_list = self
+        //     .edge_idx_map
+        //     .get(&(u_idx.clone(), v_idx.clone()))
+        //     .unwrap()
+        //     .clone();
         // assert_eq!(graph.get_size(), 2);
     }
 }
