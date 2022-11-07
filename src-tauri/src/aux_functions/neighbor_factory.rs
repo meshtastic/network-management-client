@@ -121,10 +121,11 @@ mod tests {
 
     #[test]
     fn test_protobuf_initialization() {
-        println!("here goes nothing"); //REMOVE
+        let mut coord_name = "coordinator";
+        let mut nbr_name = "responder";
 
         let coord_user = User {
-            id: "coordinator".to_string(),
+            id: coord_name.to_string(),
             long_name: "Coordinator Node".to_string(),
             short_name: "CN".to_string(),
             macaddr: vec![1],
@@ -158,7 +159,7 @@ mod tests {
         };
 
         let nbr_user = User {
-            id: "responder".to_string(),
+            id: nbr_name.to_string(),
             long_name: "Responder Node".to_string(),
             short_name: "RN".to_string(),
             macaddr: vec![0],
@@ -200,15 +201,31 @@ mod tests {
         };
 
         let graph = populate_graph(vec![neighbor_info]);
-        // println!("Graph: {:?}", graph);
         let expected_dist = 4_f64 * 2_f64.sqrt();
         // We should have one edge with corresp weight
-        assert_eq!(graph.edge_idx_list[0].unwrap().weight, expected_dist);
-        // let edge_idx_list = self
-        //     .edge_idx_map
-        //     .get(&(u_idx.clone(), v_idx.clone()))
-        //     .unwrap()
-        //     .clone();
+        println!("Node idx: {:?}", graph.node_idx_map);
+        println!("Edge idx: {:?}", graph.edge_idx_map);
+        let u_idx = graph
+            .node_idx_map
+            .get(&coord_name.clone() as &str)
+            .unwrap()
+            .clone();
+        let v_idx = graph
+            .node_idx_map
+            .get(&nbr_name.clone() as &str)
+            .unwrap()
+            .clone();
+        println!(
+            "and the edge is: {:?}",
+            graph.edge_idx_map.get(&(u_idx.clone(), v_idx.clone()))
+        );
+        let edge_idx = graph
+            .edge_idx_map
+            .get(&(u_idx.clone(), v_idx.clone()))
+            .unwrap();
+        let actual_dist = graph.g.edge_weight(edge_idx.clone()[0]).unwrap().weight;
+        assert_eq!(actual_dist, expected_dist);
+
         // assert_eq!(graph.get_size(), 2);
     }
 }
