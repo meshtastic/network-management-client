@@ -97,7 +97,7 @@ pub fn populate_graph(data: Vec<NeighborInfo>) -> Graph {
             edge_right_endpoints.push(graph.get_node_idx(neighbor_id.clone()));
             distances.push(distance_between);
             //TODO: radio quality
-            radio_quality.push(0.0);
+            radio_quality.push(1.0);
         }
     }
 
@@ -109,9 +109,14 @@ pub fn populate_graph(data: Vec<NeighborInfo>) -> Graph {
         None,
         None,
     );
+    println!("Node idx: {:?}", graph.node_idx_map);
+    println!("Edge idx: {:?}", graph.edge_idx_map);
     for edge in edges {
+        println!("Adding edge... {:?}", edge);
         graph.g.add_edge(edge.u, edge.v, edge);
     }
+    println!("Node idx: {:?}", graph.node_idx_map);
+    println!("Edge idx: {:?}", graph.edge_idx_map);
     graph
 }
 
