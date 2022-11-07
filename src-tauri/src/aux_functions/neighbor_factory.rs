@@ -3,7 +3,7 @@ use crate::algorithms::articulation_point::articulation_point;
 use crate::graph::edge::Edge;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
-use app::protobufs::{Data, NeighborInfo};
+use app::protobufs::{Data, NeighborInfo, Position, User};
 use petgraph::graph::NodeIndex;
 
 pub struct Point {
@@ -53,6 +53,7 @@ pub fn populate_graph(data: Vec<NeighborInfo>) -> Graph {
     let radio_quality = Vec::<f64>::new();
     // for each node we have info on, add it and all its neighbors to the graph
     for mut neighbor_info in data {
+        println!("Node Info: {:?}\n\n", neighbor_info);
         // Do basic none checks
         if neighbor_info.user == None || neighbor_info.position == None {
             println!("Error: Node info or position is None\n");
@@ -70,14 +71,20 @@ pub fn populate_graph(data: Vec<NeighborInfo>) -> Graph {
         }
 
         for i in 0..neighbor_info.num_neighbors {
+            println!("Neighbor Info: {:?}\n\n", neighbor_info);
             let neighbor_id = neighbor_info.neighbor_ids.pop().unwrap().id;
-            let neighbor_x = neighbor_info.neighbor_positions.pop().unwrap().latitude_i;
-            let neighbor_y = neighbor_info.neighbor_positions.pop().unwrap().longitude_i;
+            let neighbor_pos = neighbor_info.neighbor_positions.pop().unwrap();
+            let neighbor_x = neighbor_pos.latitude_i;
+            let neighbor_y = neighbor_pos.longitude_i;
             // TODO: risky unwrap, needs error checking
+            // Here, we calculate the distance between the two nodes. We may need to store
+            // additional info and do second pythagorean if the weight is the distance
+            // from the COORDINATOR node.
             let x_distance_between = node_x - neighbor_x;
             let y_distance_between = node_y - neighbor_y;
             let distance_between =
                 ((x_distance_between.pow(2) + y_distance_between.pow(2)) as f64).sqrt();
+            println!("Distance between nodes: {}\n", distance_between);
             if !graph.node_idx_map.contains_key(&neighbor_id) {
                 graph.add_node(neighbor_id.clone());
             }
@@ -102,52 +109,94 @@ pub fn populate_graph(data: Vec<NeighborInfo>) -> Graph {
     graph
 }
 
-// printing utility for testing
-fn print_protobuf(data: Data) -> Result<Data, String> {
-    // let mut data = serde_protobuf::from_bytes::<Data>(&data).unwrap();
-    println!("data: {:?}", data);
-    return Ok(data);
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_protobuf_initialization() {
-        println!("here goes nothing");
-        let mut data = vec![1u8, 2, 3];
-        //let portnum = PortNum::UNKNOWN_APP;
-        let mut payload = Data {
-            portnum: 0, //portnum,
-            payload: data,
-            want_response: false,
-            dest: 0,
-            source: 1,
-            request_id: 0,
-            reply_id: 1,
-            emoji: 0,
+        println!("here goes nothing"); //REMOVE
+
+        let mut coord_user = User {
+            id: "coordinator".to_string(),
+            long_name: "Coordinator Node".to_string(),
+            short_name: "CN".to_string(),
+            macaddr: vec![1],
+            hw_model: 0,
+            is_licensed: false,
         };
-        print_protobuf(payload);
-    }
 
-    #[test]
-    fn test_edge_factory() {
-        let u = NodeIndex::new(0);
-        let v = NodeIndex::new(1);
-        let w = NodeIndex::new(2);
-        let x = NodeIndex::new(3);
+        let mut coord_position = Position {
+            latitude_i: 1,
+            longitude_i: 2,
+            altitude: 0,
+            time: 0,
+            location_source: 0,
+            altitude_source: 0,
+            timestamp: 0,
+            timestamp_millis_adjust: 0,
+            altitude_hae: 0,
+            altitude_geoidal_separation: 0,
+            pdop: 0,
+            hdop: 0,
+            vdop: 0,
+            gps_accuracy: 1,
+            ground_speed: 0,
+            ground_track: 0,
+            fix_quality: 0,
+            fix_type: 0,
+            sats_in_view: 0,
+            sensor_id: 0,
+            next_update: 5,
+            seq_number: 0,
+        };
 
-        let a = vec![u.clone(), u.clone(), w.clone(), v.clone()];
-        let b = vec![v.clone(), w.clone(), x.clone(), x.clone()];
+        let mut nbr_user = User {
+            id: "responder".to_string(),
+            long_name: "Responder Node".to_string(),
+            short_name: "RN".to_string(),
+            macaddr: vec![0],
+            hw_model: 0,
+            is_licensed: false,
+        };
 
-        let distance = vec![0.45, 0.67, 0.23, 1.2];
-        let radio_s_quality = vec![5.5, 3.12, 10.3, 2.7];
+        let mut nbr_position = Position {
+            latitude_i: 5,
+            longitude_i: 6,
+            altitude: 0,
+            time: 0,
+            location_source: 0,
+            altitude_source: 0,
+            timestamp: 0,
+            timestamp_millis_adjust: 0,
+            altitude_hae: 0,
+            altitude_geoidal_separation: 0,
+            pdop: 0,
+            hdop: 0,
+            vdop: 0,
+            gps_accuracy: 1,
+            ground_speed: 0,
+            ground_track: 0,
+            fix_quality: 0,
+            fix_type: 0,
+            sats_in_view: 0,
+            sensor_id: 0,
+            next_update: 5,
+            seq_number: 0,
+        };
 
-        let edges = edge_factory(a, b, distance, radio_s_quality, None, None);
+        let mut neighbor_info = NeighborInfo {
+            user: Some(coord_user),
+            position: Some(coord_position),
+            num_neighbors: 1,
+            neighbor_ids: vec![nbr_user],
+            neighbor_positions: vec![nbr_position],
+        };
 
-        for edge in edges {
-            assert!(edge.weight >= 0.0 && edge.weight <= 1.1);
-        }
+        let graph = populate_graph(vec![neighbor_info]);
+        // println!("Graph: {:?}", graph);
+        let expected_dist = 4_f64 * 2_f64.sqrt();
+        // assert_eq!(graph.get_edges(), expected_dist);
+        // assert_eq!(graph.get_size(), 2);
     }
 }
