@@ -113,13 +113,11 @@ fn save_relative_ordering(graph: &Graph, file: &mut File) -> Result<(), Box<dyn 
 /// let _u_idx = G.add_node_from_struct(node_u);
 ///
 /// let mut node_v = Node::new(v.clone());
-/// node_v.latitude = 43.71584;
-/// node_v.longitude = -72.28239;
+/// node_v.set_gps(43.71584, -72.28239, 11.23);
 /// let _v_idx = G.add_node_from_struct(node_v);
 ///
 /// let mut node_w = Node::new(w.clone());
-/// node_w.latitude = 43.7114;
-/// node_w.longitude = -72.28332;
+/// node_w.set_gps(43.7114, -72.28332, 12.23)
 /// let _w_idx = G.add_node_from_struct(node_w);
 ///
 /// G.add_edge(u.clone(), v.clone(), 1 as f64);
