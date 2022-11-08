@@ -1,16 +1,53 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
+import MapIconButton from '@components/Map/MapIconButton';
 import NodeSearchInput from '@components/NodeSearch/NodeSearchInput';
 import NodeSearchResult from '@components/NodeSearch/NodeSearchResult';
-import { selectActiveNode, selectAllNodes } from '@features/device/deviceSelectors';
-import { deviceSliceActions, INode } from '@features/device/deviceSlice';
-import MapIconButton from '../Map/MapIconButton';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+
+import { selectActiveNode, selectAllDevices, selectAllNodes } from '@features/device/deviceSelectors';
+import { deviceSliceActions, IDevice, INode } from '@features/device/deviceSlice';
+
+interface _INodeSearchDockProps {
+  filteredNodes: INode[];
+  devices: IDevice[];
+  activeNodeId: number | null;
+  query: string,
+  handleNodeSelect: (nodeId: number) => void;
+}
+
+const _NodeSearchDock = ({ filteredNodes, devices, activeNodeId, query, handleNodeSelect }: _INodeSearchDockProps) => {
+  if (!filteredNodes.length && !!devices.length) {
+    return (
+      <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
+        <p className="text-sm font-normal text-gray-500">No results for &quot;{query}&quot;</p>
+      </div>
+    );
+  }
+
+  if (filteredNodes.length) {
+    return (
+      <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
+        {filteredNodes.map((node) => (
+          <NodeSearchResult
+            key={node.data.num}
+            node={node}
+            isActive={node.data.num === activeNodeId}
+            selectNode={handleNodeSelect}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return <></>;
+}
 
 const NodeSearchDock = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
+  const devices = useSelector(selectAllDevices());
   const activeNodeId = useSelector(selectActiveNode());
 
   const [filteredNodes, setFilteredNodes] = useState<INode[]>(nodes);
@@ -50,18 +87,13 @@ const NodeSearchDock = () => {
         </MapIconButton>
       </div>
 
-      <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
-        {filteredNodes.length ? filteredNodes.map((node) => (
-          <NodeSearchResult
-            key={node.data.num}
-            node={node}
-            isActive={node.data.num === activeNodeId}
-            selectNode={handleNodeSelect}
-          />
-        )) : (
-          <p className="text-sm font-normal text-gray-500">No results for &quot;{query}&quot;</p>
-        )}
-      </div>
+      <_NodeSearchDock
+        filteredNodes={filteredNodes}
+        devices={devices}
+        activeNodeId={activeNodeId}
+        query={query}
+        handleNodeSelect={handleNodeSelect}
+      />
     </div>
   );
 };

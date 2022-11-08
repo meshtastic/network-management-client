@@ -12,8 +12,8 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 import "./MapView.css";
 
 export const MapView = () => {
-  const nodes = useSelector(selectAllNodes());
   const dispatch = useDispatch();
+  const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNode());
 
   const updateActiveNode = (nodeId: number | null) => {
