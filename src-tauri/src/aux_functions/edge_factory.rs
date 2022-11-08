@@ -86,10 +86,12 @@ pub fn normalize_weight(
     radio_s_quality_minmax: (f64, f64),
     radio_s_quality_weight: f64,
 ) -> f64 {
+    let e = f64::EPSILON;
+
     let distance_norm =
-        (distance - distance_minmax.0 + 0.001) / (distance_minmax.1 - distance_minmax.0);
-    let radio_s_quality_norm = (radio_s_quality - radio_s_quality_minmax.0 + 0.001)
-        / (radio_s_quality_minmax.1 - radio_s_quality_minmax.0);
+        (distance - distance_minmax.0 + e) / (distance_minmax.1 + e - distance_minmax.0);
+    let radio_s_quality_norm = (radio_s_quality - radio_s_quality_minmax.0 + e)
+        / (radio_s_quality_minmax.1 + e - radio_s_quality_minmax.0);
     let weight =
         (distance_weight * distance_norm) + (radio_s_quality_weight * radio_s_quality_norm);
     return weight;
