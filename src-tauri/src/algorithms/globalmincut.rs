@@ -135,7 +135,7 @@ mod tests {
         G.add_edge(y.clone(), b.clone(), 1.0);
 
         let mut mincut_2 = 0;
-        for _ in 0..10000 {
+        for _ in 0..1000 {
             let order = G.get_order();
             let mincut = karger_stein_gmincut(&G.clone(), order as i32);
             if mincut == 1.0 {
@@ -143,6 +143,6 @@ mod tests {
             }
         }
 
-        println!("{} out of 10000", mincut_2);
+        println!("{} out of 1000", mincut_2);
     }
 }

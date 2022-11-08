@@ -1,5 +1,6 @@
 use super::datatypes::{Neighbor, NeighborInfo};
 use super::edge_factory::edge_factory;
+use super::take_snapshot::total_distance;
 use crate::graph::edge::Edge;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
@@ -35,6 +36,7 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
         let node_id = &node_user.id.clone();
         let node_x = graph_node.position.latitude_i;
         let node_y = graph_node.position.longitude_i;
+        let node_z = graph_node.position.altitude;
         graph = init_graph_node_if_nec(graph, node_user);
         // Add edge and distance info to the graph for each neighbor
         for _ in 0..graph_node.num_neighbors {
@@ -43,11 +45,13 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
             let neighbor_id = &neighbor_user.id.clone();
             let neighbor_x = neighbor.position.latitude_i;
             let neighbor_y = neighbor.position.longitude_i;
+            let neighbor_z = neighbor.position.altitude;
             // Create a node if it doesn't exist
             graph = init_graph_node_if_nec(graph, neighbor_user);
             // Add edge and distance info to the graph
-            let distance = calculate_distance(node_x, node_y, neighbor_x, neighbor_y);
-            //TODO: radio quality calculation
+            let distance =
+                calculate_distance(node_x, node_y, node_z, neighbor_x, neighbor_y, neighbor_z);
+            // radio quality calculation
             let radio_quality = calculate_radio_quality();
             // Store all the data for edge creation
             edge_left_endpoints.push(graph.get_node_idx(node_id.clone()));
@@ -85,9 +89,20 @@ pub fn init_graph_node_if_nec(mut graph: Graph, user: User) -> Graph {
 
 /*
 * Calculates the distance between two points on a sphere
+* Wrapper function for an i32->f64 cast; easy to remove
+* TODO: may also necessitate 1e-7 conversion; see mesh.proto
 */
-fn calculate_distance(x: i32, y: i32, nbr_x: i32, nbr_y: i32) -> f64 {
-    return total_distance(x as f64, y as f64, nbr_x as f64, nbr_y as f64);
+fn calculate_distance(x: i32, y: i32, z: i32, nbr_x: i32, nbr_y: i32, nbr_z: i32) -> f64 {
+    let i = total_distance(
+        x as f64,
+        y as f64,
+        z as f64,
+        nbr_x as f64,
+        nbr_y as f64,
+        nbr_z as f64,
+    );
+    println!("in the function wrapper, distance is: {}", i);
+    i
 }
 
 pub fn calculate_radio_quality() -> f64 {
@@ -140,8 +155,8 @@ mod tests {
 
     #[test]
     fn test_load_graph() {
-        let mut coord_name = "coordinator";
-        let mut nbr_name = "responder";
+        let coord_name = "coordinator";
+        let nbr_name = "responder";
 
         let coord_user = User {
             id: coord_name.to_string(),
@@ -153,8 +168,8 @@ mod tests {
         };
 
         let coord_position = Position {
-            latitude_i: 1,
-            longitude_i: 2,
+            latitude_i: 0,
+            longitude_i: 0,
             altitude: 0,
             time: 0,
             location_source: 0,
@@ -188,8 +203,8 @@ mod tests {
 
         let nbr_position = Position {
             latitude_i: 5,
-            longitude_i: 6,
-            altitude: 0,
+            longitude_i: 5,
+            altitude: 5,
             time: 0,
             location_source: 0,
             altitude_source: 0,
@@ -224,7 +239,7 @@ mod tests {
         };
 
         let graph = load_graph(vec![neighbor_info]);
-        let expected_dist = 4_f64 * 2_f64.sqrt();
+        let expected_dist = f64::INFINITY;
         // We should have one edge with corresp weight
         println!("Node idx: {:?}", graph.node_idx_map);
         println!("Edge idx: {:?}", graph.edge_idx_map);
@@ -249,6 +264,7 @@ mod tests {
         let actual_dist = graph.g.edge_weight(edge_idx.clone()[0]).unwrap().weight;
         assert_eq!(actual_dist, expected_dist);
         assert_eq!(graph.node_idx_map.len(), 2);
-        assert_eq!(graph.edge_idx_map.len(), 1);
+        // graph should contain two edges [0, 1] and [1, 0]
+        assert_eq!(graph.edge_idx_map.len(), 2);
     }
 }
