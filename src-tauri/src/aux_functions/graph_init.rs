@@ -67,7 +67,9 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
         None,
     );
     // Add the edges to the graph
-    //TODO:
+    for edge in edges {
+        graph.add_edge_from_struct(edge);
+    }
     graph
 }
 
@@ -84,10 +86,16 @@ pub fn init_graph_node_if_nec(mut graph: Graph, user: User) -> Graph {
 
 /*
 * Calculates the distance between two points on a sphere
+* https://en.wikipedia.org/wiki/Haversine_formula
 */
-pub fn calculate_distance(node_x: i32, node_y: i32, nbr_x: i32, nbr_y: i32) -> f64 {
-    //TODO:
-    return 0.0;
+fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
+    let r = 6371.0; // radius of the earth in km
+    let d_lat = (lat2 - lat1).to_radians();
+    let d_lon = (lon2 - lon1).to_radians();
+    let a = (d_lat / 2.0).sin().powi(2)
+        + (d_lon / 2.0).sin().powi(2) * lat1.to_radians().cos() * lat2.to_radians().cos();
+    let c = 2.0 * a.sqrt().atan2((1.0 - a).sqrt());
+    r * c
 }
 
 pub fn calculate_radio_quality() -> f64 {
