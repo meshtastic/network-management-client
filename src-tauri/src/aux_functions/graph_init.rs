@@ -93,7 +93,7 @@ pub fn init_graph_node_if_nec(mut graph: Graph, user: User) -> Graph {
 * TODO: may also necessitate 1e-7 conversion; see mesh.proto
 */
 fn calculate_distance(x: i32, y: i32, z: i32, nbr_x: i32, nbr_y: i32, nbr_z: i32) -> f64 {
-    let i = total_distance(
+    return total_distance(
         x as f64,
         y as f64,
         z as f64,
@@ -101,8 +101,6 @@ fn calculate_distance(x: i32, y: i32, z: i32, nbr_x: i32, nbr_y: i32, nbr_z: i32
         nbr_y as f64,
         nbr_z as f64,
     );
-    println!("in the function wrapper, distance is: {}", i);
-    i
 }
 
 pub fn calculate_radio_quality() -> f64 {
