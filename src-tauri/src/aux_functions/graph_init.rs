@@ -100,7 +100,46 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_protobuf_initialization() {
+    fn test_init_graph_node() {
+        let mut graph = Graph::new();
+        let user = User {
+            id: "Neighbor".to_string(),
+            long_name: "Responder Node".to_string(),
+            short_name: "RN".to_string(),
+            macaddr: vec![0],
+            hw_model: 0,
+            is_licensed: false,
+        };
+        graph = init_graph_node_if_nec(graph, user);
+        assert_eq!(graph.node_idx_map.len(), 1);
+    }
+
+    #[test]
+    fn test_init_graph_node_w_existing() {
+        let mut graph = Graph::new();
+        let user = User {
+            id: "test".to_string(),
+            long_name: "Responder Node".to_string(),
+            short_name: "RN".to_string(),
+            macaddr: vec![0],
+            hw_model: 0,
+            is_licensed: false,
+        };
+        let same_name = User {
+            id: "test".to_string(),
+            long_name: "Responder Node".to_string(),
+            short_name: "RN".to_string(),
+            macaddr: vec![0],
+            hw_model: 0,
+            is_licensed: false,
+        };
+        graph = init_graph_node_if_nec(graph, user);
+        graph = init_graph_node_if_nec(graph, same_name);
+        assert_eq!(graph.node_idx_map.len(), 1);
+    }
+
+    #[test]
+    fn test_load_graph() {
         let mut coord_name = "coordinator";
         let mut nbr_name = "responder";
 
