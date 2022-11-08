@@ -8,9 +8,9 @@ use crate::graph::graph_ds::Graph;
 /// # Arguments
 ///
 /// * `lat1` - latitude of node 1
-/// * `long1` - longitude of node 1
+/// * `lon1` - longitude of node 1
 /// * `lat2` - latitude of node 2
-/// * `long2` - longitude of node 2
+/// * `lon2` - longitude of node 2
 fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
     let r = 6371.0; // radius of the earth in km
     let d_lat = (lat2 - lat1).to_radians();
@@ -19,6 +19,22 @@ fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
         + (d_lon / 2.0).sin().powi(2) * lat1.to_radians().cos() * lat2.to_radians().cos();
     let c = 2.0 * a.sqrt().atan2((1.0 - a).sqrt());
     r * c
+}
+
+/// Returns total distance between 2 nodes using euclidean of haversine and altitude difference.
+///
+/// # Arguments
+///
+/// * `lat1` - latitude of node 1
+/// * `lon1` - longitude of node 1
+/// * `alt1` - altitude of node 1
+/// * `lat2` - latitude of node 2
+/// * `lon2` - longitude of node 2
+/// * `alt2` - altitude of node 2
+fn total_distance(lat1: f64, lon1: f64, alt1: f64, lat2: f64, lon2: f64, alt2: f64) -> f64 {
+    let haversine_distance = haversine_distance(lat1, lon1, lat2, lon2).powi(2);
+    let alt_difference = (alt1 - alt2).powi(2);
+    (haversine_distance + alt_difference).sqrt()
 }
 
 fn save_relative_ordering(graph: &Graph, file: &mut File) -> Result<(), Box<dyn Error>> {
@@ -34,17 +50,21 @@ fn save_relative_ordering(graph: &Graph, file: &mut File) -> Result<(), Box<dyn 
 
     // sort nodes by their haversine distance to the smallest longitude node
     nodes.sort_by(|a, b| {
-        let a_distance = haversine_distance(
+        let a_distance = total_distance(
             smallest_longitude_node.latitude,
             smallest_longitude_node.longitude,
+            smallest_longitude_node.altitude,
             a.latitude,
             a.longitude,
+            a.altitude,
         );
-        let b_distance = haversine_distance(
+        let b_distance = total_distance(
             smallest_longitude_node.latitude,
             smallest_longitude_node.longitude,
+            smallest_longitude_node.altitude,
             b.latitude,
             b.longitude,
+            b.altitude,
         );
         a_distance.partial_cmp(&b_distance).unwrap()
     });

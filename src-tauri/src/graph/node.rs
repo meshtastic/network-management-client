@@ -4,6 +4,7 @@ pub struct Node {
     pub optimal_weighted_degree: f64,
     pub longitude: f64,
     pub latitude: f64,
+    pub altitude: f64,
 }
 
 impl Node {
@@ -13,12 +14,14 @@ impl Node {
             optimal_weighted_degree: 0.0,
             longitude: 0.0,
             latitude: 0.0,
+            altitude: 0.0,
         }
     }
 
-    pub fn set_gps(&mut self, longitude: f64, latitude: f64) {
+    pub fn set_gps(&mut self, longitude: f64, latitude: f64, altitude: f64) {
         self.longitude = longitude;
         self.latitude = latitude;
+        self.altitude = altitude;
     }
 }
 
@@ -30,6 +33,7 @@ impl Clone for Node {
             optimal_weighted_degree: self.optimal_weighted_degree,
             longitude: self.longitude,
             latitude: self.latitude,
+            altitude: self.altitude,
         }
     }
 }
