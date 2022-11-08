@@ -20,7 +20,6 @@ export enum ActiveTab {
   NONE
 }
 
-
 const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.MAP);
 

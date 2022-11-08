@@ -4,6 +4,8 @@ import maplibregl from "maplibre-gl";
 import { Map, NavigationControl, ScaleControl } from "react-map-gl";
 
 import MapNode from "@components/Map/MapNode";
+import NodeSearchDock from "@components/MapOverlays/NodeSearchDock";
+
 import { selectAllNodes } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
@@ -27,7 +29,16 @@ export const MapView = () => {
         <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
         <NavigationControl position="bottom-right" showCompass={false} />
 
-        {nodes.map(node => (<MapNode key={node.data.num} onClick={updateActiveNode} node={node} isBase={false} />))}
+        {nodes.map(node => (
+          <MapNode
+            key={node.data.num}
+            onClick={updateActiveNode}
+            node={node}
+            isBase={false}
+          />
+        ))}
+
+        <NodeSearchDock />
       </Map>
     </div>
   );
