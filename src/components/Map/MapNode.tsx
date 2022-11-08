@@ -8,12 +8,6 @@ import type { INode } from '@features/device/deviceSlice';
 export const NODE_WARNING_THRESHOLD = 15;
 export const NODE_ERROR_THRESHOLD = 30;
 
-export interface IMapNodeProps {
-  node: INode;
-  size?: 'sm' | 'med' | 'lg'
-  isBase?: boolean;
-}
-
 export const getNodeState = (timeSinceLastMessage: number): NodeState => {
   if (timeSinceLastMessage >= NODE_ERROR_THRESHOLD) return 'error';
   if (timeSinceLastMessage >= NODE_WARNING_THRESHOLD) return 'warning';
@@ -56,7 +50,14 @@ export const getColorClassFromNodeState = (nodeState: NodeState): string => {
   }
 }
 
-const MapNode = ({ node, size = 'med', isBase = false }: IMapNodeProps) => {
+export interface IMapNodeProps {
+  node: INode;
+  onClick: (nodeId: number | null) => void;
+  size?: 'sm' | 'med' | 'lg'
+  isBase?: boolean;
+}
+
+const MapNode = ({ node, onClick, size = 'med', isBase = false }: IMapNodeProps) => {
   const lastHeard = node.data.lastHeard !== 0 ? node.data.lastHeard : Date.now(); // sec, 0 means not set
   const now = Date.now() / 1000; // sec
   const timeSinceLastMessage = Math.abs(now - lastHeard) / 60; // s to min
@@ -68,10 +69,16 @@ const MapNode = ({ node, size = 'med', isBase = false }: IMapNodeProps) => {
   const colorClass = getColorClassFromNodeState(nodeState);
   const iconRotation = !isBase ? node.data.position?.groundTrack ?? 0 : 0;
 
+  const handleNodeClick = (e: mapboxgl.MapboxEvent<MouseEvent>) => {
+    e.originalEvent.preventDefault();
+    onClick(node.data.num);
+  }
+
   return (
     <Marker
       latitude={(node.data.position?.latitudeI ?? 0) / 1e7}
       longitude={(node.data.position?.longitudeI ?? 0) / 1e7}
+      onClick={handleNodeClick}
     >
       <div className='relative'>
         <div className="absolute left-2/4 text-center whitespace-nowrap px-2 py-1 bg-white border border-gray-100 rounded-lg shadow-lg text-xs" style={{ transform: "translate(-50%, -120%)" }}>
