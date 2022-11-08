@@ -4,9 +4,9 @@ import maplibregl from "maplibre-gl";
 import { Map, NavigationControl, ScaleControl } from "react-map-gl";
 
 import MapNode from "@components/Map/MapNode";
-import NodeSearchDock from "@components/MapOverlays/NodeSearchDock";
+import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 
-import { selectAllNodes } from "@features/device/deviceSelectors";
+import { selectActiveNode, selectAllNodes } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
 import "./MapView.css";
@@ -14,6 +14,7 @@ import "./MapView.css";
 export const MapView = () => {
   const nodes = useSelector(selectAllNodes());
   const dispatch = useDispatch();
+  const activeNodeId = useSelector(selectActiveNode());
 
   const updateActiveNode = (nodeId: number | null) => {
     dispatch(deviceSliceActions.setActiveNode(nodeId));
@@ -35,6 +36,7 @@ export const MapView = () => {
             onClick={updateActiveNode}
             node={node}
             isBase={false}
+            isActive={activeNodeId === node.data.num}
           />
         ))}
 
