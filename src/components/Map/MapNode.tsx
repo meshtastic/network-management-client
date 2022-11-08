@@ -35,7 +35,7 @@ const MapNode = ({ node, onClick, size = 'med', isBase = false, isActive = false
       onClick={handleNodeClick}
     >
       <div className='relative'>
-        <div className="absolute left-2/4 text-center whitespace-nowrap px-2 py-1 bg-white border border-gray-100 rounded-lg shadow-lg text-xs" style={{ transform: "translate(-50%, -120%)" }}>
+        <div className="absolute left-2/4 text-center whitespace-nowrap px-2 py-1 default-overlay text-xs" style={{ transform: "translate(-50%, -120%)" }}>
           {headingPrefix && <span className={`font-bold ${colorClasses.text}`}>{headingPrefix} </span>}
           <span className={`font-normal ${colorClasses.text}`}>{node.data.user?.longName ?? node.data.num}</span>
           {showMessageTime && (<span className={`font-normal ${colorClasses.text}`}> ({timeSinceLastMessage} min)</span>)}

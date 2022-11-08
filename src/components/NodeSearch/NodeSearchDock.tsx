@@ -50,7 +50,7 @@ const NodeSearchDock = () => {
         </MapIconButton>
       </div>
 
-      <div className="flex flex-col gap-4 px-4 py-3 bg-white rounded-lg border-gray-100 shadow-lg">
+      <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
         {filteredNodes.length ? filteredNodes.map((node) => (
           <NodeSearchResult
             key={node.data.num}

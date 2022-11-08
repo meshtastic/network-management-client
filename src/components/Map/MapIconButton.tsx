@@ -12,7 +12,7 @@ const MapIconButton = ({ children, onClick, type = "button", className = "" }: I
     <button
       type={type}
       onClick={onClick}
-      className={`${className} bg-white rounded-lg border-gray-100 shadow-lg`}
+      className={`${className} default-overlay`}
     >
       {children}
     </button>
