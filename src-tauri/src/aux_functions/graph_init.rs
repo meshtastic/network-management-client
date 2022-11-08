@@ -1,6 +1,5 @@
 use super::datatypes::{Neighbor, NeighborInfo};
 use super::edge_factory::edge_factory;
-use crate::algorithms::articulation_point::articulation_point;
 use crate::graph::edge::Edge;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
@@ -86,16 +85,9 @@ pub fn init_graph_node_if_nec(mut graph: Graph, user: User) -> Graph {
 
 /*
 * Calculates the distance between two points on a sphere
-* https://en.wikipedia.org/wiki/Haversine_formula
 */
-fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
-    let r = 6371.0; // radius of the earth in km
-    let d_lat = (lat2 - lat1).to_radians();
-    let d_lon = (lon2 - lon1).to_radians();
-    let a = (d_lat / 2.0).sin().powi(2)
-        + (d_lon / 2.0).sin().powi(2) * lat1.to_radians().cos() * lat2.to_radians().cos();
-    let c = 2.0 * a.sqrt().atan2((1.0 - a).sqrt());
-    r * c
+fn calculate_distance(x: i32, y: i32, nbr_x: i32, nbr_y: i32) -> f64 {
+    return total_distance(x as f64, y as f64, nbr_x as f64, nbr_y as f64);
 }
 
 pub fn calculate_radio_quality() -> f64 {
@@ -256,7 +248,7 @@ mod tests {
             .unwrap();
         let actual_dist = graph.g.edge_weight(edge_idx.clone()[0]).unwrap().weight;
         assert_eq!(actual_dist, expected_dist);
-
-        // assert_eq!(graph.get_size(), 2);
+        assert_eq!(graph.node_idx_map.len(), 2);
+        assert_eq!(graph.edge_idx_map.len(), 1);
     }
 }
