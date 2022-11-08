@@ -12,7 +12,7 @@ export const getTimeSinceLastMessage = (node: INode): number => {
   const now = Date.now() / 1000; // sec
   const timeSinceLastMessage = Math.abs(now - lastHeard) / 60; // s to min
 
-  return timeSinceLastMessage;
+  return Math.floor(timeSinceLastMessage);
 };
 
 export const getNodeState = (

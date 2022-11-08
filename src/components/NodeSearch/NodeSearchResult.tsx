@@ -47,7 +47,7 @@ const NodeSearchResult = ({ node, isActive, selectNode }: INodeSearchResultProps
       <div className={`flex-grow ${colorClasses.text}`}>
         <p className="text-lg font-semibold">
           {node.data.user?.longName ?? node.data.num}
-          <span className="text-sm font-normal pl-2">??? min</span>
+          <span className="text-sm font-normal pl-2">{timeSinceLastMessage} min</span>
         </p>
         {/* <p>{Buffer.from(node.data.user?.macaddr ?? []).toString('hex')}</p> */}
         <p className="text-sm font-light">demo mac address</p>
