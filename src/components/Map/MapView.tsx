@@ -8,13 +8,30 @@ import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 
 import { selectActiveNode, selectAllNodes } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
+import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
+import type { ActiveSidebarPanel } from "@features/panels/panelsSlice";
 
 import "./MapView.css";
+
+interface _IMapViewLeftPanel {
+  activeSidebarPanel: ActiveSidebarPanel
+}
+
+const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
+  switch (activeSidebarPanel) {
+    case "map":
+      return <NodeSearchDock />;
+
+    default:
+      return <></>;
+  }
+}
 
 export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNode());
+  const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
 
   const updateActiveNode = (nodeId: number | null) => {
     dispatch(deviceSliceActions.setActiveNode(nodeId));
@@ -40,7 +57,7 @@ export const MapView = () => {
           />
         ))}
 
-        <NodeSearchDock />
+        <_MapViewLeftPanel activeSidebarPanel={activeSidebarPanel} />
       </Map>
     </div>
   );
