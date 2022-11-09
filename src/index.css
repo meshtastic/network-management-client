@@ -23,6 +23,7 @@ body {
 .default-overlay {
   @apply bg-white;
   @apply rounded-lg;
+  @apply border;
   @apply border-gray-100;
   @apply shadow-lg;
 }
