@@ -17,6 +17,18 @@ impl Edge {
     pub fn new(u: petgraph::graph::NodeIndex, v: petgraph::graph::NodeIndex, weight: f64) -> Edge {
         Edge { u, v, weight }
     }
+
+    pub fn get_u(&self) -> petgraph::graph::NodeIndex {
+        self.u
+    }
+
+    pub fn get_v(&self) -> petgraph::graph::NodeIndex {
+        self.v
+    }
+
+    pub fn get_weight(&self) -> f64 {
+        self.weight
+    }
 }
 
 /// Add clone trait to Edge

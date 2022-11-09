@@ -39,6 +39,17 @@ impl Graph {
         node_idx
     }
 
+    /// Does the same thing as add_node but accepts a node struct as input.
+    ///
+    /// # Arguments
+    ///
+    /// * `node` - Node struct.
+    pub fn add_node_from_struct(&mut self, node: Node) -> petgraph::graph::NodeIndex {
+        let node_idx = self.g.add_node(node.clone());
+        self.node_idx_map.insert(node.name.clone(), node_idx);
+        node_idx
+    }
+
     /// Removes node from the graph (and all edges connected to it). Does not return anything.
     ///
     /// # Arguments
@@ -95,6 +106,47 @@ impl Graph {
         let edge = Edge::new(u_idx.clone(), v_idx.clone(), weight);
 
         let edge_idx = self.g.add_edge(u_idx.clone(), v_idx.clone(), edge);
+
+        // Insert new edge into edge_idx_map which maps (u, v) to a list of edge indices
+        let edge_idx_list = self
+            .edge_idx_map
+            .entry((u_idx.clone(), v_idx.clone()))
+            .or_insert(Vec::new());
+
+        edge_idx_list.push(edge_idx);
+
+        // Insert new edge into edge_idx_map which maps (v, u) to a list of edge indices
+        let edge_idx_list = self
+            .edge_idx_map
+            .entry((v_idx.clone(), u_idx.clone()))
+            .or_insert(Vec::new());
+
+        edge_idx_list.push(edge_idx);
+
+        let updated_weight_u = node_u.optimal_weighted_degree + weight;
+        let updated_weight_v = node_v.optimal_weighted_degree + weight;
+
+        self.change_node_opt_weight(u_idx.clone(), updated_weight_u);
+        self.change_node_opt_weight(v_idx.clone(), updated_weight_v);
+    }
+
+    /// Does the same thing as add_edge but accepts edge struct as input.
+    ///
+    /// # Arguments
+    ///
+    /// * `edge` - Edge struct
+    pub fn add_edge_from_struct(&mut self, edge: Edge) {
+        let u_idx = edge.get_u().clone();
+        let v_idx = edge.get_v().clone();
+
+        let node_u = self.g.node_weight(u_idx).unwrap().clone();
+        let node_v = self.g.node_weight(v_idx).unwrap().clone();
+
+        let weight = edge.get_weight();
+
+        let edge_idx = self
+            .g
+            .add_edge(edge.get_u().clone(), edge.get_v().clone(), edge);
 
         // Insert new edge into edge_idx_map which maps (u, v) to a list of edge indices
         let edge_idx_list = self

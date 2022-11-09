@@ -22,22 +22,24 @@ pub fn edge_factory(
     distance_weight: Option<f64>,
     radio_s_quality_weight: Option<f64>,
 ) -> Vec<Edge> {
-    let distance_min = distance.iter().fold(f64::INFINITY, |acc, &x| acc.min(x));
-    let distance_max = distance
+    let mut scaled_distances: Vec<f64> = Vec::new();
+
+    for dist in distance {
+        let scaled_dist = scale_distance(dist);
+        scaled_distances.push(scaled_dist);
+    }
+
+    let distance_min = scaled_distances
+        .iter()
+        .fold(f64::INFINITY, |acc, &x| acc.min(x));
+    let distance_max = scaled_distances
         .iter()
         .fold(f64::NEG_INFINITY, |acc, &x| acc.max(x));
 
-    let mut scaled_rs_quality_vec: Vec<f64> = Vec::new();
-
-    for rs_q in radio_s_quality {
-        let scaled_rs_q = scale_rs_quality(rs_q);
-        scaled_rs_quality_vec.push(scaled_rs_q);
-    }
-
-    let scaled_radio_s_quality_min = scaled_rs_quality_vec
+    let radio_s_quality_min = radio_s_quality
         .iter()
         .fold(f64::INFINITY, |acc, &x| acc.min(x));
-    let scaled_radio_s_quality_max = scaled_rs_quality_vec
+    let radio_s_quality_max = radio_s_quality
         .iter()
         .fold(f64::NEG_INFINITY, |acc, &x| acc.max(x));
 
@@ -51,8 +53,8 @@ pub fn edge_factory(
     for i in 0..a.len() {
         let a = a[i].clone();
         let b = b[i].clone();
-        let distance = distance[i];
-        let radio_s_quality = scaled_rs_quality_vec[i];
+        let distance = scaled_distances[i];
+        let radio_s_quality = radio_s_quality[i];
 
         // normalize the values
         let weight = normalize_weight(
@@ -60,7 +62,7 @@ pub fn edge_factory(
             (distance_min, distance_max),
             distance_weight,
             radio_s_quality,
-            (scaled_radio_s_quality_min, scaled_radio_s_quality_max),
+            (radio_s_quality_min, radio_s_quality_max),
             radio_s_quality_weight,
         );
 
@@ -72,8 +74,8 @@ pub fn edge_factory(
     return edges;
 }
 
-pub fn scale_rs_quality(radio_s_quality: f64) -> f64 {
-    return 1.0 / (1.0 + radio_s_quality).ln();
+pub fn scale_distance(distance: f64) -> f64 {
+    return 1.0 / (1.0 + distance).ln();
 }
 
 pub fn normalize_weight(
@@ -84,10 +86,12 @@ pub fn normalize_weight(
     radio_s_quality_minmax: (f64, f64),
     radio_s_quality_weight: f64,
 ) -> f64 {
+    let e = f64::EPSILON;
+
     let distance_norm =
-        (distance - distance_minmax.0 + 0.001) / (distance_minmax.1 - distance_minmax.0);
-    let radio_s_quality_norm = (radio_s_quality - radio_s_quality_minmax.0 + 0.001)
-        / (radio_s_quality_minmax.1 - radio_s_quality_minmax.0);
+        (distance - distance_minmax.0 + e) / (distance_minmax.1 + e - distance_minmax.0);
+    let radio_s_quality_norm = (radio_s_quality - radio_s_quality_minmax.0 + e)
+        / (radio_s_quality_minmax.1 + e - radio_s_quality_minmax.0);
     let weight =
         (distance_weight * distance_norm) + (radio_s_quality_weight * radio_s_quality_norm);
     return weight;
