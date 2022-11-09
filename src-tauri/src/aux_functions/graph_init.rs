@@ -113,16 +113,19 @@ pub fn init_graph_node_if_nec(mut graph: Graph, user: User) -> Graph {
 
 /*
 * Calculates the distance between two points on a sphere
-* Wrapper function for an i32->f64 cast; easy to remove
-* TODO: may also necessitate 1e-7 conversion; see mesh.proto
+*
+* Conversion function:
+* Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
+* Altitude: in meters above sea level, no conversion needed
 */
 fn calculate_distance(x: i32, y: i32, z: i32, nbr_x: i32, nbr_y: i32, nbr_z: i32) -> f64 {
+    let conversion_factor = (10.0 as f64).powi(-7);
     return total_distance(
-        x as f64,
-        y as f64,
+        (x as f64) * conversion_factor,
+        (y as f64) * conversion_factor,
         z as f64,
-        nbr_x as f64,
-        nbr_y as f64,
+        (nbr_x as f64) * conversion_factor,
+        (nbr_y as f64) * conversion_factor,
         nbr_z as f64,
     );
 }
@@ -224,8 +227,8 @@ mod tests {
         };
 
         let nbr_position = Position {
-            latitude_i: 5,
-            longitude_i: 5,
+            latitude_i: 50000000,
+            longitude_i: 50000000,
             altitude: 5,
             time: 0,
             location_source: 0,
