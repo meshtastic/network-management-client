@@ -32,3 +32,6 @@ export const selectNodeById =
 
     return null;
   };
+
+export const selectActiveNode = () => (state: RootState) =>
+  state.devices.activeNode;

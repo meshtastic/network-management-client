@@ -14,6 +14,7 @@ import type {
   UserPacket,
   WaypointPacket,
 } from "@features/device/deviceConnectionHandlerSagas";
+import { selectNodeById } from "@features/device/deviceSelectors";
 
 export interface MessageWithAck extends Types.MessagePacket {
   ack: boolean;
@@ -60,6 +61,7 @@ export interface IDevice {
 
 export interface IDeviceState {
   devices: Record<number, IDevice>;
+  activeNode: INode["data"]["num"] | null;
 }
 
 export const initialDeviceState = {
@@ -312,6 +314,19 @@ export const deviceSlice = createSlice({
         ...currMessages,
         packet.text,
       ];
+    },
+    setActiveNode: (state, action: PayloadAction<number | null>) => {
+      const nodeId = action.payload;
+
+      if (!nodeId) {
+        state.activeNode = null;
+        return;
+      }
+
+      const foundNode = selectNodeById(nodeId);
+      if (!foundNode) return;
+
+      state.activeNode = nodeId;
     },
   },
 });

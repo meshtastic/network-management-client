@@ -1,15 +1,24 @@
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
 import { Map, NavigationControl, ScaleControl } from "react-map-gl";
+
 import MapNode from "@components/Map/MapNode";
+import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
+
+import { selectActiveNode, selectAllNodes } from "@features/device/deviceSelectors";
+import { deviceSliceActions } from "@features/device/deviceSlice";
 
 import "./MapView.css";
-import { useSelector } from "react-redux";
-import { selectAllNodes } from "@app/features/device/deviceSelectors";
-
 
 export const MapView = () => {
+  const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
+  const activeNodeId = useSelector(selectActiveNode());
+
+  const updateActiveNode = (nodeId: number | null) => {
+    dispatch(deviceSliceActions.setActiveNode(nodeId));
+  }
 
   return (
     <div className="relative w-full h-full">
@@ -21,7 +30,17 @@ export const MapView = () => {
         <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
         <NavigationControl position="bottom-right" showCompass={false} />
 
-        {nodes.map(node => (<MapNode key={node.data.num} node={node} isBase={false} />))}
+        {nodes.map(node => (
+          <MapNode
+            key={node.data.num}
+            onClick={updateActiveNode}
+            node={node}
+            isBase={false}
+            isActive={activeNodeId === node.data.num}
+          />
+        ))}
+
+        <NodeSearchDock />
       </Map>
     </div>
   );
