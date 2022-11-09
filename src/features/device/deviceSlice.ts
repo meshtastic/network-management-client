@@ -64,13 +64,14 @@ export interface IDeviceState {
   activeNode: INode["data"]["num"] | null;
 }
 
-export const initialDeviceState = {
+export const initialDeviceState: IDeviceState = {
   devices: {},
+  activeNode: null,
 };
 
 export const deviceSlice = createSlice({
   name: "devices",
-  initialState: initialDeviceState as IDeviceState,
+  initialState: initialDeviceState,
   reducers: {
     createDevice: (state, action: PayloadAction<number>) => {
       const deviceId = action.payload;
