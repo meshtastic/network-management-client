@@ -1,9 +1,6 @@
 use super::datatypes::{Neighbor, NeighborInfo, Point};
 use super::edge_factory::edge_factory;
 use super::take_snapshot::total_distance;
-use crate::algorithms::articulation_point::articulation_point;
-use crate::algorithms::globalmincut::karger_stein_gmincut;
-use crate::algorithms::stoer_wagner::stoer_wagner;
 use crate::aux_data_structures::cut::Cut;
 use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use crate::graph::edge::Edge;
@@ -11,37 +8,6 @@ use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
 use app::protobufs::{Position, User};
 use petgraph::graph::NodeIndex;
-
-#[tauri::command]
-pub fn run_articulation_point(data: Vec<NeighborInfo>) -> Vec<NodeIndex> {
-    let graph = load_graph(data);
-    let articulation_points = articulation_point(graph.clone());
-    articulation_points
-}
-
-#[tauri::command]
-pub fn run_global_mincut(data: Vec<NeighborInfo>) -> f64 {
-    let graph = load_graph(data);
-    let order = graph.get_order();
-    let global_min_cut = karger_stein_gmincut(&graph.clone(), order as i32);
-    global_min_cut
-}
-
-#[tauri::command]
-pub fn run_stoer_wagner(data: Vec<NeighborInfo>) -> Cut {
-    let graph = load_graph(data);
-    let graph_sw = &mut StoerWagnerGraph::new(graph.clone());
-    let stoer_wagner = stoer_wagner(&mut graph_sw.clone());
-    stoer_wagner
-}
-
-/*
-* Do postprocessing of the algorithm result and return it in the format the frontend expects.
-*/
-pub fn convert_node_vector_for_display(data: Vec<NodeIndex>) -> Option<Vec<Point>> {
-    //TODO:
-    None
-}
 
 /*
 * This function creates a graph from the input data.
@@ -76,7 +42,7 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
             let distance =
                 calculate_distance(node_x, node_y, node_z, neighbor_x, neighbor_y, neighbor_z);
             // radio quality calculation
-            let radio_quality = calculate_radio_quality();
+            let radio_quality = calculate_radio_quality(graph_node);
             // Store all the data for edge creation
             edge_left_endpoints.push(graph.get_node_idx(node_id.clone()));
             edge_right_endpoints.push(graph.get_node_idx(neighbor_id.clone()));
@@ -130,9 +96,8 @@ fn calculate_distance(x: i32, y: i32, z: i32, nbr_x: i32, nbr_y: i32, nbr_z: i32
     );
 }
 
-pub fn calculate_radio_quality() -> f64 {
-    //TODO:
-    return 1.0;
+pub fn calculate_radio_quality(node: NeighborInfo) -> f64 {
+    return 0.0;
 }
 
 #[cfg(test)]

@@ -1,6 +1,5 @@
 mod algorithms;
 mod aux_data_structures;
-mod aux_functions;
 mod graph;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 
@@ -23,7 +22,7 @@ fn main() {
         .manage(AsyncProcInputTx {
             inner: Mutex::new(async_proc_input_tx),
         })
-        .invoke_handler(tauri::generate_handler![js2rs])
+        .invoke_handler(tauri::generate_handler![js2rs, backend2front])
         .setup(|app| {
             tauri::async_runtime::spawn(async move {
                 async_process_model(async_proc_input_rx, async_proc_output_tx).await
@@ -74,3 +73,32 @@ async fn async_process_model(
 
     Ok(())
 }
+
+#[tauri::command]
+fn backend2front(data: String) -> String {
+    let new_data = data + " sent from the backend";
+    new_data
+}
+
+// #[tauri::command]
+// pub fn run_articulation_point(data: Vec<NeighborInfo>) -> Vec<NodeIndex> {
+//     let graph = load_graph(data);
+//     let articulation_points = articulation_point(graph.clone());
+//     articulation_points
+// }
+
+// #[tauri::command]
+// pub fn run_global_mincut(data: Vec<NeighborInfo>) -> f64 {
+//     let graph = load_graph(data);
+//     let order = graph.get_order();
+//     let global_min_cut = karger_stein_gmincut(&graph.clone(), order as i32);
+//     global_min_cut
+// }
+
+// #[tauri::command]
+// pub fn run_stoer_wagner(data: Vec<NeighborInfo>) -> Cut {
+//     let graph = load_graph(data);
+//     let graph_sw = &mut StoerWagnerGraph::new(graph.clone());
+//     let stoer_wagner = stoer_wagner(&mut graph_sw.clone());
+//     stoer_wagner
+// }

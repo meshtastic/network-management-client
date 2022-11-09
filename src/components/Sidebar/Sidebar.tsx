@@ -11,15 +11,15 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllDevices } from "@app/features/device/deviceSelectors";
 import { createDeviceAction } from "@features/device/deviceActions";
+import { invoke } from "@tauri-apps/api/tauri";
 
 export enum ActiveTab {
   MAP,
   CHAT,
   INFO,
   SETTINGS,
-  NONE
+  NONE,
 }
-
 
 const Sidebar = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.MAP);
@@ -28,11 +28,21 @@ const Sidebar = () => {
   const devices = useSelector(selectAllDevices());
 
   // Logging only, no necessary functionality
-  useEffect(() => { console.log(devices); }, [devices]);
+  useEffect(() => {
+    console.log(devices);
+  }, [devices]);
 
   const requestDeviceConnection = () => {
     const id = 1;
     dispatch(createDeviceAction(id));
+  };
+
+  const requestTestCommand = () => {
+    invoke("test_command", { message: "Here's the test string" })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(console.error);
   };
 
   return (
@@ -60,6 +70,11 @@ const Sidebar = () => {
           <SidebarIcon
             isActive={activeTab == ActiveTab.NONE}
             setTabActive={requestDeviceConnection}
+            renderIcon={() => <LinkIcon className="" />}
+          />
+          <SidebarIcon
+            isActive={activeTab == ActiveTab.NONE}
+            setTabActive={requestTestCommand}
             renderIcon={() => <LinkIcon className="" />}
           />
         </div>

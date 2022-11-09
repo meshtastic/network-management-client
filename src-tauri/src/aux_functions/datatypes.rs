@@ -1,4 +1,4 @@
-use app::protobufs::{Position, User};
+use app::protobufs::{DeviceMetrics, Position, User};
 
 /*
 * This is the info we're given for each node, which records (in
