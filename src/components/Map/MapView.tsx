@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
 import { Map, NavigationControl, ScaleControl } from "react-map-gl";
 
+import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 
@@ -41,6 +42,7 @@ export const MapView = () => {
         ))}
 
         <NodeSearchDock />
+        <MapInteractionPane />
       </Map>
     </div>
   );
