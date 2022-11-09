@@ -1,9 +1,11 @@
-use super::datatypes::{Neighbor, NeighborInfo, StoerWagnerGraph};
+use super::datatypes::{Neighbor, NeighborInfo, Point};
 use super::edge_factory::edge_factory;
 use super::take_snapshot::total_distance;
 use crate::algorithms::articulation_point::articulation_point;
 use crate::algorithms::globalmincut::karger_stein_gmincut;
 use crate::algorithms::stoer_wagner::stoer_wagner;
+use crate::aux_data_structures::cut::Cut;
+use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use crate::graph::edge::Edge;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
@@ -11,37 +13,34 @@ use app::protobufs::{Position, User};
 use petgraph::graph::NodeIndex;
 
 #[tauri::command]
-pub fn run_algorithm(data: Vec<NeighborInfo>, algorithm: u32) {
+pub fn run_articulation_point(data: Vec<NeighborInfo>) -> Vec<NodeIndex> {
     let graph = load_graph(data);
-    match algorithm {
-        // Articulation Point - takes a graph, returns a node vector
-        1 => {
-            let articulation_points = articulation_point(graph.clone());
-            let result = convert_data_for_display(articulation_points);
-            result
-        }
-        // Global Mincut - takes a graph and i32 order, returns a float
-        2 => {
-            let order = graph.get_order();
-            let global_min_cut = karger_stein_gmincut(&graph.clone(), order as i32);
-            let result = convert_data_for_display(global_min_cut);
-            result
-        }
-        // stoer wagner
-        3 => {
-            let graph_sw = &mut StoerWagnerGraph::new(graph.clone());
-            let stoer_wagner = stoer_wagner(graph_sw.clone());
-        }
-        // no default set
-        _ => return,
-    }
+    let articulation_points = articulation_point(graph.clone());
+    articulation_points
+}
+
+#[tauri::command]
+pub fn run_global_mincut(data: Vec<NeighborInfo>) -> f64 {
+    let graph = load_graph(data);
+    let order = graph.get_order();
+    let global_min_cut = karger_stein_gmincut(&graph.clone(), order as i32);
+    global_min_cut
+}
+
+#[tauri::command]
+pub fn run_stoer_wagner(data: Vec<NeighborInfo>) -> Cut {
+    let graph = load_graph(data);
+    let graph_sw = &mut StoerWagnerGraph::new(graph.clone());
+    let stoer_wagner = stoer_wagner(&mut graph_sw.clone());
+    stoer_wagner
 }
 
 /*
 * Do postprocessing of the algorithm result and return it in the format the frontend expects.
 */
-pub fn convert_data_for_display(data: Vec<NodeIndex>) {
+pub fn convert_node_vector_for_display(data: Vec<NodeIndex>) -> Option<Vec<Point>> {
     //TODO:
+    None
 }
 
 /*
