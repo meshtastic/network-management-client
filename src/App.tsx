@@ -2,7 +2,6 @@ import React from "react";
 import Sidebar from "./Components/Sidebar/Sidebar";
 import { MapView } from "./Components/Map/MapView";
 import { Route, Routes } from "react-router-dom";
-import Settings from "./Components/Settings/Settings";
 
 const App = () => {
   return (
@@ -10,7 +9,6 @@ const App = () => {
       <Sidebar />
       <div className="h-screen flex-1 bg-gray-100">
         <MapView />
-        <Settings />
       </div>
     </div>
   );

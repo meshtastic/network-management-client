@@ -4,7 +4,7 @@ import { Input } from "@material-tailwind/react";
 
 function Settings() {
   return (
-    <div className="Settings-popup bg-black bg-opacity-60">
+    <div className="Settings-popup bg-black bg-opacity-60 z-20">
       <div className="Settings-inner rounded-md drop-shadow z-40">
         <div className="Settings-text font-sans text-4xl">Settings </div>
         <div className="Option1">
