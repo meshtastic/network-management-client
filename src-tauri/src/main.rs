@@ -2,75 +2,62 @@ mod algorithms;
 mod aux_data_structures;
 mod aux_functions;
 mod graph;
+
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 
-use tauri::Manager;
-use tokio::sync::{mpsc, Mutex};
-use tracing::info;
+use std::{sync::Mutex, time::Duration};
+
+// use tokio::sync::mpsc;
+use serialport;
 use tracing_subscriber;
 
-struct AsyncProcInputTx {
-    inner: Mutex<mpsc::Sender<String>>,
+struct ActiveSerialPort {
+    inner: Mutex<Option<Box<dyn serialport::SerialPort>>>,
 }
 
 fn main() {
     tracing_subscriber::fmt::init();
 
-    let (async_proc_input_tx, async_proc_input_rx) = mpsc::channel(1); // Inputs to async process (from JS, to worker thread)
-    let (async_proc_output_tx, mut async_proc_output_rx) = mpsc::channel(1); // Outputs from async process (from worker thread, to JS)
+    // let (serial_port_input_tx, serial_port_input_rx) = mpsc::channel(32);
 
     tauri::Builder::default()
-        .manage(AsyncProcInputTx {
-            inner: Mutex::new(async_proc_input_tx),
+        .manage(ActiveSerialPort {
+            inner: Mutex::new(None),
         })
-        .invoke_handler(tauri::generate_handler![js2rs])
-        .setup(|app| {
-            tauri::async_runtime::spawn(async move {
-                async_process_model(async_proc_input_rx, async_proc_output_tx).await
-            });
-
-            let app_handle_echo = app.handle().clone();
-
-            tauri::async_runtime::spawn(async move {
-                loop {
-                    if let Some(output) = async_proc_output_rx.recv().await {
-                        rs2js(output, &app_handle_echo);
-                    }
-                }
-            });
-
-            Ok(())
-        })
+        .invoke_handler(tauri::generate_handler![
+            get_all_serial_ports,
+            connect_to_serial_port
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
 
-fn rs2js<R: tauri::Runtime>(message: String, manager: &impl Manager<R>) {
-    info!(?message, "rs2js");
-    manager
-        .emit_all("rs2js", format!("rs: {}", message))
-        .unwrap();
+#[tauri::command]
+fn get_all_serial_ports() -> Vec<String> {
+    let mut ports: Vec<String> = vec![];
+
+    for port in serialport::available_ports().expect("No ports found!") {
+        ports.push(port.port_name);
+    }
+
+    ports
 }
 
 #[tauri::command]
-async fn js2rs(message: String, state: tauri::State<'_, AsyncProcInputTx>) -> Result<(), String> {
-    info!(?message, "js2rs");
-    let async_proc_input_tx = state.inner.lock().await;
+fn connect_to_serial_port(port_name: String, state: tauri::State<'_, ActiveSerialPort>) -> bool {
+    let port = match serialport::new(port_name, 115_200)
+        .timeout(Duration::from_millis(200))
+        .open()
+    {
+        Ok(p) => p,
+        Err(_e) => return false,
+    };
 
-    async_proc_input_tx
-        .send(message)
-        .await
-        .map_err(|e| e.to_string())
-}
+    let mut state_port = match state.inner.lock() {
+        Ok(p) => p,
+        Err(_e) => return false,
+    };
 
-async fn async_process_model(
-    mut input_rx: mpsc::Receiver<String>,
-    output_tx: mpsc::Sender<String>,
-) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    while let Some(input) = input_rx.recv().await {
-        let output = input;
-        output_tx.send(output).await?;
-    }
-
-    Ok(())
+    *state_port = Some(port);
+    true
 }
