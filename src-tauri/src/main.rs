@@ -2,6 +2,12 @@ mod algorithms;
 mod aux_data_structures;
 mod graph;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
+mod aux_functions;
+use algorithms::articulation_point::articulation_point;
+use app::protobufs::{Position, User};
+use aux_functions::datatypes::NeighborInfo;
+use aux_functions::graph_init::load_graph;
+use petgraph::stable_graph::NodeIndex;
 
 use tauri::Manager;
 use tokio::sync::{mpsc, Mutex};
@@ -22,7 +28,7 @@ fn main() {
         .manage(AsyncProcInputTx {
             inner: Mutex::new(async_proc_input_tx),
         })
-        .invoke_handler(tauri::generate_handler![js2rs, backend2front])
+        .invoke_handler(tauri::generate_handler![js2rs, test_command])
         .setup(|app| {
             tauri::async_runtime::spawn(async move {
                 async_process_model(async_proc_input_rx, async_proc_output_tx).await
@@ -75,9 +81,23 @@ async fn async_process_model(
 }
 
 #[tauri::command]
-fn backend2front(data: String) -> String {
-    let new_data = data + " sent from the backend";
-    new_data
+fn test_command(user: User, position: Position) -> String {
+    let nbr_info = NeighborInfo {
+        user: user,
+        position: position,
+        num_neighbors: 0,
+        neighbors: Vec::new(),
+    };
+    let nbr_info_vec = vec![nbr_info];
+    let mut graph = load_graph(nbr_info_vec);
+    let articulation_points = articulation_point(graph.clone());
+    let mut output = String::new();
+    output.push_str("Output: ");
+    for pt in articulation_points {
+        let node = graph.g.node_weight(pt).unwrap();
+        output.push_str(&node.name);
+    }
+    output
 }
 
 // #[tauri::command]

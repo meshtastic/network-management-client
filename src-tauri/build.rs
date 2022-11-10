@@ -22,6 +22,7 @@ fn main() -> std::io::Result<()> {
         protos.push(path.to_owned());
     }
 
+    prost_build::include_serde();
     prost_build::compile_protos(&protos, &[protobufs_dir]).unwrap();
     tauri_build::build();
 

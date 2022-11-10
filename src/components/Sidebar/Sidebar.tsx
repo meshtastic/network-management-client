@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectAllDevices } from "@app/features/device/deviceSelectors";
 import { createDeviceAction } from "@features/device/deviceActions";
 import { invoke } from "@tauri-apps/api/tauri";
+import { selectAllNodes } from "@app/features/device/deviceSelectors";
+import type { INode } from "@features/device/deviceSlice";
 
 export enum ActiveTab {
   MAP,
@@ -26,6 +28,7 @@ const Sidebar = () => {
 
   const dispatch = useDispatch();
   const devices = useSelector(selectAllDevices());
+  const nodes = useSelector(selectAllNodes());
 
   // Logging only, no necessary functionality
   useEffect(() => {
@@ -38,7 +41,12 @@ const Sidebar = () => {
   };
 
   const requestTestCommand = () => {
-    invoke("test_command", { message: "Here's the test string" })
+    const node = nodes[0];
+    console.log("Requesting test command");
+    invoke("test_command", {
+      user: node.data.user,
+      position: node.data.position,
+    })
       .then((res) => {
         console.log(res);
       })
