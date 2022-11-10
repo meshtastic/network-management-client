@@ -10,8 +10,8 @@ const App = () => {
       <Sidebar />
       <div className="h-screen flex-1 bg-gray-100">
         <MapView />
+        <Settings />
       </div>
-      <Settings trigger={true} />
     </div>
   );
 };

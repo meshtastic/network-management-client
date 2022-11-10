@@ -1,33 +1,23 @@
 import React, { useState } from "react";
-import "./Settings.css";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
-function Settings(props) {
-  return props.trigger ? (
-    <div className="Settings-popup">
-      <div className="Settings-inner">
-        <div className="Settings-text font-sans text-5xl">Settings </div>
+function Settings() {
+  return (
+    <div className="Settings-popup bg-black bg-opacity-60">
+      <div className="Settings-inner rounded-md drop-shadow z-40">
+        <div className="Settings-text font-sans text-4xl">Settings </div>
         <div className="Option1">
-          <p className="Settings-text font-sans text-2xl"> Option1 </p>
-          <div className="flex w-full items-end gap-4 sm:w-80">
+          <p className="Settings-text font-sans text-2xl">Option1</p>
+          {/* <div className="flex w-full items-end gap-4 sm:w-80">
             <Input size="lg" />
-          </div>
+          </div> */}
         </div>
-        <div className="Option2">
-          <p className="Settings-text font-sans text-2xl"> Option2 </p>
-        </div>
-        <div className="Option3">
-          <p className="Settings-text font-sans text-2xl"> Option3 </p>
-        </div>
-        <button className="Close-button">
-          <XMarkIcon className="text-grey-500 h-6 w-6" />
+        <button className="Close-button ">
+          <XMarkIcon className="rounded-md hover:bg-gray-300 w-8 h-8" />
         </button>
-        {props.children}
       </div>
     </div>
-  ) : (
-    ""
   );
 }
 

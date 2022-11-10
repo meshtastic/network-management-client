@@ -29,7 +29,8 @@
     "react-map-gl": "^7.0.19",
     "react-redux": "^8.0.4",
     "react-router-dom": "^6.4.3",
-    "redux-saga": "^1.2.1"
+    "redux-saga": "^1.2.1",
+    "tileserver-gl-light": "^4.1.2"
   },
   "devDependencies": {
     "@meshtastic/eslint-config": "^1.0.8",
