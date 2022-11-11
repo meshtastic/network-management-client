@@ -14,6 +14,8 @@ import { createDeviceAction } from "@features/device/deviceActions";
 import { invoke } from "@tauri-apps/api/tauri";
 import { selectAllNodes } from "@app/features/device/deviceSelectors";
 import type { INode } from "@features/device/deviceSlice";
+import { getDemoData } from "./DemoData";
+import { Protobuf, Types } from "@meshtastic/meshtasticjs";
 
 export enum ActiveTab {
   MAP,
@@ -41,10 +43,11 @@ const Sidebar = () => {
   };
 
   const requestTestCommand = () => {
-    const node = nodes[0];
+    const nodeList: Protobuf.NodeInfo[] = getDemoData();
+    console.log(nodeList);
+    console.log("Sending test command...");
     invoke("test_command", {
-      user: node.data.user,
-      position: node.data.position,
+      nodes: nodeList,
     })
       .then((res) => {
         console.log(res);

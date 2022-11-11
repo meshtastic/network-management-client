@@ -4,10 +4,11 @@ mod graph;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 mod aux_functions;
 use algorithms::articulation_point::articulation_point;
-use app::protobufs::{Position, User};
-use aux_functions::datatypes::NeighborInfo;
+use app::protobufs::{NodeInfo, Position, User};
+use aux_functions::datatypes::{Neighbor, NeighborInfo};
 use aux_functions::graph_init::load_graph;
 use petgraph::stable_graph::NodeIndex;
+use prost_wkt_types::Struct;
 
 use tauri::Manager;
 use tokio::sync::{mpsc, Mutex};
@@ -81,23 +82,40 @@ async fn async_process_model(
 }
 
 #[tauri::command]
-fn test_command(user: User, position: Position) -> String {
-    let nbr_info = NeighborInfo {
-        user: user,
-        position: position,
-        num_neighbors: 0,
-        neighbors: Vec::new(),
-    };
-    let nbr_info_vec = vec![nbr_info];
-    let mut graph = load_graph(nbr_info_vec);
-    let articulation_points = articulation_point(graph.clone());
-    let mut output = String::new();
-    output.push_str("Output: ");
-    for pt in articulation_points {
-        let node = graph.g.node_weight(pt).unwrap();
-        output.push_str(&node.name);
-    }
-    output
+fn test_command(nodes: Vec<NodeInfo>) -> String {
+    // Assemble a vector of nodes and their neighbors
+    // println!("{:?}", nodes);
+    return "Hi from the backend".to_string();
+    // let mut nbr_info_vector = Vec::new();
+    // let mut length = nodes.len();
+    // for node in nodes.clone() {
+    //     let nbr_info = NeighborInfo {
+    //         user: node.user.unwrap(),
+    //         position: node.position.unwrap(),
+    //         snr: node.snr,
+    //         num_neighbors: length as u32,
+    //         neighbors: Vec::new(),
+    //     };
+    //     nbr_info_vector.push(nbr_info);
+    // }
+    // // Assume that all nodes have each other as neighbors; that is, that our graph is fully connected
+    // for mut nbr in nbr_info_vector.clone() {
+    //     for node_info in nodes.clone() {
+    //         nbr.neighbors.push(Neighbor {
+    //             user: node_info.user.unwrap(),
+    //             position: node_info.position.unwrap(),
+    //         });
+    //     }
+    // }
+    // let mut graph = load_graph(nbr_info_vector.clone());
+    // let articulation_points = articulation_point(graph.clone());
+    // let mut output = String::new();
+    // output.push_str("Output: ");
+    // for pt in articulation_points {
+    //     let node = graph.g.node_weight(pt).unwrap();
+    //     output.push_str(&node.name);
+    // }
+    // output
 }
 
 // #[tauri::command]

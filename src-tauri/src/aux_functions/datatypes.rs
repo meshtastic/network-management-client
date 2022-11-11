@@ -6,9 +6,11 @@ use app::protobufs::{DeviceMetrics, Position, User};
 *
 * We'll recieve N of these and use them to create a graph with N nodes.
 */
+#[derive(Clone)]
 pub struct NeighborInfo {
     pub user: User,
     pub position: Position,
+    pub snr: f32,
     pub num_neighbors: u32,
     pub neighbors: Vec<Neighbor>,
 }
@@ -20,6 +22,7 @@ impl AsRef<NeighborInfo> for NeighborInfo {
     }
 }
 
+#[derive(Clone)]
 pub struct Neighbor {
     pub user: User,
     pub position: Position,

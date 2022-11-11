@@ -6,7 +6,7 @@ use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use crate::graph::edge::Edge;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
-use app::protobufs::{Position, User};
+use app::protobufs::{NodeInfo, Position, User};
 use petgraph::graph::NodeIndex;
 
 /*
@@ -225,6 +225,7 @@ mod tests {
         let neighbor_info = NeighborInfo {
             user: coord_user,
             position: coord_position,
+            snr: 0.0,
             num_neighbors: 1,
             neighbors: vec![nbr_vec],
         };
