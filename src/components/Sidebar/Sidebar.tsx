@@ -42,7 +42,6 @@ const Sidebar = () => {
 
   const requestTestCommand = () => {
     const node = nodes[0];
-    console.log("Requesting test command");
     invoke("test_command", {
       user: node.data.user,
       position: node.data.position,
