@@ -8,7 +8,7 @@ use app::protobufs::{NodeInfo, Position, User};
 use aux_functions::datatypes::{Neighbor, NeighborInfo};
 use aux_functions::graph_init::load_graph;
 use petgraph::stable_graph::NodeIndex;
-use prost_wkt_types::Struct;
+// use prost_wkt_types::Struct;
 
 use tauri::Manager;
 use tokio::sync::{mpsc, Mutex};
@@ -82,9 +82,10 @@ async fn async_process_model(
 }
 
 #[tauri::command]
-fn test_command(nodes: Vec<NodeInfo>) -> String {
+fn test_command(nodes: User) -> String {
+    //HashMap<String, User>
     // Assemble a vector of nodes and their neighbors
-    // println!("{:?}", nodes);
+    println!("{:?}", nodes);
     return "Hi from the backend".to_string();
     // let mut nbr_info_vector = Vec::new();
     // let mut length = nodes.len();

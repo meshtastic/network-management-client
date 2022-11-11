@@ -1,12 +1,15 @@
 import type { INode } from "@features/device/deviceSlice";
 // import { EnvironmentMetrics } from "@meshtastic/meshtasticjs/dist/generated";
 export { getDemoData };
+import type { Protobuf } from "@meshtastic/meshtasticjs";
+import type { constants } from "fs/promises";
 
 /*
  * This file initializes three empty nodes, each at different locations in Hanover
  * with corresponding SNRs. Used for testing algorithm and demo flow only
  */
-function getDemoData() {
+function getDemoData(): Protobuf.NodeInfo[] {
+  //Protobuf.User[]
   const addr = new Uint8Array(6);
   const firstNode: INode = {
     data: {
@@ -133,6 +136,16 @@ function getDemoData() {
     deviceMetrics: [],
     environmentMetrics: [],
   };
+
+  const firstUser: Protobuf.User = firstNode.data.user
+    ? firstNode.data.user
+    : ({} as Protobuf.User);
+  const secondUser: Protobuf.User = secondNode.data.user
+    ? secondNode.data.user
+    : ({} as Protobuf.User);
+  const thirdUser: Protobuf.User = thirdNode.data.user
+    ? thirdNode.data.user
+    : ({} as Protobuf.User);
 
   return [firstNode.data, secondNode.data, thirdNode.data];
 }
