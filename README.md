@@ -18,6 +18,8 @@ This project requires the following programs to be installed to develop for this
 - [Node.js](https://nodejs.org/en/)
 - [PNPM Package Manager](https://pnpm.io/installation)
 
+Additionally, this project uses [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). This means you will need to run `git submodule update --init` after cloning the repository.
+
 ## Recommended IDE Setup
 
 We recommend the following Visual Studio Code extensions for developing on this codebase.
