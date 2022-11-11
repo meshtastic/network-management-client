@@ -13,6 +13,13 @@ pub struct NeighborInfo {
     pub neighbors: Vec<Neighbor>,
 }
 
+impl AsRef<NeighborInfo> for NeighborInfo {
+    fn as_ref(&self) -> &Self {
+        // Self is Struct<'a>, the type for which we impl AsRef
+        self
+    }
+}
+
 pub struct Neighbor {
     pub user: User,
     pub position: Position,

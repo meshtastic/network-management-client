@@ -29,8 +29,9 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
         let node_z = graph_node.position.altitude;
         graph = init_graph_node_if_nec(graph, node_user);
         // Add edge and distance info to the graph for each neighbor
-        for _ in 0..graph_node.num_neighbors {
-            let neighbor = graph_node.neighbors.pop().unwrap();
+        for neighbor in graph_node.neighbors {
+            // let mut_node = &mut graph_node;
+            // let neighbor = mut_node.neighbors.pop().unwrap();
             let neighbor_user = neighbor.user;
             let neighbor_id = &neighbor_user.id.clone();
             let neighbor_x = neighbor.position.latitude_i;
@@ -42,7 +43,7 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
             let distance =
                 calculate_distance(node_x, node_y, node_z, neighbor_x, neighbor_y, neighbor_z);
             // radio quality calculation
-            let radio_quality = calculate_radio_quality(graph_node);
+            let radio_quality = 0.0;
             // Store all the data for edge creation
             edge_left_endpoints.push(graph.get_node_idx(node_id.clone()));
             edge_right_endpoints.push(graph.get_node_idx(neighbor_id.clone()));
