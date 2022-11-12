@@ -14,8 +14,9 @@ import { createDeviceAction } from "@features/device/deviceActions";
 import { invoke } from "@tauri-apps/api/tauri";
 import { selectAllNodes } from "@app/features/device/deviceSelectors";
 import type { INode } from "@features/device/deviceSlice";
-import { getDemoData } from "./DemoData";
+import { generateDemoData, generateNeighborInfo } from "./DemoData";
 import type { Protobuf } from "@meshtastic/meshtasticjs/dist/";
+import type { NeighborInfo, Neighbor } from "./NeighborInfo";
 
 export enum ActiveTab {
   MAP,
@@ -43,20 +44,12 @@ const Sidebar = () => {
   };
 
   const requestTestCommand = () => {
-    const nodeList: Protobuf.NodeInfo[] = getDemoData();
-    console.log(nodeList);
-    console.log("Sending test command...");
-    const addr = new Uint8Array(6);
-    const usr = {
-      id: "node1",
-      long_name: "Node 1",
-      short_name: "N1",
-      macaddr: addr,
-      hw_model: 0,
-      is_licensed: false,
-    };
+    const nodeList: INode[] = generateDemoData();
+    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
+    console.log("Sending test command with neighbors...");
+    console.log(nbrInfoList);
     invoke("test_command", {
-      nodes: usr,
+      nodes: nbrInfoList[0].selfnode,
     })
       .then((res) => {
         console.log(res);

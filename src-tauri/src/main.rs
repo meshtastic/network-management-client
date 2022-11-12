@@ -5,8 +5,7 @@ mod graph;
 mod aux_functions;
 use algorithms::articulation_point::articulation_point;
 use app::protobufs::{NodeInfo, Position, User};
-use aux_functions::datatypes::{Neighbor, NeighborInfo};
-use aux_functions::graph_init::load_graph;
+use aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use petgraph::stable_graph::NodeIndex;
 // use prost_wkt_types::Struct;
 
@@ -82,8 +81,7 @@ async fn async_process_model(
 }
 
 #[tauri::command]
-fn test_command(nodes: User) -> String {
-    //HashMap<String, User>
+fn test_command(nodes: Neighbor) -> String {
     // Assemble a vector of nodes and their neighbors
     println!("{:?}", nodes);
     return "Hi from the backend".to_string();

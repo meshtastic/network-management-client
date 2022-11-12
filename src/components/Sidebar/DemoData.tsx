@@ -1,15 +1,12 @@
 import type { INode } from "@features/device/deviceSlice";
-// import { EnvironmentMetrics } from "@meshtastic/meshtasticjs/dist/generated";
-export { getDemoData };
-import type { Protobuf } from "@meshtastic/meshtasticjs";
-import type { constants } from "fs/promises";
+export { generateDemoData, generateNeighborInfo };
+import type { NeighborInfo, Neighbor } from "./NeighborInfo";
 
 /*
  * This file initializes three empty nodes, each at different locations in Hanover
  * with corresponding SNRs. Used for testing algorithm and demo flow only
  */
-function getDemoData(): Protobuf.NodeInfo[] {
-  //Protobuf.User[]
+function generateDemoData(): INode[] {
   const addr = new Uint8Array(6);
   const firstNode: INode = {
     data: {
@@ -137,15 +134,38 @@ function getDemoData(): Protobuf.NodeInfo[] {
     environmentMetrics: [],
   };
 
-  const firstUser: Protobuf.User = firstNode.data.user
-    ? firstNode.data.user
-    : ({} as Protobuf.User);
-  const secondUser: Protobuf.User = secondNode.data.user
-    ? secondNode.data.user
-    : ({} as Protobuf.User);
-  const thirdUser: Protobuf.User = thirdNode.data.user
-    ? thirdNode.data.user
-    : ({} as Protobuf.User);
+  return [firstNode, secondNode, thirdNode];
+}
 
-  return [firstNode.data, secondNode.data, thirdNode.data];
+/*
+ * Take the provided INodes and generate a NeighborInfo object
+ */
+function generateNeighborInfo(nodeList: INode[]): NeighborInfo[] {
+  const neighborInfo: NeighborInfo[] = [];
+  for (const node of nodeList) {
+    const latitude = node.data.position ? node.data.position.latitudeI : 0;
+    const longitude = node.data.position ? node.data.position.longitudeI : 0;
+    const nbr: Neighbor = {
+      id: node.data.num,
+      snr: node.data.snr,
+      lat: latitude,
+      lon: longitude,
+    };
+    const nbrInfo: NeighborInfo = {
+      selfnode: nbr,
+      neighbors: [],
+    };
+    neighborInfo.push(nbrInfo);
+  }
+
+  /*
+   * Make the demo assumption that the graph is fully connected.
+   */
+  for (const emptyNbrInfo of neighborInfo) {
+    for (const nodeRegistered of neighborInfo) {
+      emptyNbrInfo.neighbors.push(nodeRegistered.selfnode);
+    }
+  }
+
+  return neighborInfo;
 }

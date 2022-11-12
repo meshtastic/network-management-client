@@ -16,7 +16,7 @@ prost-build = "0.11.1"
 protoc-bin-vendored = "3.0.0"
 tauri-build = { version = "1.1.1", features = [] }
 walkdir = "2.3.2"
-prost-wkt-build = "0.3"
+# prost-wkt-build = "0.3"
 
 [dependencies]
 rand = "0.8.5"
@@ -31,8 +31,8 @@ tracing-subscriber = "0.3.16"
 serialport = "4.2.0"
 prost = "0.11.0"
 bytes = "1.2.1"
-prost-wkt = "0.3"
-prost-wkt-types = "0.3"
+# prost-wkt = "0.3"
+# prost-wkt-types = "0.3"
 
 [features]
 # by default Tauri runs in production mode
