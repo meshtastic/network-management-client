@@ -145,11 +145,13 @@ function generateNeighborInfo(nodeList: INode[]): NeighborInfo[] {
   for (const node of nodeList) {
     const latitude = node.data.position ? node.data.position.latitudeI : 0;
     const longitude = node.data.position ? node.data.position.longitudeI : 0;
+    const altitude = node.data.position ? node.data.position.altitude : 0;
     const nbr: Neighbor = {
       id: node.data.num,
       snr: node.data.snr,
       lat: latitude,
       lon: longitude,
+      alt: altitude,
     };
     const nbrInfo: NeighborInfo = {
       selfnode: nbr,

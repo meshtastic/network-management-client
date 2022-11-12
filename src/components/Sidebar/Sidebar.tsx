@@ -49,7 +49,7 @@ const Sidebar = () => {
     console.log("Sending test command with neighbors...");
     console.log(nbrInfoList);
     invoke("test_command", {
-      nodes: nbrInfoList[0].selfnode,
+      nodes: nbrInfoList,
     })
       .then((res) => {
         console.log(res);

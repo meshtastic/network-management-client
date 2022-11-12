@@ -6,8 +6,8 @@ mod aux_functions;
 use algorithms::articulation_point::articulation_point;
 use app::protobufs::{NodeInfo, Position, User};
 use aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use aux_functions::graph_init::load_graph;
 use petgraph::stable_graph::NodeIndex;
-// use prost_wkt_types::Struct;
 
 use tauri::Manager;
 use tokio::sync::{mpsc, Mutex};
@@ -81,10 +81,19 @@ async fn async_process_model(
 }
 
 #[tauri::command]
-fn test_command(nodes: Neighbor) -> String {
+fn test_command(nodes: Vec<NeighborInfo>) -> String {
     // Assemble a vector of nodes and their neighbors
     println!("{:?}", nodes);
-    return "Hi from the backend".to_string();
+    let mut graph = load_graph(nodes.clone());
+    let articulation_points = articulation_point(graph.clone());
+    let mut output = String::new();
+    output.push_str("Output: ");
+    for pt in articulation_points {
+        println!("Articulation point: {:?}", pt);
+        output.push_str(&graph.g.node_weight(pt).unwrap().name);
+    }
+    output
+
     // let mut nbr_info_vector = Vec::new();
     // let mut length = nodes.len();
     // for node in nodes.clone() {
