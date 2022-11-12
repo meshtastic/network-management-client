@@ -8,7 +8,7 @@ use petgraph::graph::NodeIndex;
 /*
 * This function creates a graph from the input data.
 */
-pub fn init_graph(data: Vec<NeighborInfo>) -> Graph {
+pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
     // Our edges will contain repeated nodes, so we need to keep of them separately
     let mut graph = Graph::new();
     let mut edge_left_endpoints = Vec::<NodeIndex>::new();
@@ -29,7 +29,7 @@ pub fn init_graph(data: Vec<NeighborInfo>) -> Graph {
                 graph.add_node(neighbor_name.clone());
             }
             let mut nbr_idx = graph.get_node_idx(neighbor_name.clone());
-            let distance = total_distance(
+            let distance = calculate_converted_distance(
                 nbr_info.selfnode.lat,
                 nbr_info.selfnode.lon,
                 nbr_info.selfnode.alt,
@@ -58,6 +58,25 @@ pub fn init_graph(data: Vec<NeighborInfo>) -> Graph {
         graph.add_edge_from_struct(edge);
     }
     graph
+}
+
+/*
+* Calculates the distance between two points on a sphere
+*
+* Conversion function:
+* Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
+* Altitude: in meters above sea level, no conversion needed
+*/
+fn calculate_converted_distance(x: f64, y: f64, z: f64, nbr_x: f64, nbr_y: f64, nbr_z: f64) -> f64 {
+    let conversion_factor = (10.0 as f64).powi(-7);
+    return total_distance(
+        (x as f64) * conversion_factor,
+        (y as f64) * conversion_factor,
+        z as f64,
+        (nbr_x as f64) * conversion_factor,
+        (nbr_y as f64) * conversion_factor,
+        nbr_z as f64,
+    );
 }
 
 // pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
@@ -113,29 +132,6 @@ pub fn init_graph(data: Vec<NeighborInfo>) -> Graph {
 //         graph.add_edge_from_struct(edge);
 //     }
 //     graph
-// }
-
-// /*
-// * Calculates the distance between two points on a sphere
-// *
-// * Conversion function:
-// * Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
-// * Altitude: in meters above sea level, no conversion needed
-// */
-// fn calculate_distance(x: i32, y: i32, z: i32, nbr_x: i32, nbr_y: i32, nbr_z: i32) -> f64 {
-//     let conversion_factor = (10.0 as f64).powi(-7);
-//     return total_distance(
-//         (x as f64) * conversion_factor,
-//         (y as f64) * conversion_factor,
-//         z as f64,
-//         (nbr_x as f64) * conversion_factor,
-//         (nbr_y as f64) * conversion_factor,
-//         nbr_z as f64,
-//     );
-// }
-
-// pub fn calculate_radio_quality(node: NeighborInfo) -> f64 {
-//     return 0.0;
 // }
 
 // #[cfg(test)]
