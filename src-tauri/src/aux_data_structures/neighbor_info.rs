@@ -6,16 +6,16 @@ use serde::{Deserialize, Serialize};
 * We'll recieve N of these and use them to create a graph with N nodes.
 */
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Neighbor {
     pub id: u32,
-    pub snr: u32,
+    pub snr: f64,
     pub lat: f64,
     pub lon: f64,
     pub alt: f64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct NeighborInfo {
     pub selfnode: Neighbor,
     pub neighbors: Vec<Neighbor>,
