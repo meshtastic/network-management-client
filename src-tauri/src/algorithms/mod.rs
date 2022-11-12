@@ -1,3 +1,3 @@
 pub mod articulation_point;
-mod globalmincut;
-mod stoer_wagner;
+pub mod globalmincut;
+pub mod stoer_wagner;

@@ -4,9 +4,12 @@ mod graph;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 mod aux_functions;
 use algorithms::articulation_point::articulation_point;
-use app::protobufs::{NodeInfo, Position, User};
+use algorithms::globalmincut::karger_stein_gmincut;
+use algorithms::stoer_wagner::stoer_wagner;
 use aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use aux_functions::graph_init::load_graph;
+use petgraph::graphmap::Nodes;
 use petgraph::stable_graph::NodeIndex;
 
 use tauri::Manager;
@@ -28,7 +31,12 @@ fn main() {
         .manage(AsyncProcInputTx {
             inner: Mutex::new(async_proc_input_tx),
         })
-        .invoke_handler(tauri::generate_handler![js2rs, test_command])
+        .invoke_handler(tauri::generate_handler![
+            js2rs,
+            run_articulation_point,
+            run_global_mincut,
+            run_stoer_wagner
+        ])
         .setup(|app| {
             tauri::async_runtime::spawn(async move {
                 async_process_model(async_proc_input_rx, async_proc_output_tx).await
@@ -81,7 +89,7 @@ async fn async_process_model(
 }
 
 #[tauri::command]
-fn test_command(nodes: Vec<NeighborInfo>) -> String {
+fn run_articulation_point(nodes: Vec<NeighborInfo>) -> String {
     // Assemble a vector of nodes and their neighbors
     println!("{:?}", nodes);
     let mut graph = load_graph(nodes.clone());
@@ -93,58 +101,28 @@ fn test_command(nodes: Vec<NeighborInfo>) -> String {
         output.push_str(&graph.g.node_weight(pt).unwrap().name);
     }
     output
-
-    // let mut nbr_info_vector = Vec::new();
-    // let mut length = nodes.len();
-    // for node in nodes.clone() {
-    //     let nbr_info = NeighborInfo {
-    //         user: node.user.unwrap(),
-    //         position: node.position.unwrap(),
-    //         snr: node.snr,
-    //         num_neighbors: length as u32,
-    //         neighbors: Vec::new(),
-    //     };
-    //     nbr_info_vector.push(nbr_info);
-    // }
-    // // Assume that all nodes have each other as neighbors; that is, that our graph is fully connected
-    // for mut nbr in nbr_info_vector.clone() {
-    //     for node_info in nodes.clone() {
-    //         nbr.neighbors.push(Neighbor {
-    //             user: node_info.user.unwrap(),
-    //             position: node_info.position.unwrap(),
-    //         });
-    //     }
-    // }
-    // let mut graph = load_graph(nbr_info_vector.clone());
-    // let articulation_points = articulation_point(graph.clone());
-    // let mut output = String::new();
-    // output.push_str("Output: ");
-    // for pt in articulation_points {
-    //     let node = graph.g.node_weight(pt).unwrap();
-    //     output.push_str(&node.name);
-    // }
-    // output
 }
 
-// #[tauri::command]
-// pub fn run_articulation_point(data: Vec<NeighborInfo>) -> Vec<NodeIndex> {
-//     let graph = load_graph(data);
-//     let articulation_points = articulation_point(graph.clone());
-//     articulation_points
-// }
+#[tauri::command]
+fn run_global_mincut(nodes: Vec<NeighborInfo>) -> f64 {
+    let graph = load_graph(nodes.clone());
+    println!("Hit global mincut");
+    let order = graph.get_order();
+    let global_min_cut = karger_stein_gmincut(&graph.clone(), order as i32);
+    global_min_cut
+}
 
-// #[tauri::command]
-// pub fn run_global_mincut(data: Vec<NeighborInfo>) -> f64 {
-//     let graph = load_graph(data);
-//     let order = graph.get_order();
-//     let global_min_cut = karger_stein_gmincut(&graph.clone(), order as i32);
-//     global_min_cut
-// }
-
-// #[tauri::command]
-// pub fn run_stoer_wagner(data: Vec<NeighborInfo>) -> Cut {
-//     let graph = load_graph(data);
-//     let graph_sw = &mut StoerWagnerGraph::new(graph.clone());
-//     let stoer_wagner = stoer_wagner(&mut graph_sw.clone());
-//     stoer_wagner
-// }
+#[tauri::command]
+fn run_stoer_wagner(nodes: Vec<NeighborInfo>) -> String {
+    let graph = load_graph(nodes.clone());
+    println!("Hit Stoer-Wagner");
+    let graph_sw = &mut StoerWagnerGraph::new(graph.clone());
+    let stoer_wagner = stoer_wagner(&mut graph_sw.clone());
+    let output = format!(
+        "Stoer-Wagner: {} {} {}",
+        stoer_wagner.get_a(),
+        stoer_wagner.get_b(),
+        stoer_wagner.get_weight()
+    );
+    output
+}

@@ -43,12 +43,38 @@ const Sidebar = () => {
     dispatch(createDeviceAction(id));
   };
 
-  const requestTestCommand = () => {
+  const requestArticulationPoint = () => {
     const nodeList: INode[] = generateDemoData();
     const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
     console.log("Sending test command with neighbors...");
     console.log(nbrInfoList);
-    invoke("test_command", {
+    invoke("run_articulation_point", {
+      nodes: nbrInfoList,
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(console.error);
+  };
+  const requestGlobalMincut = () => {
+    const nodeList: INode[] = generateDemoData();
+    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
+    console.log("Sending test command with neighbors...");
+    console.log(nbrInfoList);
+    invoke("run_global_mincut", {
+      nodes: nbrInfoList,
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch(console.error);
+  };
+  const requestStoerWagner = () => {
+    const nodeList: INode[] = generateDemoData();
+    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
+    console.log("Sending test command with neighbors...");
+    console.log(nbrInfoList);
+    invoke("run_stoer_wagner", {
       nodes: nbrInfoList,
     })
       .then((res) => {
@@ -86,7 +112,17 @@ const Sidebar = () => {
           />
           <SidebarIcon
             isActive={activeTab == ActiveTab.NONE}
-            setTabActive={requestTestCommand}
+            setTabActive={requestArticulationPoint}
+            renderIcon={() => <LinkIcon className="" />}
+          />
+          <SidebarIcon
+            isActive={activeTab == ActiveTab.NONE}
+            setTabActive={requestGlobalMincut}
+            renderIcon={() => <LinkIcon className="" />}
+          />
+          <SidebarIcon
+            isActive={activeTab == ActiveTab.NONE}
+            setTabActive={requestStoerWagner}
             renderIcon={() => <LinkIcon className="" />}
           />
         </div>
