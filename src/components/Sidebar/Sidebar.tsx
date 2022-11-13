@@ -13,34 +13,23 @@ import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
 import { selectAllDevices } from "@app/features/device/deviceSelectors";
 import { createDeviceAction } from "@features/device/deviceActions";
-<<<<<<< HEAD
 import { invoke } from "@tauri-apps/api/tauri";
 import { selectAllNodes } from "@app/features/device/deviceSelectors";
 import type { INode } from "@features/device/deviceSlice";
 import { generateDemoData, generateNeighborInfo } from "./DemoData";
 import type { Protobuf } from "@meshtastic/meshtasticjs/dist/";
 import type { NeighborInfo, Neighbor } from "./NeighborInfo";
-
-export enum ActiveTab {
-  MAP,
-  CHAT,
-  INFO,
-  SETTINGS,
-  NONE,
-}
-=======
 import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
-import { ActiveSidebarPanel, panelsSliceActions } from "@features/panels/panelsSlice";
->>>>>>> ccf25781fa804b8efc365ddcc62f9871aca24f7f
+import {
+  ActiveSidebarPanel,
+  panelsSliceActions,
+} from "@features/panels/panelsSlice";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const devices = useSelector(selectAllDevices());
-<<<<<<< HEAD
   const nodes = useSelector(selectAllNodes());
-=======
   const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
->>>>>>> ccf25781fa804b8efc365ddcc62f9871aca24f7f
 
   // Logging only, no necessary functionality
   useEffect(() => {
@@ -52,7 +41,6 @@ const Sidebar = () => {
     dispatch(createDeviceAction(id));
   };
 
-<<<<<<< HEAD
   const requestArticulationPoint = () => {
     const nodeList: INode[] = generateDemoData();
     const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
@@ -92,11 +80,9 @@ const Sidebar = () => {
       })
       .catch(console.error);
   };
-=======
   const setActivePane = (panel: ActiveSidebarPanel) => {
     dispatch(panelsSliceActions.setActiveSidebarPanel(panel));
-  }
->>>>>>> ccf25781fa804b8efc365ddcc62f9871aca24f7f
+  };
 
   return (
     <div className="h-screen flex flex-col justify-between shadow-lg">
@@ -126,18 +112,18 @@ const Sidebar = () => {
             renderIcon={() => <LinkIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeTab == ActiveTab.NONE}
-            setTabActive={requestArticulationPoint}
+            isActive={activeSidebarPanel == "info"}
+            onClick={requestArticulationPoint}
             renderIcon={() => <LinkIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeTab == ActiveTab.NONE}
-            setTabActive={requestGlobalMincut}
+            isActive={activeSidebarPanel == "info"}
+            onClick={requestGlobalMincut}
             renderIcon={() => <LinkIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeTab == ActiveTab.NONE}
-            setTabActive={requestStoerWagner}
+            isActive={activeSidebarPanel == "info"}
+            onClick={requestStoerWagner}
             renderIcon={() => <LinkIcon className="" />}
           />
         </div>
