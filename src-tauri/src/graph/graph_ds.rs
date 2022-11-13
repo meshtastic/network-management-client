@@ -392,7 +392,7 @@ impl Graph {
             let weight = self
                 .g
                 .edge_weight(edge_idx_list.clone()[parallel_edge_idx.unwrap_or(0)])
-                .unwrap()
+                .unwrap_or(&Edge::new(u_idx.clone(), v_idx.clone(), 0.0))
                 .weight;
 
             let node_u = self.g.node_weight(u_idx.clone()).unwrap();
