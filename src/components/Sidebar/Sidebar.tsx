@@ -42,8 +42,7 @@ const Sidebar = () => {
   };
 
   const requestArticulationPoint = () => {
-    const nodeList: INode[] = generateDemoData();
-    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
+    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
     console.log("Sending test command with neighbors...");
     console.log(nbrInfoList);
     invoke("run_articulation_point", {
