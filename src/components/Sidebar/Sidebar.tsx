@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
-import SidebarIcon from "@components/Sidebar/SidebarIcon";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import {
   ChatBubbleBottomCenterTextIcon,
   MagnifyingGlassIcon,
@@ -8,9 +8,12 @@ import {
   Cog8ToothIcon,
   LinkIcon,
 } from "@heroicons/react/24/outline";
-import { useDispatch, useSelector } from "react-redux";
+import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
+
+import SidebarIcon from "@components/Sidebar/SidebarIcon";
 import { selectAllDevices } from "@app/features/device/deviceSelectors";
 import { createDeviceAction } from "@features/device/deviceActions";
+<<<<<<< HEAD
 import { invoke } from "@tauri-apps/api/tauri";
 import { selectAllNodes } from "@app/features/device/deviceSelectors";
 import type { INode } from "@features/device/deviceSlice";
@@ -25,13 +28,19 @@ export enum ActiveTab {
   SETTINGS,
   NONE,
 }
+=======
+import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
+import { ActiveSidebarPanel, panelsSliceActions } from "@features/panels/panelsSlice";
+>>>>>>> ccf25781fa804b8efc365ddcc62f9871aca24f7f
 
 const Sidebar = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>(ActiveTab.MAP);
-
   const dispatch = useDispatch();
   const devices = useSelector(selectAllDevices());
+<<<<<<< HEAD
   const nodes = useSelector(selectAllNodes());
+=======
+  const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
+>>>>>>> ccf25781fa804b8efc365ddcc62f9871aca24f7f
 
   // Logging only, no necessary functionality
   useEffect(() => {
@@ -43,6 +52,7 @@ const Sidebar = () => {
     dispatch(createDeviceAction(id));
   };
 
+<<<<<<< HEAD
   const requestArticulationPoint = () => {
     const nodeList: INode[] = generateDemoData();
     const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
@@ -82,6 +92,11 @@ const Sidebar = () => {
       })
       .catch(console.error);
   };
+=======
+  const setActivePane = (panel: ActiveSidebarPanel) => {
+    dispatch(panelsSliceActions.setActiveSidebarPanel(panel));
+  }
+>>>>>>> ccf25781fa804b8efc365ddcc62f9871aca24f7f
 
   return (
     <div className="h-screen flex flex-col justify-between shadow-lg">
@@ -91,23 +106,23 @@ const Sidebar = () => {
         </div>
         <div className="flex flex-col">
           <SidebarIcon
-            isActive={activeTab == ActiveTab.MAP}
-            setTabActive={() => setActiveTab(ActiveTab.MAP)}
+            isActive={activeSidebarPanel === "map"}
+            onClick={() => setActivePane("map")}
             renderIcon={() => <MagnifyingGlassIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeTab == ActiveTab.CHAT}
-            setTabActive={() => setActiveTab(ActiveTab.CHAT)}
+            isActive={activeSidebarPanel == "chat"}
+            onClick={() => setActivePane("chat")}
             renderIcon={() => <ChatBubbleBottomCenterTextIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeTab == ActiveTab.INFO}
-            setTabActive={() => setActiveTab(ActiveTab.INFO)}
+            isActive={activeSidebarPanel == "info"}
+            onClick={() => setActivePane("info")}
             renderIcon={() => <DocumentTextIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeTab == ActiveTab.NONE}
-            setTabActive={requestDeviceConnection}
+            isActive={activeSidebarPanel == "none"}
+            onClick={requestDeviceConnection}
             renderIcon={() => <LinkIcon className="" />}
           />
           <SidebarIcon
@@ -128,8 +143,8 @@ const Sidebar = () => {
         </div>
       </div>
       <SidebarIcon
-        isActive={activeTab == ActiveTab.SETTINGS}
-        setTabActive={() => setActiveTab(ActiveTab.SETTINGS)}
+        isActive={activeSidebarPanel == "settings"}
+        onClick={() => setActivePane("settings")}
         renderIcon={() => <Cog8ToothIcon className="" />}
       />
     </div>

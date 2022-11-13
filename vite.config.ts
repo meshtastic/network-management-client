@@ -29,6 +29,7 @@ export default defineConfig({
       "@components": resolve(__dirname, "./src/components"),
       "@features": resolve(__dirname, "./src/features"),
       "@store": resolve(__dirname, "./src/store"),
+      "@utils": resolve(__dirname, "./src/utils"),
     },
   },
 });

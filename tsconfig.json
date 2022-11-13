@@ -21,7 +21,8 @@
       "@app/*": ["./src/*"],
       "@components/*": ["src/components/*"],
       "@features/*": ["./src/features/*"],
-      "@store/*": ["./src/store/*"]
+      "@store/*": ["./src/store/*"],
+      "@utils/*": ["./src/utils/*"]
     },
     "importHelpers": true,
     "removeComments": true,
