@@ -45,7 +45,8 @@ const MapNode = ({
   useEffect(() => {
     const intervalId = setInterval(reloadTimeSinceLastMessage, 1000);
     return () => clearInterval(intervalId);
-  }, [reloadTimeSinceLastMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Marker
