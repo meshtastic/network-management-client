@@ -24,11 +24,10 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
         }
         bheap.build_heap();
     }
-
-    let weight = a[a.len() - 1].weight;
     if a.len() < 2 {
         return None;
     }
+    let weight = a[a.len() - 1].weight;
 
     let s = a[a.len() - 1].node.name.clone();
     let t = a[a.len() - 2].node.name.clone();
