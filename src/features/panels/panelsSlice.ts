@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type ActiveSidebarPanel = "map" | "chat" | "info" | "settings" | "none";
+export type ActiveSidebarPanel =
+  | "map"
+  | "chat"
+  | "info"
+  | "settings"
+  | "algo"
+  | "none";
 
 export interface IPanelsSliceState {
   activeSidebarPanel: ActiveSidebarPanel;
