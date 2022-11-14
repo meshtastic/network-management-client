@@ -153,6 +153,5 @@ mod tests {
 
         let expected = "3\nO: u 0\nO: v 1\nO: w 2\nE: u v 1\nE: u w 1\nE: v w 35";
         assert_eq!(snapshot, expected);
-        println!("{}", snapshot);
     }
 }
