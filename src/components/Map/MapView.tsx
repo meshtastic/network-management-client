@@ -27,6 +27,12 @@ const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
     case "map":
       return <NodeSearchDock />;
 
+<<<<<<< HEAD
+    case "settings":
+      return <Settings />;
+
+=======
+>>>>>>> parent of b4ed4c8 (Scrollbar package)
     default:
       return <></>;
   }
