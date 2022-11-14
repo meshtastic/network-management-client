@@ -1,7 +1,6 @@
 import React from "react";
-import Sidebar from "./Components/Sidebar/Sidebar";
-import { MapView } from "./Components/Map/MapView";
-import { Route, Routes } from "react-router-dom";
+import Sidebar from "@components/Sidebar/Sidebar";
+import { MapView } from "@components/Map/MapView";
 
 const App = () => {
   return (
