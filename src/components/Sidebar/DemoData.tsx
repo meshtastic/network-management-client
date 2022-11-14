@@ -134,7 +134,49 @@ function generateDemoData(): INode[] {
     environmentMetrics: [],
   };
 
-  return [firstNode, secondNode, thirdNode];
+  const fourthNode: INode = {
+    data: {
+      num: 1439175496,
+      snr: 0,
+      lastHeard: 0,
+      user: {
+        id: "node3",
+        longName: "Node 3",
+        shortName: "N3",
+        macaddr: addr,
+        hwModel: 0,
+        isLicensed: false,
+      },
+      position: {
+        latitudeI: 437030003,
+        longitudeI: -722890003,
+        altitude: 0,
+        time: 0,
+        locationSource: 0,
+        altitudeSource: 0,
+        timestamp: 0,
+        timestampMillisAdjust: 0,
+        altitudeHae: 0,
+        altitudeGeoidalSeparation: 0,
+        pDOP: 0,
+        hDOP: 0,
+        vDOP: 0,
+        gpsAccuracy: 0,
+        groundSpeed: 0,
+        groundTrack: 0,
+        fixQuality: 0,
+        fixType: 0,
+        satsInView: 0,
+        sensorId: 0,
+        nextUpdate: 0,
+        seqNumber: 0,
+      },
+    },
+    deviceMetrics: [],
+    environmentMetrics: [],
+  };
+
+  return [firstNode, secondNode, thirdNode, fourthNode];
 }
 
 /*
