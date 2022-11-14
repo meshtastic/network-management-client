@@ -24,11 +24,10 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
         }
         bheap.build_heap();
     }
-
-    let weight = a[a.len() - 1].weight;
     if a.len() < 2 {
         return None;
     }
+    let weight = a[a.len() - 1].weight;
 
     let s = a[a.len() - 1].node.name.clone();
     let t = a[a.len() - 2].node.name.clone();
@@ -36,17 +35,31 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
     return Some(Cut::new(weight, s, t));
 }
 
-pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Cut {
+pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Option<Cut> {
     if graph.uncontracted.len() == 2 {
-        return graph.get_cut();
+        return Some(graph.get_cut());
     } else {
-        let cut = st_mincut(graph).unwrap();
-        graph.contract_edge(cut.get_a().to_string(), cut.get_b().to_string());
-        let other_cut = stoer_wagner(graph);
-        if cut.get_weight() < other_cut.get_weight() {
-            return cut;
-        } else {
-            return other_cut;
+        let mut min_cut = st_mincut(graph);
+        match min_cut {
+            Some(cut) => {
+                graph.contract_edge(cut.get_a().to_string(), cut.get_b().to_string());
+                let new_cut = stoer_wagner(graph);
+                match new_cut {
+                    Some(new_cut) => {
+                        if new_cut.get_weight() < cut.get_weight() {
+                            return Some(new_cut);
+                        } else {
+                            return Some(cut);
+                        }
+                    }
+                    None => {
+                        return Some(cut);
+                    }
+                }
+            }
+            None => {
+                return None;
+            }
         }
     }
 }
@@ -130,8 +143,13 @@ mod tests {
         for _ in 0..100 {
             let graph_sw = &mut StoerWagnerGraph::new(g.clone());
             let mincut = stoer_wagner(graph_sw);
-            if mincut.get_weight() == 1.0 {
-                correct_mincut_weight_count += 1;
+            match mincut {
+                Some(cut) => {
+                    if cut.get_weight() == 1.0 {
+                        correct_mincut_weight_count += 1;
+                    }
+                }
+                None => {}
             }
         }
 

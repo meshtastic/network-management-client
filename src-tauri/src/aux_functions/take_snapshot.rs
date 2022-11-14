@@ -31,7 +31,7 @@ fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
 /// * `lat2` - latitude of node 2
 /// * `lon2` - longitude of node 2
 /// * `alt2` - altitude of node 2
-fn total_distance(lat1: f64, lon1: f64, alt1: f64, lat2: f64, lon2: f64, alt2: f64) -> f64 {
+pub fn total_distance(lat1: f64, lon1: f64, alt1: f64, lat2: f64, lon2: f64, alt2: f64) -> f64 {
     let haversine_distance = haversine_distance(lat1, lon1, lat2, lon2).powi(2);
     let alt_difference = (alt1 - alt2).powi(2);
     (haversine_distance + alt_difference).sqrt()
@@ -101,8 +101,6 @@ pub fn take_snapshot_of_graph(graph: &Graph) -> String {
 
     save_relative_ordering(graph, &mut graph_string);
 
-    //let mut edges_rep: String = "".to_owned();
-
     for edge in graph.get_edges() {
         graph_string.push_str("E: ");
         let u_idx = edge.get_u();
@@ -153,6 +151,5 @@ mod tests {
 
         let expected = "3\nO: u 0\nO: v 1\nO: w 2\nE: u v 1\nE: u w 1\nE: v w 35";
         assert_eq!(snapshot, expected);
-        println!("{}", snapshot);
     }
 }

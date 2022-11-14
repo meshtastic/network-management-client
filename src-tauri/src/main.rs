@@ -1,14 +1,13 @@
 mod algorithms;
 mod aux_data_structures;
-mod aux_functions;
 mod graph;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
-
+mod aux_functions;
+use aux_functions::commands::{run_articulation_point, run_global_mincut, run_stoer_wagner};
 use tauri::Manager;
 use tokio::sync::{mpsc, Mutex};
 use tracing::info;
 use tracing_subscriber;
-
 struct AsyncProcInputTx {
     inner: Mutex<mpsc::Sender<String>>,
 }
@@ -23,7 +22,12 @@ fn main() {
         .manage(AsyncProcInputTx {
             inner: Mutex::new(async_proc_input_tx),
         })
-        .invoke_handler(tauri::generate_handler![js2rs])
+        .invoke_handler(tauri::generate_handler![
+            js2rs,
+            run_articulation_point,
+            run_global_mincut,
+            run_stoer_wagner
+        ])
         .setup(|app| {
             tauri::async_runtime::spawn(async move {
                 async_process_model(async_proc_input_rx, async_proc_output_tx).await
