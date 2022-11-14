@@ -43,8 +43,8 @@ const Sidebar = () => {
 
   const requestArticulationPoint = () => {
     const nodeList: INode[] = generateDemoData();
-    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
-    console.log("Sending test command with neighbors...");
+    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
+    console.log("Sending command with input...");
     console.log(nbrInfoList);
     invoke("run_articulation_point", {
       nodes: nbrInfoList,
@@ -56,7 +56,7 @@ const Sidebar = () => {
   };
   const requestGlobalMincut = () => {
     const nodeList: INode[] = generateDemoData();
-    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
+    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
     console.log("Sending test command with neighbors...");
     console.log(nbrInfoList);
     invoke("run_global_mincut", {
@@ -69,7 +69,7 @@ const Sidebar = () => {
   };
   const requestStoerWagner = () => {
     const nodeList: INode[] = generateDemoData();
-    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodeList);
+    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
     console.log("Sending test command with neighbors...");
     console.log(nbrInfoList);
     invoke("run_stoer_wagner", {
