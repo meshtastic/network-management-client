@@ -7,6 +7,7 @@ import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import Settings from "@components/Settings/Settings";
+import Messages from "@components/Messages/Messages";
 
 import {
   selectActiveNode,
@@ -27,12 +28,12 @@ const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
     case "map":
       return <NodeSearchDock />;
 
-<<<<<<< HEAD
     case "settings":
       return <Settings />;
 
-=======
->>>>>>> parent of b4ed4c8 (Scrollbar package)
+    case "chat":
+      return <Messages />;
+
     default:
       return <></>;
   }
