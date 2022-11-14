@@ -14,24 +14,27 @@
     "rust:test": "cd ./src-tauri; cargo test"
   },
   "dependencies": {
-    "@heroicons/react": "^2.0.12",
+    "@heroicons/react": "^2.0.13",
+    "@material-tailwind/react": "^1.2.4",
     "@meshtastic/meshtasticjs": "^0.6.113",
     "@reduxjs/toolkit": "^1.8.6",
     "@tauri-apps/api": "^1.1.0",
+    "heroicons": "^2.0.13",
+    "mapbox-gl": "^2.10.0",
     "maplibre-gl": "^2.4.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-map-gl": "^7.0.19",
-    "react-redux": "^8.0.4",
-    "redux-saga": "^1.2.1"
+    "react-redux": "^8.0.4"
   },
   "devDependencies": {
     "@meshtastic/eslint-config": "^1.0.8",
     "@tauri-apps/cli": "^1.1.1",
     "@types/jest": "^29.2.0",
     "@types/node": "^18.11.2",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.8",
     "@types/react-redux": "^7.1.24",
     "@types/w3c-web-serial": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^5.40.1",

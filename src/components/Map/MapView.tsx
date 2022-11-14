@@ -6,6 +6,8 @@ import { Map, NavigationControl, ScaleControl } from "react-map-gl";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
+import Settings from "@components/Settings/Settings";
+import Messages from "@components/Messages/Messages";
 
 import {
   selectActiveNode,
@@ -26,6 +28,12 @@ const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
     case "map":
       return <NodeSearchDock />;
 
+    case "settings":
+      return <Settings />;
+
+    case "chat":
+      return <Messages />;
+
     default:
       return <></>;
   }
@@ -42,7 +50,7 @@ export const MapView = () => {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full z-0">
       <Map
         mapStyle="https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
         mapLib={maplibregl}
@@ -63,6 +71,7 @@ export const MapView = () => {
 
         <_MapViewLeftPanel activeSidebarPanel={activeSidebarPanel} />
         <MapInteractionPane />
+        <Settings />
       </Map>
     </div>
   );
