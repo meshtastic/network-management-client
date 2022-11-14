@@ -31,7 +31,7 @@ fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
 /// * `lat2` - latitude of node 2
 /// * `lon2` - longitude of node 2
 /// * `alt2` - altitude of node 2
-fn total_distance(lat1: f64, lon1: f64, alt1: f64, lat2: f64, lon2: f64, alt2: f64) -> f64 {
+pub fn total_distance(lat1: f64, lon1: f64, alt1: f64, lat2: f64, lon2: f64, alt2: f64) -> f64 {
     let haversine_distance = haversine_distance(lat1, lon1, lat2, lon2).powi(2);
     let alt_difference = (alt1 - alt2).powi(2);
     (haversine_distance + alt_difference).sqrt()

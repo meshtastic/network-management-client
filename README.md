@@ -18,6 +18,8 @@ This project requires the following programs to be installed to develop for this
 - [Node.js](https://nodejs.org/en/)
 - [PNPM Package Manager](https://pnpm.io/installation)
 
+Additionally, this project uses [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). This means you will need to run `git submodule update --init` after cloning the repository.
+
 ## Recommended IDE Setup
 
 We recommend the following Visual Studio Code extensions for developing on this codebase.
@@ -38,4 +40,4 @@ The following commands can be used to develop on this codebase. Note that it is 
 - `pnpm run ui:format` - Formats the UI codebase using [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/)
 - `pnpm run ui:test` - Runs UI test suite using [Jest](https://jestjs.io/)
 - `pnpm run rust:dev` - Starts the desktop application in development mode, allowing for hot reloading of UI and Rust code
-- `pnpm run rust:test` - Runs backend tests on the Rust codebase directory (`/src-tauri`)
+- `pnpm run rust:test` - Runs backend tests on the Rust codebase directory (`/src-tauri`) Add `-- --show-output` to show printlns.

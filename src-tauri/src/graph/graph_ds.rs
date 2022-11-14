@@ -77,6 +77,15 @@ impl Graph {
         node.optimal_weighted_degree = new_weight;
     }
 
+    /// Returns a boolean signalling whether the graph contains a node
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - Name of the node
+    pub fn contains_node(&mut self, name: String) -> bool {
+        return self.node_idx_map.contains_key(&(name.clone() as String));
+    }
+
     /// Adds the edge to the graph and insert the edge index into the edge_idx_map
     /// (where the key is the tuple of the node indices and the value is the list
     /// of edges). We maintain a list because we allow parallel edges to exist.
@@ -383,7 +392,7 @@ impl Graph {
             let weight = self
                 .g
                 .edge_weight(edge_idx_list.clone()[parallel_edge_idx.unwrap_or(0)])
-                .unwrap()
+                .unwrap_or(&Edge::new(u_idx.clone(), v_idx.clone(), 0.0))
                 .weight;
 
             let node_u = self.g.node_weight(u_idx.clone()).unwrap();

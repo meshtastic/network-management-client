@@ -1,13 +1,18 @@
-import React from 'react';
-import { ShieldExclamationIcon, SignalIcon, SignalSlashIcon, ViewfinderCircleIcon } from '@heroicons/react/24/outline';
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  ShieldExclamationIcon,
+  SignalIcon,
+  SignalSlashIcon,
+  ViewfinderCircleIcon,
+} from "@heroicons/react/24/outline";
 
-import type { INode } from '@features/device/deviceSlice';
+import type { INode } from "@features/device/deviceSlice";
 import {
   getColorClassFromNodeState,
   getNodeState,
   getTimeSinceLastMessage,
-  NodeState
-} from '@utils/nodeUtils';
+  NodeState,
+} from "@utils/nodeUtils";
 
 export interface INodeSearchResultProps {
   node: INode;
@@ -16,7 +21,7 @@ export interface INodeSearchResultProps {
 }
 
 interface _INodeSearchResultIconProps {
-  nodeState: NodeState
+  nodeState: NodeState;
 }
 
 const _NodeSearchResultIcon = ({ nodeState }: _INodeSearchResultIconProps) => {
@@ -25,20 +30,39 @@ const _NodeSearchResultIcon = ({ nodeState }: _INodeSearchResultIconProps) => {
       return <SignalIcon className="w-6 h-6 mx-0 my-auto text-blue-500" />;
 
     case "warning":
-      return <SignalSlashIcon className="w-6 h-6 mx-0 my-auto text-orange-500" />;
+      return (
+        <SignalSlashIcon className="w-6 h-6 mx-0 my-auto text-orange-500" />
+      );
 
     case "error":
-      return <ShieldExclamationIcon className="w-6 h-6 mx-0 my-auto text-red-500" />;
+      return (
+        <ShieldExclamationIcon className="w-6 h-6 mx-0 my-auto text-red-500" />
+      );
 
     default:
       return <SignalIcon className="w-6 h-6 mx-0 my-auto text-gray-500" />;
   }
-}
+};
 
-const NodeSearchResult = ({ node, isActive, selectNode }: INodeSearchResultProps) => {
-  const timeSinceLastMessage = getTimeSinceLastMessage(node);
+const NodeSearchResult = ({
+  node,
+  isActive,
+  selectNode,
+}: INodeSearchResultProps) => {
+  const [timeSinceLastMessage, setTimeSinceLastMessage] = useState(0);
+
   const nodeState = getNodeState(timeSinceLastMessage, isActive);
   const colorClasses = getColorClassFromNodeState(nodeState);
+
+  const reloadTimeSinceLastMessage = useCallback(() => {
+    setTimeSinceLastMessage(getTimeSinceLastMessage(node));
+  }, [setTimeSinceLastMessage, node]);
+
+  useEffect(() => {
+    const intervalId = setInterval(reloadTimeSinceLastMessage, 1000);
+    return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex flex-row gap-4">
@@ -47,7 +71,9 @@ const NodeSearchResult = ({ node, isActive, selectNode }: INodeSearchResultProps
       <div className={`flex-grow ${colorClasses.text}`}>
         <p className="text-lg font-semibold">
           {node.data.user?.longName ?? node.data.num}
-          <span className="text-sm font-normal pl-2">{timeSinceLastMessage} min</span>
+          <span className="text-sm font-normal pl-2">
+            {timeSinceLastMessage} min
+          </span>
         </p>
         {/* <p>{Buffer.from(node.data.user?.macaddr ?? []).toString('hex')}</p> */}
         <p className="text-sm font-light">demo mac address</p>
@@ -57,8 +83,8 @@ const NodeSearchResult = ({ node, isActive, selectNode }: INodeSearchResultProps
         className={`w-6 h-6 mx-0 my-auto ${colorClasses.text} hover:cursor-pointer`}
         onClick={() => selectNode(node.data.num)}
       />
-    </div >
+    </div>
   );
-}
+};
 
 export default NodeSearchResult;
