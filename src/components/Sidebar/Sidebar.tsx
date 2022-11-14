@@ -14,15 +14,15 @@ import SidebarIcon from "@components/Sidebar/SidebarIcon";
 import { selectAllDevices } from "@app/features/device/deviceSelectors";
 import { createDeviceAction } from "@features/device/deviceActions";
 import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
-import { ActiveSidebarPanel, panelsSliceActions } from "@features/panels/panelsSlice";
+import {
+  ActiveSidebarPanel,
+  panelsSliceActions,
+} from "@features/panels/panelsSlice";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const devices = useSelector(selectAllDevices());
   const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
-
-  // Logging only, no necessary functionality
-  useEffect(() => { console.log(devices); }, [devices]);
 
   const requestDeviceConnection = () => {
     const id = 1;
@@ -31,7 +31,7 @@ const Sidebar = () => {
 
   const setActivePane = (panel: ActiveSidebarPanel) => {
     dispatch(panelsSliceActions.setActiveSidebarPanel(panel));
-  }
+  };
 
   return (
     <div className="h-screen flex flex-col justify-between shadow-lg">

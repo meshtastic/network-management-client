@@ -1,27 +1,44 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-import MapIconButton from '@components/Map/MapIconButton';
-import NodeSearchInput from '@components/NodeSearch/NodeSearchInput';
-import NodeSearchResult from '@components/NodeSearch/NodeSearchResult';
+import MapIconButton from "@components/Map/MapIconButton";
+import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
+import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
-import { selectActiveNode, selectAllDevices, selectAllNodes } from '@features/device/deviceSelectors';
-import { deviceSliceActions, IDevice, INode } from '@features/device/deviceSlice';
+import {
+  selectActiveNodeId,
+  selectAllDevices,
+  selectAllNodes,
+} from "@features/device/deviceSelectors";
+
+import {
+  deviceSliceActions,
+  IDevice,
+  INode,
+} from "@features/device/deviceSlice";
 
 interface _INodeSearchDockProps {
   filteredNodes: INode[];
   devices: IDevice[];
   activeNodeId: number | null;
-  query: string,
+  query: string;
   handleNodeSelect: (nodeId: number) => void;
 }
 
-const _NodeSearchDock = ({ filteredNodes, devices, activeNodeId, query, handleNodeSelect }: _INodeSearchDockProps) => {
+const _NodeSearchDock = ({
+  filteredNodes,
+  devices,
+  activeNodeId,
+  query,
+  handleNodeSelect,
+}: _INodeSearchDockProps) => {
   if (!filteredNodes.length && !!devices.length) {
     return (
       <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
-        <p className="text-sm font-normal text-gray-500">No results for &quot;{query}&quot;</p>
+        <p className="text-sm font-normal text-gray-500">
+          No results for &quot;{query}&quot;
+        </p>
       </div>
     );
   }
@@ -42,16 +59,16 @@ const _NodeSearchDock = ({ filteredNodes, devices, activeNodeId, query, handleNo
   }
 
   return <></>;
-}
+};
 
 const NodeSearchDock = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const devices = useSelector(selectAllDevices());
-  const activeNodeId = useSelector(selectActiveNode());
+  const activeNodeId = useSelector(selectActiveNodeId());
 
   const [filteredNodes, setFilteredNodes] = useState<INode[]>(nodes);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   const filterNodes = useCallback(() => {
     // Show all nodes on empty query
@@ -64,8 +81,12 @@ const NodeSearchDock = () => {
       const lowercaseQuery = query.toLocaleLowerCase();
 
       if (String(node.data.num).includes(lowercaseQuery)) return true;
-      if (node.data.user?.shortName.toLocaleLowerCase().includes(lowercaseQuery)) return true;
-      if (node.data.user?.longName.toLocaleLowerCase().includes(lowercaseQuery)) return true;
+      if (
+        node.data.user?.shortName.toLocaleLowerCase().includes(lowercaseQuery)
+      )
+        return true;
+      if (node.data.user?.longName.toLocaleLowerCase().includes(lowercaseQuery))
+        return true;
       return false;
     });
 
@@ -76,7 +97,9 @@ const NodeSearchDock = () => {
     dispatch(deviceSliceActions.setActiveNode(nodeId));
   };
 
-  useEffect(() => { filterNodes(); }, [filterNodes, nodes]);
+  useEffect(() => {
+    filterNodes();
+  }, [filterNodes, nodes]);
 
   return (
     <div className="absolute left-9 top-9 w-96 flex flex-col gap-4">
