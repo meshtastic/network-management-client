@@ -42,12 +42,20 @@ pub fn run_stoer_wagner(nodes: Vec<NeighborInfo>) -> String {
     println!("Calculating stoer wagner with input: {:?}", nodes);
     let graph = load_graph(nodes.clone());
     let graph_sw = &mut StoerWagnerGraph::new(graph.clone());
-    let stoer_wagner = stoer_wagner(&mut graph_sw.clone());
-    let output = format!(
-        "Stoer-Wagner: {} {} {}",
-        stoer_wagner.get_a(),
-        stoer_wagner.get_b(),
-        stoer_wagner.get_weight()
-    );
-    output
+    let cut = stoer_wagner(&mut graph_sw.clone());
+    match cut {
+        Some(stoer_wagner) => {
+            let output = format!(
+                "Stoer-Wagner: {} {} {}",
+                stoer_wagner.get_a(),
+                stoer_wagner.get_b(),
+                stoer_wagner.get_weight()
+            );
+            return output;
+        }
+        None => {
+            let output = format!("Stoer-Wagner: No cut found");
+            return output;
+        }
+    }
 }
