@@ -143,8 +143,13 @@ mod tests {
         for _ in 0..100 {
             let graph_sw = &mut StoerWagnerGraph::new(g.clone());
             let mincut = stoer_wagner(graph_sw);
-            if mincut.get_weight() == 1.0 {
-                correct_mincut_weight_count += 1;
+            match mincut {
+                Some(cut) => {
+                    if cut.get_weight() == 1.0 {
+                        correct_mincut_weight_count += 1;
+                    }
+                }
+                None => {}
             }
         }
 
