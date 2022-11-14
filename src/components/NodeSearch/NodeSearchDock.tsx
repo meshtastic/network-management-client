@@ -7,10 +7,11 @@ import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
 import {
-  selectActiveNode,
+  selectActiveNodeId,
   selectAllDevices,
   selectAllNodes,
 } from "@features/device/deviceSelectors";
+
 import {
   deviceSliceActions,
   IDevice,
@@ -64,7 +65,7 @@ const NodeSearchDock = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const devices = useSelector(selectAllDevices());
-  const activeNodeId = useSelector(selectActiveNode());
+  const activeNodeId = useSelector(selectActiveNodeId());
 
   const [filteredNodes, setFilteredNodes] = useState<INode[]>(nodes);
   const [query, setQuery] = useState("");

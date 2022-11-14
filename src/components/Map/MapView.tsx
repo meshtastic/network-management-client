@@ -8,9 +8,10 @@ import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import Settings from "@components/Settings/Settings";
 import Messages from "@components/Messages/Messages";
+import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
 import {
-  selectActiveNode,
+  selectActiveNodeId,
   selectAllNodes,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
@@ -42,7 +43,7 @@ const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
 export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
-  const activeNodeId = useSelector(selectActiveNode());
+  const activeNodeId = useSelector(selectActiveNodeId());
   const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
 
   const updateActiveNode = (nodeId: number | null) => {
@@ -68,7 +69,7 @@ export const MapView = () => {
             isActive={activeNodeId === node.data.num}
           />
         ))}
-
+        <MapSelectedNodeMenu />
         <_MapViewLeftPanel activeSidebarPanel={activeSidebarPanel} />
         <MapInteractionPane />
         <Settings />

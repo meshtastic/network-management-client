@@ -31,11 +31,6 @@ const Sidebar = () => {
   const nodes = useSelector(selectAllNodes());
   const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
 
-  // Logging only, no necessary functionality
-  useEffect(() => {
-    console.log(devices);
-  }, [devices]);
-
   const requestDeviceConnection = () => {
     const id = 1;
     dispatch(createDeviceAction(id));
