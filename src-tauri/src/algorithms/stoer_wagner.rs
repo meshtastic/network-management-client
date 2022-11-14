@@ -39,21 +39,21 @@ pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Option<Cut> {
     if graph.uncontracted.len() == 2 {
         return Some(graph.get_cut());
     } else {
-        let mut min_cut = st_mincut(graph);
-        match min_cut {
+        let opt_cut = st_mincut(graph);
+        match opt_cut {
             Some(cut) => {
                 graph.contract_edge(cut.get_a().to_string(), cut.get_b().to_string());
-                let new_cut = stoer_wagner(graph);
-                match new_cut {
-                    Some(new_cut) => {
-                        if new_cut.get_weight() < cut.get_weight() {
-                            return Some(new_cut);
-                        } else {
+                let opt_other_cut = stoer_wagner(graph);
+                match opt_other_cut {
+                    Some(other_cut) => {
+                        if cut.get_weight() < other_cut.get_weight() {
                             return Some(cut);
+                        } else {
+                            return Some(other_cut);
                         }
                     }
                     None => {
-                        return Some(cut);
+                        return None;
                     }
                 }
             }
