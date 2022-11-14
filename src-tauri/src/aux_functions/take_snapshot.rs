@@ -101,8 +101,6 @@ pub fn take_snapshot_of_graph(graph: &Graph) -> String {
 
     save_relative_ordering(graph, &mut graph_string);
 
-    //let mut edges_rep: String = "".to_owned();
-
     for edge in graph.get_edges() {
         graph_string.push_str("E: ");
         let u_idx = edge.get_u();
@@ -153,6 +151,5 @@ mod tests {
 
         let expected = "3\nO: u 0\nO: v 1\nO: w 2\nE: u v 1\nE: u w 1\nE: v w 35";
         assert_eq!(snapshot, expected);
-        println!("{}", snapshot);
     }
 }

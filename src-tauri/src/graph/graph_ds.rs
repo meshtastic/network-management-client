@@ -568,6 +568,24 @@ impl Graph {
         }
         cumulative_edge_weights
     }
+
+    /// Convert graph to string representation.
+    /// This is used for debugging purposes.
+    pub fn to_string(&self) -> String {
+        let mut s = String::new();
+
+        for edge in self.get_edges() {
+            let node_u = self.get_node(edge.u);
+            let node_v = self.get_node(edge.v);
+            s.push_str(&format!(
+                "{} - {} {}\n",
+                node_u.name.clone(),
+                node_v.name.clone(),
+                edge.weight
+            ));
+        }
+        s
+    }
 }
 
 // Function to print given error and return
