@@ -29,11 +29,11 @@ const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
     case "map":
       return <NodeSearchDock />;
 
-    case "settings":
-      return <Settings />;
-
     case "chat":
       return <Messages />;
+
+    case "settings":
+      return <Settings />;
 
     default:
       return <></>;
@@ -72,7 +72,6 @@ export const MapView = () => {
         <MapSelectedNodeMenu />
         <_MapViewLeftPanel activeSidebarPanel={activeSidebarPanel} />
         <MapInteractionPane />
-        <Settings />
       </Map>
     </div>
   );
