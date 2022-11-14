@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export interface INodeSearchInputProps {
   query: string;
@@ -16,7 +16,7 @@ const NodeSearchInput = ({ query, setQuery }: INodeSearchInputProps) => {
         placeholder="Search for nodes"
       />
     </div>
-  )
+  );
 };
 
 export default NodeSearchInput;
