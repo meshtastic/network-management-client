@@ -1,6 +1,6 @@
 use crate::graph::{edge::Edge, graph_ds::Graph, node::Node};
 
-pub fn convert_to_graph(mut graph_string: Vec<&str>) -> String {
+pub fn convert_to_graph(mut graph_string: Vec<&str>) -> Graph {
     let mut graph = Graph::new();
 
     let mut nodes: Vec<String> = Vec::new();
@@ -19,7 +19,6 @@ pub fn convert_to_graph(mut graph_string: Vec<&str>) -> String {
     // add nodes
     for node in nodes {
         let mut node_struct = Node::new(node);
-        node_struct.set_gps(0.0, 0.0, 0.0);
         graph.add_node_from_struct(node_struct);
     }
 
@@ -38,5 +37,5 @@ pub fn convert_to_graph(mut graph_string: Vec<&str>) -> String {
     }
 
     // return graph;
-    return graph.to_string();
+    return graph;
 }

@@ -101,8 +101,6 @@ pub fn take_snapshot_of_graph(graph: &Graph) -> String {
 
     save_relative_ordering(graph, &mut graph_string);
 
-    //let mut edges_rep: String = "".to_owned();
-
     for edge in graph.get_edges() {
         graph_string.push_str("E: ");
         let u_idx = edge.get_u();

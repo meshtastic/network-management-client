@@ -16,8 +16,7 @@ pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<String, String> {
         snapshots.push_str("\n\n");
     }
 
-    //let snapshots: String = snapshots.to_owned();
-    let snapshots_str: &str = &snapshots[..]; // take a full slice of the string
+    let snapshots_str: &str = &snapshots[..];
 
     let graph_json = json!({
       "snapshots": snapshots_str.clone(),
@@ -33,7 +32,6 @@ pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<String, String> {
         let graph_json = res_json.json::<serde_json::Value>().await;
 
         if let Ok(g_json) = graph_json {
-            // get the value of the key "snapshot"
             let next_statesnapshot = g_json["snapshot"].to_string().to_owned();
 
             let mut next_state_lines: Vec<&str> = next_statesnapshot.split("-").collect();
@@ -44,9 +42,9 @@ pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<String, String> {
                 [..next_state_lines[next_state_lines.len() - 1].len() - 1]; // remove the last character
 
             let graph = convert_to_graph(next_state_lines.clone());
-            //let graph_string = graph.to_string();
+            let graph_string = graph.to_string();
 
-            println!("Next Graph State: \n{}", graph);
+            println!("Next Graph State: \n{}", graph_string);
             Ok("Success".into())
         } else {
             Err("Error: could not convert graph_json to a string".into())
@@ -62,8 +60,6 @@ mod tests {
     use super::*;
     use crate::graph::edge::Edge;
     use crate::graph::node::Node;
-    use petgraph::graph::EdgeIndex;
-    use petgraph::graph::NodeIndex;
 
     #[test]
     fn test_api_call() {
