@@ -7,6 +7,7 @@ import {
   DocumentTextIcon,
   Cog8ToothIcon,
   LinkIcon,
+  BeakerIcon,
 } from "@heroicons/react/24/outline";
 import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 
@@ -112,19 +113,19 @@ const Sidebar = () => {
             renderIcon={() => <LinkIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeSidebarPanel == "info"}
+            isActive={activeSidebarPanel == "algo"}
             onClick={requestArticulationPoint}
-            renderIcon={() => <LinkIcon className="" />}
+            renderIcon={() => <BeakerIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeSidebarPanel == "info"}
+            isActive={activeSidebarPanel == "algo"}
             onClick={requestGlobalMincut}
-            renderIcon={() => <LinkIcon className="" />}
+            renderIcon={() => <BeakerIcon className="" />}
           />
           <SidebarIcon
-            isActive={activeSidebarPanel == "info"}
+            isActive={activeSidebarPanel == "algo"}
             onClick={requestStoerWagner}
-            renderIcon={() => <LinkIcon className="" />}
+            renderIcon={() => <BeakerIcon className="" />}
           />
         </div>
       </div>

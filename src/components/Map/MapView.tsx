@@ -71,7 +71,6 @@ export const MapView = () => {
 
         <_MapViewLeftPanel activeSidebarPanel={activeSidebarPanel} />
         <MapInteractionPane />
-        <Settings />
       </Map>
     </div>
   );
