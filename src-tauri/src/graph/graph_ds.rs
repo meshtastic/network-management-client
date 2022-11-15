@@ -86,6 +86,19 @@ impl Graph {
         return self.node_idx_map.contains_key(&(name.clone() as String));
     }
 
+    /// Returns whether the graph contains an edge
+    ///
+    /// # Arguments
+    ///
+    /// * `node1` - Name of the first node
+    /// * `node2` - Name of the second node
+    pub fn contains_edge(&mut self, node1: String, node2: String) -> bool {
+        let node1_idx = self.get_node_idx(node1);
+        let node2_idx = self.get_node_idx(node2);
+
+        return self.edge_idx_map.contains_key(&(node1_idx, node2_idx));
+    }
+
     /// Adds the edge to the graph and insert the edge index into the edge_idx_map
     /// (where the key is the tuple of the node indices and the value is the list
     /// of edges). We maintain a list because we allow parallel edges to exist.
@@ -299,7 +312,7 @@ impl Graph {
     /// * `parallel_edge_idx` - Optional usize index of the parallel edge we want to update.
     /// * `get_all_parallel` - Optional bool flag to get weight sum of all parallel edges.
     pub fn get_edge_weight(
-        &self,
+        &mut self,
         u: String,
         v: String,
         parallel_edge_idx: Option<usize>,
@@ -316,15 +329,12 @@ impl Graph {
             return 0.0;
         }
 
-        let u_idx = self.node_idx_map.get(&u).unwrap();
-        let v_idx = self.node_idx_map.get(&v).unwrap();
-
-        // Check if edge does not exist
-        if !self.g.contains_edge(u_idx.clone(), v_idx.clone())
-            && !self.g.contains_edge(v_idx.clone(), u_idx.clone())
-        {
+        if !self.contains_edge(u.clone(), v.clone()) {
             return 0.0;
         }
+
+        let u_idx = self.node_idx_map.get(&u).unwrap();
+        let v_idx = self.node_idx_map.get(&v).unwrap();
 
         let edge_idx_list = self
             .edge_idx_map

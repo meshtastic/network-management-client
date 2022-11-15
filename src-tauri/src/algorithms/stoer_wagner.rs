@@ -132,10 +132,18 @@ mod tests {
         let mut correct_mincut_weight_count = 0;
 
         let graph_sw = &mut StoerWagnerGraph::new(g.clone());
-        let _mincut = stoer_wagner(graph_sw);
+        let _mincut = stoer_wagner(graph_sw).unwrap();
+
+        println!("Weight of mincut: {}\n", _mincut.get_weight());
 
         let nodes = vec![u, v, w, x, y, z, a, b];
         let (s, t) = recover_mincut(graph_sw, nodes);
+
+        let mut mincut_edges: Vec<String> = Vec::new();
+
+        // print nodes in s
+        println!("Nodes in s: {:?}\n", s);
+        println!("Nodes in t: {:?}\n", t);
 
         assert!(s.len() + t.len() == 8);
         assert!(s.iter().all(|x| !t.contains(x)));
@@ -153,6 +161,10 @@ mod tests {
             }
         }
 
+        println!(
+            "Correct mincut weight count: {}",
+            correct_mincut_weight_count
+        );
         assert_eq!(correct_mincut_weight_count, 100);
     }
 }
