@@ -42,7 +42,7 @@ const MapSelectedNodeMenu = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!activeNode) return null;
+  if (!activeNode) return <></>;
 
   return (
     <div className="absolute top-24 right-9 bg-white p-5 pl-4 rounded-lg drop-shadow-lg w-80">
