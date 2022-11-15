@@ -23,7 +23,7 @@ const MessageText = (
             />
           </div>
           <div className="text-xl pl-1 flex">{name}</div>
-          <div className="ml-[20%] text-lg">
+          <div className="ml-auto text-lg">
             <div>{"(2 min. ago)"}</div>
           </div>
         </div>

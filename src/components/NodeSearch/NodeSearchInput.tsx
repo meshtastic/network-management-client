@@ -3,9 +3,14 @@ import React from "react";
 export interface INodeSearchInputProps {
   query: string;
   setQuery: (value: string) => void;
+  placeholder: string;
 }
 
-const NodeSearchInput = ({ query, setQuery }: INodeSearchInputProps) => {
+const NodeSearchInput = ({
+  query,
+  setQuery,
+  placeholder,
+}: INodeSearchInputProps) => {
   return (
     <div className="flex-grow">
       <input
@@ -13,7 +18,7 @@ const NodeSearchInput = ({ query, setQuery }: INodeSearchInputProps) => {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search for nodes"
+        placeholder={placeholder}
       />
     </div>
   );
