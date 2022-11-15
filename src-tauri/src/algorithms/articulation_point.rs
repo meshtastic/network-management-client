@@ -95,9 +95,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn graph_with_no_articulation_point() {
+    fn graph_with_articulation_point() {
         // Create a graph
-        let mut G = Graph::new();
+        let mut g = Graph::new();
 
         // Add nodes
         let u: String = "u".to_string();
@@ -105,76 +105,49 @@ mod tests {
         let w: String = "w".to_string();
         let x: String = "x".to_string();
         let y: String = "y".to_string();
+        let z: String = "z".to_string();
+        let a: String = "a".to_string();
+        let b: String = "b".to_string();
 
-        G.add_node(u.clone());
-        G.add_node(v.clone());
-        G.add_node(w.clone());
-        G.add_node(x.clone());
-        G.add_node(y.clone());
+        g.add_node(u.clone());
+        g.add_node(v.clone());
+        g.add_node(w.clone());
+        g.add_node(x.clone());
+        g.add_node(y.clone());
+        g.add_node(z.clone());
+        g.add_node(a.clone());
+        g.add_node(b.clone());
 
         // Add edges
-        G.add_edge(u.clone(), v.clone(), 1.0);
-        G.add_edge(u.clone(), w.clone(), 1.0);
-        G.add_edge(u.clone(), x.clone(), 1.0);
-        G.add_edge(w.clone(), x.clone(), 1.0);
-        G.add_edge(v.clone(), y.clone(), 1.0);
-        G.add_edge(x.clone(), y.clone(), 1.0);
+        g.add_edge(u.clone(), v.clone(), 1.0);
+        g.add_edge(u.clone(), w.clone(), 1.0);
+        g.add_edge(u.clone(), x.clone(), 1.0);
+        g.add_edge(w.clone(), x.clone(), 1.0);
+        g.add_edge(v.clone(), y.clone(), 1.0);
+        g.add_edge(x.clone(), y.clone(), 1.0);
+        g.add_edge(w.clone(), z.clone(), 1.0);
+        g.add_edge(x.clone(), a.clone(), 1.0);
+        g.add_edge(y.clone(), b.clone(), 1.0);
 
         println!("\n");
 
         // Test the articulation point function
-        let articulation_points = articulation_point(G.clone());
+        let articulation_points = articulation_point(g.clone());
         let len_articulation_points = articulation_points.len();
         for node in articulation_points.clone() {
-            let node = G.g.node_weight(node).unwrap();
+            let node = g.g.node_weight(node).unwrap();
             println!("Articulation Point: {}", node.name);
         }
-        assert_eq!(len_articulation_points, 0);
+        assert_eq!(len_articulation_points, 3);
 
         // Check if node u is an articulation point
         assert_eq!(
-            articulation_points.contains(&G.get_node_idx(u.clone())),
+            articulation_points.contains(&g.get_node_idx(u.clone())),
             false
         );
         assert_eq!(
-            articulation_points.contains(&G.get_node_idx(x.clone())),
-            false
+            articulation_points.contains(&g.get_node_idx(x.clone())),
+            true
         );
-    }
-
-    #[test]
-    fn graph_with_articulation_point() {
-        let mut G = Graph::new();
-
-        let v1: String = "1".to_string();
-        let v2: String = "2".to_string();
-        let v3: String = "3".to_string();
-        let v4: String = "4".to_string();
-        let v5: String = "5".to_string();
-
-        let v1_node = G.add_node(v1.clone());
-        G.add_node(v2.clone());
-        G.add_node(v3.clone());
-        let v4_node = G.add_node(v4.clone());
-        let v5_node = G.add_node(v5.clone());
-
-        G.add_edge(v2.clone(), v1.clone(), 1.0);
-        G.add_edge(v1.clone(), v3.clone(), 1.0);
-        G.add_edge(v3.clone(), v2.clone(), 1.0);
-        G.add_edge(v1.clone(), v4.clone(), 1.0);
-        G.add_edge(v4.clone(), v5.clone(), 1.0);
-
-        let articulation_points = articulation_point(G.clone());
-        let len_articulation_points = articulation_points.len();
-        for node in articulation_points.clone() {
-            let node = G.g.node_weight(node).unwrap();
-            println!("Articulation Point: {}", node.name);
-        }
-
-        assert_eq!(len_articulation_points, 2);
-
-        assert_eq!(articulation_points.clone().contains(&v1_node), true);
-        assert_eq!(articulation_points.clone().contains(&v4_node), true);
-        assert_eq!(articulation_points.clone().contains(&v5_node), false);
     }
 }
