@@ -81,12 +81,15 @@ const NodeSearchDock = () => {
       const lowercaseQuery = query.toLocaleLowerCase();
 
       if (String(node.data.num).includes(lowercaseQuery)) return true;
+
       if (
         node.data.user?.shortName.toLocaleLowerCase().includes(lowercaseQuery)
       )
         return true;
+
       if (node.data.user?.longName.toLocaleLowerCase().includes(lowercaseQuery))
         return true;
+
       return false;
     });
 
@@ -102,7 +105,7 @@ const NodeSearchDock = () => {
   }, [filterNodes, nodes]);
 
   return (
-    <div className="absolute left-9 top-9 w-96 flex flex-col p-4">
+    <div className="absolute left-9 top-9 w-96 flex flex-col p-4 gap-4">
       <div className="flex flex-row gap-4">
         <NodeSearchInput query={query} setQuery={setQuery} />
         <MapIconButton className="p-3" type="submit" onClick={filterNodes}>
