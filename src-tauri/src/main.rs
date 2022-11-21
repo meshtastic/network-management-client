@@ -1,6 +1,5 @@
 mod algorithms;
 mod aux_data_structures;
-mod aux_functions;
 mod graph;
 
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
@@ -9,12 +8,15 @@ use std::{sync::Mutex, time::Duration};
 
 use serialport;
 // use tokio::sync::mpsc;
-use tracing::info;
-use tracing_subscriber;
 
 struct ActiveSerialPort {
     port: Mutex<Option<Box<dyn serialport::SerialPort>>>,
 }
+mod aux_functions;
+use aux_functions::commands::{run_articulation_point, run_global_mincut, run_stoer_wagner};
+// use tauri::Manager;
+use tracing::info;
+use tracing_subscriber;
 
 fn main() {
     tracing_subscriber::fmt::init();
@@ -25,6 +27,11 @@ fn main() {
         .manage(ActiveSerialPort {
             port: Mutex::new(None),
         })
+        .invoke_handler(tauri::generate_handler![
+            run_articulation_point,
+            run_global_mincut,
+            run_stoer_wagner
+        ])
         .invoke_handler(tauri::generate_handler![
             get_all_serial_ports,
             connect_to_serial_port

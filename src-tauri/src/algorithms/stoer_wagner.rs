@@ -24,11 +24,10 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
         }
         bheap.build_heap();
     }
-
-    let weight = a[a.len() - 1].weight;
     if a.len() < 2 {
         return None;
     }
+    let weight = a[a.len() - 1].weight;
 
     let s = a[a.len() - 1].node.name.clone();
     let t = a[a.len() - 2].node.name.clone();
@@ -36,17 +35,31 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
     return Some(Cut::new(weight, s, t));
 }
 
-pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Cut {
+pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Option<Cut> {
     if graph.uncontracted.len() == 2 {
-        return graph.get_cut();
+        return Some(graph.get_cut());
     } else {
-        let cut = st_mincut(graph).unwrap();
-        graph.contract_edge(cut.get_a().to_string(), cut.get_b().to_string());
-        let other_cut = stoer_wagner(graph);
-        if cut.get_weight() < other_cut.get_weight() {
-            return cut;
-        } else {
-            return other_cut;
+        let opt_cut = st_mincut(graph);
+        match opt_cut {
+            Some(cut) => {
+                graph.contract_edge(cut.get_a().to_string(), cut.get_b().to_string());
+                let opt_other_cut = stoer_wagner(graph);
+                match opt_other_cut {
+                    Some(other_cut) => {
+                        if cut.get_weight() < other_cut.get_weight() {
+                            return Some(cut);
+                        } else {
+                            return Some(other_cut);
+                        }
+                    }
+                    None => {
+                        return None;
+                    }
+                }
+            }
+            None => {
+                return None;
+            }
         }
     }
 }
@@ -119,10 +132,18 @@ mod tests {
         let mut correct_mincut_weight_count = 0;
 
         let graph_sw = &mut StoerWagnerGraph::new(g.clone());
-        let _mincut = stoer_wagner(graph_sw);
+        let _mincut = stoer_wagner(graph_sw).unwrap();
+
+        println!("Weight of mincut: {}\n", _mincut.get_weight());
 
         let nodes = vec![u, v, w, x, y, z, a, b];
         let (s, t) = recover_mincut(graph_sw, nodes);
+
+        let mut mincut_edges: Vec<String> = Vec::new();
+
+        // print nodes in s
+        println!("Nodes in s: {:?}\n", s);
+        println!("Nodes in t: {:?}\n", t);
 
         assert!(s.len() + t.len() == 8);
         assert!(s.iter().all(|x| !t.contains(x)));
@@ -130,11 +151,20 @@ mod tests {
         for _ in 0..100 {
             let graph_sw = &mut StoerWagnerGraph::new(g.clone());
             let mincut = stoer_wagner(graph_sw);
-            if mincut.get_weight() == 1.0 {
-                correct_mincut_weight_count += 1;
+            match mincut {
+                Some(cut) => {
+                    if cut.get_weight() == 1.0 {
+                        correct_mincut_weight_count += 1;
+                    }
+                }
+                None => {}
             }
         }
 
+        println!(
+            "Correct mincut weight count: {}",
+            correct_mincut_weight_count
+        );
         assert_eq!(correct_mincut_weight_count, 100);
     }
 }

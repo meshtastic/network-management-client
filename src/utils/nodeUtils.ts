@@ -7,8 +7,9 @@ export const NODE_ERROR_THRESHOLD = 30;
 export type NodeState = "nominal" | "selected" | "warning" | "error";
 
 export const getTimeSinceLastMessage = (node: INode): number => {
-  const lastHeard =
-    node.data.lastHeard !== 0 ? node.data.lastHeard : Date.now(); // sec, 0 means not set
+  if (!node.data.lastHeard) return 0; // 0 means not set
+
+  const lastHeard = node.data.lastHeard; // sec
   const now = Date.now() / 1000; // sec
   const timeSinceLastMessage = Math.abs(now - lastHeard) / 60; // s to min
 

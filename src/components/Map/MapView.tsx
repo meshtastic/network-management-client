@@ -6,9 +6,12 @@ import { Map, NavigationControl, ScaleControl } from "react-map-gl";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
+import Settings from "@components/Settings/Settings";
+import Messages from "@components/Messages/Messages";
+import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
 import {
-  selectActiveNode,
+  selectActiveNodeId,
   selectAllNodes,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
@@ -26,6 +29,12 @@ const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
     case "map":
       return <NodeSearchDock />;
 
+    case "chat":
+      return <Messages />;
+
+    case "settings":
+      return <Settings />;
+
     default:
       return <></>;
   }
@@ -34,7 +43,7 @@ const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
 export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
-  const activeNodeId = useSelector(selectActiveNode());
+  const activeNodeId = useSelector(selectActiveNodeId());
   const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
 
   const updateActiveNode = (nodeId: number | null) => {
@@ -42,7 +51,7 @@ export const MapView = () => {
   };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full z-0">
       <Map
         mapStyle="https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
         mapLib={maplibregl}
@@ -60,7 +69,7 @@ export const MapView = () => {
             isActive={activeNodeId === node.data.num}
           />
         ))}
-
+        <MapSelectedNodeMenu />
         <_MapViewLeftPanel activeSidebarPanel={activeSidebarPanel} />
         <MapInteractionPane />
       </Map>

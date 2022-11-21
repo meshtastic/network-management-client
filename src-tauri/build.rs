@@ -1,4 +1,6 @@
 use prost_build;
+// use prost_wkt_build::*;
+use std::{env, path::PathBuf};
 use walkdir::WalkDir;
 
 fn main() -> std::io::Result<()> {
@@ -23,6 +25,7 @@ fn main() -> std::io::Result<()> {
     }
 
     prost_build::compile_protos(&protos, &[protobufs_dir]).unwrap();
+
     tauri_build::build();
 
     Ok(())

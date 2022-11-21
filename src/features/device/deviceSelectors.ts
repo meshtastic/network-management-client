@@ -33,5 +33,13 @@ export const selectNodeById =
     return null;
   };
 
-export const selectActiveNode = () => (state: RootState) =>
+export const selectActiveNodeId = () => (state: RootState) =>
   state.devices.activeNode;
+
+export const selectActiveNode =
+  () =>
+  (state: RootState): INode | null => {
+    const activeNodeId = selectActiveNodeId()(state);
+    if (!activeNodeId) return null;
+    return selectNodeById(activeNodeId)(state);
+  };

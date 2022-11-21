@@ -12,6 +12,11 @@
   },
   "tauri": {
     "allowlist": {
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [" http://127.0.0.1:5000/*"]
+      },
       "all": true
     },
     "bundle": {
