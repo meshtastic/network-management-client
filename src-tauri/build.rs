@@ -1,6 +1,5 @@
 use prost_build;
-// use prost_wkt_build::*;
-use std::{env, path::PathBuf};
+// use std::{env, path::PathBuf};
 use walkdir::WalkDir;
 
 fn main() -> std::io::Result<()> {
@@ -11,7 +10,7 @@ fn main() -> std::io::Result<()> {
     let protobufs_dir = "protobufs";
     let mut protos = vec![];
 
-    for entry in WalkDir::new("protobufs")
+    for entry in WalkDir::new(protobufs_dir)
         .into_iter()
         .map(|e| e.unwrap())
         .filter(|e| {

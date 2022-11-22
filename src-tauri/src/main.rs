@@ -6,6 +6,8 @@ mod graph;
 
 use std::{sync::Mutex, time::Duration};
 
+use app::protobufs;
+use prost::Message;
 use serialport;
 // use tokio::sync::mpsc;
 
@@ -80,7 +82,7 @@ fn connect_to_serial_port(port_name: String, state: tauri::State<'_, ActiveSeria
                 Err(_e) => continue,
             };
 
-            info!(target:"async process", recv_count);
+            info!(target: "async process", recv_count);
         }
     });
 
@@ -88,34 +90,64 @@ fn connect_to_serial_port(port_name: String, state: tauri::State<'_, ActiveSeria
 }
 
 #[tauri::command]
-fn send_text(_text: String, state: tauri::State<'_, ActiveSerialPort>) -> i32 {
+fn send_text(text: String, state: tauri::State<'_, ActiveSerialPort>) -> Vec<u8> {
     let mut guard = match state.port.lock() {
         Ok(p) => p,
-        Err(_e) => return -1,
+        Err(_e) => return vec![],
     };
 
     let port = match &mut *guard {
         Some(p) => p,
-        None => return -1,
+        None => return vec![],
     };
 
-    // 0x94, 0xc3, 0x00, data.length, ...data
-    let buf1: [u8; 33] = [
-        0x94, 0xc3, 0x00, 29, 10, 27, 21, 255, 255, 255, 255, 34, 15, 8, 1, 18, 11, 104, 101, 108,
-        108, 111, 32, 119, 111, 114, 108, 100, 53, 210, 194, 112, 17,
-    ];
+    let byte_data = text.into_bytes();
 
-    // 0x94, 0xc3, 0x00, data.length, ...data
-    let buf2: [u8; 6] = [0x94, 0xc3, 0x00, 2, 24, 1];
+    let packet = protobufs::MeshPacket {
+        payload_variant: Some(protobufs::mesh_packet::PayloadVariant::Decoded(
+            protobufs::Data {
+                portnum: protobufs::PortNum::TextMessageApp as i32,
+                payload: byte_data,
+                want_response: false,
+                dest: 0,
+                source: 0,
+                request_id: 0,
+                reply_id: 0,
+                emoji: 0,
+            },
+        )),
+        // rx_time: None,
+        // rx_snr: None,
+        // hop_limit: None,
+        // priority: None,
+        // rx_rssi: None,
+        // delayed: None,
+        from: 75,
+        to: 4294967295, // broadcast
+        id: 0,
+        want_ack: false,
+        channel: 0,
+    };
 
-    let mut bytes_sent = 0;
+    let to_radio = protobufs::ToRadio {
+        payload_variant: Some(protobufs::to_radio::PayloadVariant::Packet(packet)),
+    };
 
-    bytes_sent += port.write(&buf1).expect("Could not write first message");
-    bytes_sent += port.write(&buf2).expect("Could not write second message");
+    let mut packet_buf: Vec<u8> = vec![];
+    to_radio.encode::<Vec<u8>>(&mut packet_buf).unwrap();
 
-    bytes_sent as i32
+    let magic_buffer = [0x94, 0xc3, 0x00, packet_buf.len() as u8];
+    let packet_slice = packet_buf.as_slice();
+
+    let binding = [&magic_buffer, packet_slice].concat();
+    let message_buffer: &[u8] = binding.as_slice();
+
+    port.write(message_buffer)
+        .expect("Could not write message to radio");
+
+    binding
 }
 
 // __TAURI_INVOKE__("get_all_serial_ports").then(console.log).catch(console.error)
 // __TAURI_INVOKE__("connect_to_serial_port", { portName: "/dev/ttyACM0" }).then(console.log).catch(console.error)
-// __TAURI_INVOKE__("send_text", { Text: "hey" }).then(console.log).catch(console.error)
+// __TAURI_INVOKE__("send_text", { text: "hello world" }).then(console.log).catch(console.error)
