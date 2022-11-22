@@ -3,6 +3,8 @@ use prost_build;
 use walkdir::WalkDir;
 
 fn main() -> std::io::Result<()> {
+    println!("cargo:rerun-if-changed=protobufs");
+
     // Allows protobuf compilation without installing the `protoc` binary
     let protoc_path = protoc_bin_vendored::protoc_bin_path().unwrap();
     std::env::set_var("PROTOC", protoc_path);

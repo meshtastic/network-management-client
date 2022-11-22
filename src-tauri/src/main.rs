@@ -116,15 +116,15 @@ fn send_text(text: String, state: tauri::State<'_, ActiveSerialPort>) -> Vec<u8>
                 emoji: 0,
             },
         )),
-        // rx_time: None,
-        // rx_snr: None,
-        // hop_limit: None,
-        // priority: None,
-        // rx_rssi: None,
-        // delayed: None,
-        from: 75,
+        rx_time: 0,     // not transmitted
+        rx_snr: 0.0,    // not transmitted
+        hop_limit: 0,   // not transmitted
+        priority: 0,    // not transmitted
+        rx_rssi: 0,     // not transmitted
+        delayed: 0,     // not transmitted
+        from: 75,       // random
         to: 4294967295, // broadcast
-        id: 0,
+        id: 0,          // random
         want_ack: false,
         channel: 0,
     };
