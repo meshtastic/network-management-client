@@ -34,7 +34,8 @@ fn main() {
         ])
         .invoke_handler(tauri::generate_handler![
             get_all_serial_ports,
-            connect_to_serial_port
+            connect_to_serial_port,
+            send_text
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -85,3 +86,34 @@ fn connect_to_serial_port(port_name: String, state: tauri::State<'_, ActiveSeria
 
     true
 }
+
+#[tauri::command]
+fn send_text(_text: String, state: tauri::State<'_, ActiveSerialPort>) -> i32 {
+    let mut guard = match state.port.lock() {
+        Ok(p) => p,
+        Err(_e) => return -1,
+    };
+
+    let port = match &mut *guard {
+        Some(p) => p,
+        None => return -1,
+    };
+
+    let buf1: [u8; 33] = [
+        0x94, 0xc3, 0x00, 29, 10, 27, 21, 255, 255, 255, 255, 34, 15, 8, 1, 18, 11, 104, 101, 108,
+        108, 111, 32, 119, 111, 114, 108, 100, 53, 210, 194, 112, 17,
+    ];
+
+    let buf2: [u8; 6] = [0x94, 0xc3, 0x00, 2, 24, 1];
+
+    let mut bytes_sent = 0;
+
+    bytes_sent += port.write(&buf1).expect("Could not write first message");
+    bytes_sent += port.write(&buf2).expect("Could not write second message");
+
+    bytes_sent as i32
+}
+
+// __TAURI_INVOKE__("get_all_serial_ports").then(console.log).catch(console.error)
+// __TAURI_INVOKE__("connect_to_serial_port", { portName: "/dev/ttyACM0" }).then(console.log).catch(console.error)
+// __TAURI_INVOKE__("send_text", { Text: "hey" }).then(console.log).catch(console.error)
