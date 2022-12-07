@@ -167,29 +167,14 @@ impl SerialConnection {
 
         self.write_input_tx = Some(write_input_tx);
 
-        // ? Why doesn't this work?
-        // let mut write_port = port.try_clone().expect("Could not clone write port");
-
         let mut read_port = port.try_clone().expect("Could not clone read port");
 
         let serial_write_handle = thread::spawn(move || loop {
             if let Ok(data) = write_input_rx.recv() {
-                let magic_buffer = [0x94, 0xc3, 0x00, data.len() as u8];
-                let packet_slice = data.as_slice();
-
-                let binding = [&magic_buffer, packet_slice].concat();
-                let message_buffer: &[u8] = binding.as_slice();
-
-                match port.write(message_buffer) {
-                    Ok(_) => (),
-                    Err(e) => eprintln!("Error writing to port: {}", e),
+                match SerialConnection::write_to_radio(&mut port, data) {
+                    Ok(()) => (),
+                    Err(e) => eprintln!("Error writing to radio: {:?}", e.to_string()),
                 };
-
-                // ?? Why doesn't this work?
-                // match SerialConnection::write_to_radio(&mut port, data) {
-                //     Ok(()) => (),
-                //     Err(e) => eprintln!("Error writing to radio: {:?}", e.to_string()),
-                // };
             }
         });
 
