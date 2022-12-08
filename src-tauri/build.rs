@@ -25,7 +25,10 @@ fn main() -> std::io::Result<()> {
         protos.push(path.to_owned());
     }
 
-    prost_build::compile_protos(&protos, &[protobufs_dir]).unwrap();
+    let mut config = prost_build::Config::new();
+
+    config.type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]");
+    config.compile_protos(&protos, &[protobufs_dir]).unwrap();
 
     tauri_build::build();
 

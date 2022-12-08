@@ -76,6 +76,8 @@ fn connect_to_serial_port(
             if let Ok(message) = decoded_listener.recv().await {
                 println!("[main.rs] Decoded packet: {:?}", message.id);
 
+                handle.emit_all("demo", message.clone()).unwrap_or(());
+
                 let variant = match message.payload_variant {
                     Some(v) => v,
                     None => continue,
@@ -110,8 +112,6 @@ fn connect_to_serial_port(
                         println!("Rebooted data: {:#?}", r);
                     }
                 };
-
-                handle.emit_all("demo", message.id).unwrap_or(());
             }
         }
     });
