@@ -7,6 +7,7 @@ mod mesh;
 
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
+use std::error::Error;
 use std::sync::{Arc, Mutex};
 use tauri::Manager;
 
@@ -74,42 +75,16 @@ fn connect_to_serial_port(
     tauri::async_runtime::spawn(async move {
         loop {
             if let Ok(message) = decoded_listener.recv().await {
-                println!("[main.rs] Decoded packet: {:?}", message.id);
-
-                handle.emit_all("demo", message.clone()).unwrap_or(());
-
                 let variant = match message.payload_variant {
                     Some(v) => v,
                     None => continue,
                 };
 
-                match variant {
-                    protobufs::from_radio::PayloadVariant::Channel(c) => {
-                        println!("Channel data: {:#?}", c);
-                    }
-                    protobufs::from_radio::PayloadVariant::Config(c) => {
-                        println!("Config data: {:#?}", c);
-                    }
-                    protobufs::from_radio::PayloadVariant::ConfigCompleteId(c) => {
-                        println!("Config complete id data: {:#?}", c);
-                    }
-                    protobufs::from_radio::PayloadVariant::LogRecord(l) => {
-                        println!("Log record data: {:#?}", l);
-                    }
-                    protobufs::from_radio::PayloadVariant::ModuleConfig(m) => {
-                        println!("Module config data: {:#?}", m);
-                    }
-                    protobufs::from_radio::PayloadVariant::MyInfo(m) => {
-                        println!("My node info data: {:#?}", m);
-                    }
-                    protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
-                        println!("Node info data: {:#?}", n);
-                    }
-                    protobufs::from_radio::PayloadVariant::Packet(p) => {
-                        println!("Packet data: {:#?}", p);
-                    }
-                    protobufs::from_radio::PayloadVariant::Rebooted(r) => {
-                        println!("Rebooted data: {:#?}", r);
+                match dispatch_packet(handle.clone(), variant) {
+                    Ok(_) => (),
+                    Err(e) => {
+                        eprintln!("Error transmitting packet: {}", e.to_string());
+                        continue;
                     }
                 };
             }
@@ -122,6 +97,52 @@ fn connect_to_serial_port(
     }
 
     true
+}
+
+fn dispatch_packet(
+    handle: tauri::AppHandle,
+    variant: app::protobufs::from_radio::PayloadVariant,
+) -> Result<(), Box<dyn Error>> {
+    match variant {
+        protobufs::from_radio::PayloadVariant::Channel(c) => {
+            println!("Channel data: {:#?}", c);
+            handle.emit_all("channel", c)?;
+        }
+        protobufs::from_radio::PayloadVariant::Config(c) => {
+            // println!("Config data: {:#?}", c);
+            handle.emit_all("config", c)?;
+        }
+        protobufs::from_radio::PayloadVariant::ConfigCompleteId(c) => {
+            // println!("Config complete id data: {:#?}", c);
+            handle.emit_all("config_complete", c)?;
+        }
+        protobufs::from_radio::PayloadVariant::LogRecord(l) => {
+            // println!("Log record data: {:#?}", l);
+            handle.emit_all("log_record", l)?;
+        }
+        protobufs::from_radio::PayloadVariant::ModuleConfig(m) => {
+            // println!("Module config data: {:#?}", m);
+            handle.emit_all("module_config", m)?;
+        }
+        protobufs::from_radio::PayloadVariant::MyInfo(m) => {
+            // println!("My node info data: {:#?}", m);
+            handle.emit_all("my_node_info", m)?;
+        }
+        protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
+            // println!("Node info data: {:#?}", n);
+            handle.emit_all("node_info", n)?;
+        }
+        protobufs::from_radio::PayloadVariant::Packet(p) => {
+            // println!("Packet data: {:#?}", p);
+            handle.emit_all("packet", p)?;
+        }
+        protobufs::from_radio::PayloadVariant::Rebooted(r) => {
+            // println!("Rebooted data: {:#?}", r);
+            handle.emit_all("reboot", r)?;
+        }
+    };
+
+    Ok(())
 }
 
 #[tauri::command]
