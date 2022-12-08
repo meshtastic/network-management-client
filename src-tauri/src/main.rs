@@ -134,13 +134,102 @@ fn dispatch_packet(
         }
         protobufs::from_radio::PayloadVariant::Packet(p) => {
             // println!("Packet data: {:#?}", p);
-            handle.emit_all("packet", p)?;
+            handle_mesh_packet(handle, p)?;
         }
         protobufs::from_radio::PayloadVariant::Rebooted(r) => {
             // println!("Rebooted data: {:#?}", r);
             handle.emit_all("reboot", r)?;
         }
     };
+
+    Ok(())
+}
+
+fn handle_mesh_packet(
+    handle: tauri::AppHandle,
+    packet: protobufs::MeshPacket,
+) -> Result<(), Box<dyn Error>> {
+    let variant = packet.payload_variant.ok_or("No payload variant")?;
+
+    match variant {
+        protobufs::mesh_packet::PayloadVariant::Decoded(d) => {
+            println!("Decoded: {:#?}", d);
+            handle_decoded_mesh_packet(handle, d)?;
+        }
+        protobufs::mesh_packet::PayloadVariant::Encrypted(e) => {
+            eprintln!("Encrypted packets not yet supported in Rust: {:#?}", e);
+        }
+    }
+
+    Ok(())
+}
+
+fn handle_decoded_mesh_packet(
+    handle: tauri::AppHandle,
+    data: protobufs::Data,
+) -> Result<(), Box<dyn Error>> {
+    match data.portnum() {
+        protobufs::PortNum::AdminApp => {
+            eprintln!("Admin application not yet supported in Rust");
+        }
+        protobufs::PortNum::AtakForwarder => {
+            eprintln!("ATAK forwarder not yet supported in Rust");
+        }
+        protobufs::PortNum::AudioApp => {
+            eprintln!("Audio app not yet supported in Rust");
+        }
+        protobufs::PortNum::IpTunnelApp => {
+            eprintln!("IP tunnel app not yet supported in Rust");
+        }
+        protobufs::PortNum::NodeinfoApp => {
+            eprintln!("Node info app not yet supported in Rust");
+        }
+        protobufs::PortNum::PositionApp => {
+            handle.emit_all("position", data)?;
+        }
+        protobufs::PortNum::PrivateApp => {
+            eprintln!("Private app not yet supported in Rust");
+        }
+        protobufs::PortNum::RangeTestApp => {
+            eprintln!("Range test app not yet supported in Rust");
+        }
+        protobufs::PortNum::RemoteHardwareApp => {
+            eprintln!("Remote hardware app not yet supported in Rust");
+        }
+        protobufs::PortNum::ReplyApp => {
+            eprintln!("Reply app not yet supported in Rust");
+        }
+        protobufs::PortNum::RoutingApp => {
+            handle.emit_all("routing", data)?;
+        }
+        protobufs::PortNum::SerialApp => {
+            eprintln!("Serial app not yet supported in Rust");
+        }
+        protobufs::PortNum::SimulatorApp => {
+            eprintln!("Simulator app not yet supported in Rust");
+        }
+        protobufs::PortNum::StoreForwardApp => {
+            eprintln!("Store forward packets not yet supported in Rust");
+        }
+        protobufs::PortNum::TelemetryApp => {
+            handle.emit_all("telemetry", data)?;
+        }
+        protobufs::PortNum::TextMessageApp => {
+            handle.emit_all("text", data)?;
+        }
+        protobufs::PortNum::TextMessageCompressedApp => {
+            eprintln!("Compressed text data not yet supported in Rust");
+        }
+        protobufs::PortNum::WaypointApp => {
+            eprintln!("Waypoint app not yet supported in Rust");
+        }
+        protobufs::PortNum::ZpsApp => {
+            eprintln!("ZPS app not yet supported in Rust");
+        }
+        _ => {
+            eprintln!("Unknown packet received");
+        }
+    }
 
     Ok(())
 }
