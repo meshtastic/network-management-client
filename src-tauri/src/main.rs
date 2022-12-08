@@ -5,6 +5,7 @@ mod mesh;
 
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 
+use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use std::sync::{Arc, Mutex};
 use tauri::Manager;
@@ -74,6 +75,42 @@ fn connect_to_serial_port(
         loop {
             if let Ok(message) = decoded_listener.recv().await {
                 println!("[main.rs] Decoded packet: {:?}", message.id);
+
+                let variant = match message.payload_variant {
+                    Some(v) => v,
+                    None => continue,
+                };
+
+                match variant {
+                    protobufs::from_radio::PayloadVariant::Channel(c) => {
+                        println!("Channel data: {:#?}", c);
+                    }
+                    protobufs::from_radio::PayloadVariant::Config(c) => {
+                        println!("Config data: {:#?}", c);
+                    }
+                    protobufs::from_radio::PayloadVariant::ConfigCompleteId(c) => {
+                        println!("Config complete id data: {:#?}", c);
+                    }
+                    protobufs::from_radio::PayloadVariant::LogRecord(l) => {
+                        println!("Log record data: {:#?}", l);
+                    }
+                    protobufs::from_radio::PayloadVariant::ModuleConfig(m) => {
+                        println!("Module config data: {:#?}", m);
+                    }
+                    protobufs::from_radio::PayloadVariant::MyInfo(m) => {
+                        println!("My node info data: {:#?}", m);
+                    }
+                    protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
+                        println!("Node info data: {:#?}", n);
+                    }
+                    protobufs::from_radio::PayloadVariant::Packet(p) => {
+                        println!("Packet data: {:#?}", p);
+                    }
+                    protobufs::from_radio::PayloadVariant::Rebooted(r) => {
+                        println!("Rebooted data: {:#?}", r);
+                    }
+                };
+
                 handle.emit_all("demo", message.id).unwrap_or(());
             }
         }
