@@ -90,44 +90,46 @@ const Sidebar = () => {
           <SidebarIcon
             isActive={activeSidebarPanel === "map"}
             onClick={() => setActivePane("map")}
-            renderIcon={() => <MagnifyingGlassIcon className="" />}
+            renderIcon={() => <MagnifyingGlassIcon className="w-6" />}
           />
           <SidebarIcon
             isActive={activeSidebarPanel == "chat"}
             onClick={() => setActivePane("chat")}
-            renderIcon={() => <ChatBubbleBottomCenterTextIcon className="" />}
+            renderIcon={() => (
+              <ChatBubbleBottomCenterTextIcon className="w-6" />
+            )}
           />
           <SidebarIcon
             isActive={activeSidebarPanel == "info"}
             onClick={() => setActivePane("info")}
-            renderIcon={() => <DocumentTextIcon className="" />}
+            renderIcon={() => <DocumentTextIcon className="w-6" />}
           />
           <SidebarIcon
             isActive={activeSidebarPanel == "none"}
             onClick={requestDeviceConnection}
-            renderIcon={() => <LinkIcon className="" />}
+            renderIcon={() => <LinkIcon className="w-6" />}
           />
           <SidebarIcon
             isActive={activeSidebarPanel == "algo"}
             onClick={requestArticulationPoint}
-            renderIcon={() => <BeakerIcon className="" />}
+            renderIcon={() => <BeakerIcon className="w-6" />}
           />
           <SidebarIcon
             isActive={activeSidebarPanel == "algo"}
             onClick={requestGlobalMincut}
-            renderIcon={() => <BeakerIcon className="" />}
+            renderIcon={() => <BeakerIcon className="w-6" />}
           />
           <SidebarIcon
             isActive={activeSidebarPanel == "algo"}
             onClick={requestStoerWagner}
-            renderIcon={() => <BeakerIcon className="" />}
+            renderIcon={() => <BeakerIcon className="w-6" />}
           />
         </div>
       </div>
       <SidebarIcon
         isActive={activeSidebarPanel == "settings"}
         onClick={() => setActivePane("settings")}
-        renderIcon={() => <Cog8ToothIcon className="" />}
+        renderIcon={() => <Cog8ToothIcon className="w-6" />}
       />
     </div>
   );

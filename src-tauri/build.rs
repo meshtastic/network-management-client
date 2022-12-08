@@ -1,9 +1,9 @@
 use prost_build;
-// use prost_wkt_build::*;
-use std::{env, path::PathBuf};
 use walkdir::WalkDir;
 
 fn main() -> std::io::Result<()> {
+    println!("cargo:rerun-if-changed=protobufs");
+
     // Allows protobuf compilation without installing the `protoc` binary
     let protoc_path = protoc_bin_vendored::protoc_bin_path().unwrap();
     std::env::set_var("PROTOC", protoc_path);
@@ -11,7 +11,7 @@ fn main() -> std::io::Result<()> {
     let protobufs_dir = "protobufs";
     let mut protos = vec![];
 
-    for entry in WalkDir::new("protobufs")
+    for entry in WalkDir::new(protobufs_dir)
         .into_iter()
         .map(|e| e.unwrap())
         .filter(|e| {
@@ -24,7 +24,10 @@ fn main() -> std::io::Result<()> {
         protos.push(path.to_owned());
     }
 
-    prost_build::compile_protos(&protos, &[protobufs_dir]).unwrap();
+    let mut config = prost_build::Config::new();
+
+    config.type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]");
+    config.compile_protos(&protos, &[protobufs_dir]).unwrap();
 
     tauri_build::build();
 
