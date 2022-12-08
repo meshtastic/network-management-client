@@ -1,5 +1,4 @@
 use prost_build;
-// use std::{env, path::PathBuf};
 use walkdir::WalkDir;
 
 fn main() -> std::io::Result<()> {

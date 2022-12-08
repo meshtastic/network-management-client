@@ -3,11 +3,7 @@ mod aux_data_structures;
 mod graph;
 mod mesh;
 
-// Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
-
-use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
-use std::error::Error;
 use std::sync::{Arc, Mutex};
 use tauri::Manager;
 
@@ -53,7 +49,6 @@ fn connect_to_serial_port(
 ) -> bool {
     let mut connection: SerialConnection = MeshConnection::new();
 
-    // ? Might be able to return the listener from here
     match connection.connect(port_name, 115_200) {
         Ok(_h) => (),
         Err(_e) => {
@@ -80,7 +75,7 @@ fn connect_to_serial_port(
                     None => continue,
                 };
 
-                match dispatch_packet(handle.clone(), variant) {
+                match SerialConnection::dispatch_packet(handle.clone(), variant) {
                     Ok(_) => (),
                     Err(e) => {
                         eprintln!("Error transmitting packet: {}", e.to_string());
@@ -97,141 +92,6 @@ fn connect_to_serial_port(
     }
 
     true
-}
-
-fn dispatch_packet(
-    handle: tauri::AppHandle,
-    variant: app::protobufs::from_radio::PayloadVariant,
-) -> Result<(), Box<dyn Error>> {
-    match variant {
-        protobufs::from_radio::PayloadVariant::Channel(c) => {
-            println!("Channel data: {:#?}", c);
-            handle.emit_all("channel", c)?;
-        }
-        protobufs::from_radio::PayloadVariant::Config(c) => {
-            // println!("Config data: {:#?}", c);
-            handle.emit_all("config", c)?;
-        }
-        protobufs::from_radio::PayloadVariant::ConfigCompleteId(c) => {
-            // println!("Config complete id data: {:#?}", c);
-            handle.emit_all("config_complete", c)?;
-        }
-        protobufs::from_radio::PayloadVariant::LogRecord(l) => {
-            // println!("Log record data: {:#?}", l);
-            handle.emit_all("log_record", l)?;
-        }
-        protobufs::from_radio::PayloadVariant::ModuleConfig(m) => {
-            // println!("Module config data: {:#?}", m);
-            handle.emit_all("module_config", m)?;
-        }
-        protobufs::from_radio::PayloadVariant::MyInfo(m) => {
-            // println!("My node info data: {:#?}", m);
-            handle.emit_all("my_node_info", m)?;
-        }
-        protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
-            // println!("Node info data: {:#?}", n);
-            handle.emit_all("node_info", n)?;
-        }
-        protobufs::from_radio::PayloadVariant::Packet(p) => {
-            // println!("Packet data: {:#?}", p);
-            handle_mesh_packet(handle, p)?;
-        }
-        protobufs::from_radio::PayloadVariant::Rebooted(r) => {
-            // println!("Rebooted data: {:#?}", r);
-            handle.emit_all("reboot", r)?;
-        }
-    };
-
-    Ok(())
-}
-
-fn handle_mesh_packet(
-    handle: tauri::AppHandle,
-    packet: protobufs::MeshPacket,
-) -> Result<(), Box<dyn Error>> {
-    let variant = packet.payload_variant.ok_or("No payload variant")?;
-
-    match variant {
-        protobufs::mesh_packet::PayloadVariant::Decoded(d) => {
-            println!("Decoded: {:#?}", d);
-            handle_decoded_mesh_packet(handle, d)?;
-        }
-        protobufs::mesh_packet::PayloadVariant::Encrypted(e) => {
-            eprintln!("Encrypted packets not yet supported in Rust: {:#?}", e);
-        }
-    }
-
-    Ok(())
-}
-
-fn handle_decoded_mesh_packet(
-    handle: tauri::AppHandle,
-    data: protobufs::Data,
-) -> Result<(), Box<dyn Error>> {
-    match data.portnum() {
-        protobufs::PortNum::AdminApp => {
-            eprintln!("Admin application not yet supported in Rust");
-        }
-        protobufs::PortNum::AtakForwarder => {
-            eprintln!("ATAK forwarder not yet supported in Rust");
-        }
-        protobufs::PortNum::AudioApp => {
-            eprintln!("Audio app not yet supported in Rust");
-        }
-        protobufs::PortNum::IpTunnelApp => {
-            eprintln!("IP tunnel app not yet supported in Rust");
-        }
-        protobufs::PortNum::NodeinfoApp => {
-            eprintln!("Node info app not yet supported in Rust");
-        }
-        protobufs::PortNum::PositionApp => {
-            handle.emit_all("position", data)?;
-        }
-        protobufs::PortNum::PrivateApp => {
-            eprintln!("Private app not yet supported in Rust");
-        }
-        protobufs::PortNum::RangeTestApp => {
-            eprintln!("Range test app not yet supported in Rust");
-        }
-        protobufs::PortNum::RemoteHardwareApp => {
-            eprintln!("Remote hardware app not yet supported in Rust");
-        }
-        protobufs::PortNum::ReplyApp => {
-            eprintln!("Reply app not yet supported in Rust");
-        }
-        protobufs::PortNum::RoutingApp => {
-            handle.emit_all("routing", data)?;
-        }
-        protobufs::PortNum::SerialApp => {
-            eprintln!("Serial app not yet supported in Rust");
-        }
-        protobufs::PortNum::SimulatorApp => {
-            eprintln!("Simulator app not yet supported in Rust");
-        }
-        protobufs::PortNum::StoreForwardApp => {
-            eprintln!("Store forward packets not yet supported in Rust");
-        }
-        protobufs::PortNum::TelemetryApp => {
-            handle.emit_all("telemetry", data)?;
-        }
-        protobufs::PortNum::TextMessageApp => {
-            handle.emit_all("text", data)?;
-        }
-        protobufs::PortNum::TextMessageCompressedApp => {
-            eprintln!("Compressed text data not yet supported in Rust");
-        }
-        protobufs::PortNum::WaypointApp => {
-            eprintln!("Waypoint app not yet supported in Rust");
-        }
-        protobufs::PortNum::ZpsApp => {
-            eprintln!("ZPS app not yet supported in Rust");
-        }
-        _ => {
-            eprintln!("Unknown packet received");
-        }
-    }
-
-    Ok(())
 }
 
 #[tauri::command]
