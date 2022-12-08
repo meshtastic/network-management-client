@@ -6,10 +6,11 @@ mod mesh;
 // Reference: https://rfdonnelly.github.io/posts/tauri-async-rust-process/
 
 use mesh::serial_connection::{MeshConnection, SerialConnection};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
+use tauri::Manager;
 
 struct ActiveSerialConnection {
-    inner: Mutex<Option<mesh::serial_connection::SerialConnection>>,
+    inner: Arc<Mutex<Option<mesh::serial_connection::SerialConnection>>>,
 }
 
 mod aux_functions;
@@ -21,7 +22,7 @@ fn main() {
 
     tauri::Builder::default()
         .manage(ActiveSerialConnection {
-            inner: Mutex::new(None),
+            inner: Arc::new(Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
             run_articulation_point,
@@ -45,10 +46,12 @@ fn get_all_serial_ports() -> Vec<String> {
 #[tauri::command]
 fn connect_to_serial_port(
     port_name: String,
+    app_handle: tauri::AppHandle,
     state: tauri::State<'_, ActiveSerialConnection>,
 ) -> bool {
     let mut connection: SerialConnection = MeshConnection::new();
 
+    // ? Might be able to return the listener from here
     match connection.connect(port_name, 115_200) {
         Ok(_h) => (),
         Err(_e) => {
@@ -56,6 +59,25 @@ fn connect_to_serial_port(
             return false;
         }
     };
+
+    let mut decoded_listener = match connection.on_decoded_packet.as_ref() {
+        Some(l) => l.resubscribe(),
+        None => {
+            eprintln!("Decoded packet listener not open");
+            return false;
+        }
+    };
+
+    let handle = app_handle.app_handle().clone();
+
+    tauri::async_runtime::spawn(async move {
+        loop {
+            if let Ok(message) = decoded_listener.recv().await {
+                println!("[main.rs] Decoded packet: {:?}", message.id);
+                handle.emit_all("demo", message.id).unwrap_or(());
+            }
+        }
+    });
 
     {
         let mut state_connection = state.inner.lock().unwrap();

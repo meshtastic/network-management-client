@@ -9,10 +9,12 @@ use std::{
 use prost::Message;
 use rand::{distributions::Standard, prelude::Distribution, Rng};
 use serialport::SerialPort;
+use tokio::sync::broadcast;
 
 use app::protobufs;
 
 pub struct SerialConnection {
+    pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
     write_input_tx: Option<Sender<Vec<u8>>>,
     config_id: u32,
 }
@@ -49,6 +51,7 @@ impl MeshConnection for SerialConnection {
     fn new() -> Self {
         SerialConnection {
             write_input_tx: None,
+            on_decoded_packet: None,
             config_id: SerialConnection::generate_rand_id(),
         }
     }
@@ -164,8 +167,10 @@ impl SerialConnection {
 
         let (write_input_tx, write_input_rx) = mpsc::channel::<Vec<u8>>();
         let (read_output_tx, read_output_rx) = mpsc::channel::<Vec<u8>>();
+        let (decoded_packet_tx, decoded_packet_rx) = broadcast::channel::<protobufs::FromRadio>(32);
 
         self.write_input_tx = Some(write_input_tx);
+        self.on_decoded_packet = Some(decoded_packet_rx);
 
         let mut read_port = port.try_clone().expect("Could not clone read port");
 
@@ -306,7 +311,7 @@ impl SerialConnection {
                         transform_serial_buf =
                             transform_serial_buf[start_of_next_packet_idx..].to_vec();
 
-                        let decoded = match protobufs::FromRadio::decode(packet.as_slice()) {
+                        let decoded_packet = match protobufs::FromRadio::decode(packet.as_slice()) {
                             Ok(d) => d,
                             Err(err) => {
                                 eprintln!("deserialize failed: {:?}", err);
@@ -314,7 +319,7 @@ impl SerialConnection {
                             }
                         };
 
-                        println!("Decoded packet: {:?}", decoded);
+                        decoded_packet_tx.send(decoded_packet).unwrap();
                     }
                 }
             }
