@@ -2,6 +2,7 @@
 
 <div align="center">
   <h1 align="center">Meshtastic Emergency Response Client</h1>
+  <p align="center">An (unofficial) Meshtastic client allowing first responders to deploy and manage mesh networks in the field.</p>
 </div>
 
 <p align="center">
@@ -37,26 +38,54 @@
 
 <!-- > :bangbang: **This application is in early alpha development. For the time being, all images shown in this README are Figma designs and are likely not implemented. We will update this README when this functionality is implemented.** :bangbang: -->
 
-This application is a desktop client for the [Meshtastic](https://meshtastic.org/) mesh networking project intended for use in offline disaster response scenarios (e.g., missing person, fire response, etc...). This client is still in early alpha development, so feedback is very welcome! Feel free to drop an issue :)
+This application is an unofficial desktop client for the [Meshtastic Project](https://meshtastic.org/), with the goal of allowing emergency response workers to deploy and manage an off-grid mesh network. Currently, many emergency response teams utilize UHF/VHF analog radios, and while reliable, cannot reliably transmit vital data over long distances (GPS waypoints, regions of interest, etc). Our goal is to allow response coordinators to purchase [cheap, off-shelf radio hardware](https://meshtastic.org/docs/supported-hardware) and quickly and reliably use that hardware to communicate this vital response information.
 
-This project uses the [Tauri](https://tauri.app/) framework, which uses the native OS webview to render a web UI within a native Rust application window.
-
-> ℹ️ **This image is a conceptual design and is not yet fully implemented.** ℹ️
+This application is built using the [Tauri Framework](https://tauri.app/), a modern, secure successor to the [Electron Framework](https://www.electronjs.org/). This allows us to natively support Linux, macOS, and Windows within the same codebase without the performance or memory overhead of a Chromium browser. Our core application infrastructure is written in Rust, and UI and client functionality is written in React TypeScript and bundled using [Vite](https://vitejs.dev/). This project is in early stages of development, and as such is not yet suitable for production use.
 
 <!-- ![image](https://user-images.githubusercontent.com/46639306/197882383-e993add8-0900-4114-9cb6-9e9cb4d331d4.png) -->
 ![image](https://user-images.githubusercontent.com/46639306/206596246-0619edd5-7303-4fad-81f0-8c84263016b1.png)
 
-## Development Prerequisites
+<p align="center">ℹ️ <b>This image is a conceptual design and is not yet fully implemented.</b> ℹ️</p>
 
-This project requires the following programs to be installed to develop for this application:
+## Features
+
+This project is in early stages of development, but here's a rough roadmap of functionality we're working on.
+
+- [ ] :earth_americas: Node in-map viewing
+  - [x] Mapping service integration
+  - [x] Node positioning on map
+  - [ ] Offline map usage
+- [ ] :electric_plug: Rust serial management of base node
+  - [x] Rust serialport integration
+  - [x] Rust protobuf decoding/encoding
+  - [x] Tauri event management
+  - [ ] Redux saga event integration
+- [ ] :satellite: Messaging and channel management
+  - [x] Redux store + saga setup
+  - [ ] Channel management flows + UI
+  - [ ] Messaging UI
+  - [ ] Local message backup
+- [ ] :memo: Network onboarding and configuration flow
+- [ ] :computer: Algorithmic network management
+  - [x] Tauri command infrastructure
+  - [ ] Graph initialization and management
+  - [x] Algorithm implementations
+  - [ ] Insight utility UI
+- [ ] :floppy_disk: Response summary and export flow
+
+## Development
+
+### Prerequisites
+
+This project is built in Rust and React TypeScript, and managed using the PNPM package manager. As such, this project requires the following programs to be installed on your development machine:
 
 - [Rust Language](https://www.rust-lang.org/)
 - [Node.js](https://nodejs.org/en/)
 - [PNPM Package Manager](https://pnpm.io/installation)
 
-Additionally, this project uses [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). This means you will need to run `git submodule update --init` after cloning the repository.
+Additionally, this project uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to include the [meshtastic/protobufs](https://github.com/meshtastic/protobufs) repository. To install this submodule, run `git submodule update --init` after cloning this repository.
 
-## Recommended IDE Setup
+### Recommended IDE Setup
 
 We recommend the following Visual Studio Code extensions for developing on this codebase.
 
@@ -66,7 +95,7 @@ We recommend the following Visual Studio Code extensions for developing on this 
 - [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 - [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode)
 
-## Commands
+### Commands
 
 The following commands can be used to develop on this codebase. Note that it is possible to run the UI within a browser outside of the Rust application window, which is useful for developing UI code. This can be done with the `ui:*` commands. Dependencies can be installed with `pnpm i`.
 
