@@ -87,22 +87,26 @@ Additionally, this project uses [Git submodules](https://git-scm.com/book/en/v2/
 
 ### Recommended IDE Setup
 
-We recommend the following Visual Studio Code extensions for developing on this codebase.
+While this project can be developed within any text editor, we recommend the [Visual Studio Code](https://code.visualstudio.com/) editor. If using VSCode, we strongly recommend that you install the following Visual Studio Code extensions. These extensions both enforce code style and enable language and framework support for our tech stack.
 
 - [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 - [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
 - [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 - [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode)
+- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) (optional)
 
 ### Commands
 
-The following commands can be used to develop on this codebase. Note that it is possible to run the UI within a browser outside of the Rust application window, which is useful for developing UI code. This can be done with the `ui:*` commands. Dependencies can be installed with `pnpm i`.
+To standardise and simplify our development flow, we utilize PNPM commands (defined in `package.json`). We have created commands which allow for the development of the client only, or development of the client embeddeded in a desktop application window. We support running the application UI in a browser in the event that a contributor wants to make UI changes but is unable to install the required project dependences, although we strongly recommend developing using the `rust:*` commands. You will be unable to connect to a serial device when developing in-browser. Project dependencies can be installed with `pnpm i`.
 
-- `pnpm run ui:dev` - Starts the UI development server, allowing for UI development in a browser environment. Note that any code that interfaces with the Rust backend **will not function** within this browser environment
+- `pnpm run ui:dev` - Starts the UI development server, allowing for UI development in a browser environment. Note that any code that interfaces with the Rust backend **will not function** within this browser environment, meaning you will be unable to connect to serial devices in this context
 - `pnpm run ui:build`: - Runs a production build on the UI code into the `dist` directory
 - `pnpm run ui:preview` - Runs the built UI from the `dist` directory. This command must be run after `ui:build`
 - `pnpm run ui:format` - Formats the UI codebase using [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/)
 - `pnpm run ui:test` - Runs UI test suite using [Jest](https://jestjs.io/)
 - `pnpm run rust:dev` - Starts the desktop application in development mode, allowing for hot reloading of UI and Rust code
-- `pnpm run rust:test` - Runs backend tests on the Rust codebase directory (`/src-tauri`) Add `-- --show-output` to show printlns.
+- `pnpm run rust:test` - Runs backend test suite. Add `-- --show-output` to show Rust `println!` macro calls
+
+## Contributing
+
+As we are still very early in development, we don't yet have a standardized framework for accepting contributions. This being said, we are very open to suggestions and/or code changes! If you're interested in contributing to this repository, we would ask that you first check our issue board to ensure your work isn't duplicating the work of others. Then, please make an issue on our board so we know what you're interested in working on. If you have any questions about the project, we would love to hear from you!
