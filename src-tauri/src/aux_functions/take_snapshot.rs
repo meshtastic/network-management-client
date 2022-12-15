@@ -82,11 +82,6 @@ fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
         ordering_counter += 1;
         graph_text.push_str("\n");
     }
-
-    //file.write_all(ordering.as_bytes())
-    //    .expect("Unable to write data");
-
-    //Ok(())
 }
 
 /// Converts a graph to a string and returns it
