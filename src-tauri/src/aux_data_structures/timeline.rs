@@ -6,64 +6,67 @@ use postgres::{Client, NoTls};
 
 // Created at the beginning of each rescue attempt.
 pub struct Timeline {
-    snapshots: Vec<Graph>,
+    curr_snapshot: Option<Graph>,
     client: Client,
+    curr_timeline_id: i32,
 }
 
 impl Timeline {
     pub fn new(link: &str) -> Timeline {
+        // connect to the database and get the id of latest timeline
+        let mut client = Client::connect(link, NoTls).unwrap();
+        let mut curr_timeline_id = 0;
+
+        for row in client
+            .query("SELECT MAX(timeline_id) FROM timelines_1", &[])
+            .unwrap_or(Vec::new())
+        {
+            let timeline_id: i32 = row.get(0);
+            curr_timeline_id = timeline_id + 1;
+        }
+
         Timeline {
-            snapshots: Vec::new(),
-            client: Client::connect(link, NoTls).unwrap(),
+            curr_snapshot: None,
+            client,
+            curr_timeline_id,
         }
     }
 
     pub fn add_snapshot(&mut self, snapshot: Graph) {
-        // check if there is a disconnection
-        if self.snapshots.len() > 0 {
-            let last_snapshot = self.snapshots.last().unwrap();
-            let is_connected = handle_disc::check_connection(last_snapshot, &snapshot);
-            if !is_connected {
-                // write the current timeline to database, then clear the timeline
-                // and create another
-                self.write();
-                self.snapshots.clear();
-                // change self to a new timeline
-                self.snapshots.push(snapshot);
-            } else {
-                self.snapshots.push(snapshot);
+        match &self.curr_snapshot {
+            None => {
+                self.curr_snapshot = Some(snapshot);
+            }
+            Some(curr_snapshot) => {
+                let is_connected = handle_disc::check_connection(&curr_snapshot, &snapshot);
+                if !is_connected {
+                    self.write();
+                    self.curr_snapshot = Some(snapshot);
+                } else {
+                    self.curr_snapshot = Some(snapshot);
+                }
             }
         }
     }
 
-    pub fn get_snapshots(&self) -> Vec<Graph> {
-        let mut snapshots = Vec::new();
-        for snapshot in &self.snapshots {
-            snapshots.push(snapshot.clone());
+    pub fn get_curr_snapshot(&self) -> Option<Graph> {
+        match self.curr_snapshot {
+            None => None,
+            Some(ref curr_snapshot) => Some(curr_snapshot.clone()),
         }
-        snapshots
-    }
-
-    pub fn get_snapshot(&self, idx: usize) -> Graph {
-        self.snapshots[idx].clone()
-    }
-
-    pub fn get_snapshot_count(&self) -> usize {
-        self.snapshots.len()
     }
 
     pub fn write(&mut self) {
-        for snapshot in &self.snapshots {
-            let snapshot_string = take_snapshot_of_graph(snapshot);
-            let query = format!(
-                "INSERT INTO snapshots (snapshot) VALUES ('{}')",
-                snapshot_string
-            );
-            self.client.execute(query.as_str(), &[]).unwrap();
-        }
+        let curr_snapshot = self.curr_snapshot.as_ref().expect("msg");
+        let snapshot_string = take_snapshot_of_graph(&curr_snapshot);
+        let query = format!(
+            "INSERT INTO snapshots (snapshot) VALUES ('{}')",
+            snapshot_string
+        );
+        self.client.execute(query.as_str(), &[]).unwrap();
     }
 
     pub fn clear(&mut self) {
-        self.snapshots.clear();
+        self.curr_snapshot = None;
     }
 }
