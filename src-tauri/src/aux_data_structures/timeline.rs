@@ -1,5 +1,4 @@
 // A data structure to represent the timeline of graph snapshots.
-use crate::aux_functions::handle_disc;
 use crate::aux_functions::take_snapshot::take_snapshot_of_graph;
 use crate::graph::graph_ds::Graph;
 use postgres::{Client, NoTls};
@@ -37,14 +36,29 @@ impl Timeline {
             None => {
                 self.curr_snapshot = Some(snapshot);
             }
-            Some(curr_snapshot) => {
-                let is_connected = handle_disc::check_connection(&curr_snapshot, &snapshot);
+            Some(_curr_snapshot) => {
+                let is_connected = self.check_connection(&snapshot);
                 if !is_connected {
                     self.write();
                     self.curr_snapshot = Some(snapshot);
                 } else {
                     self.curr_snapshot = Some(snapshot);
                 }
+            }
+        }
+    }
+
+    pub fn check_connection(&mut self, other_snapshot: &Graph) -> bool {
+        match &self.curr_snapshot {
+            None => true,
+            Some(curr_snapshot) => {
+                let g1_order = curr_snapshot.get_order();
+                let g2_order = other_snapshot.get_order();
+                let diff = (g1_order as i32 - g2_order as i32).abs();
+                if diff >= 1 {
+                    return false;
+                }
+                true
             }
         }
     }
