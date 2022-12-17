@@ -42,13 +42,13 @@ impl Timeline {
 
         let create_timeline_ft_table_query = format!(
             "CREATE TABLE IF NOT EXISTS {} (
-                timeline_id INT,
-                snapshot_id INT,
-                node_fts_prim JSONB,
-                snapshot_txt VARCHAR,
-                misc JSONB
+                timeline_id integer,
+                snapshot_id integer,
+                node_fts_prim jsonb,
+                snapshot_txt varchar,
+                misc jsonb
             )",
-            config_fields.get("timeline_table_name").unwrap()
+            config_fields.get("ft_table_name").unwrap()
         );
 
         client
@@ -78,10 +78,7 @@ impl Timeline {
                 .get("training_table_name")
                 .unwrap()
                 .to_string(),
-            timeline_ft_table_name: config_fields
-                .get("timeline_table_name")
-                .unwrap()
-                .to_string(),
+            timeline_ft_table_name: config_fields.get("ft_table_name").unwrap().to_string(),
         }
     }
 
