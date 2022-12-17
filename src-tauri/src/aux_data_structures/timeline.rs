@@ -1,5 +1,5 @@
 // A data structure to represent the timeline of graph snapshots.
-use crate::aux_functions::take_snapshot::take_snapshot_of_graph;
+use crate::aux_functions::take_snapshot::{take_snapshot_of_graph, take_snapshot_of_node_fts};
 use crate::graph::graph_ds::Graph;
 use postgres::{Client, NoTls};
 
@@ -7,6 +7,7 @@ use postgres::{Client, NoTls};
 pub struct Timeline {
     curr_snapshot: Option<Graph>,
     client: Client,
+    label: i32,
     curr_timeline_id: i32,
     curr_snapshot_id: i32,
 }
@@ -26,7 +27,7 @@ impl Timeline {
         let mut curr_timeline_id = 0;
 
         for row in client
-            .query("SELECT MAX(timeline_id) FROM timelinestable1", &[])
+            .query("SELECT MAX(timeline_id) FROM timelinestable2", &[])
             .unwrap_or(Vec::new())
         {
             let timeline_id: i32 = row.get(0);
@@ -36,6 +37,7 @@ impl Timeline {
         Timeline {
             curr_snapshot: None,
             client,
+            label: 1,
             curr_timeline_id,
             curr_snapshot_id: 0,
         }
@@ -51,6 +53,13 @@ impl Timeline {
                 self.write();
                 self.curr_snapshot = Some(snapshot);
                 if !is_connected {
+                    self.label = 0;
+                    self.client
+                        .execute(
+                            "INSERT INTO trainingtable2 (timeline_id, label) VALUES ($1, $2)",
+                            &[&self.curr_timeline_id, &self.label],
+                        )
+                        .unwrap();
                     self.curr_timeline_id += 1;
                 }
             }
@@ -84,20 +93,49 @@ impl Timeline {
         let curr_snapshot = self.curr_snapshot.as_ref().expect("msg");
         let snapshot_string = take_snapshot_of_graph(curr_snapshot);
 
-        println!("{}", snapshot_string);
-
         let snapshot_id = self.curr_snapshot_id;
         let timeline_id = self.curr_timeline_id;
+
+        let snapshot_of_node_fts = take_snapshot_of_node_fts(curr_snapshot);
+
+        let snapshot_of_node_fts = serde_json::to_string(&snapshot_of_node_fts).unwrap();
+        let snapshot_of_node_fts_json: serde_json::Value =
+            serde_json::from_str(&snapshot_of_node_fts)
+                .expect("Error converting snapshot_of_node_fts to serde_json::Value");
+
         let query_str =
-            "INSERT INTO timelinestable1 (timeline_id, snapshot_id, dats) VALUES ($1, $2, $3)";
+            "INSERT INTO timelinestable2 (timeline_id, snapshot_id, node_fts_prim, snapshot_txt, misc) VALUES ($1, $2, $3, $4, $5)";
+
+        // create empty serde_json value
+        let empty_json = serde_json::Value::Object(serde_json::Map::new());
 
         self.client
-            .execute(query_str, &[&timeline_id, &snapshot_id, &snapshot_string])
+            .execute(
+                query_str,
+                &[
+                    &timeline_id,
+                    &snapshot_id,
+                    &snapshot_of_node_fts_json,
+                    &snapshot_string,
+                    &empty_json,
+                ],
+            )
             .unwrap();
     }
 
     pub fn clear(&mut self) {
         self.curr_snapshot = None;
+    }
+
+    pub fn conclude_timeline(&mut self) {
+        self.write();
+        self.label = 1;
+        self.client
+            .execute(
+                "INSERT INTO trainingtable2 (timeline_id, label) VALUES ($1, $2)",
+                &[&self.curr_timeline_id, &self.label],
+            )
+            .unwrap();
     }
 }
 
@@ -190,5 +228,7 @@ mod tests {
         for graph in graphs {
             timeline.add_snapshot(graph);
         }
+
+        timeline.conclude_timeline();
     }
 }
