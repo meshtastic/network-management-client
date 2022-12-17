@@ -8,16 +8,25 @@ pub struct Timeline {
     curr_snapshot: Option<Graph>,
     client: Client,
     curr_timeline_id: i32,
+    curr_snapshot_id: i32,
 }
 
 impl Timeline {
     pub fn new(link: &str) -> Timeline {
-        // connect to the database and get the id of latest timeline
-        let mut client = Client::connect(link, NoTls).unwrap();
+        let mut config = postgres::Config::new();
+
+        config
+            .user("barkin")
+            .password("zbRH6C32$f2N")
+            .dbname("timelines1")
+            .host("localhost")
+            .port(5432);
+
+        let mut client = config.connect(NoTls).unwrap(); //Client::connect(params, NoTls).unwrap();
         let mut curr_timeline_id = 0;
 
         for row in client
-            .query("SELECT MAX(timeline_id) FROM timelines_1", &[])
+            .query("SELECT MAX(timeline_id) FROM timelinestable1", &[])
             .unwrap_or(Vec::new())
         {
             let timeline_id: i32 = row.get(0);
@@ -28,6 +37,7 @@ impl Timeline {
             curr_snapshot: None,
             client,
             curr_timeline_id,
+            curr_snapshot_id: 0,
         }
     }
 
@@ -38,14 +48,14 @@ impl Timeline {
             }
             Some(_curr_snapshot) => {
                 let is_connected = self.check_connection(&snapshot);
+                self.write();
+                self.curr_snapshot = Some(snapshot);
                 if !is_connected {
-                    self.write();
-                    self.curr_snapshot = Some(snapshot);
-                } else {
-                    self.curr_snapshot = Some(snapshot);
+                    self.curr_timeline_id += 1;
                 }
             }
         }
+        self.curr_snapshot_id += 1;
     }
 
     pub fn check_connection(&mut self, other_snapshot: &Graph) -> bool {
@@ -72,15 +82,113 @@ impl Timeline {
 
     pub fn write(&mut self) {
         let curr_snapshot = self.curr_snapshot.as_ref().expect("msg");
-        let snapshot_string = take_snapshot_of_graph(&curr_snapshot);
-        let query = format!(
-            "INSERT INTO snapshots (snapshot) VALUES ('{}')",
-            snapshot_string
-        );
-        self.client.execute(query.as_str(), &[]).unwrap();
+        let snapshot_string = take_snapshot_of_graph(curr_snapshot);
+
+        println!("{}", snapshot_string);
+
+        let snapshot_id = self.curr_snapshot_id;
+        let timeline_id = self.curr_timeline_id;
+        let query_str =
+            "INSERT INTO timelinestable1 (timeline_id, snapshot_id, dats) VALUES ($1, $2, $3)";
+
+        self.client
+            .execute(query_str, &[&timeline_id, &snapshot_id, &snapshot_string])
+            .unwrap();
     }
 
     pub fn clear(&mut self) {
         self.curr_snapshot = None;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::graph::{edge::Edge, node::Node};
+
+    use super::*;
+
+    #[test]
+    fn test_timeline() {
+        let mut timeline = Timeline::new("");
+
+        let mut G1 = Graph::new();
+
+        // Create a few nodes and edges and add to graph
+        let a: String = "a".to_string();
+        let b: String = "b".to_string();
+        let c: String = "c".to_string();
+        let d: String = "d".to_string();
+
+        let mut a_node = Node::new(a.clone());
+        a_node.set_gps(-72.28486, 43.71489, 1.0);
+        let a_idx = G1.add_node_from_struct(a_node);
+
+        let mut b_node = Node::new(b.clone());
+        b_node.set_gps(-72.28239, 43.71584, 1.0);
+        let b_idx = G1.add_node_from_struct(b_node);
+
+        let mut c_node = Node::new(c.clone());
+        c_node.set_gps(-72.28332, 43.7114, 1.0);
+        let c_idx = G1.add_node_from_struct(c_node);
+
+        let mut d_node = Node::new(d.clone());
+        d_node.set_gps(-72.28085, 43.71235, 1.0);
+        let d_idx = G1.add_node_from_struct(d_node);
+
+        // 0: a, 1: b, 2: c, 3: d
+        let a_b = Edge::new(a_idx, b_idx, 0.51);
+        G1.add_edge_from_struct(a_b);
+
+        let a_c = Edge::new(a_idx, c_idx, 0.39);
+        G1.add_edge_from_struct(a_c);
+
+        let b_c = Edge::new(b_idx, c_idx, 0.4);
+        G1.add_edge_from_struct(b_c);
+
+        let b_d = Edge::new(b_idx, d_idx, 0.6);
+        G1.add_edge_from_struct(b_d);
+
+        let mut G2 = Graph::new();
+
+        // Create a few nodes and edges and add to graph
+        let a: String = "a".to_string();
+        let b: String = "b".to_string();
+        let c: String = "c".to_string();
+        let d: String = "d".to_string();
+
+        let mut a_node = Node::new(a.clone());
+        a_node.set_gps(-72.28239, 43.71489, 1.0);
+        let a_idx = G2.add_node_from_struct(a_node);
+
+        let mut b_node = Node::new(b.clone());
+        b_node.set_gps(-72.28486, 43.71584, 1.0);
+        let b_idx = G2.add_node_from_struct(b_node);
+
+        let mut c_node = Node::new(c.clone());
+        c_node.set_gps(-72.28332, 43.7114, 1.0);
+        let c_idx = G2.add_node_from_struct(c_node);
+
+        let mut d_node = Node::new(d.clone());
+        d_node.set_gps(-72.28085, 43.71235, 1.0);
+        let d_idx = G2.add_node_from_struct(d_node);
+
+        // 0: a, 1: b, 2: c, 3: d
+        let a_b = Edge::new(a_idx, b_idx, 0.6);
+        G2.add_edge_from_struct(a_b);
+
+        let a_c = Edge::new(a_idx, c_idx, 0.33);
+        G2.add_edge_from_struct(a_c);
+
+        let b_d = Edge::new(b_idx, d_idx, 0.65);
+        G2.add_edge_from_struct(b_d);
+
+        let b_c = Edge::new(b_idx, c_idx, 0.11);
+        G2.add_edge_from_struct(b_c);
+
+        let graphs = vec![G1, G2];
+
+        for graph in graphs {
+            timeline.add_snapshot(graph);
+        }
     }
 }
