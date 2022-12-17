@@ -1,4 +1,4 @@
-use std::{error::Error, fs::File, io::Write};
+use std::collections::HashMap;
 
 use crate::graph::graph_ds::Graph;
 
@@ -116,6 +116,25 @@ pub fn take_snapshot_of_graph(graph: &Graph) -> String {
     graph_string.pop();
 
     return graph_string;
+}
+
+pub fn take_snapshot_of_node_fts(graph: &Graph) -> HashMap<String, HashMap<String, f64>> {
+    // Creates a hashmap where each key is node_id string and value is another
+    // hashmap, where each key is name of feature and value is the feature value
+    let mut node_fts: HashMap<String, HashMap<String, f64>> = HashMap::new();
+
+    for node in graph.get_nodes() {
+        let mut node_ft: HashMap<String, f64> = HashMap::new();
+        node_ft.insert("latitude".to_string(), node.latitude);
+        node_ft.insert("longitude".to_string(), node.longitude);
+        node_ft.insert("altitude".to_string(), node.altitude);
+        node_ft.insert("speed".to_string(), node.speed);
+        node_ft.insert("direction".to_string(), node.direction as f64);
+        node_ft.insert("degree".to_string(), node.optimal_weighted_degree as f64);
+
+        node_fts.insert(node.name.clone(), node_ft);
+    }
+    node_fts
 }
 
 // Create a unit test for the Graph struct
