@@ -44,9 +44,9 @@ impl Timeline {
             "CREATE TABLE IF NOT EXISTS {} (
                 timeline_id INT,
                 snapshot_id INT,
-                node_id INT,
-                node_ft_id INT,
-                node_ft_value FLOAT
+                node_fts_prim JSONB,
+                snapshot_txt VARCHAR,
+                misc JSONB
             )",
             config_fields.get("timeline_table_name").unwrap()
         );
