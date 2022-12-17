@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 // A data structure to represent the timeline of graph snapshots.
 use crate::aux_functions::take_snapshot::{take_snapshot_of_graph, take_snapshot_of_node_fts};
 use crate::graph::graph_ds::Graph;
@@ -10,24 +12,56 @@ pub struct Timeline {
     label: i32,
     curr_timeline_id: i32,
     curr_snapshot_id: i32,
+    training_table_name: String,
+    timeline_ft_table_name: String,
 }
 
 impl Timeline {
-    pub fn new(link: &str) -> Timeline {
+    pub fn new(config_fields: HashMap<&str, &str>) -> Timeline {
         let mut config = postgres::Config::new();
 
         config
-            .user("barkin")
-            .password("zbRH6C32$f2N")
-            .dbname("timelines1")
-            .host("localhost")
-            .port(5432);
+            .user(config_fields.get("user").unwrap())
+            .password(config_fields.get("password").unwrap())
+            .dbname(config_fields.get("dbname").unwrap())
+            .host(config_fields.get("host").unwrap())
+            .port(config_fields.get("port").unwrap().parse::<u16>().unwrap());
 
-        let mut client = config.connect(NoTls).unwrap(); //Client::connect(params, NoTls).unwrap();
+        let mut client = config.connect(NoTls).unwrap();
         let mut curr_timeline_id = 0;
 
+        let create_training_table_query = format!(
+            "CREATE TABLE IF NOT EXISTS {} (
+                timeline_id INT,
+                label INT
+            )",
+            config_fields.get("training_table_name").unwrap()
+        );
+
+        client.execute(&create_training_table_query, &[]).unwrap();
+
+        let create_timeline_ft_table_query = format!(
+            "CREATE TABLE IF NOT EXISTS {} (
+                timeline_id INT,
+                snapshot_id INT,
+                node_id INT,
+                node_ft_id INT,
+                node_ft_value FLOAT
+            )",
+            config_fields.get("timeline_table_name").unwrap()
+        );
+
+        client
+            .execute(&create_timeline_ft_table_query, &[])
+            .unwrap();
+
+        let max_timeline_id_query = format!(
+            "SELECT MAX(timeline_id) FROM {}",
+            config_fields.get("training_table_name").unwrap()
+        );
+
         for row in client
-            .query("SELECT MAX(timeline_id) FROM timelinestable2", &[])
+            .query(&max_timeline_id_query, &[])
             .unwrap_or(Vec::new())
         {
             let timeline_id: i32 = row.get(0);
@@ -40,6 +74,14 @@ impl Timeline {
             label: 1,
             curr_timeline_id,
             curr_snapshot_id: 0,
+            training_table_name: config_fields
+                .get("training_table_name")
+                .unwrap()
+                .to_string(),
+            timeline_ft_table_name: config_fields
+                .get("timeline_table_name")
+                .unwrap()
+                .to_string(),
         }
     }
 
@@ -54,11 +96,12 @@ impl Timeline {
                 self.curr_snapshot = Some(snapshot);
                 if !is_connected {
                     self.label = 0;
+                    let query = format!(
+                        "INSERT INTO {} (timeline_id, label) VALUES ($1, $2)",
+                        self.training_table_name
+                    );
                     self.client
-                        .execute(
-                            "INSERT INTO trainingtable2 (timeline_id, label) VALUES ($1, $2)",
-                            &[&self.curr_timeline_id, &self.label],
-                        )
+                        .execute(&query, &[&self.curr_timeline_id, &self.label])
                         .unwrap();
                     self.curr_timeline_id += 1;
                 }
@@ -104,14 +147,14 @@ impl Timeline {
                 .expect("Error converting snapshot_of_node_fts to serde_json::Value");
 
         let query_str =
-            "INSERT INTO timelinestable2 (timeline_id, snapshot_id, node_fts_prim, snapshot_txt, misc) VALUES ($1, $2, $3, $4, $5)";
+            format!("INSERT INTO {} (timeline_id, snapshot_id, node_fts_prim, snapshot_txt, misc) VALUES ($1, $2, $3, $4, $5)", self.timeline_ft_table_name);
 
         // create empty serde_json value
         let empty_json = serde_json::Value::Object(serde_json::Map::new());
 
         self.client
             .execute(
-                query_str,
+                &query_str,
                 &[
                     &timeline_id,
                     &snapshot_id,
@@ -130,11 +173,12 @@ impl Timeline {
     pub fn conclude_timeline(&mut self) {
         self.write();
         self.label = 1;
+        let query = format!(
+            "INSERT INTO {} (timeline_id, label) VALUES ($1, $2)",
+            self.training_table_name
+        );
         self.client
-            .execute(
-                "INSERT INTO trainingtable2 (timeline_id, label) VALUES ($1, $2)",
-                &[&self.curr_timeline_id, &self.label],
-            )
+            .execute(&query, &[&self.curr_timeline_id, &self.label])
             .unwrap();
     }
 }
@@ -147,7 +191,17 @@ mod tests {
 
     #[test]
     fn test_timeline() {
-        let mut timeline = Timeline::new("");
+        let mut config_fields = HashMap::new();
+
+        config_fields.insert("user", "barkin");
+        config_fields.insert("password", "zbRH6C32$f2N");
+        config_fields.insert("dbname", "timelines1");
+        config_fields.insert("host", "localhost");
+        config_fields.insert("port", "5432");
+        config_fields.insert("ft_table_name", "timelinestable2");
+        config_fields.insert("training_table_name", "trainingtable2");
+
+        let mut timeline = Timeline::new(config_fields);
 
         let mut G1 = Graph::new();
 
