@@ -1,86 +1,89 @@
 import { EventChannel, eventChannel } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 import type { Types } from "@meshtastic/meshtasticjs";
+import { listen } from "@tauri-apps/api/event";
 
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
-export type DeviceMetadataPacket = Types.DeviceMetadataPacket;
-export type RoutingPacket = Types.RoutingPacket;
-export type TelemetryPacket = Types.TelemetryPacket;
-export type DeviceStatusPacket = Types.DeviceStatusEnum;
-export type PositionPacket = Types.PositionPacket;
-export type WaypointPacket = Types.WaypointPacket;
-export type UserPacket = Types.UserPacket;
-export type NodeInfoPacket = Types.NodeInfoPacket;
-export type ChannelPacket = Types.ChannelPacket;
-export type ConfigPacket = Types.ConfigPacket;
-export type ModuleConfigPacket = Types.ModuleConfigPacket;
-export type MessagePacket = Types.MessagePacket;
+export type DeviceMetadata = Types.DeviceMetadataPacket["data"];
+export type Routing = Types.RoutingPacket["data"];
+export type Telemetry = Types.TelemetryPacket["data"];
+export type DeviceStatus = Types.DeviceStatusEnum;
+export type Position = Types.PositionPacket["data"];
+export type Waypoint = Types.WaypointPacket["data"];
+export type User = Types.UserPacket["data"];
+export type NodeInfo = Types.NodeInfoPacket["data"];
+export type Channel = Types.ChannelPacket["data"];
+export type Config = Types.ConfigPacket["data"];
+export type ModuleConfig = Types.ModuleConfigPacket["data"];
+export type Message = Types.MessagePacket["text"];
 
-export type DeviceMetadataPacketChannel = EventChannel<DeviceMetadataPacket>;
-export type RoutingPacketChannel = EventChannel<RoutingPacket>;
-export type TelemetryPacketChannel = EventChannel<TelemetryPacket>;
-export type DeviceStatusChannel = EventChannel<DeviceStatusPacket>;
-export type PostionPacketChannel = EventChannel<PositionPacket>;
-export type WaypointPacketChannel = EventChannel<WaypointPacket>;
-export type UserPacketChannel = EventChannel<UserPacket>;
-export type NodeInfoPacketChannel = EventChannel<NodeInfoPacket>;
-export type ChannelPacketChannel = EventChannel<ChannelPacket>;
-export type ConfigPacketChannel = EventChannel<ConfigPacket>;
-export type ModuleConfigPacketChannel = EventChannel<ModuleConfigPacket>;
-export type MessagePacketChannel = EventChannel<MessagePacket>;
+export type DeviceMetadataChannel = EventChannel<DeviceMetadata>;
+export type RoutingChannel = EventChannel<Routing>;
+export type TelemetryChannel = EventChannel<Telemetry>;
+export type DeviceStatusChannel = EventChannel<DeviceStatus>;
+export type PostionChannel = EventChannel<Position>;
+export type WaypointChannel = EventChannel<Waypoint>;
+export type UserChannel = EventChannel<User>;
+export type NodeInfoChannel = EventChannel<NodeInfo>;
+export type ChannelChannel = EventChannel<Channel>;
+export type ConfigChannel = EventChannel<Config>;
+export type ModuleConfigChannel = EventChannel<ModuleConfig>;
+export type MessageChannel = EventChannel<Message>;
 
 function* handleSagaError(error: unknown) {
   yield put({ type: "GENERAL_ERROR", payload: error });
 }
 
-export const createDeviceMetadataPacketChannel = (
-  connection: Types.ConnectionType
-): DeviceMetadataPacketChannel => {
+export const createDeviceMetadataChannel = (): DeviceMetadataChannel => {
   return eventChannel((emitter) => {
-    connection.onDeviceMetadataPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    // connection.onDeviceMetadataPacket.subscribe((packet) => {
+    //   emitter(packet);
+    // });
 
     return () => null;
   });
 };
 
-export function* handleDeviceMetadataPacketChannel(
+export function* handleDeviceMetadataChannel(
   deviceId: number,
-  channel: DeviceMetadataPacketChannel
+  channel: DeviceMetadataChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: DeviceMetadataPacket = yield take(channel);
-      yield put(deviceSliceActions.updateDeviceMetadata({ deviceId, packet }));
+      const packet: DeviceMetadata = yield take(channel);
+      // yield put(deviceSliceActions.updateDeviceMetadata({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
   }
 }
 
-export const createRoutingPacketChannel = (
-  connection: Types.ConnectionType
-): RoutingPacketChannel => {
+export const createRoutingChannel = (): RoutingChannel => {
   return eventChannel((emitter) => {
-    connection.onRoutingPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    listen<Routing>("routing", (event) => {
+      console.log("routing", event.payload);
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
 
+    // TODO UNLISTEN
     return () => null;
   });
 };
 
-export function* handleRoutingPacketChannel(
+export function* handleRoutingChannel(
   deviceId: number,
-  channel: RoutingPacketChannel
+  channel: RoutingChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: RoutingPacket = yield take(channel);
+      const packet: Routing = yield take(channel);
       console.log("routingPacket", deviceId, packet);
     }
   } catch (error) {
@@ -88,26 +91,30 @@ export function* handleRoutingPacketChannel(
   }
 }
 
-export const createTelemetryPacketChannel = (
-  connection: Types.ConnectionType
-): TelemetryPacketChannel => {
+export const createTelemetryChannel = (): TelemetryChannel => {
   return eventChannel((emitter) => {
-    connection.onTelemetryPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    listen<Telemetry>("telemetry", (event) => {
+      console.log("telemetry", event.payload);
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
 
+    // TODO UNLISTEN
     return () => null;
   });
 };
 
-export function* handleTelemetryPacketChannel(
+export function* handleTelemetryChannel(
   deviceId: number,
-  channel: TelemetryPacketChannel
+  channel: TelemetryChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: TelemetryPacket = yield take(channel);
+      const packet: Telemetry = yield take(channel);
       console.log("telemetryPacket", deviceId, packet);
     }
   } catch (error) {
@@ -115,81 +122,81 @@ export function* handleTelemetryPacketChannel(
   }
 }
 
-export const createDeviceStatusPacketChannel = (
-  connection: Types.ConnectionType
-): DeviceStatusChannel => {
+export const createDeviceStatusChannel = (): DeviceStatusChannel => {
   return eventChannel((emitter) => {
-    connection.onDeviceStatus.subscribe((packet) => {
-      emitter(packet);
-    });
+    // connection.onDeviceStatus.subscribe((packet) => {
+    //   emitter(packet);
+    // });
 
     return () => null;
   });
 };
 
-export function* handleDeviceStatusPacketChannel(
+export function* handleDeviceStatusChannel(
   deviceId: number,
   channel: DeviceStatusChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: DeviceStatusPacket = yield take(channel);
-      yield put(deviceSliceActions.updateDeviceStatus({ deviceId, packet }));
+      const packet: DeviceStatus = yield take(channel);
+      // yield put(deviceSliceActions.updateDeviceStatus({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
   }
 }
 
-export const createPositionPacketChannel = (
-  connection: Types.ConnectionType
-): PostionPacketChannel => {
+export const createPositionChannel = (): PostionChannel => {
   return eventChannel((emitter) => {
-    connection.onPositionPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    listen<Position>("position", (event) => {
+      console.log("position", event.payload);
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
 
+    // TODO UNLISTEN
     return () => null;
   });
 };
 
-export function* handlePositionPacketChannel(
+export function* handlePositionChannel(
   deviceId: number,
-  channel: PostionPacketChannel
+  channel: PostionChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: PositionPacket = yield take(channel);
-      yield put(deviceSliceActions.updateNodePosition({ deviceId, packet }));
+      const packet: Position = yield take(channel);
+      // yield put(deviceSliceActions.updateNodePosition({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
   }
 }
 
-export const createWaypointPacketChannel = (
-  connection: Types.ConnectionType
-): WaypointPacketChannel => {
+export const createWaypointChannel = (): WaypointChannel => {
   return eventChannel((emitter) => {
-    connection.onWaypointPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    // connection.onWaypointPacket.subscribe((packet) => {
+    //   emitter(packet);
+    // });
 
     return () => null;
   });
 };
 
-export function* handleWaypointPacketChannel(
+export function* handleWaypointChannel(
   deviceId: number,
-  channel: WaypointPacketChannel
+  channel: WaypointChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: WaypointPacket = yield take(channel);
-      yield put(deviceSliceActions.addDeviceWaypoint({ deviceId, packet }));
+      const packet: Waypoint = yield take(channel);
+      // yield put(deviceSliceActions.addDeviceWaypoint({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
@@ -198,164 +205,176 @@ export function* handleWaypointPacketChannel(
 
 // TODO myNodeInfo
 
-export const createUserPacketChannel = (
-  connection: Types.ConnectionType
-): UserPacketChannel => {
+export const createUserChannel = (): UserChannel => {
   return eventChannel((emitter) => {
-    connection.onUserPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    // connection.onUserPacket.subscribe((packet) => {
+    //   emitter(packet);
+    // });
 
     return () => null;
   });
 };
 
-export function* handleUserPacketChannel(
-  deviceId: number,
-  channel: UserPacketChannel
-) {
+export function* handleUserChannel(deviceId: number, channel: UserChannel) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: UserPacket = yield take(channel);
-      yield put(deviceSliceActions.updateNodeUser({ deviceId, packet }));
+      const packet: User = yield take(channel);
+      // yield put(deviceSliceActions.updateNodeUser({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
   }
 }
 
-export const createNodeInfoPacketChannel = (
-  connection: Types.ConnectionType
-): NodeInfoPacketChannel => {
+export const createNodeInfoChannel = (): NodeInfoChannel => {
   return eventChannel((emitter) => {
-    connection.onNodeInfoPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    listen<NodeInfo>("node_info", (event) => {
+      console.log("node_info", event.payload);
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
 
+    // TODO UNLISTEN
     return () => null;
   });
 };
 
-export function* handleNodeInfoPacketChannel(
+export function* handleNodeInfoChannel(
   deviceId: number,
-  channel: NodeInfoPacketChannel
+  channel: NodeInfoChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: NodeInfoPacket = yield take(channel);
-      yield put(deviceSliceActions.updateNodeInfo({ deviceId, packet }));
+      const packet: NodeInfo = yield take(channel);
+      // yield put(deviceSliceActions.updateNodeInfo({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
   }
 }
 
-export const createChannelPacketChannel = (
-  connection: Types.ConnectionType
-): ChannelPacketChannel => {
+export const createChannelChannel = (): ChannelChannel => {
   return eventChannel((emitter) => {
-    connection.onChannelPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    listen<Channel>("channel", (event) => {
+      console.log("channel", event.payload);
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
 
+    // TODO UNLISTEN
     return () => null;
   });
 };
 
-export function* handleChannelPacketChannel(
+export function* handleChannelChannel(
   deviceId: number,
-  channel: ChannelPacketChannel
+  channel: ChannelChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: ChannelPacket = yield take(channel);
-      yield put(deviceSliceActions.addDeviceChannel({ deviceId, packet }));
+      const packet: Channel = yield take(channel);
+      // yield put(deviceSliceActions.addDeviceChannel({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
   }
 }
 
-export const createConfigPacketChannel = (
-  connection: Types.ConnectionType
-): ConfigPacketChannel => {
+export const createConfigChannel = (): ConfigChannel => {
   return eventChannel((emitter) => {
-    connection.onConfigPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    listen<Config>("config", (event) => {
+      console.log("config", event.payload);
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
 
+    // TODO UNLISTEN
     return () => null;
   });
 };
 
-export function* handleConfigPacketChannel(
-  deviceId: number,
-  channel: ConfigPacketChannel
-) {
+export function* handleConfigChannel(deviceId: number, channel: ConfigChannel) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: ConfigPacket = yield take(channel);
-      yield put(deviceSliceActions.updateDeviceConfig({ deviceId, packet }));
+      const packet: Config = yield take(channel);
+      // yield put(deviceSliceActions.updateDeviceConfig({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);
   }
 }
 
-export const createModuleConfigPacketChannel = (
-  connection: Types.ConnectionType
-): ModuleConfigPacketChannel => {
+export const createModuleConfigChannel = (): ModuleConfigChannel => {
   return eventChannel((emitter) => {
-    connection.onModuleConfigPacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    listen<ModuleConfig>("module_config", (event) => {
+      console.log("module_config", event.payload);
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
 
+    // TODO UNLISTEN
     return () => null;
   });
 };
 
-export function* handleModuleConfigPacketChannel(
+export function* handleModuleConfigChannel(
   deviceId: number,
-  channel: ModuleConfigPacketChannel
+  channel: ModuleConfigChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: ModuleConfigPacket = yield take(channel);
-      yield put(
-        deviceSliceActions.updateDeviceModuleConfig({ deviceId, packet })
-      );
+      const packet: ModuleConfig = yield take(channel);
+      // yield put(
+      //   deviceSliceActions.updateDeviceModuleConfig({ deviceId, packet })
+      // );
     }
   } catch (error) {
     yield call(handleSagaError, error);
   }
 }
 
-export const createMessagePacketChannel = (
-  connection: Types.ConnectionType
-): MessagePacketChannel => {
+export const createMessageChannel = (): MessageChannel => {
   return eventChannel((emitter) => {
-    connection.onMessagePacket.subscribe((packet) => {
-      emitter(packet);
-    });
+    listen<string>("text", (event) => {
+      console.log("text", event.payload);
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
 
+    // TODO UNLISTEN
     return () => null;
   });
 };
 
 export function* handleMessageChannel(
   deviceId: number,
-  channel: MessagePacketChannel
+  channel: MessageChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: MessagePacket = yield take(channel);
-      yield put(deviceSliceActions.addDeviceMessage({ deviceId, packet }));
+      const packet: Message = yield take(channel);
+      // yield put(deviceSliceActions.addDeviceMessage({ deviceId, packet }));
     }
   } catch (error) {
     yield call(handleSagaError, error);

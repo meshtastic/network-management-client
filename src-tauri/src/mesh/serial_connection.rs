@@ -233,7 +233,7 @@ impl MeshConnection for SerialConnection {
                 eprintln!("Node info app not yet supported in Rust");
             }
             protobufs::PortNum::PositionApp => {
-                handle.emit_all("position", data)?;
+                // handle.emit_all("position", data)?;
             }
             protobufs::PortNum::PrivateApp => {
                 eprintln!("Private app not yet supported in Rust");
@@ -248,7 +248,7 @@ impl MeshConnection for SerialConnection {
                 eprintln!("Reply app not yet supported in Rust");
             }
             protobufs::PortNum::RoutingApp => {
-                handle.emit_all("routing", data)?;
+                // handle.emit_all("routing", data)?;
             }
             protobufs::PortNum::SerialApp => {
                 eprintln!("Serial app not yet supported in Rust");
@@ -260,10 +260,13 @@ impl MeshConnection for SerialConnection {
                 eprintln!("Store forward packets not yet supported in Rust");
             }
             protobufs::PortNum::TelemetryApp => {
-                handle.emit_all("telemetry", data)?;
+                // let data = serde_json::from_slice::<Telemetry>(data.payload.as_slice())?;
+                // handle.emit_all("telemetry", data)?;
             }
             protobufs::PortNum::TextMessageApp => {
-                handle.emit_all("text", data)?;
+                let text_data = String::from_utf8(data.payload)?;
+                println!("Decoded text: {:?}", text_data);
+                handle.emit_all("text", text_data)?;
             }
             protobufs::PortNum::TextMessageCompressedApp => {
                 eprintln!("Compressed text data not yet supported in Rust");
