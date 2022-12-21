@@ -1,7 +1,5 @@
 import { all, call, fork, put, take, takeEvery } from "redux-saga/effects";
 
-import { createDeviceAction } from "@features/device/deviceActions";
-// import { deviceSliceActions } from "@features/device/deviceSlice";
 import {
   ChannelChannel,
   ConfigChannel,
@@ -10,6 +8,7 @@ import {
   createDeviceMetadataChannel,
   createDeviceStatusChannel,
   createMessageChannel,
+  createMessagesChannel,
   createModuleConfigChannel,
   createNodeInfoChannel,
   createPositionChannel,
@@ -24,6 +23,7 @@ import {
   handleDeviceMetadataChannel,
   handleDeviceStatusChannel,
   handleMessageChannel,
+  handleMessagesChannel,
   handleModuleConfigChannel,
   handleNodeInfoChannel,
   handlePositionChannel,
@@ -32,6 +32,7 @@ import {
   handleUserChannel,
   handleWaypointChannel,
   MessageChannel,
+  MessagesChannel,
   ModuleConfigChannel,
   NodeInfoChannel,
   PostionChannel,
@@ -40,14 +41,13 @@ import {
   UserChannel,
   WaypointChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
-import { eventChannel } from "redux-saga";
-import { listen } from "@tauri-apps/api/event";
+import { deviceSliceActions } from "@features/device/deviceSlice";
 
-const subscribeNotImplemented = () => {
-  // connection.onMyNodeInfo.subscribe((nodeInfo) => {
-  //   console.log("myNodeInfoPacket", nodeInfo);
-  // });
-};
+// const subscribeNotImplemented = () => {
+//   connection.onMyNodeInfo.subscribe((nodeInfo) => {
+//     console.log("myNodeInfoPacket", nodeInfo);
+//   });
+// };
 
 function* subscribeAll(deviceId: number) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -100,6 +100,11 @@ function* subscribeAll(deviceId: number) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const messagePacketChannel: MessageChannel = yield call(createMessageChannel);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const messagesPacketChannel: MessagesChannel = yield call(
+    createMessagesChannel
+  );
+
   yield all([
     call(handleDeviceMetadataChannel, deviceId, deviceMetadataPacketChannel),
     call(handleRoutingChannel, deviceId, routingPacketChannel),
@@ -113,10 +118,13 @@ function* subscribeAll(deviceId: number) {
     call(handleConfigChannel, deviceId, configPacketChannel),
     call(handleModuleConfigChannel, deviceId, moduleConfigPacketChannel),
     call(handleMessageChannel, deviceId, messagePacketChannel),
+    call(handleMessagesChannel, deviceId, messagesPacketChannel),
   ]);
 }
 
-function* createDeviceWorker(action: ReturnType<typeof createDeviceAction>) {
+function* createDeviceWorker(
+  action: ReturnType<typeof deviceSliceActions["createDevice"]>
+) {
   try {
     const deviceId = action.payload;
 
@@ -144,7 +152,7 @@ function* createDeviceWorker(action: ReturnType<typeof createDeviceAction>) {
 }
 
 export function* watchCreateDevice() {
-  yield takeEvery(createDeviceAction.type, createDeviceWorker);
+  yield takeEvery(deviceSliceActions.createDevice.type, createDeviceWorker);
 }
 
 export function* devicesSaga() {

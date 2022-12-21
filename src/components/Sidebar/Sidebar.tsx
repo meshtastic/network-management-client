@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -12,13 +12,13 @@ import {
 import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
-import { selectAllDevices } from "@app/features/device/deviceSelectors";
-import { createDeviceAction } from "@features/device/deviceActions";
 import { invoke } from "@tauri-apps/api/tauri";
-import { selectAllNodes } from "@app/features/device/deviceSelectors";
-import type { INode } from "@features/device/deviceSlice";
+import {
+  selectAllDevices,
+  selectAllNodes,
+} from "@features/device/deviceSelectors";
+import { deviceSliceActions, INode } from "@features/device/deviceSlice";
 import { generateDemoData, generateNeighborInfo } from "./DemoData";
-import type { Protobuf } from "@meshtastic/meshtasticjs/dist/";
 import type { NeighborInfo, Neighbor } from "./NeighborInfo";
 import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
 import {
@@ -34,7 +34,7 @@ const Sidebar = () => {
 
   const requestDeviceConnection = () => {
     const id = 1;
-    dispatch(createDeviceAction(id));
+    dispatch(deviceSliceActions.createDevice(id));
   };
 
   const requestArticulationPoint = () => {

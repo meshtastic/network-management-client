@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import type { Protobuf, Types } from "@meshtastic/meshtasticjs";
+import { Protobuf, Types } from "@meshtastic/meshtasticjs";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type {
   Channel,
@@ -7,6 +7,7 @@ import type {
   DeviceMetadata,
   DeviceStatus,
   Message,
+  Messages,
   ModuleConfig,
   NodeInfo,
   Position,
@@ -56,7 +57,8 @@ export interface IDevice {
   channels: Record<number, Channel>;
   config: Config | null;
   moduleConfig: ModuleConfig | null;
-  messages: { [channel: number]: Message[] };
+  // messages: { [channel: number]: Message[] }; // * This will need to be renamed
+  messages: Messages[];
 }
 
 export interface IDeviceState {
@@ -72,33 +74,53 @@ export const initialDeviceState: IDeviceState = {
 export const deviceSlice = createSlice({
   name: "devices",
   initialState: initialDeviceState,
-  reducers: {},
+  reducers: {
+    createDevice: (state, action: PayloadAction<number>) => {
+      const deviceId = action.payload;
+      console.warn("deviceId", deviceId);
+      if (state.devices[deviceId]) return;
+
+      const newDevice: IDevice = {
+        id: deviceId,
+        // hardware: Protobuf.MyNodeInfo.create(),
+        nodes: {},
+        activePeer: 0,
+        regionUnset: false,
+        currentMetrics: Protobuf.DeviceMetrics.create(),
+        // deviceMetadata: null,
+        deviceStatus: 0,
+        waypoints: {},
+        // user: null,
+        // nodeInfo: null,
+        channels: {},
+        config: null,
+        moduleConfig: null,
+        messages: [],
+      };
+
+      state.devices[deviceId] = newDevice;
+
+      console.warn("called with id", deviceId);
+    },
+    updateMessages: (
+      state,
+      {
+        payload: { deviceId, messages },
+      }: PayloadAction<{ deviceId: number; messages: Messages[] }>
+    ) => {
+      console.warn("payload", { deviceId, messages });
+
+      if (!state.devices[deviceId]) {
+        console.warn("device not found", Object.entries(state.devices));
+        return;
+      }
+
+      state.devices[deviceId].messages = messages;
+      console.warn("new state", state.devices[deviceId].messages);
+    },
+  },
   // reducers: {
-  //   createDevice: (state, action: PayloadAction<number>) => {
-  //     const deviceId = action.payload;
-  //     console.log("deviceId", deviceId);
-  //     if (state.devices[deviceId]) return;
 
-  //     const newDevice: IDevice = {
-  //       id: deviceId,
-  //       // hardware: Protobuf.MyNodeInfo.create(),
-  //       nodes: {},
-  //       activePeer: 0,
-  //       regionUnset: false,
-  //       currentMetrics: Protobuf.DeviceMetrics.create(),
-  //       // deviceMetadata: null,
-  //       deviceStatus: 0,
-  //       waypoints: {},
-  //       // user: null,
-  //       // nodeInfo: null,
-  //       channels: {},
-  //       config: null,
-  //       moduleConfig: null,
-  //       messages: {},
-  //     };
-
-  //     state.devices[deviceId] = newDevice;
-  //   },
   //   removeDevice: (state, action: PayloadAction<number>) => {
   //     const id = action.payload;
   //     delete state.devices[id];
