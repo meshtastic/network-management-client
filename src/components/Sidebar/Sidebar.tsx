@@ -17,7 +17,8 @@ import {
   selectAllDevices,
   selectAllNodes,
 } from "@features/device/deviceSelectors";
-import { deviceSliceActions, INode } from "@features/device/deviceSlice";
+import { requestCreateDeviceAction } from "@features/device/deviceActions";
+import type { INode } from "@features/device/deviceSlice";
 import { generateDemoData, generateNeighborInfo } from "./DemoData";
 import type { NeighborInfo, Neighbor } from "./NeighborInfo";
 import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
@@ -34,7 +35,7 @@ const Sidebar = () => {
 
   const requestDeviceConnection = () => {
     const id = 1;
-    dispatch(deviceSliceActions.createDevice(id));
+    dispatch(requestCreateDeviceAction(id));
   };
 
   const requestArticulationPoint = () => {

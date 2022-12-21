@@ -1,4 +1,5 @@
 import type { RootState } from "@app/store";
+import { Protobuf } from "@meshtastic/meshtasticjs";
 import type { IDevice, INode } from "@features/device/deviceSlice";
 
 export const selectAllDevices =
@@ -42,4 +43,34 @@ export const selectActiveNode =
     const activeNodeId = selectActiveNodeId()(state);
     if (!activeNodeId) return null;
     return selectNodeById(activeNodeId)(state);
+  };
+
+export type MessageType = { message: string; userName: string; time: Date };
+
+export const selectMessagesByDeviceId =
+  (id: number) =>
+  (state: RootState): MessageType[] => {
+    const device = state.devices.devices[id];
+    if (!device) return [];
+
+    const decoder = new TextDecoder();
+
+    return device.meshPackets.reduce((accum, m) => {
+      if (
+        !("decoded" in m.payloadVariant) ||
+        m.payloadVariant?.decoded?.portnum !== Protobuf.PortNum.TEXT_MESSAGE_APP
+      )
+        return accum;
+
+      return [
+        ...accum,
+        {
+          message: decoder.decode(
+            new Uint8Array(m.payloadVariant.decoded.payload)
+          ),
+          userName: m.from.toString(),
+          time: new Date(m.rxTime ?? Date.now()),
+        },
+      ];
+    }, [] as MessageType[]);
   };

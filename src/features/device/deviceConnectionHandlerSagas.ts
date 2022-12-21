@@ -1,6 +1,6 @@
 import { EventChannel, eventChannel } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
-import type { Types } from "@meshtastic/meshtasticjs";
+import type { Types, Protobuf } from "@meshtastic/meshtasticjs";
 import { listen } from "@tauri-apps/api/event";
 
 import { deviceSliceActions } from "@features/device/deviceSlice";
@@ -17,19 +17,7 @@ export type Channel = Types.ChannelPacket["data"];
 export type Config = Types.ConfigPacket["data"];
 export type ModuleConfig = Types.ModuleConfigPacket["data"];
 export type Message = Types.MessagePacket["text"];
-export type Messages =
-  | Types.DeviceMetadataPacket
-  | Types.RoutingPacket
-  | Types.TelemetryPacket
-  | Types.DeviceStatusEnum
-  | Types.PositionPacket
-  | Types.WaypointPacket
-  | Types.UserPacket
-  | Types.NodeInfoPacket
-  | Types.ChannelPacket
-  | Types.ConfigPacket
-  | Types.ModuleConfigPacket
-  | Types.MessagePacket;
+export type MeshPacket = Protobuf.MeshPacket;
 
 export type DeviceMetadataChannel = EventChannel<DeviceMetadata>;
 export type RoutingChannel = EventChannel<Routing>;
@@ -43,7 +31,7 @@ export type ChannelChannel = EventChannel<Channel>;
 export type ConfigChannel = EventChannel<Config>;
 export type ModuleConfigChannel = EventChannel<ModuleConfig>;
 export type MessageChannel = EventChannel<Message>;
-export type MessagesChannel = EventChannel<Messages[]>;
+export type MeshPacketChannel = EventChannel<MeshPacket[]>;
 
 function* handleSagaError(error: unknown) {
   yield put({ type: "GENERAL_ERROR", payload: error });
@@ -395,9 +383,9 @@ export function* handleMessageChannel(
   }
 }
 
-export const createMessagesChannel = (): MessagesChannel => {
+export const createMeshPacketsChannel = (): MeshPacketChannel => {
   return eventChannel((emitter) => {
-    listen<Messages[]>("message_update", (event) => {
+    listen<MeshPacket[]>("message_update", (event) => {
       // console.log("message_update", event.payload);
       emitter(event.payload);
     })
@@ -411,19 +399,19 @@ export const createMessagesChannel = (): MessagesChannel => {
   });
 };
 
-export function* handleMessagesChannel(
+export function* handleMeshPacketsChannel(
   deviceId: number,
-  channel: MessagesChannel
+  channel: MeshPacketChannel
 ) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const packet: { messages: Messages[] } = yield take(channel);
+      const packet: { meshPackets: MeshPacket[] } = yield take(channel);
 
       yield put(
         deviceSliceActions.updateMessages({
           deviceId,
-          messages: packet.messages,
+          meshPackets: packet.meshPackets,
         })
       );
     }

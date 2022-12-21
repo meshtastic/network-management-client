@@ -1,11 +1,19 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import MapIconButton from "@components/Map/MapIconButton";
+import { selectMessagesByDeviceId } from "@features/device/deviceSelectors";
 
 const Messages = () => {
   const [query, setQuery] = useState("");
+  const messages = useSelector(selectMessagesByDeviceId(1)); // TODO replace hard-code
+
+  const dateFormatter = new Intl.DateTimeFormat("en", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
     <div className="absolute left-9 top-9 w-96 p-4 flex flex-col gap-4">
@@ -24,7 +32,17 @@ const Messages = () => {
         </MapIconButton>
       </div>
 
-      <div className="flex flex-col rounded-lg w-full h-auto bg-gray-100 drop-shadow justify-top overflow-y-auto"></div>
+      <div className="flex flex-col rounded-lg w-full h-auto bg-gray-100 drop-shadow justify-top overflow-y-auto">
+        {messages.map((m) => (
+          <div key={m.time.getMilliseconds()}>
+            <div>
+              <p>{m.userName}</p>
+              <p>{dateFormatter.format(m.time)}</p>
+            </div>
+            <p>{m.message}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

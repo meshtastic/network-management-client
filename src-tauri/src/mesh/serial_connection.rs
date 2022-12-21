@@ -40,13 +40,13 @@ pub trait MeshConnection {
     async fn dispatch_packet(
         handle: tauri::AppHandle,
         variant: app::protobufs::from_radio::PayloadVariant,
-        dispatch_tx: tauri::async_runtime::Sender<store::MessagesActions>,
+        dispatch_tx: tauri::async_runtime::Sender<store::MeshPacketActions>,
     ) -> Result<(), Box<dyn Error>>;
 
     async fn handle_mesh_packet(
         handle: tauri::AppHandle,
         packet: protobufs::MeshPacket,
-        dispatch_tx: tauri::async_runtime::Sender<store::MessagesActions>,
+        dispatch_tx: tauri::async_runtime::Sender<store::MeshPacketActions>,
     ) -> Result<(), Box<dyn Error>>;
 
     fn generate_rand_id<T>() -> T
@@ -150,7 +150,7 @@ impl MeshConnection for SerialConnection {
     async fn dispatch_packet(
         handle: tauri::AppHandle,
         variant: app::protobufs::from_radio::PayloadVariant,
-        dispatch_tx: tauri::async_runtime::Sender<store::MessagesActions>,
+        dispatch_tx: tauri::async_runtime::Sender<store::MeshPacketActions>,
     ) -> Result<(), Box<dyn Error>> {
         match variant {
             protobufs::from_radio::PayloadVariant::Channel(c) => {
@@ -197,7 +197,7 @@ impl MeshConnection for SerialConnection {
     async fn handle_mesh_packet(
         handle: tauri::AppHandle,
         packet: protobufs::MeshPacket,
-        dispatch_tx: tauri::async_runtime::Sender<store::MessagesActions>,
+        dispatch_tx: tauri::async_runtime::Sender<store::MeshPacketActions>,
     ) -> Result<(), Box<dyn Error>> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
 
@@ -206,9 +206,8 @@ impl MeshConnection for SerialConnection {
                 // println!("Decoded: {:#?}", data);
 
                 dispatch_tx
-                    .send(store::MessagesActions::AddMessage {
-                        id: packet.id,
-                        data: data.clone(),
+                    .send(store::MeshPacketActions::AddPacket {
+                        packet: packet.clone(),
                     })
                     .await
                     .expect("Error in tx");

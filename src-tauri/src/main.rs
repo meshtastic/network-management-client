@@ -59,7 +59,7 @@ fn connect_to_serial_port(
         .resubscribe();
 
     let handle = app_handle.app_handle().clone();
-    let (tx, mut rx) = mpsc::channel::<mesh::store::MessagesActions>(32);
+    let (tx, mut rx) = mpsc::channel::<mesh::store::MeshPacketActions>(32);
 
     tauri::async_runtime::spawn(async move {
         let store = Store::new(mesh::store::message_reducer);

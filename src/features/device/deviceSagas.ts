@@ -1,4 +1,4 @@
-import { all, call, fork, put, take, takeEvery } from "redux-saga/effects";
+import { all, call, fork, put, takeEvery } from "redux-saga/effects";
 
 import {
   ChannelChannel,
@@ -8,7 +8,7 @@ import {
   createDeviceMetadataChannel,
   createDeviceStatusChannel,
   createMessageChannel,
-  createMessagesChannel,
+  createMeshPacketsChannel,
   createModuleConfigChannel,
   createNodeInfoChannel,
   createPositionChannel,
@@ -23,7 +23,7 @@ import {
   handleDeviceMetadataChannel,
   handleDeviceStatusChannel,
   handleMessageChannel,
-  handleMessagesChannel,
+  handleMeshPacketsChannel,
   handleModuleConfigChannel,
   handleNodeInfoChannel,
   handlePositionChannel,
@@ -32,7 +32,7 @@ import {
   handleUserChannel,
   handleWaypointChannel,
   MessageChannel,
-  MessagesChannel,
+  MeshPacketChannel,
   ModuleConfigChannel,
   NodeInfoChannel,
   PostionChannel,
@@ -42,6 +42,7 @@ import {
   WaypointChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import { deviceSliceActions } from "@features/device/deviceSlice";
+import { requestCreateDeviceAction } from "@features/device/deviceActions";
 
 // const subscribeNotImplemented = () => {
 //   connection.onMyNodeInfo.subscribe((nodeInfo) => {
@@ -101,8 +102,8 @@ function* subscribeAll(deviceId: number) {
   const messagePacketChannel: MessageChannel = yield call(createMessageChannel);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const messagesPacketChannel: MessagesChannel = yield call(
-    createMessagesChannel
+  const messagesPacketChannel: MeshPacketChannel = yield call(
+    createMeshPacketsChannel
   );
 
   yield all([
@@ -118,7 +119,7 @@ function* subscribeAll(deviceId: number) {
     call(handleConfigChannel, deviceId, configPacketChannel),
     call(handleModuleConfigChannel, deviceId, moduleConfigPacketChannel),
     call(handleMessageChannel, deviceId, messagePacketChannel),
-    call(handleMessagesChannel, deviceId, messagesPacketChannel),
+    call(handleMeshPacketsChannel, deviceId, messagesPacketChannel),
   ]);
 }
 
@@ -140,8 +141,8 @@ function* createDeviceWorker(
       .then(console.log)
       .catch(console.error);
 
-    // // Device needs to be created before subscriptions
-    // yield put(deviceSliceActions.createDevice(deviceId));
+    // Device needs to be created before subscriptions
+    yield put(deviceSliceActions.createDevice(deviceId));
 
     // Subscribe to device serial events
     yield call(subscribeAll, deviceId);
@@ -152,7 +153,7 @@ function* createDeviceWorker(
 }
 
 export function* watchCreateDevice() {
-  yield takeEvery(deviceSliceActions.createDevice.type, createDeviceWorker);
+  yield takeEvery(requestCreateDeviceAction.type, createDeviceWorker);
 }
 
 export function* devicesSaga() {

@@ -6,8 +6,8 @@ import type {
   Config,
   DeviceMetadata,
   DeviceStatus,
+  MeshPacket,
   Message,
-  Messages,
   ModuleConfig,
   NodeInfo,
   Position,
@@ -58,7 +58,7 @@ export interface IDevice {
   config: Config | null;
   moduleConfig: ModuleConfig | null;
   // messages: { [channel: number]: Message[] }; // * This will need to be renamed
-  messages: Messages[];
+  meshPackets: MeshPacket[];
 }
 
 export interface IDeviceState {
@@ -95,7 +95,7 @@ export const deviceSlice = createSlice({
         channels: {},
         config: null,
         moduleConfig: null,
-        messages: [],
+        meshPackets: [],
       };
 
       state.devices[deviceId] = newDevice;
@@ -105,18 +105,15 @@ export const deviceSlice = createSlice({
     updateMessages: (
       state,
       {
-        payload: { deviceId, messages },
-      }: PayloadAction<{ deviceId: number; messages: Messages[] }>
+        payload: { deviceId, meshPackets },
+      }: PayloadAction<{ deviceId: number; meshPackets: MeshPacket[] }>
     ) => {
-      console.warn("payload", { deviceId, messages });
-
       if (!state.devices[deviceId]) {
         console.warn("device not found", Object.entries(state.devices));
         return;
       }
 
-      state.devices[deviceId].messages = messages;
-      console.warn("new state", state.devices[deviceId].messages);
+      state.devices[deviceId].meshPackets = meshPackets;
     },
   },
   // reducers: {

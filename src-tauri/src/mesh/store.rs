@@ -5,26 +5,27 @@ use std::collections::LinkedList;
 use app::protobufs;
 
 #[derive(Serialize, Deserialize, Clone, Default, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct MessagesState {
-    messages: LinkedList<(u32, protobufs::Data)>,
+    mesh_packets: LinkedList<protobufs::MeshPacket>,
 }
 
 #[derive(Clone, Debug)]
-pub enum MessagesActions {
-    AddMessage { id: u32, data: protobufs::Data },
+pub enum MeshPacketActions {
+    AddPacket { packet: protobufs::MeshPacket },
 }
 
-pub fn message_reducer(mut state: MessagesState, action: MessagesActions) -> MessagesState {
+pub fn message_reducer(mut state: MessagesState, action: MeshPacketActions) -> MessagesState {
     match action {
-        MessagesActions::AddMessage { id, data } => MessagesState {
-            messages: {
-                state.messages.push_back((id, data));
+        MeshPacketActions::AddPacket { packet } => MessagesState {
+            mesh_packets: {
+                state.mesh_packets.push_back(packet);
 
-                if state.messages.len() >= 256 {
-                    state.messages.pop_front();
+                if state.mesh_packets.len() >= 256 {
+                    state.mesh_packets.pop_front();
                 }
 
-                state.messages
+                state.mesh_packets
             },
             ..state
         },
@@ -33,9 +34,9 @@ pub fn message_reducer(mut state: MessagesState, action: MessagesActions) -> Mes
 
 pub struct SelectAllMessages;
 impl Selector<MessagesState> for SelectAllMessages {
-    type Result = Vec<protobufs::Data>;
+    type Result = Vec<protobufs::MeshPacket>;
 
     fn select(&self, state: &MessagesState) -> Self::Result {
-        state.messages.iter().map(|e| e.1.to_owned()).collect()
+        state.mesh_packets.iter().map(|e| e.to_owned()).collect()
     }
 }
