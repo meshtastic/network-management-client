@@ -1,25 +1,27 @@
-use std::{
-    error::Error,
-    io::ErrorKind::TimedOut,
-    sync::mpsc::{self, Sender},
-    thread::{self, JoinHandle},
-    time::Duration,
-};
-
+use async_trait::async_trait;
 use prost::Message;
 use rand::{distributions::Standard, prelude::Distribution, Rng};
 use serialport::SerialPort;
+use std::{
+    error::Error,
+    io::ErrorKind::TimedOut,
+    sync,
+    thread::{self, JoinHandle},
+    time::Duration,
+};
 use tauri::{self, Manager};
 use tokio::sync::broadcast;
 
+use super::store;
 use app::protobufs;
 
 pub struct SerialConnection {
     pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
-    write_input_tx: Option<Sender<Vec<u8>>>,
+    write_input_tx: Option<sync::mpsc::Sender<Vec<u8>>>,
     config_id: u32,
 }
 
+#[async_trait]
 pub trait MeshConnection {
     fn new() -> Self;
     fn configure(&mut self) -> Result<(), Box<dyn Error>>;
@@ -35,19 +37,16 @@ pub trait MeshConnection {
     fn send_raw(&mut self, data: Vec<u8>) -> Result<(), Box<dyn Error>>;
     fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), Box<dyn Error>>;
 
-    fn dispatch_packet(
+    async fn dispatch_packet(
         handle: tauri::AppHandle,
         variant: app::protobufs::from_radio::PayloadVariant,
+        dispatch_tx: tauri::async_runtime::Sender<store::MessagesActions>,
     ) -> Result<(), Box<dyn Error>>;
 
-    fn handle_mesh_packet(
+    async fn handle_mesh_packet(
         handle: tauri::AppHandle,
         packet: protobufs::MeshPacket,
-    ) -> Result<(), Box<dyn Error>>;
-
-    fn handle_decoded_mesh_packet(
-        handle: tauri::AppHandle,
-        data: protobufs::Data,
+        dispatch_tx: tauri::async_runtime::Sender<store::MessagesActions>,
     ) -> Result<(), Box<dyn Error>>;
 
     fn generate_rand_id<T>() -> T
@@ -55,6 +54,7 @@ pub trait MeshConnection {
         Standard: Distribution<T>;
 }
 
+#[async_trait]
 impl MeshConnection for SerialConnection {
     fn new() -> Self {
         SerialConnection {
@@ -147,9 +147,10 @@ impl MeshConnection for SerialConnection {
         Ok(())
     }
 
-    fn dispatch_packet(
+    async fn dispatch_packet(
         handle: tauri::AppHandle,
         variant: app::protobufs::from_radio::PayloadVariant,
+        dispatch_tx: tauri::async_runtime::Sender<store::MessagesActions>,
     ) -> Result<(), Box<dyn Error>> {
         match variant {
             protobufs::from_radio::PayloadVariant::Channel(c) => {
@@ -182,7 +183,7 @@ impl MeshConnection for SerialConnection {
             }
             protobufs::from_radio::PayloadVariant::Packet(p) => {
                 // println!("Packet data: {:#?}", p);
-                SerialConnection::handle_mesh_packet(handle, p)?;
+                SerialConnection::handle_mesh_packet(handle, p, dispatch_tx).await?;
             }
             protobufs::from_radio::PayloadVariant::Rebooted(r) => {
                 // println!("Rebooted data: {:#?}", r);
@@ -193,92 +194,93 @@ impl MeshConnection for SerialConnection {
         Ok(())
     }
 
-    fn handle_mesh_packet(
+    async fn handle_mesh_packet(
         handle: tauri::AppHandle,
         packet: protobufs::MeshPacket,
+        dispatch_tx: tauri::async_runtime::Sender<store::MessagesActions>,
     ) -> Result<(), Box<dyn Error>> {
-        let variant = packet.payload_variant.ok_or("No payload variant")?;
+        let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
 
         match variant {
-            protobufs::mesh_packet::PayloadVariant::Decoded(d) => {
-                println!("Decoded: {:#?}", d);
-                SerialConnection::handle_decoded_mesh_packet(handle, d)?;
+            protobufs::mesh_packet::PayloadVariant::Decoded(data) => {
+                // println!("Decoded: {:#?}", data);
+
+                dispatch_tx
+                    .send(store::MessagesActions::AddMessage {
+                        id: packet.id,
+                        data: data.clone(),
+                    })
+                    .await
+                    .expect("Error in tx");
+
+                match data.portnum() {
+                    protobufs::PortNum::AdminApp => {
+                        eprintln!("Admin application not yet supported in Rust");
+                    }
+                    protobufs::PortNum::AtakForwarder => {
+                        eprintln!("ATAK forwarder not yet supported in Rust");
+                    }
+                    protobufs::PortNum::AudioApp => {
+                        eprintln!("Audio app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::IpTunnelApp => {
+                        eprintln!("IP tunnel app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::NodeinfoApp => {
+                        eprintln!("Node info app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::PositionApp => {
+                        // handle.emit_all("position", data)?;
+                    }
+                    protobufs::PortNum::PrivateApp => {
+                        eprintln!("Private app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::RangeTestApp => {
+                        eprintln!("Range test app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::RemoteHardwareApp => {
+                        eprintln!("Remote hardware app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::ReplyApp => {
+                        eprintln!("Reply app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::RoutingApp => {
+                        // handle.emit_all("routing", data)?;
+                    }
+                    protobufs::PortNum::SerialApp => {
+                        eprintln!("Serial app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::SimulatorApp => {
+                        eprintln!("Simulator app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::StoreForwardApp => {
+                        eprintln!("Store forward packets not yet supported in Rust");
+                    }
+                    protobufs::PortNum::TelemetryApp => {
+                        // let data = serde_json::from_slice::<Telemetry>(data.payload.as_slice())?;
+                        // handle.emit_all("telemetry", data)?;
+                    }
+                    protobufs::PortNum::TextMessageApp => {
+                        let text_data = String::from_utf8(data.payload)?;
+                        println!("Decoded text: {:?}", text_data);
+                        handle.emit_all("text", text_data)?;
+                    }
+                    protobufs::PortNum::TextMessageCompressedApp => {
+                        eprintln!("Compressed text data not yet supported in Rust");
+                    }
+                    protobufs::PortNum::WaypointApp => {
+                        eprintln!("Waypoint app not yet supported in Rust");
+                    }
+                    protobufs::PortNum::ZpsApp => {
+                        eprintln!("ZPS app not yet supported in Rust");
+                    }
+                    _ => {
+                        eprintln!("Unknown packet received");
+                    }
+                }
             }
             protobufs::mesh_packet::PayloadVariant::Encrypted(e) => {
                 eprintln!("Encrypted packets not yet supported in Rust: {:#?}", e);
-            }
-        }
-
-        Ok(())
-    }
-
-    fn handle_decoded_mesh_packet(
-        handle: tauri::AppHandle,
-        data: protobufs::Data,
-    ) -> Result<(), Box<dyn Error>> {
-        match data.portnum() {
-            protobufs::PortNum::AdminApp => {
-                eprintln!("Admin application not yet supported in Rust");
-            }
-            protobufs::PortNum::AtakForwarder => {
-                eprintln!("ATAK forwarder not yet supported in Rust");
-            }
-            protobufs::PortNum::AudioApp => {
-                eprintln!("Audio app not yet supported in Rust");
-            }
-            protobufs::PortNum::IpTunnelApp => {
-                eprintln!("IP tunnel app not yet supported in Rust");
-            }
-            protobufs::PortNum::NodeinfoApp => {
-                eprintln!("Node info app not yet supported in Rust");
-            }
-            protobufs::PortNum::PositionApp => {
-                // handle.emit_all("position", data)?;
-            }
-            protobufs::PortNum::PrivateApp => {
-                eprintln!("Private app not yet supported in Rust");
-            }
-            protobufs::PortNum::RangeTestApp => {
-                eprintln!("Range test app not yet supported in Rust");
-            }
-            protobufs::PortNum::RemoteHardwareApp => {
-                eprintln!("Remote hardware app not yet supported in Rust");
-            }
-            protobufs::PortNum::ReplyApp => {
-                eprintln!("Reply app not yet supported in Rust");
-            }
-            protobufs::PortNum::RoutingApp => {
-                // handle.emit_all("routing", data)?;
-            }
-            protobufs::PortNum::SerialApp => {
-                eprintln!("Serial app not yet supported in Rust");
-            }
-            protobufs::PortNum::SimulatorApp => {
-                eprintln!("Simulator app not yet supported in Rust");
-            }
-            protobufs::PortNum::StoreForwardApp => {
-                eprintln!("Store forward packets not yet supported in Rust");
-            }
-            protobufs::PortNum::TelemetryApp => {
-                // let data = serde_json::from_slice::<Telemetry>(data.payload.as_slice())?;
-                // handle.emit_all("telemetry", data)?;
-            }
-            protobufs::PortNum::TextMessageApp => {
-                let text_data = String::from_utf8(data.payload)?;
-                println!("Decoded text: {:?}", text_data);
-                handle.emit_all("text", text_data)?;
-            }
-            protobufs::PortNum::TextMessageCompressedApp => {
-                eprintln!("Compressed text data not yet supported in Rust");
-            }
-            protobufs::PortNum::WaypointApp => {
-                eprintln!("Waypoint app not yet supported in Rust");
-            }
-            protobufs::PortNum::ZpsApp => {
-                eprintln!("ZPS app not yet supported in Rust");
-            }
-            _ => {
-                eprintln!("Unknown packet received");
             }
         }
 
@@ -295,13 +297,15 @@ impl MeshConnection for SerialConnection {
 }
 
 impl SerialConnection {
-    pub fn get_available_ports() -> Vec<String> {
-        let available_ports = serialport::available_ports().unwrap_or(vec![]);
+    pub fn get_available_ports() -> Result<Vec<String>, String> {
+        let available_ports = serialport::available_ports().map_err(|e| e.to_string())?;
+
         let ports: Vec<String> = available_ports
             .iter()
             .map(|p| p.port_name.clone())
             .collect();
-        ports
+
+        Ok(ports)
     }
 
     pub fn connect(
@@ -311,8 +315,8 @@ impl SerialConnection {
     ) -> Result<(JoinHandle<()>, JoinHandle<()>, JoinHandle<()>), Box<dyn Error>> {
         let mut port = serialport::new(port_name.into(), baud_rate).open()?;
 
-        let (write_input_tx, write_input_rx) = mpsc::channel::<Vec<u8>>();
-        let (read_output_tx, read_output_rx) = mpsc::channel::<Vec<u8>>();
+        let (write_input_tx, write_input_rx) = sync::mpsc::channel::<Vec<u8>>();
+        let (read_output_tx, read_output_rx) = sync::mpsc::channel::<Vec<u8>>();
         let (decoded_packet_tx, decoded_packet_rx) = broadcast::channel::<protobufs::FromRadio>(32);
 
         self.write_input_tx = Some(write_input_tx);

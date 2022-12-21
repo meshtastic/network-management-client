@@ -4,8 +4,10 @@ mod graph;
 mod mesh;
 
 use mesh::serial_connection::{MeshConnection, SerialConnection};
+use redux_rs::Store;
 use std::sync::{Arc, Mutex};
 use tauri::Manager;
+use tokio::sync::mpsc;
 
 struct ActiveSerialConnection {
     inner: Arc<Mutex<Option<mesh::serial_connection::SerialConnection>>>,
@@ -37,7 +39,7 @@ fn main() {
 }
 
 #[tauri::command]
-fn get_all_serial_ports() -> Vec<String> {
+fn get_all_serial_ports() -> Result<Vec<String>, String> {
     SerialConnection::get_available_ports()
 }
 
@@ -46,26 +48,32 @@ fn connect_to_serial_port(
     port_name: String,
     app_handle: tauri::AppHandle,
     state: tauri::State<'_, ActiveSerialConnection>,
-) -> bool {
+) -> Result<(), String> {
     let mut connection: SerialConnection = MeshConnection::new();
+    connection.connect(port_name, 115_200).unwrap();
 
-    match connection.connect(port_name, 115_200) {
-        Ok(_h) => (),
-        Err(_e) => {
-            eprintln!("Could not connect to radio");
-            return false;
-        }
-    };
-
-    let mut decoded_listener = match connection.on_decoded_packet.as_ref() {
-        Some(l) => l.resubscribe(),
-        None => {
-            eprintln!("Decoded packet listener not open");
-            return false;
-        }
-    };
+    let mut decoded_listener = connection
+        .on_decoded_packet
+        .as_ref()
+        .ok_or("Decoded packet listener not open")?
+        .resubscribe();
 
     let handle = app_handle.app_handle().clone();
+    let (tx, mut rx) = mpsc::channel::<mesh::store::MessagesActions>(32);
+
+    tauri::async_runtime::spawn(async move {
+        let store = Store::new(mesh::store::message_reducer);
+
+        store
+            .subscribe(|state: &mesh::store::MessagesState| println!("New state: {:?}", state))
+            .await;
+
+        loop {
+            if let Some(message) = rx.recv().await {
+                store.dispatch(message).await;
+            }
+        }
+    });
 
     tauri::async_runtime::spawn(async move {
         loop {
@@ -75,7 +83,7 @@ fn connect_to_serial_port(
                     None => continue,
                 };
 
-                match SerialConnection::dispatch_packet(handle.clone(), variant) {
+                match SerialConnection::dispatch_packet(handle.clone(), variant, tx.clone()).await {
                     Ok(_) => (),
                     Err(e) => {
                         eprintln!("Error transmitting packet: {}", e.to_string());
@@ -91,26 +99,14 @@ fn connect_to_serial_port(
         *state_connection = Some(connection);
     }
 
-    true
+    Ok(())
 }
 
 #[tauri::command]
-fn send_text(text: String, state: tauri::State<'_, ActiveSerialConnection>) -> bool {
+fn send_text(text: String, state: tauri::State<'_, ActiveSerialConnection>) -> Result<(), String> {
     let mut guard = state.inner.lock().unwrap();
     let connection = guard.as_mut().expect("Connection not initialized");
-    let result = connection.send_text(text, 0);
+    connection.send_text(text, 0).map_err(|e| e.to_string())?;
 
-    match result {
-        Ok(()) => (),
-        Err(_e) => {
-            eprintln!("Could not send text to radio");
-            return false;
-        }
-    };
-
-    true
+    Ok(())
 }
-
-// __TAURI_INVOKE__("get_all_serial_ports").then(console.log).catch(console.error)
-// __TAURI_INVOKE__("connect_to_serial_port", { portName: "/dev/ttyACM0" }).then(console.log).catch(console.error)
-// __TAURI_INVOKE__("send_text", { text: "hello world" }).then(console.log).catch(console.error)

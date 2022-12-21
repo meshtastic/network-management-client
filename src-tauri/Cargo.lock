@@ -69,6 +69,7 @@ checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "bytes",
  "defaultdict",
  "petgraph",
@@ -76,6 +77,7 @@ dependencies = [
  "prost-build",
  "protoc-bin-vendored",
  "rand 0.8.5",
+ "redux-rs",
  "reqwest",
  "serde",
  "serde_json",
@@ -86,6 +88,17 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "walkdir",
+]
+
+[[package]]
+name = "async-trait"
+version = "0.1.60"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "677d1d8ab452a3936018a687b20e6f7cf5363d713b732b8884001317b0e48aa3"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -2442,6 +2455,16 @@ dependencies = [
  "getrandom 0.2.8",
  "redox_syscall",
  "thiserror",
+]
+
+[[package]]
+name = "redux-rs"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86920873d78b1940a002bbfddc9a8c6acb52257c386fa9b2b709c426c66a16b5"
+dependencies = [
+ "async-trait",
+ "tokio",
 ]
 
 [[package]]
