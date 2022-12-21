@@ -1,25 +1,12 @@
-extern crate lru;
-
-use lru::LruCache;
 use redux_rs::Selector;
-use std::num::NonZeroUsize;
+use serde::{Deserialize, Serialize};
+use std::collections::LinkedList;
 
 use app::protobufs;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Clone, Default, Debug)]
 pub struct MessagesState {
-    messages: LruCache<u32, protobufs::Data>,
-}
-
-impl Default for MessagesState {
-    fn default() -> Self {
-        return MessagesState {
-            messages: LruCache::new(
-                NonZeroUsize::new(64)
-                    .expect("Error creating non-zero usize in LRU default initialization"),
-            ),
-        };
-    }
+    messages: LinkedList<(u32, protobufs::Data)>,
 }
 
 #[derive(Clone, Debug)]
@@ -31,7 +18,12 @@ pub fn message_reducer(mut state: MessagesState, action: MessagesActions) -> Mes
     match action {
         MessagesActions::AddMessage { id, data } => MessagesState {
             messages: {
-                state.messages.put(id, data);
+                state.messages.push_back((id, data));
+
+                if state.messages.len() >= 256 {
+                    state.messages.pop_front();
+                }
+
                 state.messages
             },
             ..state

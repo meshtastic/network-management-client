@@ -63,6 +63,7 @@ fn connect_to_serial_port(
 
     tauri::async_runtime::spawn(async move {
         let store = Store::new(mesh::store::message_reducer);
+        let handle = app_handle.app_handle().clone();
 
         store
             .subscribe(|state: &mesh::store::MessagesState| println!("New state: {:?}", state))
@@ -71,6 +72,15 @@ fn connect_to_serial_port(
         loop {
             if let Some(message) = rx.recv().await {
                 store.dispatch(message).await;
+
+                let cloned_store = store.state_cloned().await;
+                match handle.emit_all("message_update", cloned_store) {
+                    Ok(_) => (),
+                    Err(e) => {
+                        eprintln!("Error emitting updated message state: {:?}", e.to_string());
+                        continue;
+                    }
+                };
             }
         }
     });
