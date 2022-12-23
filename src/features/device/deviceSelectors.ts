@@ -69,7 +69,7 @@ export const selectMessagesByDeviceId =
             new Uint8Array(m.payloadVariant.decoded.payload)
           ),
           userName: m.from.toString(),
-          time: new Date(m.rxTime ?? Date.now()),
+          time: new Date(m.rxTime ?? 0),
         },
       ];
     }, [] as MessageType[]);

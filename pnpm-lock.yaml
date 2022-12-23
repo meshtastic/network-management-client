@@ -30,6 +30,7 @@ specifiers:
   react-dom: ^18.2.0
   react-map-gl: ^7.0.19
   react-redux: ^8.0.4
+  redux-logger: ^3.0.6
   redux-saga: ^1.2.1
   tailwindcss: ^3.2.1
   ts-jest: ^29.0.3
@@ -50,6 +51,7 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-map-gl: 7.0.19_6nlej2sgzao4w63iqaban4rulm
   react-redux: 8.0.4_moha6x5fbqoiok2ot63p7hwafm
+  redux-logger: 3.0.6
   redux-saga: 1.2.1
 
 devDependencies:
@@ -2078,6 +2080,10 @@ packages:
   /dedent/0.7.0:
     resolution: {integrity: sha512-Q6fKUPqnAHAyhiUgFU7BUzLiv0kd8saH9al7tnu5Q/okj6dnupxyTgFIBjVzJATdfIAm9NAsvXNzjaKa+bxVyA==}
     dev: true
+
+  /deep-diff/0.3.8:
+    resolution: {integrity: sha512-yVn6RZmHiGnxRKR9sJb3iVV2XTF1Ghh2DiWRZ3dMnGc43yUdWWF/kX6lQyk3+P84iprfWKU/8zFTrlkvtFm1ug==}
+    dev: false
 
   /deep-is/0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
@@ -4457,6 +4463,12 @@ packages:
     dependencies:
       picomatch: 2.3.1
     dev: true
+
+  /redux-logger/3.0.6:
+    resolution: {integrity: sha512-JoCIok7bg/XpqA1JqCqXFypuqBbQzGQySrhFzewB7ThcnysTO30l4VCst86AuB9T9tuT03MAA56Jw2PNhRSNCg==}
+    dependencies:
+      deep-diff: 0.3.8
+    dev: false
 
   /redux-saga/1.2.1:
     resolution: {integrity: sha512-fVCicLlf4hLP+KB6H7RHfZlZ8LdYckhaemXBB3wh//a2ESyz/z/l8ygxlm0OqPjS/PARdsQ2hIdAltxEB+NgvA==}

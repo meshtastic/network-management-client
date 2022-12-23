@@ -1,4 +1,5 @@
-import { all, call, fork, put, takeEvery } from "redux-saga/effects";
+import { invoke } from "@tauri-apps/api";
+import { all, call, put, spawn, takeEvery } from "redux-saga/effects";
 
 import {
   ChannelChannel,
@@ -42,7 +43,10 @@ import {
   WaypointChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { requestCreateDeviceAction } from "@features/device/deviceActions";
+import {
+  requestCreateDeviceAction,
+  requestSendMessage,
+} from "@features/device/deviceActions";
 
 // const subscribeNotImplemented = () => {
 //   connection.onMyNodeInfo.subscribe((nodeInfo) => {
@@ -152,10 +156,22 @@ function* createDeviceWorker(
   }
 }
 
-export function* watchCreateDevice() {
+function* watchCreateDevice() {
   yield takeEvery(requestCreateDeviceAction.type, createDeviceWorker);
 }
 
+function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
+  try {
+    yield call(invoke, "send_text", { text: action.payload });
+  } catch (error) {
+    yield put({ type: "GENERAL_ERROR", payload: error });
+  }
+}
+
+function* watchSendMessage() {
+  yield takeEvery(requestSendMessage.type, sendMessageWorker);
+}
+
 export function* devicesSaga() {
-  yield all([fork(watchCreateDevice)]);
+  yield all([spawn(watchCreateDevice), spawn(watchSendMessage)]);
 }
