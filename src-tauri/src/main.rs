@@ -3,8 +3,8 @@ mod aux_data_structures;
 mod graph;
 mod mesh;
 
+use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
-use redux_rs::Store;
 use std::sync::{Arc, Mutex};
 use tauri::Manager;
 use tokio::sync::mpsc;
@@ -59,22 +59,17 @@ fn connect_to_serial_port(
         .resubscribe();
 
     let handle = app_handle.app_handle().clone();
-    let (tx, mut rx) = mpsc::channel::<mesh::store::MeshPacketActions>(32);
+    let (tx, mut rx) = mpsc::channel::<protobufs::MeshPacket>(32);
 
     tauri::async_runtime::spawn(async move {
-        let store = Store::new(mesh::store::message_reducer);
+        let mut state = mesh::store::MessagesState::new();
         let handle = app_handle.app_handle().clone();
-
-        store
-            .subscribe(|state: &mesh::store::MessagesState| println!("New state: {:?}", state))
-            .await;
 
         loop {
             if let Some(message) = rx.recv().await {
-                store.dispatch(message).await;
+                state.mesh_packets.push_back(message);
 
-                let cloned_store = store.state_cloned().await;
-                match handle.emit_all("message_update", cloned_store) {
+                match handle.emit_all("message_update", state.clone()) {
                     Ok(_) => (),
                     Err(e) => {
                         eprintln!("Error emitting updated message state: {:?}", e.to_string());

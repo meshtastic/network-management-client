@@ -12,7 +12,6 @@ use std::{
 use tauri::{self, Manager};
 use tokio::sync::broadcast;
 
-use super::store;
 use app::protobufs;
 
 pub struct SerialConnection {
@@ -40,13 +39,13 @@ pub trait MeshConnection {
     async fn dispatch_packet(
         handle: tauri::AppHandle,
         variant: app::protobufs::from_radio::PayloadVariant,
-        dispatch_tx: tauri::async_runtime::Sender<store::MeshPacketActions>,
+        dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
     ) -> Result<(), Box<dyn Error>>;
 
     async fn handle_mesh_packet(
         handle: tauri::AppHandle,
         packet: protobufs::MeshPacket,
-        dispatch_tx: tauri::async_runtime::Sender<store::MeshPacketActions>,
+        dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
     ) -> Result<(), Box<dyn Error>>;
 
     fn generate_rand_id<T>() -> T
@@ -150,7 +149,7 @@ impl MeshConnection for SerialConnection {
     async fn dispatch_packet(
         handle: tauri::AppHandle,
         variant: app::protobufs::from_radio::PayloadVariant,
-        dispatch_tx: tauri::async_runtime::Sender<store::MeshPacketActions>,
+        dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
     ) -> Result<(), Box<dyn Error>> {
         match variant {
             protobufs::from_radio::PayloadVariant::Channel(c) => {
@@ -197,7 +196,7 @@ impl MeshConnection for SerialConnection {
     async fn handle_mesh_packet(
         handle: tauri::AppHandle,
         packet: protobufs::MeshPacket,
-        dispatch_tx: tauri::async_runtime::Sender<store::MeshPacketActions>,
+        dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
     ) -> Result<(), Box<dyn Error>> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
 
@@ -205,12 +204,7 @@ impl MeshConnection for SerialConnection {
             protobufs::mesh_packet::PayloadVariant::Decoded(data) => {
                 // println!("Decoded: {:#?}", data);
 
-                dispatch_tx
-                    .send(store::MeshPacketActions::AddPacket {
-                        packet: packet.clone(),
-                    })
-                    .await
-                    .expect("Error in tx");
+                dispatch_tx.send(packet.clone()).await.expect("Error in tx");
 
                 match data.portnum() {
                     protobufs::PortNum::AdminApp => {
