@@ -106,7 +106,7 @@ const Sidebar = () => {
             onClick={requestDeviceConnection}
             renderIcon={() => <LinkIcon className="w-6" />}
           />
-          <SidebarIcon
+          {/* <SidebarIcon
             isActive={activeSidebarPanel == "algo"}
             onClick={requestArticulationPoint}
             renderIcon={() => <BeakerIcon className="w-6" />}
@@ -120,7 +120,7 @@ const Sidebar = () => {
             isActive={activeSidebarPanel == "algo"}
             onClick={requestStoerWagner}
             renderIcon={() => <BeakerIcon className="w-6" />}
-          />
+          /> */}
         </div>
       </div>
       <SidebarIcon
