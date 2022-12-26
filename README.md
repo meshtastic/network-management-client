@@ -40,4 +40,4 @@ The following commands can be used to develop on this codebase. Note that it is 
 - `pnpm run ui:format` - Formats the UI codebase using [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/)
 - `pnpm run ui:test` - Runs UI test suite using [Jest](https://jestjs.io/)
 - `pnpm run rust:dev` - Starts the desktop application in development mode, allowing for hot reloading of UI and Rust code
-- `pnpm run rust:test` - Runs backend tests on the Rust codebase directory (`/src-tauri`) Add `-- --show-output` to show printlns.
+- `pnpm run rust:test` - Runs backend tests on the Rust codebase directory (`/src-tauri`). This command also generates TypeScript client bindings in the `/src-tauri/bindings` directory. Add `-- --show-output` to show printlns.
