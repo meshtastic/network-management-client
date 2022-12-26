@@ -1,11 +1,23 @@
 use app::protobufs;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, time::UNIX_EPOCH};
+use ts_rs::TS;
 
 use super::serial_connection::{MeshConnection, SerialConnection};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+pub fn get_current_time_u32() -> u32 {
+    std::time::SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("Could not get time since unix epoch")
+        .as_secs()
+        .try_into()
+        .expect("Could not convert u128 to u32")
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub enum MeshDeviceStatus {
     DeviceRestarting,
     DeviceDisconnected,
@@ -22,104 +34,121 @@ impl Default for MeshDeviceStatus {
     }
 }
 
-pub fn get_current_time_u32() -> u32 {
-    std::time::SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("Could not get time since unix epoch")
-        .as_secs()
-        .try_into()
-        .expect("Could not convert u128 to u32")
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct MeshChannel {
     pub config: protobufs::Channel,
     pub last_interaction: u32,
     pub messages: Vec<MessageType>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct MeshNodeDeviceMetrics {
     metrics: protobufs::DeviceMetrics,
     timestamp: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct MeshNodeEnvironmentMetrics {
     metrics: protobufs::EnvironmentMetrics,
     timestamp: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct MeshNode {
     pub device_metrics: Vec<MeshNodeDeviceMetrics>,
     pub environment_metrics: Vec<MeshNodeEnvironmentMetrics>,
     pub data: protobufs::NodeInfo,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TelemetryPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::Telemetry,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct UserPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::User,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct PositionPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::Position,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct MessagePacket {
     pub packet: protobufs::MeshPacket,
     pub data: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct WaypointPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::Waypoint,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub enum MessageType {
     MessageWithAck(MessageWithAck),
     WaypointIDWithAck(WaypointIDWithAck),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct MessageWithAck {
     pub packet: MessagePacket,
     pub ack: bool,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct WaypointIDWithAck {
     pub packet: WaypointPacket,
     pub waypoint_id: u32,
     pub ack: bool,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase")]
+#[ts(export)]
 pub struct MeshDevice {
     pub id: u32,                                      // unique id of device
     pub ready: bool,                                  // is device configured to participate in mesh

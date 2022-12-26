@@ -3,8 +3,9 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { listen } from "@tauri-apps/api/event";
 
+import App from "@app/App";
+import type { MeshDevice } from "@bindings/MeshDevice";
 import { store } from "@store/index";
-import App from "./App";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./index.css";
@@ -41,7 +42,7 @@ listen("reboot", (event) => {
   })
   .catch(console.error);
 
-void listen<any>("device_update", (v) => {
+void listen<MeshDevice>("device_update", (v) => {
   console.log("device_update", v.payload);
 })
   .then((unlisten) => {
