@@ -1,28 +1,27 @@
 mod algorithms;
 mod aux_data_structures;
+mod aux_functions;
 mod graph;
 mod mesh;
 
 use app::protobufs;
+use aux_functions::commands::{run_articulation_point, run_global_mincut, run_stoer_wagner};
 use mesh::serial_connection::{MeshConnection, SerialConnection};
-use std::sync::{Arc, Mutex};
-use tauri::Manager;
+use std::sync::{self, Arc};
+use tauri::{async_runtime, Manager};
 use tokio::sync::mpsc;
+use tracing_subscriber;
 
 struct ActiveSerialConnection {
-    inner: Arc<Mutex<Option<mesh::serial_connection::SerialConnection>>>,
+    inner: Arc<sync::Mutex<Option<mesh::serial_connection::SerialConnection>>>,
 }
-
-mod aux_functions;
-use aux_functions::commands::{run_articulation_point, run_global_mincut, run_stoer_wagner};
-use tracing_subscriber;
 
 fn main() {
     tracing_subscriber::fmt::init();
 
     tauri::Builder::default()
         .manage(ActiveSerialConnection {
-            inner: Arc::new(Mutex::new(None)),
+            inner: Arc::new(sync::Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
             run_articulation_point,
@@ -81,6 +80,8 @@ fn connect_to_serial_port(
     });
 
     tauri::async_runtime::spawn(async move {
+        let device_mutex = async_runtime::Mutex::new(mesh::device::MeshDevice::new());
+
         loop {
             if let Ok(message) = decoded_listener.recv().await {
                 let variant = match message.payload_variant {
@@ -88,7 +89,16 @@ fn connect_to_serial_port(
                     None => continue,
                 };
 
-                match SerialConnection::dispatch_packet(handle.clone(), variant, tx.clone()).await {
+                let mut device = device_mutex.lock().await;
+
+                match SerialConnection::dispatch_packet(
+                    handle.clone(),
+                    variant,
+                    tx.clone(),
+                    &mut device,
+                )
+                .await
+                {
                     Ok(_) => (),
                     Err(e) => {
                         eprintln!("Error transmitting packet: {}", e.to_string());

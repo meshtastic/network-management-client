@@ -12,6 +12,7 @@ use std::{
 use tauri::{self, Manager};
 use tokio::sync::broadcast;
 
+use super::device;
 use app::protobufs;
 
 pub struct SerialConnection {
@@ -40,12 +41,14 @@ pub trait MeshConnection {
         handle: tauri::AppHandle,
         variant: app::protobufs::from_radio::PayloadVariant,
         dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
+        device: &mut device::MeshDevice,
     ) -> Result<(), Box<dyn Error>>;
 
     async fn handle_mesh_packet(
         handle: tauri::AppHandle,
         packet: protobufs::MeshPacket,
         dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
+        device: &mut device::MeshDevice,
     ) -> Result<(), Box<dyn Error>>;
 
     fn generate_rand_id<T>() -> T
@@ -150,14 +153,22 @@ impl MeshConnection for SerialConnection {
         handle: tauri::AppHandle,
         variant: app::protobufs::from_radio::PayloadVariant,
         dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
+        device: &mut device::MeshDevice,
     ) -> Result<(), Box<dyn Error>> {
         match variant {
             protobufs::from_radio::PayloadVariant::Channel(c) => {
                 // println!("Channel data: {:#?}", c);
+                device.add_channel(device::MeshChannel {
+                    config: c.clone(),
+                    last_interaction: device::get_current_time_u32(),
+                    messages: vec![],
+                });
+
                 handle.emit_all("channel", c)?;
             }
             protobufs::from_radio::PayloadVariant::Config(c) => {
                 // println!("Config data: {:#?}", c);
+                device.set_config(c.clone());
                 handle.emit_all("config", c)?;
             }
             protobufs::from_radio::PayloadVariant::ConfigCompleteId(c) => {
@@ -174,15 +185,17 @@ impl MeshConnection for SerialConnection {
             }
             protobufs::from_radio::PayloadVariant::MyInfo(m) => {
                 // println!("My node info data: {:#?}", m);
+                device.set_hardware_info(m.clone());
                 handle.emit_all("my_node_info", m)?;
             }
             protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
                 // println!("Node info data: {:#?}", n);
+                device.add_node_info(n.clone());
                 handle.emit_all("node_info", n)?;
             }
             protobufs::from_radio::PayloadVariant::Packet(p) => {
                 // println!("Packet data: {:#?}", p);
-                SerialConnection::handle_mesh_packet(handle, p, dispatch_tx).await?;
+                SerialConnection::handle_mesh_packet(handle, p, dispatch_tx, device).await?;
             }
             protobufs::from_radio::PayloadVariant::Rebooted(r) => {
                 // println!("Rebooted data: {:#?}", r);
@@ -197,6 +210,7 @@ impl MeshConnection for SerialConnection {
         handle: tauri::AppHandle,
         packet: protobufs::MeshPacket,
         dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
+        device: &mut device::MeshDevice,
     ) -> Result<(), Box<dyn Error>> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
 
@@ -220,9 +234,14 @@ impl MeshConnection for SerialConnection {
                         eprintln!("IP tunnel app not yet supported in Rust");
                     }
                     protobufs::PortNum::NodeinfoApp => {
-                        eprintln!("Node info app not yet supported in Rust");
+                        let data = protobufs::User::decode(data.payload.as_slice())
+                            .expect("Error decoding NodeInfo MeshPacket");
+                        device.add_user(device::UserPacket { packet, data });
+                        // eprintln!("User info packet not yet supported in Rust");
                     }
                     protobufs::PortNum::PositionApp => {
+                        let data = protobufs::Position::decode(data.payload.as_slice())?;
+                        device.add_position(device::PositionPacket { packet, data });
                         // handle.emit_all("position", data)?;
                     }
                     protobufs::PortNum::PrivateApp => {
@@ -250,18 +269,36 @@ impl MeshConnection for SerialConnection {
                         eprintln!("Store forward packets not yet supported in Rust");
                     }
                     protobufs::PortNum::TelemetryApp => {
-                        // let data = serde_json::from_slice::<Telemetry>(data.payload.as_slice())?;
+                        let data = protobufs::Telemetry::decode(data.payload.as_slice())?;
+                        device.set_device_metrics(device::TelemetryPacket { packet, data });
                         // handle.emit_all("telemetry", data)?;
                     }
                     protobufs::PortNum::TextMessageApp => {
-                        let text_data = String::from_utf8(data.payload)?;
-                        println!("Decoded text: {:?}", text_data);
-                        handle.emit_all("text", text_data)?;
+                        let data = String::from_utf8(data.payload)?;
+
+                        device.add_message(device::MessageWithAck {
+                            packet: device::MessagePacket {
+                                packet,
+                                data: data.clone(),
+                            },
+                            ack: false,
+                        });
+
+                        println!("Decoded text: {:?}", data);
+                        handle.emit_all("text", data)?;
                     }
                     protobufs::PortNum::TextMessageCompressedApp => {
                         eprintln!("Compressed text data not yet supported in Rust");
                     }
                     protobufs::PortNum::WaypointApp => {
+                        let data = protobufs::Waypoint::decode(data.payload.as_slice())?;
+                        device.add_waypoint(data.clone());
+                        device.add_waypoint_message(device::WaypointIDWithAck {
+                            waypoint_id: data.id,
+                            // ack: packet.from != my_node_id // TODO implement this
+                            ack: false,
+                            packet: device::WaypointPacket { packet, data },
+                        });
                         eprintln!("Waypoint app not yet supported in Rust");
                     }
                     protobufs::PortNum::ZpsApp => {
