@@ -9,7 +9,6 @@ use std::{
     thread::{self, JoinHandle},
     time::Duration,
 };
-use tauri;
 use tokio::sync::broadcast;
 
 use super::device;
@@ -39,13 +38,11 @@ pub trait MeshConnection {
 
     async fn handle_packet_from_radio(
         variant: app::protobufs::from_radio::PayloadVariant,
-        dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
         device: &mut device::MeshDevice,
     ) -> Result<bool, Box<dyn Error>>;
 
     async fn handle_mesh_packet(
         packet: protobufs::MeshPacket,
-        dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
         device: &mut device::MeshDevice,
     ) -> Result<bool, Box<dyn Error>>;
 
@@ -149,7 +146,6 @@ impl MeshConnection for SerialConnection {
 
     async fn handle_packet_from_radio(
         variant: app::protobufs::from_radio::PayloadVariant,
-        dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
         device: &mut device::MeshDevice,
     ) -> Result<bool, Box<dyn Error>> {
         let mut device_updated = false;
@@ -185,8 +181,7 @@ impl MeshConnection for SerialConnection {
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::Packet(p) => {
-                device_updated =
-                    SerialConnection::handle_mesh_packet(p, dispatch_tx, device).await?;
+                device_updated = SerialConnection::handle_mesh_packet(p, device).await?;
             }
             protobufs::from_radio::PayloadVariant::Rebooted(_r) => {
                 // println!("Rebooted data: {:#?}", r);
@@ -198,92 +193,87 @@ impl MeshConnection for SerialConnection {
 
     async fn handle_mesh_packet(
         packet: protobufs::MeshPacket,
-        dispatch_tx: tauri::async_runtime::Sender<protobufs::MeshPacket>,
         device: &mut device::MeshDevice,
     ) -> Result<bool, Box<dyn Error>> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
         let mut device_updated = false;
 
         match variant {
-            protobufs::mesh_packet::PayloadVariant::Decoded(data) => {
-                dispatch_tx.send(packet.clone()).await.expect("Error in tx");
-
-                match data.portnum() {
-                    protobufs::PortNum::AdminApp => {
-                        println!("Admin application not yet supported in Rust");
-                    }
-                    protobufs::PortNum::AtakForwarder => {
-                        println!("ATAK forwarder not yet supported in Rust");
-                    }
-                    protobufs::PortNum::AudioApp => {
-                        println!("Audio app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::IpTunnelApp => {
-                        println!("IP tunnel app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::NodeinfoApp => {
-                        let data = protobufs::User::decode(data.payload.as_slice())
-                            .expect("Error decoding NodeInfo MeshPacket");
-                        device.add_user(device::UserPacket { packet, data });
-                        device_updated = true;
-                    }
-                    protobufs::PortNum::PositionApp => {
-                        let data = protobufs::Position::decode(data.payload.as_slice())?;
-                        device.add_position(device::PositionPacket { packet, data });
-                        device_updated = true;
-                    }
-                    protobufs::PortNum::PrivateApp => {
-                        println!("Private app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::RangeTestApp => {
-                        println!("Range test app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::RemoteHardwareApp => {
-                        println!("Remote hardware app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::ReplyApp => {
-                        println!("Reply app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::RoutingApp => {
-                        println!("Routing app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::SerialApp => {
-                        println!("Serial app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::SimulatorApp => {
-                        println!("Simulator app not yet supported in Rust");
-                    }
-                    protobufs::PortNum::StoreForwardApp => {
-                        println!("Store forward packets not yet supported in Rust");
-                    }
-                    protobufs::PortNum::TelemetryApp => {
-                        let data = protobufs::Telemetry::decode(data.payload.as_slice())?;
-                        device.set_device_metrics(device::TelemetryPacket { packet, data });
-                        device_updated = true;
-                    }
-                    protobufs::PortNum::TextMessageApp => {
-                        let data = String::from_utf8(data.payload)?;
-
-                        device.add_message(device::TextPacket { packet, data });
-                        device_updated = true;
-                    }
-                    protobufs::PortNum::TextMessageCompressedApp => {
-                        eprintln!("Compressed text data not yet supported in Rust");
-                    }
-                    protobufs::PortNum::WaypointApp => {
-                        let data = protobufs::Waypoint::decode(data.payload.as_slice())?;
-                        device.add_waypoint(data.clone());
-                        device.add_waypoint_message(device::WaypointPacket { packet, data });
-                        device_updated = true;
-                    }
-                    protobufs::PortNum::ZpsApp => {
-                        println!("ZPS app not yet supported in Rust");
-                    }
-                    _ => {
-                        println!("Unknown packet received");
-                    }
+            protobufs::mesh_packet::PayloadVariant::Decoded(data) => match data.portnum() {
+                protobufs::PortNum::AdminApp => {
+                    println!("Admin application not yet supported in Rust");
                 }
-            }
+                protobufs::PortNum::AtakForwarder => {
+                    println!("ATAK forwarder not yet supported in Rust");
+                }
+                protobufs::PortNum::AudioApp => {
+                    println!("Audio app not yet supported in Rust");
+                }
+                protobufs::PortNum::IpTunnelApp => {
+                    println!("IP tunnel app not yet supported in Rust");
+                }
+                protobufs::PortNum::NodeinfoApp => {
+                    let data = protobufs::User::decode(data.payload.as_slice())
+                        .expect("Error decoding NodeInfo MeshPacket");
+                    device.add_user(device::UserPacket { packet, data });
+                    device_updated = true;
+                }
+                protobufs::PortNum::PositionApp => {
+                    let data = protobufs::Position::decode(data.payload.as_slice())?;
+                    device.add_position(device::PositionPacket { packet, data });
+                    device_updated = true;
+                }
+                protobufs::PortNum::PrivateApp => {
+                    println!("Private app not yet supported in Rust");
+                }
+                protobufs::PortNum::RangeTestApp => {
+                    println!("Range test app not yet supported in Rust");
+                }
+                protobufs::PortNum::RemoteHardwareApp => {
+                    println!("Remote hardware app not yet supported in Rust");
+                }
+                protobufs::PortNum::ReplyApp => {
+                    println!("Reply app not yet supported in Rust");
+                }
+                protobufs::PortNum::RoutingApp => {
+                    println!("Routing app not yet supported in Rust");
+                }
+                protobufs::PortNum::SerialApp => {
+                    println!("Serial app not yet supported in Rust");
+                }
+                protobufs::PortNum::SimulatorApp => {
+                    println!("Simulator app not yet supported in Rust");
+                }
+                protobufs::PortNum::StoreForwardApp => {
+                    println!("Store forward packets not yet supported in Rust");
+                }
+                protobufs::PortNum::TelemetryApp => {
+                    let data = protobufs::Telemetry::decode(data.payload.as_slice())?;
+                    device.set_device_metrics(device::TelemetryPacket { packet, data });
+                    device_updated = true;
+                }
+                protobufs::PortNum::TextMessageApp => {
+                    let data = String::from_utf8(data.payload)?;
+
+                    device.add_message(device::TextPacket { packet, data });
+                    device_updated = true;
+                }
+                protobufs::PortNum::TextMessageCompressedApp => {
+                    eprintln!("Compressed text data not yet supported in Rust");
+                }
+                protobufs::PortNum::WaypointApp => {
+                    let data = protobufs::Waypoint::decode(data.payload.as_slice())?;
+                    device.add_waypoint(data.clone());
+                    device.add_waypoint_message(device::WaypointPacket { packet, data });
+                    device_updated = true;
+                }
+                protobufs::PortNum::ZpsApp => {
+                    println!("ZPS app not yet supported in Rust");
+                }
+                _ => {
+                    println!("Unknown packet received");
+                }
+            },
             protobufs::mesh_packet::PayloadVariant::Encrypted(e) => {
                 eprintln!("Encrypted packets not yet supported in Rust: {:#?}", e);
             }

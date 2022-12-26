@@ -6,7 +6,10 @@ import ChatBubble from "@components/Messages/ChatBubble";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import MapIconButton from "@components/Map/MapIconButton";
 import { requestSendMessage } from "@features/device/deviceActions";
-import { selectMessagesByChannel } from "@app/features/device/deviceSelectors";
+import {
+  selectAllUsersByNodeIds,
+  selectMessagesByChannel,
+} from "@app/features/device/deviceSelectors";
 
 const Messages = () => {
   const [query, setQuery] = useState("");
@@ -14,10 +17,12 @@ const Messages = () => {
 
   const dispatch = useDispatch();
   const messages = useSelector(selectMessagesByChannel(0)); // TODO replace hard-coded broadcast
+  const users = useSelector(selectAllUsersByNodeIds());
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    dispatch(requestSendMessage(message));
+    dispatch(requestSendMessage({ channel: 0, text: message }));
+    setMessage("");
   };
 
   return (
@@ -47,6 +52,7 @@ const Messages = () => {
 
             const { data, packet } = message.payload.text;
             const time = new Date(packet.rxTime);
+            const user = users[packet.from];
 
             return [
               ...accum,
@@ -54,7 +60,8 @@ const Messages = () => {
                 key={time.getMilliseconds()}
                 time={time}
                 message={data}
-                userName={packet.from.toString()}
+                fromSelf={packet.from === 0}
+                displayName={user?.longName ?? packet.from.toString()}
               />,
             ];
           }, [] as ReactNode[])}

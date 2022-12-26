@@ -30,9 +30,7 @@ function* createDeviceWorker(
       .then(console.log)
       .catch(console.error);
 
-    invoke("send_text", { text: "device initialized" })
-      .then(console.log)
-      .catch(console.error);
+    yield put(requestSendMessage({ channel: 0, text: "Device Initialized" }));
 
     yield call(subscribeAll);
   } catch (error) {
@@ -46,7 +44,10 @@ function* watchCreateDevice() {
 
 function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
   try {
-    yield call(invoke, "send_text", { text: action.payload });
+    yield call(invoke, "send_text", {
+      channel: action.payload.channel,
+      text: action.payload.text,
+    });
   } catch (error) {
     yield put({ type: "GENERAL_ERROR", payload: error });
   }
