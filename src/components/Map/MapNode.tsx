@@ -4,7 +4,7 @@ import { Marker, MapboxEvent } from "react-map-gl";
 import type { MeshNode } from "@bindings/MeshNode";
 import MapNodeIcon from "@components/Map/MapNodeIcon";
 import {
-  getTimeSinceLastMessage,
+  getTimeSinceLastHeard,
   getNodeState,
   getHeadingFromNodeState,
   getColorClassFromNodeState,
@@ -39,7 +39,7 @@ const MapNode = ({
   };
 
   const reloadTimeSinceLastMessage = useCallback(() => {
-    setTimeSinceLastMessage(getTimeSinceLastMessage(node));
+    setTimeSinceLastMessage(getTimeSinceLastHeard(node));
   }, [setTimeSinceLastMessage, node]);
 
   useEffect(() => {

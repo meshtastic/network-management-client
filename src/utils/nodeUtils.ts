@@ -6,10 +6,16 @@ export const NODE_ERROR_THRESHOLD = 30;
 
 export type NodeState = "nominal" | "selected" | "warning" | "error";
 
-export const getTimeSinceLastMessage = (node: MeshNode): number => {
-  if (!node.data.lastHeard) return 0; // 0 means not set
+export const getTimeSinceLastHeard = (node: MeshNode): number => {
+  const lastMetricTime = Math.max(
+    node.deviceMetrics.at(-1)?.timestamp ?? 0,
+    node.environmentMetrics.at(-1)?.timestamp ?? 0
+  );
 
-  const lastHeard = node.data.lastHeard; // sec
+  if (!node.data.lastHeard || lastMetricTime === 0) return 0; // 0 means not set
+
+  // TODO lastHeard should be the source of truth in firmware
+  const lastHeard = Math.max(node.data.lastHeard, lastMetricTime); // sec
   const now = Date.now() / 1000; // sec
   const timeSinceLastMessage = Math.abs(now - lastHeard) / 60; // s to min
 

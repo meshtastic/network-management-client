@@ -10,7 +10,7 @@ import type { MeshNode } from "@bindings/MeshNode";
 import {
   getColorClassFromNodeState,
   getNodeState,
-  getTimeSinceLastMessage,
+  getTimeSinceLastHeard,
   NodeState,
 } from "@utils/nodeUtils";
 
@@ -55,7 +55,7 @@ const NodeSearchResult = ({
   const colorClasses = getColorClassFromNodeState(nodeState);
 
   const reloadTimeSinceLastMessage = useCallback(() => {
-    setTimeSinceLastMessage(getTimeSinceLastMessage(node));
+    setTimeSinceLastMessage(getTimeSinceLastHeard(node));
   }, [setTimeSinceLastMessage, node]);
 
   useEffect(() => {
