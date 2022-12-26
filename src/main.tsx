@@ -41,6 +41,14 @@ listen("reboot", (event) => {
   })
   .catch(console.error);
 
+void listen<any>("device_update", (v) => {
+  console.log("device_update", v.payload);
+})
+  .then((unlisten) => {
+    return unlisten;
+  })
+  .catch(console.error);
+
 createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>

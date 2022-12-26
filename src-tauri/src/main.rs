@@ -91,7 +91,7 @@ fn connect_to_serial_port(
 
                 let mut device = device_mutex.lock().await;
 
-                match SerialConnection::dispatch_packet(
+                let device_updated = match SerialConnection::dispatch_packet(
                     handle.clone(),
                     variant,
                     tx.clone(),
@@ -99,12 +99,22 @@ fn connect_to_serial_port(
                 )
                 .await
                 {
-                    Ok(_) => (),
+                    Ok(d) => d,
                     Err(e) => {
                         eprintln!("Error transmitting packet: {}", e.to_string());
                         continue;
                     }
                 };
+
+                if device_updated {
+                    match handle.emit_all("device_update", device.clone()) {
+                        Ok(_) => (),
+                        Err(e) => {
+                            eprintln!("Error emitting event to client: {:?}", e.to_string());
+                            continue;
+                        }
+                    };
+                }
             }
         }
     });
