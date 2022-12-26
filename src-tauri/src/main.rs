@@ -16,12 +16,19 @@ struct ActiveSerialConnection {
     inner: Arc<sync::Mutex<Option<mesh::serial_connection::SerialConnection>>>,
 }
 
+struct ActiveMeshDevice {
+    inner: Arc<async_runtime::Mutex<mesh::device::MeshDevice>>,
+}
+
 fn main() {
     tracing_subscriber::fmt::init();
 
     tauri::Builder::default()
         .manage(ActiveSerialConnection {
             inner: Arc::new(sync::Mutex::new(None)),
+        })
+        .manage(ActiveMeshDevice {
+            inner: Arc::new(async_runtime::Mutex::new(mesh::device::MeshDevice::new())),
         })
         .invoke_handler(tauri::generate_handler![
             run_articulation_point,
@@ -46,7 +53,8 @@ fn get_all_serial_ports() -> Result<Vec<String>, String> {
 fn connect_to_serial_port(
     port_name: String,
     app_handle: tauri::AppHandle,
-    state: tauri::State<'_, ActiveSerialConnection>,
+    mesh_device: tauri::State<'_, ActiveMeshDevice>,
+    serial_connection: tauri::State<'_, ActiveSerialConnection>,
 ) -> Result<(), String> {
     let mut connection: SerialConnection = MeshConnection::new();
     connection.connect(port_name, 115_200).unwrap();
@@ -79,9 +87,9 @@ fn connect_to_serial_port(
         }
     });
 
-    tauri::async_runtime::spawn(async move {
-        let device_mutex = async_runtime::Mutex::new(mesh::device::MeshDevice::new());
+    let mesh_device_arc = mesh_device.inner.clone();
 
+    tauri::async_runtime::spawn(async move {
         loop {
             if let Ok(message) = decoded_listener.recv().await {
                 let variant = match message.payload_variant {
@@ -89,7 +97,7 @@ fn connect_to_serial_port(
                     None => continue,
                 };
 
-                let mut device = device_mutex.lock().await;
+                let mut device = mesh_device_arc.lock().await;
 
                 let device_updated = match SerialConnection::handle_packet_from_radio(
                     variant,
@@ -119,7 +127,7 @@ fn connect_to_serial_port(
     });
 
     {
-        let mut state_connection = state.inner.lock().unwrap();
+        let mut state_connection = serial_connection.inner.lock().unwrap();
         *state_connection = Some(connection);
     }
 
