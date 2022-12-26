@@ -1,37 +1,24 @@
-import React, { FormEventHandler, useState } from "react";
+import React, { FormEventHandler, ReactNode, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
+import ChatBubble from "@components/Messages/ChatBubble";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import MapIconButton from "@components/Map/MapIconButton";
 import { requestSendMessage } from "@features/device/deviceActions";
-import {
-  MessageType,
-  selectMessagesByDeviceId,
-} from "@features/device/deviceSelectors";
-import ChatBubble from "@components/Messages/ChatBubble";
+import { selectMessagesByChannel } from "@app/features/device/deviceSelectors";
 
 const Messages = () => {
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
-  const [sentMessages, setSentMessages] = useState<MessageType[]>([]);
 
   const dispatch = useDispatch();
-  const messages = useSelector(selectMessagesByDeviceId(1)); // TODO replace hard-code
+  const messages = useSelector(selectMessagesByChannel(0)); // TODO replace hard-coded broadcast
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    setSentMessages([
-      ...sentMessages,
-      { message, userName: "You", time: new Date() },
-    ]);
-    setMessage("");
     dispatch(requestSendMessage(message));
   };
-
-  const allMessages = [...messages, ...sentMessages].sort(
-    (a, b) => a.time.valueOf() - b.time.valueOf()
-  );
 
   return (
     <div
@@ -55,14 +42,22 @@ const Messages = () => {
 
       <div className="flex flex-1 flex-col rounded-lg w-full h-auto bg-white border-gray-50 drop-shadow justify-top overflow-y-auto">
         <div className="flex flex-col p-6 overflow-scroll gap-4">
-          {allMessages.map(({ time, message, userName }) => (
-            <ChatBubble
-              key={time.getMilliseconds()}
-              time={time}
-              message={message}
-              userName={userName}
-            />
-          ))}
+          {messages.reduce((accum, message) => {
+            if (!("text" in message.payload)) return accum;
+
+            const { data, packet } = message.payload.text;
+            const time = new Date(packet.rxTime);
+
+            return [
+              ...accum,
+              <ChatBubble
+                key={time.getMilliseconds()}
+                time={time}
+                message={data}
+                userName={packet.from.toString()}
+              />,
+            ];
+          }, [] as ReactNode[])}
         </div>
         <form className="mt-auto px-6 py-4 bg-gray-100" onSubmit={handleSubmit}>
           <div className="flex flex-row rounded-lg border-gray-100">

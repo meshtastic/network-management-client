@@ -1,34 +1,23 @@
 import type { RootState } from "@app/store";
-import { Protobuf } from "@meshtastic/meshtasticjs";
-import type { IDevice, INode } from "@features/device/deviceSlice";
+import type { ChannelMessageWithAck } from "@bindings/ChannelMessageWithAck";
+import type { MeshDevice } from "@bindings/MeshDevice";
+import type { MeshNode } from "@bindings/MeshNode";
 
-export const selectAllDevices =
+export const selectDevice =
   () =>
-  (state: RootState): IDevice[] =>
-    Object.values(state.devices.devices);
-
-export const selectDeviceById =
-  (id: number) =>
-  (state: RootState): IDevice | null =>
-    state.devices.devices[id] ?? null;
+  (state: RootState): MeshDevice | null =>
+    state.devices.device;
 
 export const selectAllNodes =
   () =>
-  (state: RootState): INode[] =>
-    Object.values(state.devices.devices).reduce<INode[]>(
-      (accum, curr) => [...accum, ...Object.values(curr.nodes)],
-      []
-    );
+  (state: RootState): MeshNode[] =>
+    Object.values(state.devices.device?.nodes ?? []);
 
 export const selectNodeById =
   (id: number) =>
-  (state: RootState): INode | null => {
-    const devices = state.devices.devices;
-
-    for (const device of Object.values(devices)) {
-      for (const node of Object.values(device.nodes)) {
-        if (node.data.num === id) return node;
-      }
+  (state: RootState): MeshNode | null => {
+    for (const node of selectAllNodes()(state)) {
+      if (node.data.num === id) return node;
     }
 
     return null;
@@ -39,38 +28,19 @@ export const selectActiveNodeId = () => (state: RootState) =>
 
 export const selectActiveNode =
   () =>
-  (state: RootState): INode | null => {
+  (state: RootState): MeshNode | null => {
     const activeNodeId = selectActiveNodeId()(state);
     if (!activeNodeId) return null;
     return selectNodeById(activeNodeId)(state);
   };
 
-export type MessageType = { message: string; userName: string; time: Date };
+export const selectMessagesByChannel =
+  (channelId: number) =>
+  (state: RootState): ChannelMessageWithAck[] => {
+    const numChannels = Object.values(
+      state.devices.device?.channels ?? {}
+    ).length;
 
-export const selectMessagesByDeviceId =
-  (id: number) =>
-  (state: RootState): MessageType[] => {
-    const device = state.devices.devices[id];
-    if (!device) return [];
-
-    const decoder = new TextDecoder();
-
-    return device.meshPackets.reduce((accum, m) => {
-      if (
-        !("decoded" in m.payloadVariant) ||
-        m.payloadVariant?.decoded?.portnum !== Protobuf.PortNum.TEXT_MESSAGE_APP
-      )
-        return accum;
-
-      return [
-        ...accum,
-        {
-          message: decoder.decode(
-            new Uint8Array(m.payloadVariant.decoded.payload)
-          ),
-          userName: m.from.toString(),
-          time: new Date(m.rxTime ?? 0),
-        },
-      ];
-    }, [] as MessageType[]);
+    if (!numChannels || channelId < 0 || numChannels <= channelId) return [];
+    return state.devices.device?.channels[channelId].messages ?? [];
   };

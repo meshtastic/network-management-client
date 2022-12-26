@@ -12,15 +12,10 @@ import {
 import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
-import { invoke } from "@tauri-apps/api/tauri";
-import {
-  selectAllDevices,
-  selectAllNodes,
-} from "@features/device/deviceSelectors";
+// import { invoke } from "@tauri-apps/api/tauri";
+// import { selectAllNodes } from "@features/device/deviceSelectors";
 import { requestCreateDeviceAction } from "@features/device/deviceActions";
-import type { INode } from "@features/device/deviceSlice";
-import { generateDemoData, generateNeighborInfo } from "./DemoData";
-import type { NeighborInfo, Neighbor } from "./NeighborInfo";
+// import type { NeighborInfo, Neighbor } from "./NeighborInfo";
 import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
 import {
   ActiveSidebarPanel,
@@ -29,8 +24,7 @@ import {
 
 const Sidebar = () => {
   const dispatch = useDispatch();
-  const devices = useSelector(selectAllDevices());
-  const nodes = useSelector(selectAllNodes());
+  // const nodes = useSelector(selectAllNodes());
   const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
 
   const requestDeviceConnection = () => {
@@ -39,44 +33,46 @@ const Sidebar = () => {
   };
 
   const requestArticulationPoint = () => {
-    const nodeList: INode[] = generateDemoData();
-    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
-    console.log("Sending command with input...");
-    console.log(nbrInfoList);
-    invoke("run_articulation_point", {
-      nodes: nbrInfoList,
-    })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch(console.error);
+    // const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
+    // console.log("Sending command with input...");
+    // console.log(nbrInfoList);
+    // invoke("run_articulation_point", {
+    //   nodes: nbrInfoList,
+    // })
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch(console.error);
   };
+
   const requestGlobalMincut = () => {
-    const nodeList: INode[] = generateDemoData();
-    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
-    console.log("Sending test command with neighbors...");
-    console.log(nbrInfoList);
-    invoke("run_global_mincut", {
-      nodes: nbrInfoList,
-    })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch(console.error);
+    // const nodeList: INode[] = generateDemoData();
+    // const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
+    // console.log("Sending test command with neighbors...");
+    // console.log(nbrInfoList);
+    // invoke("run_global_mincut", {
+    //   nodes: nbrInfoList,
+    // })
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch(console.error);
   };
+
   const requestStoerWagner = () => {
-    const nodeList: INode[] = generateDemoData();
-    const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
-    console.log("Sending test command with neighbors...");
-    console.log(nbrInfoList);
-    invoke("run_stoer_wagner", {
-      nodes: nbrInfoList,
-    })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch(console.error);
+    // const nodeList: INode[] = generateDemoData();
+    // const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
+    // console.log("Sending test command with neighbors...");
+    // console.log(nbrInfoList);
+    // invoke("run_stoer_wagner", {
+    //   nodes: nbrInfoList,
+    // })
+    //   .then((res) => {
+    //     console.log(res);
+    //   })
+    //   .catch(console.error);
   };
+
   const setActivePane = (panel: ActiveSidebarPanel) => {
     dispatch(panelsSliceActions.setActiveSidebarPanel(panel));
   };

@@ -23,7 +23,8 @@ const MapSelectedNodeMenu = () => {
   const deviceLtCoord = (activeNode?.data.position?.latitudeI ?? 0) / 1e7;
   const deviceLgCoord = (activeNode?.data.position?.longitudeI ?? 0) / 1e7;
   const devicePercentCharge = activeNode?.data.deviceMetrics?.batteryLevel ?? 0;
-  const deviceIsCharging = false;
+  const deviceIsCharging =
+    activeNode?.deviceMetrics.at(-1)?.metrics.batteryLevel === 0;
   const deviceSpeed = activeNode?.data.position?.groundSpeed ?? 0;
   const deviceDirection = activeNode?.data.position?.groundTrack ?? 0;
 

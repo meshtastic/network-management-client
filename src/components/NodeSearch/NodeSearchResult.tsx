@@ -6,7 +6,7 @@ import {
   ViewfinderCircleIcon,
 } from "@heroicons/react/24/outline";
 
-import type { INode } from "@features/device/deviceSlice";
+import type { MeshNode } from "@bindings/MeshNode";
 import {
   getColorClassFromNodeState,
   getNodeState,
@@ -15,7 +15,7 @@ import {
 } from "@utils/nodeUtils";
 
 export interface INodeSearchResultProps {
-  node: INode;
+  node: MeshNode;
   isActive: boolean;
   selectNode: (nodeId: number) => void;
 }

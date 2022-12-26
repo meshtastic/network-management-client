@@ -41,7 +41,7 @@ impl Default for MeshDeviceStatus {
 pub struct MeshChannel {
     pub config: protobufs::Channel,
     pub last_interaction: u32,
-    pub messages: Vec<MessageType>,
+    pub messages: Vec<ChannelMessageWithAck>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
@@ -103,7 +103,7 @@ pub struct PositionPacket {
 #[serde(rename_all = "camelCase")]
 #[ts(rename_all = "camelCase")]
 #[ts(export)]
-pub struct MessagePacket {
+pub struct TextPacket {
     pub packet: protobufs::MeshPacket,
     pub data: String,
 }
@@ -121,27 +121,17 @@ pub struct WaypointPacket {
 #[serde(rename_all = "camelCase")]
 #[ts(rename_all = "camelCase")]
 #[ts(export)]
-pub enum MessageType {
-    MessageWithAck(MessageWithAck),
-    WaypointIDWithAck(WaypointIDWithAck),
+pub enum ChannelMessagePayload {
+    Text(TextPacket),
+    Waypoint(WaypointPacket),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(rename_all = "camelCase")]
 #[ts(export)]
-pub struct MessageWithAck {
-    pub packet: MessagePacket,
-    pub ack: bool,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
-#[serde(rename_all = "camelCase")]
-#[ts(rename_all = "camelCase")]
-#[ts(export)]
-pub struct WaypointIDWithAck {
-    pub packet: WaypointPacket,
-    pub waypoint_id: u32,
+pub struct ChannelMessageWithAck {
+    pub payload: ChannelMessagePayload,
     pub ack: bool,
 }
 
@@ -397,27 +387,33 @@ impl MeshDevice {
         }
     }
 
-    pub fn add_message(&mut self, message: MessageWithAck) {
-        let channel = self.channels.get_mut(&message.packet.packet.channel);
+    pub fn add_message(&mut self, message: TextPacket) {
+        let channel = self.channels.get_mut(&message.packet.channel);
 
         if let Some(ch) = channel {
             println!(
                 "Adding text message to channel {:?}: {:?}",
-                message.packet.packet.channel, message.packet.data
+                message.packet.channel, message.data
             );
-            ch.messages.push(MessageType::MessageWithAck(message));
+            ch.messages.push(ChannelMessageWithAck {
+                payload: ChannelMessagePayload::Text(message),
+                ack: false,
+            });
         }
     }
 
-    pub fn add_waypoint_message(&mut self, message: WaypointIDWithAck) {
-        let channel = self.channels.get_mut(&message.packet.packet.channel);
+    pub fn add_waypoint_message(&mut self, message: WaypointPacket) {
+        let channel = self.channels.get_mut(&message.packet.channel);
 
         if let Some(ch) = channel {
             println!(
                 "Adding waypoint message to channel {:?}: {:?}",
-                message.packet.packet.channel, message.packet.data
+                message.packet.channel, message.data
             );
-            ch.messages.push(MessageType::WaypointIDWithAck(message));
+            ch.messages.push(ChannelMessageWithAck {
+                payload: ChannelMessagePayload::Waypoint(message),
+                ack: false,
+            });
         }
     }
 
@@ -427,22 +423,17 @@ impl MeshDevice {
         let channel = self.channels.get_mut(&channel_id);
 
         if let Some(ch) = channel {
-            let message_opt = ch.messages.iter_mut().find(|message| match message {
-                MessageType::MessageWithAck(m) => m.packet.packet.id == message_id,
-                MessageType::WaypointIDWithAck(w) => w.packet.packet.id == message_id,
-            });
+            let message = ch
+                .messages
+                .iter_mut()
+                .find(|message| match message.payload.clone() {
+                    ChannelMessagePayload::Text(t) => t.packet.id == message_id,
+                    ChannelMessagePayload::Waypoint(w) => w.packet.id == message_id,
+                });
 
-            if let Some(message) = message_opt {
-                println!("Acking message id {:?}: {:?}", message_id, message);
-
-                match message {
-                    MessageType::MessageWithAck(m) => {
-                        m.ack = true;
-                    }
-                    MessageType::WaypointIDWithAck(w) => {
-                        w.ack = true;
-                    }
-                };
+            if let Some(m) = message {
+                println!("Acking message id {:?}: {:?}", message_id, m);
+                m.ack = true;
             }
         }
     }

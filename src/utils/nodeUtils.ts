@@ -1,4 +1,4 @@
-import type { INode } from "@features/device/deviceSlice";
+import type { MeshNode } from "@bindings/MeshNode";
 
 // TODO these will need to be configurable
 export const NODE_WARNING_THRESHOLD = 15;
@@ -6,7 +6,7 @@ export const NODE_ERROR_THRESHOLD = 30;
 
 export type NodeState = "nominal" | "selected" | "warning" | "error";
 
-export const getTimeSinceLastMessage = (node: INode): number => {
+export const getTimeSinceLastMessage = (node: MeshNode): number => {
   if (!node.data.lastHeard) return 0; // 0 means not set
 
   const lastHeard = node.data.lastHeard; // sec

@@ -91,8 +91,7 @@ fn connect_to_serial_port(
 
                 let mut device = device_mutex.lock().await;
 
-                let device_updated = match SerialConnection::dispatch_packet(
-                    handle.clone(),
+                let device_updated = match SerialConnection::handle_packet_from_radio(
                     variant,
                     tx.clone(),
                     &mut device,
