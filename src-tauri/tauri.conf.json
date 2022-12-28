@@ -23,6 +23,13 @@
         "scope": [
           " http://127.0.0.1:5000/*"
         ]
+      },
+      "shell": {
+        "all": false,
+        "execute": false,
+        "open": true,
+        "scope": [],
+        "sidecar": false
       }
     },
     "bundle": {
