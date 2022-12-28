@@ -11,6 +11,7 @@
     "ui:format": "prettier --write 'src/**/*.{ts,tsx}' && eslint src/*.{ts,tsx}",
     "ui:test": "jest --passWithNoTests",
     "rust:dev": "tauri dev",
+    "rust:build": "tauri build --",
     "rust:test": "cd ./src-tauri; rm -rf ./bindings && cargo test"
   },
   "dependencies": {

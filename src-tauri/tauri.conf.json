@@ -47,7 +47,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "org.meshtastic.emergency",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -73,11 +73,9 @@
     },
     "windows": [
       {
-        "fullscreen": false,
-        "height": 600,
+        "maximized": true,
         "resizable": true,
-        "title": "Meshtastic Emergency Response Client",
-        "width": 800
+        "title": "Meshtastic Emergency Response Client"
       }
     ]
   }
