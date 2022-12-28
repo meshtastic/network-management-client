@@ -1,0 +1,3 @@
+.splash-screen-opacity {
+  transition: opacity 900ms ease-in-out;
+}

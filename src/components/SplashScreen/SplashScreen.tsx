@@ -1,35 +1,64 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { open } from "@tauri-apps/api/shell";
 import { Particles } from "react-tsparticles";
 import { loadFull } from "tsparticles";
-import type { Container, Engine } from "tsparticles-engine";
+import type { Engine } from "tsparticles-engine";
 
 import RainierSplashBackground from "@app/assets/rainier_splash_background.jpg";
-import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
-import { options } from "./SplashScreenParticlesOptions";
+import { options } from "@components/SplashScreen/SplashScreenParticlesOptions";
+import SplashScreenLogo from "@components/SplashScreen/SplashScreenLogo";
+
+import "./SplashScreen.css";
 
 const SplashScreen = () => {
+  const [isParticlesLoaded, setParticlesLoaded] = useState(false);
+  const [isScreenLoaded, setScreenLoaded] = useState(false);
+  const [isScreenVisible, setScreenVisible] = useState(true);
+
   const particlesInit = useCallback(async (engine: Engine) => {
-    console.log(engine);
     await loadFull(engine);
   }, []);
 
-  const particlesLoaded = useCallback(
-    // eslint-disable-next-line @typescript-eslint/require-await
-    async (container: Container | undefined) => {
-      console.log(container);
-    },
-    []
-  );
+  // eslint-disable-next-line @typescript-eslint/require-await
+  const particlesLoaded = useCallback(async () => {
+    setParticlesLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isParticlesLoaded) return;
+
+    const loadingHandle = setTimeout(() => {
+      setScreenLoaded(true);
+    }, 1200);
+
+    return () => {
+      clearTimeout(loadingHandle);
+    };
+  }, [isParticlesLoaded]);
+
+  useEffect(() => {
+    if (!isScreenLoaded) return;
+
+    const fadeOutHandle = setTimeout(() => {
+      setScreenVisible(false);
+    }, 5000);
+
+    return () => {
+      clearTimeout(fadeOutHandle);
+    };
+  }, [isScreenLoaded]);
 
   const openExternalLink = (url: string) => () => {
     void open(url);
   };
 
   return (
-    <div className="absolute top-0 left-0 w-screen h-screen z-50">
+    <div
+      className="splash-screen-opacity absolute top-0 left-0 w-screen h-screen z-50"
+      style={{ opacity: isScreenVisible ? 1 : 0 }}
+    >
       <img
-        className="absolute w-full h-full object-cover"
+        className="absolute w-full h-full object-cover bg-gray-200 transition-all"
         src={RainierSplashBackground}
         alt="Photo of Mount Rainier at sunset"
       />
@@ -66,10 +95,9 @@ const SplashScreen = () => {
         }}
       />
 
-      <img
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/4"
-        src={LogoWhiteSVG}
-      />
+      {isScreenLoaded && (
+        <SplashScreenLogo className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      )}
 
       <p className="absolute bottom-3 right-3 text-right text-sm text-gray-600">
         Photo by{" "}
@@ -91,6 +119,11 @@ const SplashScreen = () => {
           Unsplash
         </button>
       </p>
+
+      <div
+        className="splash-screen-opacity absolute w-full h-full bg-white transition-all"
+        style={{ opacity: isScreenLoaded ? 0 : 1 }}
+      />
     </div>
   );
 };

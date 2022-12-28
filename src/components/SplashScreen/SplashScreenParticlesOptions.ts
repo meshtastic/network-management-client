@@ -1,6 +1,7 @@
 import type { IParticlesProps } from "react-tsparticles";
 
 export const options: IParticlesProps["options"] = {
+  fpsLimit: 30,
   particles: {
     number: {
       density: {
