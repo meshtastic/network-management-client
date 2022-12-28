@@ -27,7 +27,7 @@
   animation-name: dash-plus;
   animation-duration: 300ms;
   animation-timing-function: ease-in-out;
-  animation-delay: 3400ms;
+  animation-delay: 2850ms;
   animation-fill-mode: forwards;
 }
 
@@ -38,7 +38,7 @@
   animation-name: dash-plus;
   animation-duration: 300ms;
   animation-timing-function: ease-in-out;
-  animation-delay: 3550ms;
+  animation-delay: 3000ms;
   animation-fill-mode: forwards;
 }
 

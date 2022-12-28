@@ -10,10 +10,14 @@ import SplashScreenLogo from "@components/SplashScreen/SplashScreenLogo";
 
 import "./SplashScreen.css";
 
-const SplashScreen = () => {
+export interface ISplashScreenProps {
+  unmountSelf: () => void;
+}
+
+const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
   const [isParticlesLoaded, setParticlesLoaded] = useState(false);
   const [isScreenLoaded, setScreenLoaded] = useState(false);
-  const [isScreenVisible, setScreenVisible] = useState(true);
+  const [isScreenActive, setScreenActive] = useState(true);
 
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadFull(engine);
@@ -24,29 +28,44 @@ const SplashScreen = () => {
     setParticlesLoaded(true);
   }, []);
 
+  // Wait for particles to stabilize
   useEffect(() => {
     if (!isParticlesLoaded) return;
 
     const loadingHandle = setTimeout(() => {
       setScreenLoaded(true);
-    }, 1200);
+    }, 900);
 
     return () => {
       clearTimeout(loadingHandle);
     };
   }, [isParticlesLoaded]);
 
+  // Wait for animation to complete
   useEffect(() => {
     if (!isScreenLoaded) return;
 
     const fadeOutHandle = setTimeout(() => {
-      setScreenVisible(false);
-    }, 5000);
+      setScreenActive(false);
+    }, 4500);
 
     return () => {
       clearTimeout(fadeOutHandle);
     };
   }, [isScreenLoaded]);
+
+  // Wait for hide animation to complete
+  useEffect(() => {
+    if (isScreenActive) return;
+
+    const unmountHandle = setTimeout(() => {
+      unmountSelf();
+    }, 900);
+
+    return () => {
+      clearTimeout(unmountHandle);
+    };
+  }, [isScreenActive, unmountSelf]);
 
   const openExternalLink = (url: string) => () => {
     void open(url);
@@ -55,7 +74,7 @@ const SplashScreen = () => {
   return (
     <div
       className="splash-screen-opacity absolute top-0 left-0 w-screen h-screen z-50"
-      style={{ opacity: isScreenVisible ? 1 : 0 }}
+      style={{ opacity: isScreenActive ? 1 : 0 }}
     >
       <img
         className="absolute w-full h-full object-cover bg-gray-200 transition-all"
