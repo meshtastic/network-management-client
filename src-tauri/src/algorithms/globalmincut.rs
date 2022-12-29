@@ -35,44 +35,44 @@ pub fn bisect_left<T: PartialOrd>(a: &[T], x: T) -> usize {
 /// * Arguments
 ///
 /// * `G` - The graph to pick the edge from
-pub fn random_select(G: &Graph) -> Edge {
+pub fn random_select(g: &Graph) -> Edge {
     // Calculate the cumulative edge weights
-    let cumulative_edge_weights = G.get_cumulative_edge_weights();
+    let cumulative_edge_weights = g.get_cumulative_edge_weights();
     let total_weight = cumulative_edge_weights[cumulative_edge_weights.len() - 1];
 
     let r = rand::random::<f64>() * (total_weight as f64);
     let i = bisect_left(&cumulative_edge_weights, r);
-    let edges = G.get_edges();
+    let edges = g.get_edges();
     return edges[i].clone();
 }
 
-pub fn contract(G: &Graph, k: usize) -> Graph {
-    let mut G = G.clone();
+pub fn contract(g: &Graph, k: usize) -> Graph {
+    let mut g = g.clone();
 
-    while G.get_order() > k {
-        let e = random_select(&G);
+    while g.get_order() > k {
+        let e = random_select(&g);
 
         let start_idx = e.u.clone();
         let finish_idx = e.v.clone();
 
-        let start = G.get_node(start_idx.clone());
-        let finish = G.get_node(finish_idx.clone());
+        let start = g.get_node(start_idx.clone());
+        let finish = g.get_node(finish_idx.clone());
 
-        for node in G.get_neighbors(finish.name.clone()) {
+        for node in g.get_neighbors(finish.name.clone()) {
             if !node.name.eq(&start.name) {
                 let weight =
-                    G.get_edge_weight(finish.name.clone(), node.name.clone(), None, Some(true));
-                G.add_edge(start.name.clone(), node.name.clone(), weight);
+                    g.get_edge_weight(finish.name.clone(), node.name.clone(), None, Some(true));
+                g.add_edge(start.name.clone(), node.name.clone(), weight);
             }
         }
-        G.remove_node(finish_idx.clone());
+        g.remove_node(finish_idx.clone());
     }
-    return G.clone();
+    return g.clone();
 }
 
-pub fn karger_stein_gmincut(G: &Graph, n: i32) -> f64 {
+pub fn karger_stein_gmincut(g: &Graph, n: i32) -> f64 {
     if n <= 6 {
-        let g_prime = contract(G, 2);
+        let g_prime = contract(g, 2);
         let mut cut_sum = 0.0;
         for edge in g_prime.get_edges() {
             cut_sum += edge.weight;
@@ -80,10 +80,10 @@ pub fn karger_stein_gmincut(G: &Graph, n: i32) -> f64 {
         return cut_sum;
     } else {
         let n = (n as f64 / 2.0f64.sqrt()) as i32 + 1;
-        let g_prime_1 = contract(G, n as usize);
+        let g_prime_1 = contract(g, n as usize);
         let g_prime_1_min_cut = karger_stein_gmincut(&g_prime_1, n);
 
-        let g_prime_2 = contract(G, n as usize);
+        let g_prime_2 = contract(g, n as usize);
         let g_prime_2_min_cut = karger_stein_gmincut(&g_prime_2, n);
 
         if g_prime_1_min_cut > g_prime_2_min_cut {
@@ -102,42 +102,42 @@ mod tests {
     #[test]
     fn run_globalmincut() {
         // Create a graph
-        let mut G = Graph::new();
+        let mut g = Graph::new();
 
         // Add nodes
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
-        let x: String = "x".to_string();
-        let y: String = "y".to_string();
-        let z: String = "z".to_string();
-        let a: String = "a".to_string();
-        let b: String = "b".to_string();
+        let u = "u".to_string();
+        let v = "v".to_string();
+        let w = "w".to_string();
+        let x = "x".to_string();
+        let y = "y".to_string();
+        let z = "z".to_string();
+        let a = "a".to_string();
+        let b = "b".to_string();
 
-        G.add_node(u.clone());
-        G.add_node(v.clone());
-        G.add_node(w.clone());
-        G.add_node(x.clone());
-        G.add_node(y.clone());
-        G.add_node(z.clone());
-        G.add_node(a.clone());
-        G.add_node(b.clone());
+        g.add_node(u.clone());
+        g.add_node(v.clone());
+        g.add_node(w.clone());
+        g.add_node(x.clone());
+        g.add_node(y.clone());
+        g.add_node(z.clone());
+        g.add_node(a.clone());
+        g.add_node(b.clone());
 
         // Add edges
-        G.add_edge(u.clone(), v.clone(), 1.0);
-        G.add_edge(u.clone(), w.clone(), 1.0);
-        G.add_edge(u.clone(), x.clone(), 1.0);
-        G.add_edge(w.clone(), x.clone(), 1.0);
-        G.add_edge(v.clone(), y.clone(), 1.0);
-        G.add_edge(x.clone(), y.clone(), 1.0);
-        G.add_edge(w.clone(), z.clone(), 1.0);
-        G.add_edge(x.clone(), a.clone(), 1.0);
-        G.add_edge(y.clone(), b.clone(), 1.0);
+        g.add_edge(u.clone(), v.clone(), 1.0);
+        g.add_edge(u.clone(), w.clone(), 1.0);
+        g.add_edge(u.clone(), x.clone(), 1.0);
+        g.add_edge(w.clone(), x.clone(), 1.0);
+        g.add_edge(v.clone(), y.clone(), 1.0);
+        g.add_edge(x.clone(), y.clone(), 1.0);
+        g.add_edge(w.clone(), z.clone(), 1.0);
+        g.add_edge(x.clone(), a.clone(), 1.0);
+        g.add_edge(y.clone(), b.clone(), 1.0);
 
         let mut mincut_2 = 0;
         for _ in 0..1000 {
-            let order = G.get_order();
-            let mincut = karger_stein_gmincut(&G.clone(), order as i32);
+            let order = g.get_order();
+            let mincut = karger_stein_gmincut(&g.clone(), order as i32);
             if mincut == 1.0 {
                 mincut_2 += 1;
             }

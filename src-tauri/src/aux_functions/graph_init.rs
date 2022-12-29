@@ -1,7 +1,6 @@
 use super::edge_factory::edge_factory;
 use super::take_snapshot::total_distance;
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
-use crate::graph::edge::{self, Edge};
 use crate::graph::graph_ds::Graph;
 use petgraph::graph::NodeIndex;
 
@@ -16,19 +15,19 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
     let mut edge_distances = Vec::<f64>::new();
     let mut edge_radio_quality = Vec::<f64>::new();
 
-    for mut nbr_info in data {
-        let mut name: String = nbr_info.selfnode.id.to_string();
+    for nbr_info in data {
+        let name: String = nbr_info.selfnode.id.to_string();
         if !graph.contains_node(name.clone()) {
             graph.add_node(name.clone());
         }
-        let mut node_idx = graph.get_node_idx(name.clone());
+        let node_idx = graph.get_node_idx(name.clone());
         for neighbor in nbr_info.neighbors {
             //initialize node if it doesn't exist
-            let mut neighbor_name = neighbor.id.to_string();
+            let neighbor_name = neighbor.id.to_string();
             if !graph.contains_node(neighbor_name.clone()) {
                 graph.add_node(neighbor_name.clone());
             }
-            let mut nbr_idx = graph.get_node_idx(neighbor_name.clone());
+            let nbr_idx = graph.get_node_idx(neighbor_name.clone());
             let distance = calculate_converted_distance(
                 nbr_info.selfnode.lat,
                 nbr_info.selfnode.lon,
@@ -85,35 +84,35 @@ mod tests {
 
     #[test]
     fn test_init_graph() {
-        let neighbor_1: Neighbor = Neighbor {
+        let neighbor_1 = Neighbor {
             id: 1,
             lat: 1.0,
             lon: 1.0,
             alt: 1.0,
             snr: 1.0,
         };
-        let neighbor_2: Neighbor = Neighbor {
+        let neighbor_2 = Neighbor {
             id: 2,
             lat: 2.0,
             lon: 2.0,
             alt: 2.0,
             snr: 2.0,
         };
-        let neighbor_3: Neighbor = Neighbor {
+        let neighbor_3 = Neighbor {
             id: 3,
             lat: 3.0,
             lon: 3.0,
             alt: 3.0,
             snr: 3.0,
         };
-        let neighbor_4: Neighbor = Neighbor {
+        let neighbor_4 = Neighbor {
             id: 4,
             lat: 4.0,
             lon: 4.0,
             alt: 4.0,
             snr: 4.0,
         };
-        let neighbor_info_1: NeighborInfo = NeighborInfo {
+        let neighbor_info_1 = NeighborInfo {
             selfnode: neighbor_1.clone(),
             neighbors: vec![neighbor_2.clone(), neighbor_3.clone(), neighbor_4.clone()],
         };

@@ -64,81 +64,81 @@ mod tests {
     #[test]
     fn test_api_call() {
         // Create a graph
-        let mut G = Graph::new();
+        let mut g = Graph::new();
 
         // Create a few nodes and edges and add to graph
-        let a: String = "a".to_string();
-        let b: String = "b".to_string();
-        let c: String = "c".to_string();
-        let d: String = "d".to_string();
+        let a = "a".to_string();
+        let b = "b".to_string();
+        let c = "c".to_string();
+        let d = "d".to_string();
 
         let mut a_node = Node::new(a.clone());
         a_node.set_gps(-72.28486, 43.71489, 1.0);
-        let a_idx = G.add_node_from_struct(a_node);
+        let a_idx = g.add_node_from_struct(a_node);
 
         let mut b_node = Node::new(b.clone());
         b_node.set_gps(-72.28239, 43.71584, 1.0);
-        let b_idx = G.add_node_from_struct(b_node);
+        let b_idx = g.add_node_from_struct(b_node);
 
         let mut c_node = Node::new(c.clone());
         c_node.set_gps(-72.28332, 43.7114, 1.0);
-        let c_idx = G.add_node_from_struct(c_node);
+        let c_idx = g.add_node_from_struct(c_node);
 
         let mut d_node = Node::new(d.clone());
         d_node.set_gps(-72.28085, 43.71235, 1.0);
-        let d_idx = G.add_node_from_struct(d_node);
+        let d_idx = g.add_node_from_struct(d_node);
 
         // 0: a, 1: b, 2: c, 3: d
         let a_b = Edge::new(a_idx, b_idx, 0.51);
-        G.add_edge_from_struct(a_b);
+        g.add_edge_from_struct(a_b);
 
         let a_c = Edge::new(a_idx, c_idx, 0.39);
-        G.add_edge_from_struct(a_c);
+        g.add_edge_from_struct(a_c);
 
         let b_c = Edge::new(b_idx, c_idx, 0.4);
-        G.add_edge_from_struct(b_c);
+        g.add_edge_from_struct(b_c);
 
         let b_d = Edge::new(b_idx, d_idx, 0.6);
-        G.add_edge_from_struct(b_d);
+        g.add_edge_from_struct(b_d);
 
-        let mut G2 = Graph::new();
+        let mut g_2 = Graph::new();
 
         // Create a few nodes and edges and add to graph
-        let a: String = "a".to_string();
-        let b: String = "b".to_string();
-        let c: String = "c".to_string();
-        let d: String = "d".to_string();
+        let a = "a".to_string();
+        let b = "b".to_string();
+        let c = "c".to_string();
+        let d = "d".to_string();
 
         let mut a_node = Node::new(a.clone());
         a_node.set_gps(-72.28239, 43.71489, 1.0);
-        let a_idx = G2.add_node_from_struct(a_node);
+        let a_idx = g_2.add_node_from_struct(a_node);
 
         let mut b_node = Node::new(b.clone());
         b_node.set_gps(-72.28486, 43.71584, 1.0);
-        let b_idx = G2.add_node_from_struct(b_node);
+        let b_idx = g_2.add_node_from_struct(b_node);
 
         let mut c_node = Node::new(c.clone());
         c_node.set_gps(-72.28332, 43.7114, 1.0);
-        let c_idx = G2.add_node_from_struct(c_node);
+        let c_idx = g_2.add_node_from_struct(c_node);
 
         let mut d_node = Node::new(d.clone());
         d_node.set_gps(-72.28085, 43.71235, 1.0);
-        let d_idx = G2.add_node_from_struct(d_node);
+        let d_idx = g_2.add_node_from_struct(d_node);
 
         // 0: a, 1: b, 2: c, 3: d
         let a_b = Edge::new(a_idx, b_idx, 0.6);
-        G2.add_edge_from_struct(a_b);
+        g_2.add_edge_from_struct(a_b);
 
         let a_c = Edge::new(a_idx, c_idx, 0.33);
-        G2.add_edge_from_struct(a_c);
+        g_2.add_edge_from_struct(a_c);
 
         let b_d = Edge::new(b_idx, d_idx, 0.65);
-        G2.add_edge_from_struct(b_d);
+        g_2.add_edge_from_struct(b_d);
 
         let b_c = Edge::new(b_idx, c_idx, 0.11);
-        G2.add_edge_from_struct(b_c);
+        g_2.add_edge_from_struct(b_c);
 
-        let graphs = vec![&G, &G2];
+        let graphs = vec![&g, &g_2];
 
         let rt = tokio::runtime::Runtime::new().unwrap();
 

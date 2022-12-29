@@ -1,17 +1,15 @@
 use crate::algorithms::articulation_point::articulation_point;
 use crate::algorithms::globalmincut::karger_stein_gmincut;
 use crate::algorithms::stoer_wagner::stoer_wagner;
-use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use crate::aux_data_structures::neighbor_info::NeighborInfo;
 use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use crate::aux_functions::graph_init::load_graph;
-use petgraph::graphmap::Nodes;
-use petgraph::stable_graph::NodeIndex;
 
 #[tauri::command]
 pub fn run_articulation_point(nodes: Vec<NeighborInfo>) -> String {
     // Assemble a vector of nodes and their neighbors
     println!("Calculating articulation points with input: {:?}", nodes);
-    let mut graph = load_graph(nodes.clone());
+    let graph = load_graph(nodes.clone());
     let mut ap_size: usize = 0;
     let articulation_points = articulation_point(graph.clone());
     let mut output = String::new();

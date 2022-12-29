@@ -1,5 +1,3 @@
-use std::{error::Error, fs::File, io::Write};
-
 use crate::graph::graph_ds::Graph;
 
 /// Returns Haversine distance between 2 nodes using their lat and long
