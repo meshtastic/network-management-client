@@ -10,7 +10,7 @@ import {
 
 import { selectActiveNode } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { getTimeSinceLastMessage } from "@utils/nodeUtils";
+import { getTimeSinceLastHeard } from "@utils/nodeUtils";
 import { writeValueToClipboard } from "@utils/clipboard";
 
 const MapSelectedNodeMenu = () => {
@@ -23,7 +23,8 @@ const MapSelectedNodeMenu = () => {
   const deviceLtCoord = (activeNode?.data.position?.latitudeI ?? 0) / 1e7;
   const deviceLgCoord = (activeNode?.data.position?.longitudeI ?? 0) / 1e7;
   const devicePercentCharge = activeNode?.data.deviceMetrics?.batteryLevel ?? 0;
-  const deviceIsCharging = false;
+  const deviceIsCharging =
+    activeNode?.deviceMetrics.at(-1)?.metrics.batteryLevel === 0;
   const deviceSpeed = activeNode?.data.position?.groundSpeed ?? 0;
   const deviceDirection = activeNode?.data.position?.groundTrack ?? 0;
 
@@ -33,7 +34,7 @@ const MapSelectedNodeMenu = () => {
 
   const reloadTimeSinceLastMessage = useCallback(() => {
     if (!activeNode) return;
-    setTimeSinceLastMessage(getTimeSinceLastMessage(activeNode));
+    setTimeSinceLastMessage(getTimeSinceLastHeard(activeNode));
   }, [setTimeSinceLastMessage, activeNode]);
 
   useEffect(() => {
@@ -68,7 +69,13 @@ const MapSelectedNodeMenu = () => {
           <div className="flex justify-start">
             <MapPinIcon className="w-5 h-5 text-gray-500 mt-0.5" />
             <h3 className="text-gray-500 text-base leading-6 font-normal pl-2">
-              {deviceLtCoord}&#176;, {deviceLgCoord}&#176;
+              {!deviceLtCoord || !deviceLgCoord ? (
+                <span>UNK</span>
+              ) : (
+                <span>
+                  {deviceLtCoord}&#176;, {deviceLgCoord}&#176;
+                </span>
+              )}
             </h3>
           </div>
           <button
@@ -94,7 +101,11 @@ const MapSelectedNodeMenu = () => {
           <button
             type="button"
             onClick={() =>
-              void writeValueToClipboard(`${devicePercentCharge}%`)
+              void writeValueToClipboard(
+                `${devicePercentCharge}%, ${
+                  deviceIsCharging === true ? "charging" : "discharging"
+                }`
+              )
             }
           >
             <DocumentDuplicateIcon className="w-5 h-5 text-gray-500" />
@@ -105,7 +116,13 @@ const MapSelectedNodeMenu = () => {
           <div className="flex justify-start">
             <ArrowRightCircleIcon className="w-5 h-5 outline-gray-400 mt-0.5 text-gray-500" />
             <h3 className="text-gray-500 text-base leading-6 font-normal pl-2">
-              {deviceSpeed} mph, {deviceDirection}&#176;
+              {!deviceSpeed || !deviceDirection ? (
+                <span>UNK</span>
+              ) : (
+                <span>
+                  {deviceSpeed} mph, {deviceDirection}&#176;
+                </span>
+              )}
             </h3>
           </div>
           <button

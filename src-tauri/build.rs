@@ -26,7 +26,14 @@ fn main() -> std::io::Result<()> {
 
     let mut config = prost_build::Config::new();
 
-    config.type_attribute(".", "#[derive(serde::Serialize, serde::Deserialize)]");
+    config.type_attribute(
+        ".",
+        "#[derive(serde::Serialize, serde::Deserialize, ts_rs::TS)]",
+    );
+    config.type_attribute(".", "#[serde(rename_all = \"camelCase\")]");
+    config.type_attribute(".", "#[ts(rename_all = \"camelCase\")]");
+    config.type_attribute(".", "#[ts(export, export_to = \"bindings/protobufs/\")]");
+
     config.compile_protos(&protos, &[protobufs_dir]).unwrap();
 
     tauri_build::build();

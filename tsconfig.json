@@ -18,11 +18,12 @@
     "jsx": "react-jsx",
     "baseUrl": "./",
     "paths": {
-      "@app/*": ["./src/*"],
+      "@app/*": ["src/*"],
+      "@bindings/*": ["src-tauri/bindings/*"],
       "@components/*": ["src/components/*"],
-      "@features/*": ["./src/features/*"],
-      "@store/*": ["./src/store/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@features/*": ["src/features/*"],
+      "@store/*": ["src/store/*"],
+      "@utils/*": ["src/utils/*"]
     },
     "importHelpers": true,
     "removeComments": true,

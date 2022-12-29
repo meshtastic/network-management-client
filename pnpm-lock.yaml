@@ -4,7 +4,6 @@ specifiers:
   '@heroicons/react': ^2.0.13
   '@material-tailwind/react': ^1.2.4
   '@meshtastic/eslint-config': ^1.0.8
-  '@meshtastic/meshtasticjs': ^0.6.113
   '@reduxjs/toolkit': ^1.8.6
   '@tauri-apps/api': ^1.1.0
   '@tauri-apps/cli': ^1.1.1
@@ -13,6 +12,7 @@ specifiers:
   '@types/react': ^18.0.25
   '@types/react-dom': ^18.0.8
   '@types/react-redux': ^7.1.24
+  '@types/redux-logger': ^3.0.9
   '@types/w3c-web-serial': ^1.0.3
   '@typescript-eslint/eslint-plugin': ^5.40.1
   '@typescript-eslint/parser': ^5.40.1
@@ -30,6 +30,7 @@ specifiers:
   react-dom: ^18.2.0
   react-map-gl: ^7.0.19
   react-redux: ^8.0.4
+  redux-logger: ^3.0.6
   redux-saga: ^1.2.1
   tailwindcss: ^3.2.1
   ts-jest: ^29.0.3
@@ -39,7 +40,6 @@ specifiers:
 dependencies:
   '@heroicons/react': 2.0.13_react@18.2.0
   '@material-tailwind/react': 1.2.4_2zx2umvpluuhvlq44va5bta2da
-  '@meshtastic/meshtasticjs': 0.6.113
   '@reduxjs/toolkit': 1.8.6_kuo2ie247izvzll3jejufdtq3q
   '@tauri-apps/api': 1.1.0
   heroicons: 2.0.13
@@ -50,6 +50,7 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-map-gl: 7.0.19_6nlej2sgzao4w63iqaban4rulm
   react-redux: 8.0.4_moha6x5fbqoiok2ot63p7hwafm
+  redux-logger: 3.0.6
   redux-saga: 1.2.1
 
 devDependencies:
@@ -60,6 +61,7 @@ devDependencies:
   '@types/react': 18.0.25
   '@types/react-dom': 18.0.9
   '@types/react-redux': 7.1.24
+  '@types/redux-logger': 3.0.9
   '@types/w3c-web-serial': 1.0.3
   '@typescript-eslint/eslint-plugin': 5.40.1_ukgdydjtebaxmxfqp5v5ulh64y
   '@typescript-eslint/parser': 5.40.1_z4bbprzjrhnsfa24uvmcbu7f5q
@@ -939,18 +941,6 @@ packages:
       - supports-color
     dev: true
 
-  /@meshtastic/meshtasticjs/0.6.113:
-    resolution: {integrity: sha512-4/Qlqof/Dm2gWS1nqZ/H/csYy5o7EjdKlGWCBFQjAA5s9PmZ4vMI20UdoSaAz3+DvW7CYCzAx3h1e5WwsClF0A==}
-    dependencies:
-      '@protobuf-ts/runtime': 2.8.1
-      '@serialport/stream': 10.3.0
-      glob: 8.0.3
-      serialport: 10.4.0
-      sub-events: 1.9.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /@motionone/animation/10.14.0:
     resolution: {integrity: sha512-h+1sdyBP8vbxEBW5gPFDnj+m2DCqdlAuf2g6Iafb1lcMnqjsRXWlPw1AXgvUMXmreyhqmPbJqoNfIKdytampRQ==}
     dependencies:
@@ -1019,10 +1009,6 @@ packages:
       fastq: 1.13.0
     dev: true
 
-  /@protobuf-ts/runtime/2.8.1:
-    resolution: {integrity: sha512-D9M5hSumYCovIfNllt7N6ODh4q+LrjiMWtNETvooaf+a2XheZJ7kgjFlsFghti0CFWwtA//of4JXQfw9hU+cCw==}
-    dev: false
-
   /@redux-saga/core/1.2.1:
     resolution: {integrity: sha512-ABCxsZy9DwmNoYNo54ZlfuTvh77RXx8ODKpxOHeWam2dOaLGQ7vAktpfOtqSeTdYrKEORtTeWnxkGJMmPOoukg==}
     dependencies:
@@ -1078,102 +1064,6 @@ packages:
       redux: 4.2.0
       redux-thunk: 2.4.1_redux@4.2.0
       reselect: 4.1.6
-    dev: false
-
-  /@serialport/binding-mock/10.2.2:
-    resolution: {integrity: sha512-HAFzGhk9OuFMpuor7aT5G1ChPgn5qSsklTFOTUX72Rl6p0xwcSVsRtG/xaGp6bxpN7fI9D/S8THLBWbBgS6ldw==}
-    engines: {node: '>=12.0.0'}
-    dependencies:
-      '@serialport/bindings-interface': 1.2.2
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@serialport/bindings-cpp/10.7.0:
-    resolution: {integrity: sha512-Xx1wA2UCG2loS32hxNvWJI4smCzGKhWqE85//fLRzHoGgE1lSLe3Nk7W40/ebrlGFHWRbQZmeaIF4chb2XLliA==}
-    engines: {node: '>=12.17.0 <13.0 || >=14.0.0'}
-    requiresBuild: true
-    dependencies:
-      '@serialport/bindings-interface': 1.2.1
-      '@serialport/parser-readline': 10.3.0
-      debug: 4.3.4
-      node-addon-api: 4.3.0
-      node-gyp-build: 4.5.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@serialport/bindings-interface/1.2.1:
-    resolution: {integrity: sha512-63Dyqz2gtryRDDckFusOYqLYhR3Hq/M4sEdbF9i/VsvDb6T+tNVgoAKUZ+FMrXXKnCSu+hYbk+MTc0XQANszxw==}
-    engines: {node: ^12.22 || ^14.13 || >=16}
-    dev: false
-
-  /@serialport/bindings-interface/1.2.2:
-    resolution: {integrity: sha512-CJaUd5bLvtM9c5dmO9rPBHPXTa9R2UwpkJ0wdh9JCYcbrPWsKz+ErvR0hBLeo7NPeiFdjFO4sonRljiw4d2XiA==}
-    engines: {node: ^12.22 || ^14.13 || >=16}
-    dev: false
-
-  /@serialport/parser-byte-length/10.3.0:
-    resolution: {integrity: sha512-pJ/VoFemzKRRNDHLhFfPThwP40QrGaEnm9TtwL7o2GihEPwzBg3T0bN13ew5TpbbUYZdMpUtpm3CGfl6av9rUQ==}
-    engines: {node: '>=12.0.0'}
-    dev: false
-
-  /@serialport/parser-cctalk/10.3.0:
-    resolution: {integrity: sha512-8ujmk8EvVbDPrNF4mM33bWvUYJOZ0wXbY3WCRazHRWvyCdL0VO0DQvW81ZqgoTpiDQZm5r8wQu9rmuemahF6vQ==}
-    engines: {node: '>=12.0.0'}
-    dev: false
-
-  /@serialport/parser-delimiter/10.3.0:
-    resolution: {integrity: sha512-9E4Vj6s0UbbcCCTclwegHGPYjJhdm9qLCS0lowXQDEQC5naZnbsELemMHs93nD9jHPcyx1B4oXkMnVZLxX5TYw==}
-    engines: {node: '>=12.0.0'}
-    dev: false
-
-  /@serialport/parser-inter-byte-timeout/10.3.0:
-    resolution: {integrity: sha512-wKP0QK85NHgvT6BBB1qBfKBBU4pf8kespNXAZBUYmFT+P4n8r8IZE2mqigCD+AiZcfWNQoAizwOsT/Jx/qeVig==}
-    engines: {node: '>=12.0.0'}
-    dev: false
-
-  /@serialport/parser-packet-length/10.3.0:
-    resolution: {integrity: sha512-bj0cWzt8YSQj/E5fRQVYdi4TsfTlZQrXlXrUwjyTsCONv8IPOHzsz+yY0fw5SEMiJtaLyqvPkCHLsttOd/zFsg==}
-    engines: {node: '>=8.6.0'}
-    dev: false
-
-  /@serialport/parser-readline/10.3.0:
-    resolution: {integrity: sha512-ki3ATZ3/RAqnqGROBKE7k+OeZ0DZXZ53GTca4q71OU5RazbbNhTOBQLKLXD3v9QZXCMJdg4hGW/2Y0DuMUqMQg==}
-    engines: {node: '>=12.0.0'}
-    dependencies:
-      '@serialport/parser-delimiter': 10.3.0
-    dev: false
-
-  /@serialport/parser-ready/10.3.0:
-    resolution: {integrity: sha512-1owywJ4p592dJyVrEJZPIh6pUZ3/y/LN6kGTDH2wxdewRUITo/sGvDy0er5i2+dJD3yuowiAz0dOHSdz8tevJA==}
-    engines: {node: '>=12.0.0'}
-    dev: false
-
-  /@serialport/parser-regex/10.3.0:
-    resolution: {integrity: sha512-tIogTs7CvTH+UUFnsvE7i33MSISyTPTGPWlglWYH2/5coipXY503jlaYS1YGe818wWNcSx6YAjMZRdhTWwM39w==}
-    engines: {node: '>=12.0.0'}
-    dev: false
-
-  /@serialport/parser-slip-encoder/10.3.0:
-    resolution: {integrity: sha512-JI0ILF5sylWn8f0MuMzHFBix/iMUTa79/Z95KaPZYnVaEdA7h7hh/o21Jmon/26P3RJwL1SNJCjZ81zfan+LtQ==}
-    engines: {node: '>=12.0.0'}
-    dev: false
-
-  /@serialport/parser-spacepacket/10.3.0:
-    resolution: {integrity: sha512-PDF73ClEPsClD1FEJZHNuBevDKsJCkqy/XD5+S5eA6+tY5D4HLrVgSWsg+3qqB6+dlpwf2CzHe+uO8D3teuKHA==}
-    engines: {node: '>=12.0.0'}
-    dev: false
-
-  /@serialport/stream/10.3.0:
-    resolution: {integrity: sha512-7sooi5fHogYNVEJwxVdg872xO6TuMgQd2E9iRmv+o8pk/1dbBnPkmH6Ka3st1mVE+0KnIJqVlgei+ncSsqXIGw==}
-    engines: {node: '>=12.0.0'}
-    dependencies:
-      '@serialport/bindings-interface': 1.2.1
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /@sinclair/typebox/0.24.51:
@@ -1423,6 +1313,12 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
       csstype: 3.1.1
+
+  /@types/redux-logger/3.0.9:
+    resolution: {integrity: sha512-cwYhVbYNgH01aepeMwhd0ABX6fhVB2rcQ9m80u8Fl50ZODhsZ8RhQArnLTkE7/Zrfq4Sz/taNoF7DQy9pCZSKg==}
+    dependencies:
+      redux: 4.2.0
+    dev: true
 
   /@types/scheduler/0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
@@ -1835,6 +1731,7 @@ packages:
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+    dev: true
 
   /binary-extensions/2.2.0:
     resolution: {integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==}
@@ -1847,12 +1744,6 @@ packages:
       balanced-match: 1.0.2
       concat-map: 0.0.1
     dev: true
-
-  /brace-expansion/2.0.1:
-    resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
-    dependencies:
-      balanced-match: 1.0.2
-    dev: false
 
   /braces/3.0.2:
     resolution: {integrity: sha512-b8um+L1RzM3WDSzvhm6gIz1yfTbBt6YTlcEKAvsmqCZZFw46z626lVj9j1yEPW33H5H+lBQpZMP1k8l+78Ha0A==}
@@ -2074,10 +1965,15 @@ packages:
         optional: true
     dependencies:
       ms: 2.1.2
+    dev: true
 
   /dedent/0.7.0:
     resolution: {integrity: sha512-Q6fKUPqnAHAyhiUgFU7BUzLiv0kd8saH9al7tnu5Q/okj6dnupxyTgFIBjVzJATdfIAm9NAsvXNzjaKa+bxVyA==}
     dev: true
+
+  /deep-diff/0.3.8:
+    resolution: {integrity: sha512-yVn6RZmHiGnxRKR9sJb3iVV2XTF1Ghh2DiWRZ3dMnGc43yUdWWF/kX6lQyk3+P84iprfWKU/8zFTrlkvtFm1ug==}
+    dev: false
 
   /deep-is/0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
@@ -2863,6 +2759,7 @@ packages:
 
   /fs.realpath/1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
+    dev: true
 
   /fsevents/2.3.2:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
@@ -2957,17 +2854,6 @@ packages:
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
-
-  /glob/8.0.3:
-    resolution: {integrity: sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==}
-    engines: {node: '>=12'}
-    dependencies:
-      fs.realpath: 1.0.0
-      inflight: 1.0.6
-      inherits: 2.0.4
-      minimatch: 5.1.0
-      once: 1.4.0
-    dev: false
 
   /global-prefix/3.0.0:
     resolution: {integrity: sha512-awConJSVCHVGND6x3tmMaKcQvwXLhjdkmomy2W+Goaui8YPgYgXJZewhg3fWC+DlfqqQuWg8AwqjGTD2nAPVWg==}
@@ -3115,9 +3001,11 @@ packages:
     dependencies:
       once: 1.4.0
       wrappy: 1.0.2
+    dev: true
 
   /inherits/2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
+    dev: true
 
   /ini/1.3.8:
     resolution: {integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==}
@@ -3956,13 +3844,6 @@ packages:
       brace-expansion: 1.1.11
     dev: true
 
-  /minimatch/5.1.0:
-    resolution: {integrity: sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==}
-    engines: {node: '>=10'}
-    dependencies:
-      brace-expansion: 2.0.1
-    dev: false
-
   /minimist/1.2.7:
     resolution: {integrity: sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==}
 
@@ -3972,6 +3853,7 @@ packages:
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
+    dev: true
 
   /murmurhash-js/1.0.0:
     resolution: {integrity: sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw==}
@@ -3986,15 +3868,6 @@ packages:
   /natural-compare/1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
-
-  /node-addon-api/4.3.0:
-    resolution: {integrity: sha512-73sE9+3UaLYYFmDsFZnqCInzPyh3MqIwZO9cw58yIqAZhONrrabrYyYe3TuIqtIiOuTXVhsGau8hcrhhwSsDIQ==}
-    dev: false
-
-  /node-gyp-build/4.5.0:
-    resolution: {integrity: sha512-2iGbaQBV+ITgCz76ZEjmhUKAKVf7xfY1sRl4UiKQspfZMH2h06SyhNsnSVy50cwkFQDGLyif6m/6uFXHkOZ6rg==}
-    hasBin: true
-    dev: false
 
   /node-int64/0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
@@ -4087,6 +3960,7 @@ packages:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
     dependencies:
       wrappy: 1.0.2
+    dev: true
 
   /onetime/5.1.2:
     resolution: {integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==}
@@ -4458,6 +4332,12 @@ packages:
       picomatch: 2.3.1
     dev: true
 
+  /redux-logger/3.0.6:
+    resolution: {integrity: sha512-JoCIok7bg/XpqA1JqCqXFypuqBbQzGQySrhFzewB7ThcnysTO30l4VCst86AuB9T9tuT03MAA56Jw2PNhRSNCg==}
+    dependencies:
+      deep-diff: 0.3.8
+    dev: false
+
   /redux-saga/1.2.1:
     resolution: {integrity: sha512-fVCicLlf4hLP+KB6H7RHfZlZ8LdYckhaemXBB3wh//a2ESyz/z/l8ygxlm0OqPjS/PARdsQ2hIdAltxEB+NgvA==}
     dependencies:
@@ -4606,28 +4486,6 @@ packages:
       lru-cache: 6.0.0
     dev: true
 
-  /serialport/10.4.0:
-    resolution: {integrity: sha512-PszPM5SnFMgSXom60PkKS2A9nMlNbHkuoyRBlzdSWw9rmgOn258+V0dYbWMrETJMM+TJV32vqBzjg5MmmUMwMw==}
-    engines: {node: '>=12.0.0'}
-    dependencies:
-      '@serialport/binding-mock': 10.2.2
-      '@serialport/bindings-cpp': 10.7.0
-      '@serialport/parser-byte-length': 10.3.0
-      '@serialport/parser-cctalk': 10.3.0
-      '@serialport/parser-delimiter': 10.3.0
-      '@serialport/parser-inter-byte-timeout': 10.3.0
-      '@serialport/parser-packet-length': 10.3.0
-      '@serialport/parser-readline': 10.3.0
-      '@serialport/parser-ready': 10.3.0
-      '@serialport/parser-regex': 10.3.0
-      '@serialport/parser-slip-encoder': 10.3.0
-      '@serialport/parser-spacepacket': 10.3.0
-      '@serialport/stream': 10.3.0
-      debug: 4.3.4
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
   /shebang-command/2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
@@ -4771,11 +4629,6 @@ packages:
     dependencies:
       hey-listen: 1.0.8
       tslib: 2.4.1
-    dev: false
-
-  /sub-events/1.9.0:
-    resolution: {integrity: sha512-dnFBayilG9Ku0k/lNs1Y7WV4kv91+ovCoeBV3uIYrY49DylvBb6z9d9ED2ctcrvX2YlReFalpCgJNtSgmrOaJg==}
-    engines: {node: '>=10.0.0'}
     dev: false
 
   /supercluster/7.1.5:
@@ -5115,6 +4968,7 @@ packages:
 
   /wrappy/1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+    dev: true
 
   /write-file-atomic/4.0.2:
     resolution: {integrity: sha512-7KxauUdBmSdWnmpaGFg+ppNjKF8uNLry8LyzjauQDOVONfFLNKrKvQOxZ/VuTIcS/gge/YNahf5RIIQWTSarlg==}

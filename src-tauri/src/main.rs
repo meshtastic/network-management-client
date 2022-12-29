@@ -1,26 +1,33 @@
 mod algorithms;
 mod aux_data_structures;
+mod aux_functions;
 mod graph;
 mod mesh;
 
+use app::protobufs;
+use aux_functions::commands::{run_articulation_point, run_global_mincut, run_stoer_wagner};
 use mesh::serial_connection::{MeshConnection, SerialConnection};
-use std::sync::{Arc, Mutex};
-use tauri::Manager;
+use std::sync::Arc;
+use tauri::{async_runtime, Manager};
+use tracing_subscriber;
 
 struct ActiveSerialConnection {
-    inner: Arc<Mutex<Option<mesh::serial_connection::SerialConnection>>>,
+    inner: Arc<async_runtime::Mutex<Option<mesh::serial_connection::SerialConnection>>>,
 }
 
-mod aux_functions;
-use aux_functions::commands::{run_articulation_point, run_global_mincut, run_stoer_wagner};
-use tracing_subscriber;
+struct ActiveMeshDevice {
+    inner: Arc<async_runtime::Mutex<mesh::device::MeshDevice>>,
+}
 
 fn main() {
     tracing_subscriber::fmt::init();
 
     tauri::Builder::default()
         .manage(ActiveSerialConnection {
-            inner: Arc::new(Mutex::new(None)),
+            inner: Arc::new(async_runtime::Mutex::new(None)),
+        })
+        .manage(ActiveMeshDevice {
+            inner: Arc::new(async_runtime::Mutex::new(mesh::device::MeshDevice::new())),
         })
         .invoke_handler(tauri::generate_handler![
             run_articulation_point,
@@ -37,35 +44,28 @@ fn main() {
 }
 
 #[tauri::command]
-fn get_all_serial_ports() -> Vec<String> {
+fn get_all_serial_ports() -> Result<Vec<String>, String> {
     SerialConnection::get_available_ports()
 }
 
 #[tauri::command]
-fn connect_to_serial_port(
+async fn connect_to_serial_port(
     port_name: String,
     app_handle: tauri::AppHandle,
-    state: tauri::State<'_, ActiveSerialConnection>,
-) -> bool {
+    mesh_device: tauri::State<'_, ActiveMeshDevice>,
+    serial_connection: tauri::State<'_, ActiveSerialConnection>,
+) -> Result<(), String> {
     let mut connection: SerialConnection = MeshConnection::new();
+    connection.connect(port_name, 115_200).unwrap();
 
-    match connection.connect(port_name, 115_200) {
-        Ok(_h) => (),
-        Err(_e) => {
-            eprintln!("Could not connect to radio");
-            return false;
-        }
-    };
-
-    let mut decoded_listener = match connection.on_decoded_packet.as_ref() {
-        Some(l) => l.resubscribe(),
-        None => {
-            eprintln!("Decoded packet listener not open");
-            return false;
-        }
-    };
+    let mut decoded_listener = connection
+        .on_decoded_packet
+        .as_ref()
+        .ok_or("Decoded packet listener not open")?
+        .resubscribe();
 
     let handle = app_handle.app_handle().clone();
+    let mesh_device_arc = mesh_device.inner.clone();
 
     tauri::async_runtime::spawn(async move {
         loop {
@@ -75,42 +75,69 @@ fn connect_to_serial_port(
                     None => continue,
                 };
 
-                match SerialConnection::dispatch_packet(handle.clone(), variant) {
-                    Ok(_) => (),
-                    Err(e) => {
-                        eprintln!("Error transmitting packet: {}", e.to_string());
-                        continue;
-                    }
-                };
+                let mut device = mesh_device_arc.lock().await;
+
+                let device_updated =
+                    match SerialConnection::handle_packet_from_radio(variant, &mut device).await {
+                        Ok(d) => d,
+                        Err(e) => {
+                            eprintln!("Error transmitting packet: {}", e.to_string());
+                            continue;
+                        }
+                    };
+
+                if device_updated {
+                    match dispatch_updated_device(handle.clone(), device.clone()) {
+                        Ok(_) => (),
+                        Err(e) => {
+                            eprintln!("Error emitting event to client: {:?}", e.to_string());
+                            continue;
+                        }
+                    };
+                }
             }
         }
     });
 
     {
-        let mut state_connection = state.inner.lock().unwrap();
+        let mut state_connection = serial_connection.inner.lock().await;
         *state_connection = Some(connection);
     }
 
-    true
+    Ok(())
+}
+
+fn dispatch_updated_device(
+    handle: tauri::AppHandle,
+    device: mesh::device::MeshDevice,
+) -> tauri::Result<()> {
+    handle.emit_all("device_update", device)
 }
 
 #[tauri::command]
-fn send_text(text: String, state: tauri::State<'_, ActiveSerialConnection>) -> bool {
-    let mut guard = state.inner.lock().unwrap();
+async fn send_text(
+    text: String,
+    channel: u32,
+    app_handle: tauri::AppHandle,
+    mesh_device: tauri::State<'_, ActiveMeshDevice>,
+    serial_connection: tauri::State<'_, ActiveSerialConnection>,
+) -> Result<(), String> {
+    let mut guard = serial_connection.inner.lock().await;
     let connection = guard.as_mut().expect("Connection not initialized");
-    let result = connection.send_text(text, 0);
+    connection
+        .send_text(text.clone(), 0)
+        .map_err(|e| e.to_string())?;
 
-    match result {
-        Ok(()) => (),
-        Err(_e) => {
-            eprintln!("Could not send text to radio");
-            return false;
-        }
-    };
+    let mut device = mesh_device.inner.lock().await;
+    device.add_message(mesh::device::TextPacket {
+        packet: protobufs::MeshPacket {
+            rx_time: mesh::device::get_current_time_u32(),
+            channel,
+            ..Default::default()
+        },
+        data: text,
+    });
+    dispatch_updated_device(app_handle, device.clone()).map_err(|e| e.to_string())?;
 
-    true
+    Ok(())
 }
-
-// __TAURI_INVOKE__("get_all_serial_ports").then(console.log).catch(console.error)
-// __TAURI_INVOKE__("connect_to_serial_port", { portName: "/dev/ttyACM0" }).then(console.log).catch(console.error)
-// __TAURI_INVOKE__("send_text", { text: "hello world" }).then(console.log).catch(console.error)

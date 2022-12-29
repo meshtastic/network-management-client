@@ -6,16 +6,16 @@ import {
   ViewfinderCircleIcon,
 } from "@heroicons/react/24/outline";
 
-import type { INode } from "@features/device/deviceSlice";
+import type { MeshNode } from "@bindings/MeshNode";
 import {
   getColorClassFromNodeState,
   getNodeState,
-  getTimeSinceLastMessage,
+  getTimeSinceLastHeard,
   NodeState,
 } from "@utils/nodeUtils";
 
 export interface INodeSearchResultProps {
-  node: INode;
+  node: MeshNode;
   isActive: boolean;
   selectNode: (nodeId: number) => void;
 }
@@ -55,7 +55,7 @@ const NodeSearchResult = ({
   const colorClasses = getColorClassFromNodeState(nodeState);
 
   const reloadTimeSinceLastMessage = useCallback(() => {
-    setTimeSinceLastMessage(getTimeSinceLastMessage(node));
+    setTimeSinceLastMessage(getTimeSinceLastHeard(node));
   }, [setTimeSinceLastMessage, node]);
 
   useEffect(() => {
