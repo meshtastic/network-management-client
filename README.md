@@ -56,15 +56,15 @@ This project is in early stages of development, but here's a rough roadmap of fu
   - [x] Mapping service integration
   - [x] Node positioning on map
   - [ ] Offline map usage
-- [ ] :electric_plug: Rust serial management of base node
+- [x] :electric_plug: Rust serial management of base node
   - [x] Rust serialport integration
   - [x] Rust protobuf decoding/encoding
   - [x] Tauri event management
-  - [ ] Redux saga event integration
+  - [x] Redux saga event integration
 - [ ] :satellite: Messaging and channel management
   - [x] Redux store + saga setup
   - [ ] Channel management flows + UI
-  - [ ] Messaging UI
+  - [x] Messaging UI
   - [ ] Local message backup
 - [ ] :memo: Network onboarding and configuration flow
 - [ ] :computer: Algorithmic network management
