@@ -23,6 +23,13 @@
         "scope": [
           " http://127.0.0.1:5000/*"
         ]
+      },
+      "shell": {
+        "all": false,
+        "execute": false,
+        "open": true,
+        "scope": [],
+        "sidecar": false
       }
     },
     "bundle": {
@@ -40,7 +47,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "org.meshtastic.emergency",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -66,11 +73,9 @@
     },
     "windows": [
       {
-        "fullscreen": false,
-        "height": 600,
+        "maximized": true,
         "resizable": true,
-        "title": "Meshtastic Emergency Response Client",
-        "width": 800
+        "title": "Meshtastic Emergency Response Client"
       }
     ]
   }

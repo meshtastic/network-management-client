@@ -2,9 +2,9 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { listen } from "@tauri-apps/api/event";
+import { BrowserRouter } from "react-router-dom";
 
 import App from "@app/App";
-import type { MeshDevice } from "@bindings/MeshDevice";
 import { store } from "@store/index";
 
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -44,8 +44,10 @@ listen("reboot", (event) => {
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <BrowserRouter>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </BrowserRouter>
   </React.StrictMode>
 );

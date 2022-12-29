@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { all, call, put, spawn, takeEvery } from "redux-saga/effects";
+import { all, call, put, takeEvery } from "redux-saga/effects";
 
 import {
   createDeviceUpdateChannel,
@@ -7,9 +7,12 @@ import {
   DeviceUpdateChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import {
-  requestCreateDeviceAction,
+  requestAvailablePorts,
+  requestConnectToDevice,
+  requestDisconnectFromDevice,
   requestSendMessage,
 } from "@features/device/deviceActions";
+import { deviceSliceActions } from "@features/device/deviceSlice";
 
 function* subscribeAll() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -20,26 +23,43 @@ function* subscribeAll() {
   yield all([call(handleDeviceUpdateChannel, deviceUpdateChannel)]);
 }
 
-function* createDeviceWorker(
-  action: ReturnType<typeof requestCreateDeviceAction>
+function* getAvailableSerialPortsWorker() {
+  try {
+    const serialPorts = (yield call(
+      invoke,
+      "get_all_serial_ports"
+    )) as string[];
+
+    yield put(deviceSliceActions.setAvailableSerialPorts(serialPorts));
+  } catch (error) {
+    yield put({ type: "GENERAL_ERROR", payload: error });
+  }
+}
+
+function* connectToDeviceWorker(
+  action: ReturnType<typeof requestConnectToDevice>
 ) {
   try {
-    invoke("get_all_serial_ports").then(console.log).catch(console.error);
+    yield call(disconnectFromDeviceWorker);
+    yield call(invoke, "connect_to_serial_port", { portName: action.payload });
 
-    invoke("connect_to_serial_port", { portName: "/dev/ttyACM0" })
-      .then(console.log)
-      .catch(console.error);
-
+    yield put(deviceSliceActions.setActiveSerialPort(action.payload));
     yield put(requestSendMessage({ channel: 0, text: "Device Initialized" }));
-
     yield call(subscribeAll);
   } catch (error) {
     yield put({ type: "GENERAL_ERROR", payload: error });
   }
 }
 
-function* watchCreateDevice() {
-  yield takeEvery(requestCreateDeviceAction.type, createDeviceWorker);
+function* disconnectFromDeviceWorker() {
+  try {
+    yield call(invoke, "disconnect_from_serial_port");
+    yield put(deviceSliceActions.setActiveSerialPort(null));
+    yield put(deviceSliceActions.setActiveNode(null));
+    yield put(deviceSliceActions.setDevice(null));
+  } catch (error) {
+    yield put({ type: "GENERAL_ERROR", payload: error });
+  }
 }
 
 function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
@@ -53,10 +73,11 @@ function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
   }
 }
 
-function* watchSendMessage() {
-  yield takeEvery(requestSendMessage.type, sendMessageWorker);
-}
-
 export function* devicesSaga() {
-  yield all([spawn(watchCreateDevice), spawn(watchSendMessage)]);
+  yield all([
+    takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
+    takeEvery(requestConnectToDevice.type, connectToDeviceWorker),
+    takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
+    takeEvery(requestSendMessage.type, sendMessageWorker),
+  ]);
 }

@@ -1,11 +1,6 @@
-import { all, fork, takeLatest } from "redux-saga/effects";
-import { requestDemoAPI } from "@features/demoAPI/demoAPIActions";
-import { fetchNumberWorkerSaga } from "@features/demoAPI/demoAPISaga";
+import { all, fork } from "redux-saga/effects";
 import { devicesSaga } from "@features/device/deviceSagas";
 
 export default function* rootSaga() {
-  yield all([
-    takeLatest(requestDemoAPI.type, fetchNumberWorkerSaga),
-    fork(devicesSaga),
-  ]);
+  yield all([fork(devicesSaga)]);
 }

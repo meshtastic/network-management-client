@@ -4,10 +4,25 @@ import type { MeshDevice } from "@bindings/MeshDevice";
 import type { MeshNode } from "@bindings/MeshNode";
 import type { User } from "@bindings/protobufs/User";
 
+export const selectAvailablePorts =
+  () =>
+  (state: RootState): string[] | null =>
+    state.devices.availableSerialPorts;
+
+export const selectActiveSerialPort =
+  () =>
+  (state: RootState): string | null =>
+    state.devices.activeSerialPort;
+
 export const selectDevice =
   () =>
   (state: RootState): MeshDevice | null =>
     state.devices.device;
+
+export const selectDeviceConnected =
+  () =>
+  (state: RootState): boolean =>
+    !!state.devices.device;
 
 export const selectAllNodes =
   () =>
