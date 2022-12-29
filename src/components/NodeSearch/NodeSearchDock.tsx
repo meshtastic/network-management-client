@@ -8,17 +8,19 @@ import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
 import {
   selectActiveNodeId,
-  selectDevice,
+  selectAllDevices,
   selectAllNodes,
 } from "@features/device/deviceSelectors";
 
-import { deviceSliceActions } from "@features/device/deviceSlice";
-import type { MeshNode } from "@bindings/MeshNode";
-import type { MeshDevice } from "@bindings/MeshDevice";
+import {
+  deviceSliceActions,
+  IDevice,
+  INode,
+} from "@features/device/deviceSlice";
 
 interface _INodeSearchDockProps {
-  filteredNodes: MeshNode[];
-  device: MeshDevice | null;
+  filteredNodes: INode[];
+  devices: IDevice[];
   activeNodeId: number | null;
   query: string;
   handleNodeSelect: (nodeId: number) => void;
@@ -26,12 +28,12 @@ interface _INodeSearchDockProps {
 
 const _NodeSearchDock = ({
   filteredNodes,
-  device,
+  devices,
   activeNodeId,
   query,
   handleNodeSelect,
 }: _INodeSearchDockProps) => {
-  if (!filteredNodes.length && !!device) {
+  if (!filteredNodes.length && !!devices.length) {
     return (
       <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
         <p className="text-sm font-normal text-gray-500">
@@ -62,10 +64,10 @@ const _NodeSearchDock = ({
 const NodeSearchDock = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
-  const device = useSelector(selectDevice());
+  const devices = useSelector(selectAllDevices());
   const activeNodeId = useSelector(selectActiveNodeId());
 
-  const [filteredNodes, setFilteredNodes] = useState<MeshNode[]>(nodes);
+  const [filteredNodes, setFilteredNodes] = useState<INode[]>(nodes);
   const [query, setQuery] = useState("");
 
   const filterNodes = useCallback(() => {
@@ -117,7 +119,7 @@ const NodeSearchDock = () => {
 
       <_NodeSearchDock
         filteredNodes={filteredNodes}
-        device={device}
+        devices={devices}
         activeNodeId={activeNodeId}
         query={query}
         handleNodeSelect={handleNodeSelect}

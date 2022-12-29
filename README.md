@@ -43,7 +43,6 @@ This application is an unofficial desktop client for the [Meshtastic Project](ht
 This application is built using the [Tauri Framework](https://tauri.app/), a modern, secure successor to the [Electron Framework](https://www.electronjs.org/). This allows us to natively support Linux, macOS, and Windows within the same codebase without the performance or memory overhead of a Chromium browser. Our core application infrastructure is written in Rust, and UI and client functionality is written in React TypeScript and bundled using [Vite](https://vitejs.dev/). This project is in early stages of development, and as such is not yet suitable for production use.
 
 <!-- ![image](https://user-images.githubusercontent.com/46639306/197882383-e993add8-0900-4114-9cb6-9e9cb4d331d4.png) -->
-
 ![image](https://user-images.githubusercontent.com/46639306/206596246-0619edd5-7303-4fad-81f0-8c84263016b1.png)
 
 <p align="center">ℹ️ <b>This image is a conceptual design and is not yet fully implemented.</b> ℹ️</p>
@@ -106,7 +105,7 @@ To standardise and simplify our development flow, we utilize PNPM commands (defi
 - `pnpm run ui:format` - Formats the UI codebase using [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/)
 - `pnpm run ui:test` - Runs UI test suite using [Jest](https://jestjs.io/)
 - `pnpm run rust:dev` - Starts the desktop application in development mode, allowing for hot reloading of UI and Rust code
-- `pnpm run rust:test` - Runs backend tests on the Rust codebase directory (`/src-tauri`). This command also generates TypeScript client bindings in the `/src-tauri/bindings` directory. Add `-- --show-output` to show Rust `println!` macro calls within test suites.
+- `pnpm run rust:test` - Runs backend test suite. Add `-- --show-output` to show Rust `println!` macro calls
 
 ## Contributing
 

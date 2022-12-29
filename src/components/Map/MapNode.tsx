@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Marker, MapboxEvent } from "react-map-gl";
+import { Marker } from "react-map-gl";
 
-import type { MeshNode } from "@bindings/MeshNode";
 import MapNodeIcon from "@components/Map/MapNodeIcon";
+import type { INode } from "@features/device/deviceSlice";
 import {
-  getTimeSinceLastHeard,
+  getTimeSinceLastMessage,
   getNodeState,
   getHeadingFromNodeState,
   getColorClassFromNodeState,
 } from "@utils/nodeUtils";
 
 export interface IMapNodeProps {
-  node: MeshNode;
+  node: INode;
   onClick: (nodeId: number | null) => void;
   size?: "sm" | "med" | "lg";
   isBase?: boolean;
@@ -33,13 +33,13 @@ const MapNode = ({
   const colorClasses = getColorClassFromNodeState(nodeState);
   const iconRotation = !isBase ? node.data.position?.groundTrack ?? 0 : 0;
 
-  const handleNodeClick = (e: MapboxEvent<MouseEvent>) => {
+  const handleNodeClick = (e: mapboxgl.MapboxEvent<MouseEvent>) => {
     e.originalEvent.preventDefault();
     onClick(node.data.num);
   };
 
   const reloadTimeSinceLastMessage = useCallback(() => {
-    setTimeSinceLastMessage(getTimeSinceLastHeard(node));
+    setTimeSinceLastMessage(getTimeSinceLastMessage(node));
   }, [setTimeSinceLastMessage, node]);
 
   useEffect(() => {

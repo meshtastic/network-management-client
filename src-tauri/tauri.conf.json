@@ -12,18 +12,12 @@
   },
   "tauri": {
     "allowlist": {
-      "clipboard": {
-        "all": false,
-        "readText": false,
-        "writeText": true
-      },
       "http": {
         "all": true,
         "request": true,
-        "scope": [
-          " http://127.0.0.1:5000/*"
-        ]
-      }
+        "scope": [" http://127.0.0.1:5000/*"]
+      },
+      "all": true
     },
     "bundle": {
       "active": true,
