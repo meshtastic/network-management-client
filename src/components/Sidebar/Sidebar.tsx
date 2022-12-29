@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   ChatBubbleBottomCenterTextIcon,
@@ -7,29 +8,33 @@ import {
   DocumentTextIcon,
   Cog8ToothIcon,
   LinkIcon,
+  PowerIcon,
   BeakerIcon,
 } from "@heroicons/react/24/outline";
-import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 
+import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
-// import { invoke } from "@tauri-apps/api/tauri";
-// import { selectAllNodes } from "@features/device/deviceSelectors";
-import { requestCreateDeviceAction } from "@features/device/deviceActions";
-// import type { NeighborInfo, Neighbor } from "./NeighborInfo";
-import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
+
 import {
-  ActiveSidebarPanel,
-  panelsSliceActions,
-} from "@features/panels/panelsSlice";
+  requestConnectToDevice,
+  requestDisconnectFromDevice,
+} from "@features/device/deviceActions";
+// import type { NeighborInfo, Neighbor } from "./NeighborInfo";
+import { selectDeviceConnected } from "@features/device/deviceSelectors";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
-  // const nodes = useSelector(selectAllNodes());
-  const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
+  const isDeviceConnected = !!useSelector(selectDeviceConnected());
 
-  const requestDeviceConnection = () => {
-    const id = 1;
-    dispatch(requestCreateDeviceAction(id));
+  const location = useLocation();
+  const navigateTo = useNavigate();
+
+  const handleDeviceConnectionRequest = () => {
+    if (!isDeviceConnected) {
+      dispatch(requestConnectToDevice());
+    } else {
+      dispatch(requestDisconnectFromDevice());
+    }
   };
 
   const requestArticulationPoint = () => {
@@ -73,10 +78,6 @@ const Sidebar = () => {
     //   .catch(console.error);
   };
 
-  const setActivePane = (panel: ActiveSidebarPanel) => {
-    dispatch(panelsSliceActions.setActiveSidebarPanel(panel));
-  };
-
   return (
     <div className="h-screen flex flex-col justify-between shadow-lg">
       <div>
@@ -85,26 +86,34 @@ const Sidebar = () => {
         </div>
         <div className="flex flex-col">
           <SidebarIcon
-            isActive={activeSidebarPanel === "map"}
-            onClick={() => setActivePane("map")}
+            isActive={location.pathname === "/" && !location.hash}
+            onClick={() => navigateTo("/")}
             renderIcon={() => <MagnifyingGlassIcon className="w-6" />}
           />
           <SidebarIcon
-            isActive={activeSidebarPanel == "chat"}
-            onClick={() => setActivePane("chat")}
+            isActive={
+              location.pathname === "/" && location.hash === "#messages"
+            }
+            onClick={() => navigateTo("/#messages")}
             renderIcon={() => (
               <ChatBubbleBottomCenterTextIcon className="w-6" />
             )}
           />
           <SidebarIcon
-            isActive={activeSidebarPanel == "info"}
-            onClick={() => setActivePane("info")}
+            isActive={location.pathname === "/info"}
+            onClick={() => navigateTo("/info")}
             renderIcon={() => <DocumentTextIcon className="w-6" />}
           />
           <SidebarIcon
-            isActive={activeSidebarPanel == "none"}
-            onClick={requestDeviceConnection}
-            renderIcon={() => <LinkIcon className="w-6" />}
+            isActive={location.pathname === "/serial-connect"}
+            onClick={handleDeviceConnectionRequest}
+            renderIcon={() =>
+              isDeviceConnected ? (
+                <PowerIcon className="w-6" />
+              ) : (
+                <LinkIcon className="w-6" />
+              )
+            }
           />
           {/* <SidebarIcon
             isActive={activeSidebarPanel == "algo"}
@@ -124,8 +133,8 @@ const Sidebar = () => {
         </div>
       </div>
       <SidebarIcon
-        isActive={activeSidebarPanel == "settings"}
-        onClick={() => setActivePane("settings")}
+        isActive={location.pathname === "/" && location.hash === "#settings"}
+        onClick={() => navigateTo("/#settings")}
         renderIcon={() => <Cog8ToothIcon className="w-6" />}
       />
     </div>

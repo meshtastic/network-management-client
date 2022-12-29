@@ -16,7 +16,7 @@ struct ActiveSerialConnection {
 }
 
 struct ActiveMeshDevice {
-    inner: Arc<async_runtime::Mutex<mesh::device::MeshDevice>>,
+    inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
 }
 
 fn main() {
@@ -27,7 +27,9 @@ fn main() {
             inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .manage(ActiveMeshDevice {
-            inner: Arc::new(async_runtime::Mutex::new(mesh::device::MeshDevice::new())),
+            inner: Arc::new(async_runtime::Mutex::new(Some(
+                mesh::device::MeshDevice::new(),
+            ))),
         })
         .invoke_handler(tauri::generate_handler![
             run_articulation_point,
@@ -37,6 +39,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_all_serial_ports,
             connect_to_serial_port,
+            disconnect_from_serial_port,
             send_text
         ])
         .run(tauri::generate_context!())
@@ -67,6 +70,11 @@ async fn connect_to_serial_port(
     let handle = app_handle.app_handle().clone();
     let mesh_device_arc = mesh_device.inner.clone();
 
+    {
+        let mut new_device = mesh_device_arc.lock().await;
+        *new_device = Some(mesh::device::MeshDevice::new());
+    }
+
     tauri::async_runtime::spawn(async move {
         loop {
             if let Ok(message) = decoded_listener.recv().await {
@@ -75,10 +83,18 @@ async fn connect_to_serial_port(
                     None => continue,
                 };
 
-                let mut device = mesh_device_arc.lock().await;
+                let mut device_guard = mesh_device_arc.lock().await;
+
+                let device = match device_guard.as_mut().ok_or("Device not initialized") {
+                    Ok(d) => d,
+                    Err(e) => {
+                        eprintln!("{:?}", e);
+                        continue;
+                    }
+                };
 
                 let device_updated =
-                    match SerialConnection::handle_packet_from_radio(variant, &mut device).await {
+                    match SerialConnection::handle_packet_from_radio(variant, device).await {
                         Ok(d) => d,
                         Err(e) => {
                             eprintln!("Error transmitting packet: {}", e.to_string());
@@ -107,6 +123,24 @@ async fn connect_to_serial_port(
     Ok(())
 }
 
+#[tauri::command]
+async fn disconnect_from_serial_port(
+    mesh_device: tauri::State<'_, ActiveMeshDevice>,
+    serial_connection: tauri::State<'_, ActiveSerialConnection>,
+) -> Result<(), String> {
+    {
+        let mut state_connection = serial_connection.inner.lock().await;
+        *state_connection = None;
+    }
+
+    {
+        let mut state_device = mesh_device.inner.lock().await;
+        *state_device = None;
+    }
+
+    Ok(())
+}
+
 fn dispatch_updated_device(
     handle: tauri::AppHandle,
     device: mesh::device::MeshDevice,
@@ -128,7 +162,13 @@ async fn send_text(
         .send_text(text.clone(), 0)
         .map_err(|e| e.to_string())?;
 
-    let mut device = mesh_device.inner.lock().await;
+    let mut device_guard = mesh_device.inner.lock().await;
+
+    let device = device_guard
+        .as_mut()
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
     device.add_message(mesh::device::TextPacket {
         packet: protobufs::MeshPacket {
             rx_time: mesh::device::get_current_time_u32(),
@@ -137,6 +177,7 @@ async fn send_text(
         },
         data: text,
     });
+
     dispatch_updated_device(app_handle, device.clone()).map_err(|e| e.to_string())?;
 
     Ok(())

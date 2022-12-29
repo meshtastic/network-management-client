@@ -1,20 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
-import {
-  ActiveSidebarPanel,
-  panelsSliceActions,
-} from "@features/panels/panelsSlice";
-
-import { useDispatch } from "react-redux";
-
 function Settings() {
-  // Allows us to change state after clicking the 'x'
-  const dispatch = useDispatch();
-  const setActivePane = (panel: ActiveSidebarPanel) => {
-    dispatch(panelsSliceActions.setActiveSidebarPanel(panel));
-  };
+  const navigateTo = useNavigate();
 
   return (
     // Create darker screen
@@ -24,8 +14,11 @@ function Settings() {
         {/* Set up header, close button*/}
         <div className="sticky top-0">
           <div className="flex justify-end sticky top-0">
-            <button className="X-button flex rounded-md hover:bg-gray-300 w-8 h-8 justify-end">
-              <XMarkIcon onClick={() => setActivePane("map")} />
+            <button
+              className="X-button flex rounded-md hover:bg-gray-300 w-8 h-8 justify-end"
+              onClick={() => navigateTo("/")}
+            >
+              <XMarkIcon />
             </button>
           </div>
           <div className="flex justify-center sticky top-0 z-50">

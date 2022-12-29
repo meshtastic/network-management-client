@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
 import { Map, NavigationControl, ScaleControl } from "react-map-gl";
+import { useLocation, Location as RouterLocation } from "react-router-dom";
 
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
@@ -15,28 +16,23 @@ import {
   selectAllNodes,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectActiveSidebarPanel } from "@features/panels/panelsSelectors";
-import type { ActiveSidebarPanel } from "@features/panels/panelsSlice";
 
 import "./MapView.css";
 
 interface _IMapViewLeftPanel {
-  activeSidebarPanel: ActiveSidebarPanel;
+  location: RouterLocation;
 }
 
-const _MapViewLeftPanel = ({ activeSidebarPanel }: _IMapViewLeftPanel) => {
-  switch (activeSidebarPanel) {
-    case "map":
-      return <NodeSearchDock />;
-
-    case "chat":
+const _MapViewLeftPanel = ({ location }: _IMapViewLeftPanel) => {
+  switch (location.hash) {
+    case "#messages":
       return <Messages />;
 
-    case "settings":
+    case "#settings":
       return <Settings />;
 
     default:
-      return <></>;
+      return <NodeSearchDock />;
   }
 };
 
@@ -44,7 +40,7 @@ export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
-  const activeSidebarPanel = useSelector(selectActiveSidebarPanel());
+  const location = useLocation();
 
   const updateActiveNode = (nodeId: number | null) => {
     dispatch(deviceSliceActions.setActiveNode(nodeId));
@@ -69,8 +65,9 @@ export const MapView = () => {
             isActive={activeNodeId === node.data.num}
           />
         ))}
+
         <MapSelectedNodeMenu />
-        <_MapViewLeftPanel activeSidebarPanel={activeSidebarPanel} />
+        <_MapViewLeftPanel location={location} />
         <MapInteractionPane />
       </Map>
     </div>

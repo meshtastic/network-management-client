@@ -1,10 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
-import logger from "redux-logger";
+import { logger } from "redux-logger";
 
 import counterSliceReducer from "@features/counter/counterSlice";
 import { deviceReducer } from "@features/device/deviceSlice";
-import { panelsReducer } from "@features/panels/panelsSlice";
 import rootSaga from "@store/saga";
 
 const sagaMiddleware = createSagaMiddleware();
@@ -14,7 +13,6 @@ export const store = configureStore({
   reducer: {
     counter: counterSliceReducer,
     devices: deviceReducer,
-    panels: panelsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(middleware),

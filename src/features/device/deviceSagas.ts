@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { all, call, put, spawn, takeEvery } from "redux-saga/effects";
+import { all, call, put, takeEvery } from "redux-saga/effects";
 
 import {
   createDeviceUpdateChannel,
@@ -7,9 +7,11 @@ import {
   DeviceUpdateChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import {
-  requestCreateDeviceAction,
+  requestConnectToDevice,
+  requestDisconnectFromDevice,
   requestSendMessage,
 } from "@features/device/deviceActions";
+import { deviceSliceActions } from "@features/device/deviceSlice";
 
 function* subscribeAll() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -20,15 +22,10 @@ function* subscribeAll() {
   yield all([call(handleDeviceUpdateChannel, deviceUpdateChannel)]);
 }
 
-function* createDeviceWorker(
-  action: ReturnType<typeof requestCreateDeviceAction>
-) {
+function* connectToDeviceWorker() {
   try {
-    invoke("get_all_serial_ports").then(console.log).catch(console.error);
-
-    invoke("connect_to_serial_port", { portName: "/dev/ttyACM0" })
-      .then(console.log)
-      .catch(console.error);
+    yield call(invoke, "get_all_serial_ports");
+    yield call(invoke, "connect_to_serial_port", { portName: "/dev/ttyACM0" });
 
     yield put(requestSendMessage({ channel: 0, text: "Device Initialized" }));
 
@@ -38,8 +35,13 @@ function* createDeviceWorker(
   }
 }
 
-function* watchCreateDevice() {
-  yield takeEvery(requestCreateDeviceAction.type, createDeviceWorker);
+function* disconnectFromDeviceWorker() {
+  try {
+    yield call(invoke, "disconnect_from_serial_port");
+    yield put(deviceSliceActions.setDevice(null));
+  } catch (error) {
+    yield put({ type: "GENERAL_ERROR", payload: error });
+  }
 }
 
 function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
@@ -53,10 +55,10 @@ function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
   }
 }
 
-function* watchSendMessage() {
-  yield takeEvery(requestSendMessage.type, sendMessageWorker);
-}
-
 export function* devicesSaga() {
-  yield all([spawn(watchCreateDevice), spawn(watchSendMessage)]);
+  yield all([
+    takeEvery(requestConnectToDevice.type, connectToDeviceWorker),
+    takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
+    takeEvery(requestSendMessage.type, sendMessageWorker),
+  ]);
 }

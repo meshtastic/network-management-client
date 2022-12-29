@@ -9,6 +9,11 @@ export const selectDevice =
   (state: RootState): MeshDevice | null =>
     state.devices.device;
 
+export const selectDeviceConnected =
+  () =>
+  (state: RootState): boolean =>
+    !!state.devices.device;
+
 export const selectAllNodes =
   () =>
   (state: RootState): MeshNode[] =>
