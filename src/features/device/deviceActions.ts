@@ -1,6 +1,12 @@
 import { createAction } from "@reduxjs/toolkit";
 
-export const requestConnectToDevice = createAction("@device/request-connect");
+export const requestAvailablePorts = createAction(
+  "@device/request-available-ports"
+);
+
+export const requestConnectToDevice = createAction<string>(
+  "@device/request-connect"
+);
 
 export const requestDisconnectFromDevice = createAction(
   "@device/request-disconnect"

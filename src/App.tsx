@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Routes, Route, Outlet, NavLink } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 
 import SplashScreen from "@components/SplashScreen/SplashScreen";
 import Sidebar from "@components/Sidebar/Sidebar";
-import HomePage from "@components/pages/Home";
+import HomePage from "@components/pages/HomePage";
+import SerialConnectPage from "@components/pages/SerialConnectPage";
+import FallbackPage from "@components/pages/FallbackPage";
 
 const AppWrapper = () => (
   <>
@@ -11,15 +13,6 @@ const AppWrapper = () => (
     <Outlet />
   </>
 );
-
-const SerialConnect = () => (
-  <div>
-    <p>Serial connection page</p>
-    <NavLink to="/">Home</NavLink>
-  </div>
-);
-
-const Fallback = () => <NavLink to="/">Go home</NavLink>;
 
 const App = () => {
   const [isSplashMounted, setSplashMounted] = useState(true);
@@ -33,8 +26,8 @@ const App = () => {
       <Routes>
         <Route path="*" element={<AppWrapper />}>
           <Route index element={<HomePage />} />
-          <Route path="serial-connect" element={<SerialConnect />} />
-          <Route path="*" element={<Fallback />} />
+          <Route path="serial-connect" element={<SerialConnectPage />} />
+          <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>
     </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
@@ -7,35 +7,18 @@ import {
   MagnifyingGlassIcon,
   DocumentTextIcon,
   Cog8ToothIcon,
-  LinkIcon,
-  PowerIcon,
+  RadioIcon,
   BeakerIcon,
 } from "@heroicons/react/24/outline";
 
 import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
 
-import {
-  requestConnectToDevice,
-  requestDisconnectFromDevice,
-} from "@features/device/deviceActions";
 // import type { NeighborInfo, Neighbor } from "./NeighborInfo";
-import { selectDeviceConnected } from "@features/device/deviceSelectors";
 
 const Sidebar = () => {
-  const dispatch = useDispatch();
-  const isDeviceConnected = !!useSelector(selectDeviceConnected());
-
   const location = useLocation();
   const navigateTo = useNavigate();
-
-  const handleDeviceConnectionRequest = () => {
-    if (!isDeviceConnected) {
-      dispatch(requestConnectToDevice());
-    } else {
-      dispatch(requestDisconnectFromDevice());
-    }
-  };
 
   const requestArticulationPoint = () => {
     // const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
@@ -106,14 +89,8 @@ const Sidebar = () => {
           />
           <SidebarIcon
             isActive={location.pathname === "/serial-connect"}
-            onClick={handleDeviceConnectionRequest}
-            renderIcon={() =>
-              isDeviceConnected ? (
-                <PowerIcon className="w-6" />
-              ) : (
-                <LinkIcon className="w-6" />
-              )
-            }
+            onClick={() => navigateTo("/serial-connect")}
+            renderIcon={() => <RadioIcon className="w-6" />}
           />
           {/* <SidebarIcon
             isActive={activeSidebarPanel == "algo"}
