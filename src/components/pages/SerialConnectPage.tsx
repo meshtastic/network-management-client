@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
@@ -24,9 +24,15 @@ const SerialConnectPage = () => {
   const [selectedPort, setSelectedPort] = useState<string>(EMPTY_PORT_VALUE);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  const requestPorts = useCallback(() => {
+    setSelectedPort(EMPTY_PORT_VALUE);
     dispatch(requestAvailablePorts());
   }, [dispatch]);
+
+  useEffect(() => {
+    requestPorts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const connectToPort = (port: string) => {
     if (selectedPort === EMPTY_PORT_VALUE) return;
@@ -65,6 +71,12 @@ const SerialConnectPage = () => {
             Disconnect from port {activeSerialPort}
           </button>
         )}
+      </div>
+
+      <div>
+        <button type="button" onClick={() => requestPorts()}>
+          Refresh ports
+        </button>
       </div>
 
       <p>
