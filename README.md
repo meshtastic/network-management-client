@@ -2,7 +2,7 @@
 
 <div align="center">
   <h1 align="center">Meshtastic Emergency Response Client</h1>
-  <p align="center">An (unofficial) Meshtastic client allowing first responders to deploy and manage mesh networks in the field.</p>
+  <p align="center">An unofficial Meshtastic desktop client, allowing simple, offline deployment and administration of a mesh communication network.</p>
 </div>
 
 <p align="center">

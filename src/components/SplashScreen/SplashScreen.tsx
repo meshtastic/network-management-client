@@ -118,7 +118,15 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
         <SplashScreenLogo className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
       )}
 
-      <p className="absolute bottom-3 right-3 text-right text-sm text-gray-600">
+      <div
+        className="splash-screen-opacity absolute w-full h-full bg-white transition-all"
+        style={{ opacity: isScreenLoaded ? 0 : 1 }}
+      />
+
+      <p
+        className="splash-screen-opacity absolute bottom-3 right-3 text-right text-sm text-gray-600"
+        style={{ opacity: isScreenLoaded ? 1 : 0 }}
+      >
         Photo by{" "}
         <button
           className="hover:underline"
@@ -138,11 +146,6 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
           Unsplash
         </button>
       </p>
-
-      <div
-        className="splash-screen-opacity absolute w-full h-full bg-white transition-all"
-        style={{ opacity: isScreenLoaded ? 0 : 1 }}
-      />
     </div>
   );
 };
