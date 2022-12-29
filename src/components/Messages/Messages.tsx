@@ -51,7 +51,7 @@ const Messages = () => {
             if (!("text" in message.payload)) return accum;
 
             const { data, packet } = message.payload.text;
-            const time = new Date(packet.rxTime);
+            const time = new Date(packet.rxTime * 1000); // s to ms
             const user = users[packet.from];
 
             return [
