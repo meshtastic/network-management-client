@@ -8,58 +8,14 @@ import {
   DocumentTextIcon,
   Cog8ToothIcon,
   RadioIcon,
-  BeakerIcon,
 } from "@heroicons/react/24/outline";
 
 import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
 
-// import type { NeighborInfo, Neighbor } from "./NeighborInfo";
-
 const Sidebar = () => {
   const location = useLocation();
   const navigateTo = useNavigate();
-
-  const requestArticulationPoint = () => {
-    // const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
-    // console.log("Sending command with input...");
-    // console.log(nbrInfoList);
-    // invoke("run_articulation_point", {
-    //   nodes: nbrInfoList,
-    // })
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch(console.error);
-  };
-
-  const requestGlobalMincut = () => {
-    // const nodeList: INode[] = generateDemoData();
-    // const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
-    // console.log("Sending test command with neighbors...");
-    // console.log(nbrInfoList);
-    // invoke("run_global_mincut", {
-    //   nodes: nbrInfoList,
-    // })
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch(console.error);
-  };
-
-  const requestStoerWagner = () => {
-    // const nodeList: INode[] = generateDemoData();
-    // const nbrInfoList: NeighborInfo[] = generateNeighborInfo(nodes);
-    // console.log("Sending test command with neighbors...");
-    // console.log(nbrInfoList);
-    // invoke("run_stoer_wagner", {
-    //   nodes: nbrInfoList,
-    // })
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch(console.error);
-  };
 
   return (
     <div className="h-screen flex flex-col justify-between shadow-lg">
@@ -92,21 +48,6 @@ const Sidebar = () => {
             onClick={() => navigateTo("/serial-connect")}
             renderIcon={() => <RadioIcon className="w-6" />}
           />
-          {/* <SidebarIcon
-            isActive={activeSidebarPanel == "algo"}
-            onClick={requestArticulationPoint}
-            renderIcon={() => <BeakerIcon className="w-6" />}
-          />
-          <SidebarIcon
-            isActive={activeSidebarPanel == "algo"}
-            onClick={requestGlobalMincut}
-            renderIcon={() => <BeakerIcon className="w-6" />}
-          />
-          <SidebarIcon
-            isActive={activeSidebarPanel == "algo"}
-            onClick={requestStoerWagner}
-            renderIcon={() => <BeakerIcon className="w-6" />}
-          /> */}
         </div>
       </div>
       <SidebarIcon
