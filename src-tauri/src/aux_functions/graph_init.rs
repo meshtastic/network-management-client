@@ -65,12 +65,12 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
 */
 fn calculate_converted_distance(x: f64, y: f64, z: f64, nbr_x: f64, nbr_y: f64, nbr_z: f64) -> f64 {
     return total_distance(
-        (x as f64) * LAT_CONVERSION_FACTOR,
-        (y as f64) * LON_CONVERSION_FACTOR,
-        (z as f64) * ALT_CONVERSION_FACTOR,
-        (nbr_x as f64) * LAT_CONVERSION_FACTOR,
-        (nbr_y as f64) * LON_CONVERSION_FACTOR,
-        (nbr_z as f64) * ALT_CONVERSION_FACTOR,
+        x * LAT_CONVERSION_FACTOR,
+        y * LON_CONVERSION_FACTOR,
+        z * ALT_CONVERSION_FACTOR,
+        nbr_x * LAT_CONVERSION_FACTOR,
+        nbr_y * LON_CONVERSION_FACTOR,
+        nbr_z * ALT_CONVERSION_FACTOR,
     );
 }
 
