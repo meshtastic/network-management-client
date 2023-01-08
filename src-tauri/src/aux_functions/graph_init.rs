@@ -4,6 +4,26 @@ use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use crate::graph::graph_ds::Graph;
 use petgraph::graph::NodeIndex;
 
+/* Lat: 1e-7 conversion from int to floating point degrees; see mesh.proto */
+const LAT_CONVERSION_FACTOR: f64 = 1e-7;
+/* Longitude: 1e-7 conversion from int to floating point degrees; see mesh.proto */
+const LON_CONVERSION_FACTOR: f64 = 1e-7;
+/* Altitude: in meters above sea level, no conversion needed */
+const ALT_CONVERSION_FACTOR: f64 = 1.0;
+struct ConversionFactors {
+    pub lat_conversion_factor: f64,
+    pub lon_conversion_factor: f64,
+    pub alt_conversion_factor: f64,
+}
+/*
+* public const of protobuf conversion factors, used to load graph and mock data. See mesh.proto
+*/
+pub const CONVERSION_FACTORS: ConversionFactors = ConversionFactors {
+    lat_conversion_factor: LAT_CONVERSION_FACTOR,
+    lon_conversion_factor: LON_CONVERSION_FACTOR,
+    alt_conversion_factor: ALT_CONVERSION_FACTOR,
+};
+
 /*
 * This function creates a graph from the input data.
 */
@@ -61,10 +81,6 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
 
 /*
 * Calculates the distance between two points on a sphere
-*
-* Conversion function:
-* Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
-* Altitude: in meters above sea level, no conversion needed
 */
 fn calculate_converted_distance(x: f64, y: f64, z: f64, nbr_x: f64, nbr_y: f64, nbr_z: f64) -> f64 {
     let conversion_factor = (10.0 as f64).powi(-7);
