@@ -46,7 +46,7 @@ const Messages = () => {
       </div>
 
       <div className="flex flex-1 flex-col rounded-lg w-full h-auto bg-white border-gray-50 drop-shadow justify-top overflow-y-auto">
-        <div className="flex flex-col p-6 overflow-scroll gap-4">
+        <div className="flex flex-col p-6 overflow-auto gap-4">
           {messages.reduce((accum, message) => {
             if (!("text" in message.payload)) return accum;
 

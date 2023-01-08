@@ -308,7 +308,9 @@ impl SerialConnection {
         port_name: impl Into<String>,
         baud_rate: u32,
     ) -> Result<(JoinHandle<()>, JoinHandle<()>, JoinHandle<()>), Box<dyn Error>> {
-        let mut port = serialport::new(port_name.into(), baud_rate).open()?;
+        let mut port = serialport::new(port_name.into(), baud_rate)
+            .timeout(Duration::from_millis(10))
+            .open()?;
 
         let (write_input_tx, write_input_rx) = sync::mpsc::channel::<Vec<u8>>();
         let (read_output_tx, read_output_rx) = sync::mpsc::channel::<Vec<u8>>();
