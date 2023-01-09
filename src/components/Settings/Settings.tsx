@@ -3,18 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
-function Settings() {
+const Settings = () => {
   const navigateTo = useNavigate();
 
   const [deviceID, setDeviceID] = useState("Default Device ID");
-
   const [deviceName, setDeviceName] = useState("Mr. Meshtastic");
   const [deviceNickname, setDeviceNickname] = useState("MRM");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const sherryTest = { deviceID, deviceNickname, deviceName };
-    console.log(sherryTest);
+    const deviceInfoTest = { deviceID, deviceNickname, deviceName };
+    console.log(deviceInfoTest);
   };
 
   return (
@@ -37,6 +36,9 @@ function Settings() {
           <div className="flex justify-center sticky top-0 z-50">
             <div className="font-bold"> Settings </div>
           </div>
+        </div>
+        <div className="text-sm flex justify-center">
+          Note: This is the UI, and is not currently connected to backend
         </div>
 
         {/* Make a form where we put the options */}
@@ -109,6 +111,6 @@ function Settings() {
       </div>
     </div>
   );
-}
+};
 
 export default Settings;
