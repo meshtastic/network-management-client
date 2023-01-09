@@ -100,6 +100,8 @@ While this project can be developed within any text editor, we recommend the [Vi
 
 To standardise and simplify our development flow, we utilize PNPM commands (defined in `package.json`). We have created commands which allow for the development of the client only, or development of the client embeddeded in a desktop application window. We support running the application UI in a browser in the event that a contributor wants to make UI changes but is unable to install the required project dependences, although we strongly recommend developing using the `rust:*` commands. You will be unable to connect to a serial device when developing in-browser. Project dependencies can be installed with `pnpm i`.
 
+> **Reminder:** When using any `rust:*` command, you will need to have the `src-tauri/protobufs` git submodule initialized. To do so, run `git submodule update --init` in the root of the project.
+
 - `pnpm run ui:dev` - Starts the UI development server, allowing for UI development in a browser environment. Note that any code that interfaces with the Rust backend **will not function** within this browser environment, meaning you will be unable to connect to serial devices in this context
 - `pnpm run ui:build`: - Runs a production build on the UI code into the `dist` directory
 - `pnpm run ui:preview` - Runs the built UI from the `dist` directory. This command must be run after `ui:build`
