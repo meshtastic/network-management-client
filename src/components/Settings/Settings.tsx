@@ -38,7 +38,7 @@ const Settings = () => {
           </div>
         </div>
         <div className="text-sm flex justify-center">
-          Note: This is the UI, and is not currently connected to backend
+          Note: This is just the UI, and is not currently connected to backend
         </div>
 
         {/* Make a form where we put the options */}
