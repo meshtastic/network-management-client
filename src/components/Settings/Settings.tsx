@@ -86,18 +86,7 @@ const Settings = () => {
                 onChange={(e) => setDeviceNickname(e.target.value)}
               />
             </div>
-            <label className="flex pl-[4%] pt-[6%] pl-2 text-xl">
-              {" "}
-              Option 4{" "}
-            </label>{" "}
-            <div className="pl-[6%] pr-[8%] font-sans text-sm">
-              <Input
-                className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
-                type="text"
-                size="lg"
-                label="Placeholder for adding future functionality"
-              />
-            </div>
+            {/* Meshtastic Web Client has two more options - MAC Address and Hardware type. Since both are not changeable, we will not make the UI for these. */}
             <div className="flex justify-center pt-[6%] pb-[3%]">
               <button
                 className="border-black border-1 bg-gray-300 px-[6%] py-[2%] text-xl rounded-md hover:bg-gray-400 hover:border-2"
