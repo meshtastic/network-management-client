@@ -58,8 +58,10 @@ async fn connect_to_serial_port(
     mesh_device: tauri::State<'_, ActiveMeshDevice>,
     serial_connection: tauri::State<'_, ActiveSerialConnection>,
 ) -> Result<(), String> {
-    let mut connection: SerialConnection = MeshConnection::new();
-    connection.connect(port_name, 115_200).unwrap();
+    let mut connection = SerialConnection::new();
+    connection
+        .connect(port_name, 115_200)
+        .expect("Could not connect to serial port at 115_200 baud");
 
     let mut decoded_listener = connection
         .on_decoded_packet

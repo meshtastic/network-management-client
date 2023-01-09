@@ -1,6 +1,7 @@
 use super::edge_factory::edge_factory;
 use super::take_snapshot::total_distance;
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use crate::aux_functions::conversion_factors::*;
 use crate::graph::graph_ds::Graph;
 use petgraph::graph::NodeIndex;
 
@@ -61,20 +62,15 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
 
 /*
 * Calculates the distance between two points on a sphere
-*
-* Conversion function:
-* Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
-* Altitude: in meters above sea level, no conversion needed
 */
 fn calculate_converted_distance(x: f64, y: f64, z: f64, nbr_x: f64, nbr_y: f64, nbr_z: f64) -> f64 {
-    let conversion_factor = (10.0 as f64).powi(-7);
     return total_distance(
-        (x as f64) * conversion_factor,
-        (y as f64) * conversion_factor,
-        z as f64,
-        (nbr_x as f64) * conversion_factor,
-        (nbr_y as f64) * conversion_factor,
-        nbr_z as f64,
+        x * LAT_CONVERSION_FACTOR,
+        y * LON_CONVERSION_FACTOR,
+        z * ALT_CONVERSION_FACTOR,
+        nbr_x * LAT_CONVERSION_FACTOR,
+        nbr_y * LON_CONVERSION_FACTOR,
+        nbr_z * ALT_CONVERSION_FACTOR,
     );
 }
 
