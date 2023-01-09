@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
-function Settings() {
+const Settings = () => {
   const navigateTo = useNavigate();
+
+  const [deviceID, setDeviceID] = useState("Default Device ID");
+  const [deviceName, setDeviceName] = useState("Mr. Meshtastic");
+  const [deviceNickname, setDeviceNickname] = useState("MRM");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const deviceInfoTest = { deviceID, deviceNickname, deviceName };
+    console.log(deviceInfoTest);
+  };
 
   return (
     // Create darker screen
@@ -15,64 +25,81 @@ function Settings() {
         <div className="sticky top-0">
           <div className="flex justify-end sticky top-0">
             <button
-              className="X-button flex rounded-md hover:bg-gray-300 w-8 h-8 justify-end"
-              onClick={() => navigateTo("/")}
+              className="X-button flex rounded-md hover:bg-gray-300 w-10 h-10 justify-end"
+              onClick={() => {
+                navigateTo("/");
+              }}
             >
-              <XMarkIcon />
+              <XMarkIcon className="justify-center" />
             </button>
           </div>
           <div className="flex justify-center sticky top-0 z-50">
             <div className="font-bold"> Settings </div>
           </div>
         </div>
-        {/* Set different options */}
+        <div className="text-sm flex justify-center">
+          Note: This is just the UI, and is not currently connected to backend
+        </div>
+
+        {/* Make a form where we put the options */}
         <div className="overflow-y-scroll h-4/5 mt-2">
-          <div className="pl-[4%] pl-2 text-xl"> Option </div>
-          <div className="pl-[6%] pr-[8%] font-sans text-2xl">
-            <Input
-              className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
-              size="lg"
-            />
-          </div>
-          <div className="pl-[4%] pt-[3%] pl-2 text-xl"> Option </div>
-          <div className="pl-[6%] pr-[8%] font-sans text-2xl">
-            <Input
-              className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
-              size="lg"
-            />
-          </div>
-          <div className="pl-[4%] pt-[3%] pl-2 text-xl"> Option </div>
-          <div className="pl-[6%] pr-[8%] font-sans text-2xl">
-            <Input
-              className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
-              size="lg"
-            />
-          </div>
-          <div className="pl-[4%] pt-[3%] pl-2 text-xl"> Option </div>
-          <div className="pl-[6%] pr-[8%] font-sans text-2xl">
-            <Input
-              className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
-              size="lg"
-            />
-          </div>
-          <div className="pl-[4%] pt-[3%] pl-2 text-xl"> Option </div>
-          <div className="pl-[6%] pr-[8%] font-sans text-2xl">
-            <Input
-              className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
-              size="lg"
-            />
-          </div>
-          <div className="pl-[4%] pt-[3%] pl-2 text-xl"> Option </div>
-          <div className="pl-[6%] pr-[8%] font-sans text-2xl">
-            <Input
-              className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
-              size="lg"
-            />
-          </div>
+          <form onSubmit={handleSubmit}>
+            <label className="pl-[4%] pl-2 text-xl"> Device ID </label>
+            <div className="pl-[6%] pr-[8%] font-sans text-sm">
+              <Input
+                className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4 disabled:opacity-80"
+                type="text"
+                size="lg"
+                label="Unique preset identifier for this device."
+                value={deviceID}
+                onChange={(e) => setDeviceID(e.target.value)}
+                disabled
+              />
+            </div>
+            <label className="flex pl-[4%] pt-[6%] pl-2 text-xl">
+              {" "}
+              Device Name{" "}
+            </label>
+            <div className="pl-[6%] pr-[8%] font-sans text-sm">
+              <Input
+                className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
+                type="text"
+                size="lg"
+                label="Personalised name for this device."
+                value={deviceName}
+                onChange={(e) => setDeviceName(e.target.value)}
+              />
+            </div>
+            <label className="flex pl-[4%] pt-[6%] pl-2 text-xl">
+              {" "}
+              Device Nickname{" "}
+            </label>
+            <div className="pl-[6%] pr-[8%] font-sans text-sm">
+              <Input
+                className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
+                type="text"
+                size="lg"
+                label="3 character nickname for small screens."
+                maxLength={3}
+                minLength={1}
+                value={deviceNickname}
+                onChange={(e) => setDeviceNickname(e.target.value)}
+              />
+            </div>
+            {/* Meshtastic Web Client has two more options - MAC Address and Hardware type. Since both are not changeable, we will not make the UI for these. */}
+            <div className="flex justify-center pt-[6%] pb-[3%]">
+              <button
+                className="border-black border-1 bg-gray-300 px-[6%] py-[2%] text-xl rounded-md hover:bg-gray-400 hover:border-2"
+                type="submit"
+              >
+                Save
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Settings;
