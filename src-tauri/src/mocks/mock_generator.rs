@@ -10,13 +10,10 @@ GPS precision is as follows:
 See https://gis.stackexchange.com/questions/8650/measuring-accuracy-of-latitude-and-longitude/8674#8674
 */
 
-pub const HANOVER_LON_PREFIX: i32 = 43.70;
-pub const HANOVER_LAT_PREFIX: i32 = 72.28;
+pub const HANOVER_LON_PREFIX: f64 = 43.70;
+pub const HANOVER_LAT_PREFIX: f64 = 72.28;
 
-/*
-Generates mock protobufs of struct types below
-*/
-pub fn mock_generator(num_nodes: i32) -> Vec<NeighborInfo> {
+pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInfo> {
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
         neighborinfo_vec[node_id] = NeighborInfo {
@@ -35,8 +32,22 @@ pub fn mock_generator(num_nodes: i32) -> Vec<NeighborInfo> {
             neighbors: Vec::new(),
         };
     }
-    // Connect graph randomly
 
+    // Add all the edges to a vector, then shuffle it and pick the first x edges to add to the graph
+    let mut all_edges_vec = Vec::new();
+    for node_id in 0..num_nodes {
+        for neighbor_id in 0..num_nodes {
+            if node_id != neighbor_id {
+                all_edges_vec.push((node_id, neighbor_id));
+            }
+        }
+    }
+    all_edges_vec.shuffle(&mut rand::thread_rng());
+    for edge_num in len(all_edges_vec) * percent_connected {
+        neighborinfo_vec[edge_num.0]
+            .neighbors
+            .push(neighborinfo_vec[edge_num.1].selfnode);
+    }
     neighborinfo_vec
 }
 
