@@ -16,14 +16,28 @@ pub const HANOVER_LAT_PREFIX: i32 = 72.28;
 /*
 Generates mock protobufs of struct types below
 */
-pub fn mock_generator(num_nodes: i32) -> neighborinfo_protobuf::NeighborInfo {
-    let mut neighborinfo = neighborinfo_protobuf::NeighborInfo::new();
-    neighborinfo.set_selfnode(mock_proto_node());
-    neighborinfo.set_neighbors(RepeatedField::from_vec(vec![
-        mock_proto_neighbor(),
-        num_nodes,
-    ]));
-    neighborinfo
+pub fn mock_generator(num_nodes: i32) -> Vec<NeighborInfo> {
+    let mut neighborinfo_vec = Vec::new();
+    for node_id in 0..num_nodes {
+        neighborinfo_vec[node_id] = NeighborInfo {
+            selfnode: Neighbor {
+                // Assign sequential ids
+                id: node_id,
+                // Assign latitude within zone
+                lat: HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01,
+                // Assign longitude within zone
+                lon: HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01,
+                // Assign flat altitude
+                alt: 0.0,
+                // Assign random SNR (0-1 float)
+                snr: rand::random::<f64>(),
+            },
+            neighbors: Vec::new(),
+        };
+    }
+    // Connect graph randomly
+
+    neighborinfo_vec
 }
 
 pub fn mock_datastream(num_nodes: i32) -> neighborinfo_protobuf::NeighborInfo {
