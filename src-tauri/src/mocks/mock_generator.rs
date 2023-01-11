@@ -17,7 +17,7 @@ pub const HANOVER_LAT_PREFIX: f64 = 72.28;
 pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInfo> {
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
-        neighborinfo_vec[node_id as usize] = NeighborInfo {
+        let mut new_neighbor = NeighborInfo {
             selfnode: Neighbor {
                 // Assign sequential ids
                 id: node_id as u32,
@@ -32,6 +32,7 @@ pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInf
             },
             neighbors: Vec::new(),
         };
+        neighborinfo_vec.push(new_neighbor)
     }
 
     // Add all the edges to a vector, then shuffle it and pick the first x edges to add to the graph
@@ -48,9 +49,13 @@ pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInf
     for edge_num in 0..num_added_edges {
         let first_neighbor_id = all_edges_vec[edge_num as usize].0;
         let second_neighbor_id = all_edges_vec[edge_num as usize].1;
+        // Push a copy of the second neighbor into the first neighbor's neighbor list
+        let edge_neighbor = neighborinfo_vec[second_neighbor_id as usize]
+            .selfnode
+            .clone();
         neighborinfo_vec[first_neighbor_id as usize]
             .neighbors
-            .push(neighborinfo_vec[second_neighbor_id as usize].selfnode);
+            .push(edge_neighbor);
     }
     neighborinfo_vec
 }
@@ -59,9 +64,10 @@ pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInf
 mod tests {
     use super::*;
 
-    /* Generate a random number of protobufs */
+    #[test]
     fn test_init_three_nodes() {
         let neighborinfo = mock_generator(3, 0.8);
+        // run unittests with -- --nocapture to print the structs
         println!("{:?}", neighborinfo);
         assert_eq!(neighborinfo.len(), 3);
     }
