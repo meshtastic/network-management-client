@@ -1,4 +1,5 @@
-use crate::aux_data_structures::neighbor_info::NeighborInfo;
+use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use rand::seq::SliceRandom;
 /*
 Append two GPS decimal points to beginning of randomly generated latitude and longitude to simulate a moving network
 within the Hanover area.
@@ -16,10 +17,10 @@ pub const HANOVER_LAT_PREFIX: f64 = 72.28;
 pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInfo> {
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
-        neighborinfo_vec[node_id] = NeighborInfo {
+        neighborinfo_vec[node_id as usize] = NeighborInfo {
             selfnode: Neighbor {
                 // Assign sequential ids
-                id: node_id,
+                id: node_id as u32,
                 // Assign latitude within zone
                 lat: HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01,
                 // Assign longitude within zone
@@ -43,18 +44,15 @@ pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInf
         }
     }
     all_edges_vec.shuffle(&mut rand::thread_rng());
-    for edge_num in len(all_edges_vec) * percent_connected {
-        neighborinfo_vec[edge_num.0]
+    let num_added_edges = (all_edges_vec.len() as f64 * percent_connected) as i32;
+    for edge_num in 0..num_added_edges {
+        let first_neighbor_id = all_edges_vec[edge_num as usize].0;
+        let second_neighbor_id = all_edges_vec[edge_num as usize].1;
+        neighborinfo_vec[first_neighbor_id as usize]
             .neighbors
-            .push(neighborinfo_vec[edge_num.1].selfnode);
+            .push(neighborinfo_vec[second_neighbor_id as usize].selfnode);
     }
     neighborinfo_vec
-}
-
-pub fn mock_datastream(num_nodes: i32) -> neighborinfo_protobuf::NeighborInfo {
-    /*
-    Call mock generator in a loop with the same number of nodes to simulate a datastream from a moving network
-    */
 }
 
 #[cfg(test)]
@@ -63,7 +61,8 @@ mod tests {
 
     /* Generate a random number of protobufs */
     fn test_init_three_nodes() {
-        let neighborinfo = mock_generator(3);
-        assert_eq!(neighborinfo.get_neighbors().len(), 3);
+        let neighborinfo = mock_generator(3, 0.8);
+        println!("{:?}", neighborinfo);
+        assert_eq!(1, 2);
     }
 }
