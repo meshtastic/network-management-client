@@ -63,6 +63,6 @@ mod tests {
     fn test_init_three_nodes() {
         let neighborinfo = mock_generator(3, 0.8);
         println!("{:?}", neighborinfo);
-        assert_eq!(1, 2);
+        assert_eq!(neighborinfo.len(), 3);
     }
 }
