@@ -2,9 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  selectActiveNodeId,
+  selectAllNodes,
+  selectUserByNodeId,
+} from "@features/device/deviceSelectors";
 
 const Settings = () => {
   const navigateTo = useNavigate();
+
+  const users = useSelector(selectUserByNodeId());
 
   const [deviceID, setDeviceID] = useState("Default Device ID");
   const [deviceName, setDeviceName] = useState("Mr. Meshtastic");
@@ -35,6 +44,10 @@ const Settings = () => {
           </div>
           <div className="flex justify-center sticky top-0 z-50">
             <div className="font-bold"> Settings </div>
+            <button onClick={() => window.alert("sherrynotice")}>
+              {" "}
+              sherrybutton{" "}
+            </button>
           </div>
         </div>
         <div className="text-sm flex justify-center">
