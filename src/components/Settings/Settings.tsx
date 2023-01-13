@@ -16,7 +16,7 @@ const Settings = () => {
 
   // Functions to set device info. Forbidden non-null suppressed, but I checked if a device is connected.
   const [deviceID, setDeviceID] = useState(
-    activeNode ? activeNode.data.user!.id : "ID: No device selected"
+    activeNode ? activeNode.data.user!.id : "No device selected"
   );
   const [deviceName, setDeviceName] = useState(
     activeNode ? activeNode.data.user!.longName : "No device selected"
