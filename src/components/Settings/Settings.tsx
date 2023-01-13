@@ -82,7 +82,7 @@ const Settings = () => {
                 label="Personalised name for this device."
                 value={deviceName}
                 onChange={(e) => setDeviceName(e.target.value)}
-                disabled={selectActiveNode() ? true : false}
+                disabled={activeNode ? false : true}
               />
             </div>
             <label className="flex pl-[4%] pt-[6%] pl-2 text-xl">
@@ -99,7 +99,7 @@ const Settings = () => {
                 minLength={1}
                 value={deviceNickname}
                 onChange={(e) => setDeviceNickname(e.target.value)}
-                disabled={selectActiveNode() ? true : false}
+                disabled={activeNode ? false : true}
               />
             </div>
             {/* Meshtastic Web Client has two more options - MAC Address and Hardware type. Since both are not changeable, we will not make the UI for these. */}
