@@ -3,6 +3,7 @@ mod aux_data_structures;
 mod aux_functions;
 mod graph;
 mod mesh;
+mod mocks;
 
 use app::protobufs;
 use aux_functions::commands::{run_articulation_point, run_global_mincut, run_stoer_wagner};
