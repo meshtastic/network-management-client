@@ -1,4 +1,5 @@
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use rand::prelude::*;
 use rand::seq::SliceRandom;
 /*
 Append two GPS decimal points to beginning of randomly generated latitude and longitude to simulate a moving network
@@ -18,18 +19,11 @@ pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInf
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
         let mut new_neighbor = NeighborInfo {
-            selfnode: Neighbor {
-                // Assign sequential ids
-                id: node_id as u32,
-                // Assign latitude within zone
-                lat: HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01,
-                // Assign longitude within zone
-                lon: HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01,
-                // Assign flat altitude
-                alt: 0.0,
-                // Assign random SNR (0-1 float)
-                snr: rand::random::<f64>(),
-            },
+            // Assign sequential ids
+            id: node_id as u32,
+            // Assign zero time for now
+            timestamp: 0,
+            // Initialize empty neighbor lists
             neighbors: Vec::new(),
         };
         neighborinfo_vec.push(new_neighbor)
@@ -49,10 +43,14 @@ pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInf
     for edge_num in 0..num_added_edges {
         let first_neighbor_id = all_edges_vec[edge_num as usize].0;
         let second_neighbor_id = all_edges_vec[edge_num as usize].1;
-        // Push a copy of the second neighbor into the first neighbor's neighbor list
-        let edge_neighbor = neighborinfo_vec[second_neighbor_id as usize]
-            .selfnode
-            .clone();
+        let mut rng = rand::thread_rng();
+        let rand_nbr_snr: f64 = rng.gen(); // generates a float between 0 and 1
+                                           // Push a copy of the second neighbor into the first neighbor's neighbor list
+        let edge_neighbor = Neighbor {
+            id: neighborinfo_vec[second_neighbor_id as usize].id,
+            snr: rand_nbr_snr,
+            timestamp: 0,
+        };
         neighborinfo_vec[first_neighbor_id as usize]
             .neighbors
             .push(edge_neighbor);

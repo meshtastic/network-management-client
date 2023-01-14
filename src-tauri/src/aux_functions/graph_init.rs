@@ -17,7 +17,7 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
     let mut edge_radio_quality = Vec::<f64>::new();
 
     for nbr_info in data {
-        let name: String = nbr_info.selfnode.id.to_string();
+        let name: String = nbr_info.id.to_string();
         if !graph.contains_node(name.clone()) {
             graph.add_node(name.clone());
         }
@@ -29,14 +29,7 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
                 graph.add_node(neighbor_name.clone());
             }
             let nbr_idx = graph.get_node_idx(neighbor_name.clone());
-            let distance = calculate_converted_distance(
-                nbr_info.selfnode.lat,
-                nbr_info.selfnode.lon,
-                nbr_info.selfnode.alt,
-                neighbor.lat,
-                neighbor.lon,
-                neighbor.alt,
-            );
+            let distance = calculate_converted_distance(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
             edge_left_endpoints.push(node_idx);
             edge_right_endpoints.push(nbr_idx);
@@ -62,8 +55,13 @@ pub fn load_graph(data: Vec<NeighborInfo>) -> Graph {
 
 /*
 * Calculates the distance between two points on a sphere
+*
+* Conversion function:
+* Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
+* Altitude: in meters above sea level, no conversion needed
 */
 fn calculate_converted_distance(x: f64, y: f64, z: f64, nbr_x: f64, nbr_y: f64, nbr_z: f64) -> f64 {
+    let conversion_factor = (10.0 as f64).powi(-7);
     return total_distance(
         x * LAT_CONVERSION_FACTOR,
         y * LON_CONVERSION_FACTOR,
@@ -82,46 +80,42 @@ mod tests {
     fn test_init_graph() {
         let neighbor_1 = Neighbor {
             id: 1,
-            lat: 1.0,
-            lon: 1.0,
-            alt: 1.0,
+            timestamp: 0,
             snr: 1.0,
         };
         let neighbor_2 = Neighbor {
             id: 2,
-            lat: 2.0,
-            lon: 2.0,
-            alt: 2.0,
+            timestamp: 0,
             snr: 2.0,
         };
         let neighbor_3 = Neighbor {
             id: 3,
-            lat: 3.0,
-            lon: 3.0,
-            alt: 3.0,
+            timestamp: 0,
             snr: 3.0,
         };
         let neighbor_4 = Neighbor {
             id: 4,
-            lat: 4.0,
-            lon: 4.0,
-            alt: 4.0,
+            timestamp: 0,
             snr: 4.0,
         };
         let neighbor_info_1 = NeighborInfo {
-            selfnode: neighbor_1.clone(),
+            id: 1,
+            timestamp: 0,
             neighbors: vec![neighbor_2.clone(), neighbor_3.clone(), neighbor_4.clone()],
         };
         let neighbor_info_2: NeighborInfo = NeighborInfo {
-            selfnode: neighbor_2.clone(),
+            id: 2,
+            timestamp: 0,
             neighbors: vec![neighbor_1.clone(), neighbor_3.clone(), neighbor_4.clone()],
         };
         let neighbor_info_3: NeighborInfo = NeighborInfo {
-            selfnode: neighbor_3.clone(),
+            id: 3,
+            timestamp: 0,
             neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_4.clone()],
         };
         let neighbor_info_4: NeighborInfo = NeighborInfo {
-            selfnode: neighbor_4.clone(),
+            id: 4,
+            timestamp: 0,
             neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_3.clone()],
         };
         let graph = load_graph(vec![
