@@ -1,4 +1,5 @@
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use crate::aux_functions::conversion_factors::{HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX};
 use rand::prelude::*;
 use rand::seq::SliceRandom;
 /*
@@ -7,8 +8,10 @@ Generate a randomly connected graph with the degree of connectedness specified b
 Note: this graph does not currently have location info attached. Location info will be retrieved
 by mapping the node id to its location info.
 */
-
-pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInfo> {
+pub fn generate_loc_independent_packets(
+    num_nodes: i32,
+    percent_connected: f64,
+) -> Vec<NeighborInfo> {
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
         let mut new_neighbor = NeighborInfo {
@@ -51,13 +54,25 @@ pub fn mock_generator(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInf
     neighborinfo_vec
 }
 
+/* Create a vector of location info that can be mapped to by sequential node ids */
+pub fn generate_loc_info(num_nodes: i32) -> Vec<(f64, f64, f64)> {
+    let mut node_locations = Vec::new();
+    for _ in 0..num_nodes {
+        let rand_lat: f64 = HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01;
+        let rand_long: f64 = HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01;
+        let rand_alt: f64 = rand::random::<f64>() * 100.0;
+        node_locations.push((rand_lat, rand_long, rand_alt));
+    }
+    node_locations
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_init_three_nodes() {
-        let neighborinfo = mock_generator(3, 0.8);
+        let neighborinfo = generate_loc_independent_packets(3, 0.8);
         // run unittests with -- --nocapture to print the structs
         println!("{:?}", neighborinfo);
         assert_eq!(neighborinfo.len(), 3);
