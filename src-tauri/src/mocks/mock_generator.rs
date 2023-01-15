@@ -1,5 +1,8 @@
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
-use crate::aux_functions::conversion_factors::{HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX};
+use crate::aux_functions::conversion_factors::{
+    ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
+    LON_CONVERSION_FACTOR,
+};
 use rand::prelude::*;
 use rand::seq::SliceRandom;
 /*
@@ -58,9 +61,11 @@ pub fn generate_loc_independent_packets(
 pub fn generate_loc_info(num_nodes: i32) -> Vec<(f64, f64, f64)> {
     let mut node_locations = Vec::new();
     for _ in 0..num_nodes {
-        let rand_lat: f64 = HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01;
-        let rand_long: f64 = HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01;
-        let rand_alt: f64 = rand::random::<f64>() * 100.0;
+        let rand_lat: f64 =
+            HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01 / LAT_CONVERSION_FACTOR;
+        let rand_long: f64 =
+            HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01 / LON_CONVERSION_FACTOR;
+        let rand_alt: f64 = rand::random::<f64>() * 100.0 / ALT_CONVERSION_FACTOR;
         node_locations.push((rand_lat, rand_long, rand_alt));
     }
     node_locations
