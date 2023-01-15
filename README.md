@@ -46,8 +46,6 @@ This application is built using the [Tauri Framework](https://tauri.app/), a mod
 
 ![image](https://user-images.githubusercontent.com/46639306/206596246-0619edd5-7303-4fad-81f0-8c84263016b1.png)
 
-<p align="center">ℹ️ <b>This image is a conceptual design and is not yet fully implemented.</b> ℹ️</p>
-
 ## Features
 
 This project is in early stages of development, but here's a rough roadmap of functionality we're working on.
