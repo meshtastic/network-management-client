@@ -3,8 +3,11 @@ use crate::aux_functions::conversion_factors::{
     ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
     LON_CONVERSION_FACTOR,
 };
+use crate::mesh::device::MeshNode;
+use app::protobufs;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
+use std::collections::HashMap;
 /*
 Generate a randomly connected graph with the degree of connectedness specified by percent_connected.
 
@@ -58,17 +61,68 @@ pub fn generate_loc_independent_packets(
 }
 
 /* Create a vector of location info that can be mapped to by sequential node ids */
-pub fn generate_loc_info(num_nodes: i32) -> Vec<(f64, f64, f64)> {
-    let mut node_locations = Vec::new();
-    for _ in 0..num_nodes {
+pub fn generate_loc_info(num_nodes: i32) -> HashMap<u32, MeshNode> {
+    let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
+    for node_id in 0..num_nodes {
         let rand_lat: f64 =
             HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01 / LAT_CONVERSION_FACTOR;
         let rand_long: f64 =
             HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01 / LON_CONVERSION_FACTOR;
         let rand_alt: f64 = rand::random::<f64>() * 100.0 / ALT_CONVERSION_FACTOR;
-        node_locations.push((rand_lat, rand_long, rand_alt));
+        let position = protobufs::Position {
+            latitude_i: rand_lat as i32,
+            longitude_i: rand_long as i32,
+            altitude: rand_alt as i32,
+            time: 0,
+            location_source: 0,
+            altitude_source: 0,
+            timestamp: 0,
+            timestamp_millis_adjust: 0,
+            altitude_hae: 0,
+            altitude_geoidal_separation: 0,
+            pdop: 0,
+            hdop: 0,
+            vdop: 0,
+            gps_accuracy: 0,
+            ground_speed: 0,
+            ground_track: 0,
+            fix_quality: 0,
+            fix_type: 0,
+            sats_in_view: 0,
+            sensor_id: 0,
+            next_update: 0,
+            seq_number: 0,
+        };
+        let user = protobufs::User {
+            id: "test".to_string(),
+            long_name: "test".to_string(),
+            short_name: "test".to_string(),
+            macaddr: Vec::new(),
+            hw_model: 0,
+            is_licensed: false,
+        };
+        let device_metrics = protobufs::DeviceMetrics {
+            battery_level: 0,
+            voltage: 0.0,
+            channel_utilization: 0.0,
+            air_util_tx: 0.0,
+        };
+        let node_info = protobufs::NodeInfo {
+            num: node_id as u32,
+            user: Some(user),
+            position: Some(position),
+            snr: 0.0,
+            last_heard: 0,
+            device_metrics: Some(device_metrics),
+        };
+        let meshnode = MeshNode {
+            device_metrics: vec![],
+            environment_metrics: vec![],
+            data: node_info,
+        };
+        loc_hashmap.insert(node_id as u32, meshnode);
     }
-    node_locations
+    loc_hashmap
 }
 
 #[cfg(test)]
