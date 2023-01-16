@@ -98,6 +98,7 @@ impl Timeline {
         }
     }
 
+    /// Writes the current snapshot to a txt file.
     pub fn write_snapshot(&mut self) {
         let curr_snapshot = self.curr_snapshot.as_ref().expect("msg");
         let mut snapshot_string = take_snapshot_of_graph(curr_snapshot).clone();
@@ -121,6 +122,7 @@ impl Timeline {
         }
     }
 
+    /// Writes the current label to a txt file.
     pub fn write_timeline_label(&mut self) {
         let label_text = format!("{},{}", self.curr_timeline_id, self.label);
         let filename = format!("{}/labels.txt", self.label_dir);
