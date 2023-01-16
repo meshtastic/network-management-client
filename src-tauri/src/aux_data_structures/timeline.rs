@@ -18,6 +18,15 @@ pub struct Timeline {
 }
 
 impl Timeline {
+    /// Creates a new timeline.
+    ///
+    /// # Arguments
+    ///
+    /// * `config_fields` - a HashMap containing the config fields: timeline_data_dir (location of data/timelines) and timeline_label_dir (location of data)
+    ///
+    /// # Returns
+    ///
+    /// * `Timeline` - a new timeline
     pub fn new(config_fields: HashMap<&str, &str>) -> Timeline {
         let mut curr_timeline_id = 0;
 
@@ -100,11 +109,15 @@ impl Timeline {
         let mut file = OpenOptions::new()
             .append(true)
             .create(true)
-            .open(filename)
+            .open(filename.clone())
             .unwrap();
 
         if let Err(e) = writeln!(file, "{}", snapshot_string) {
-            eprintln!("Couldn't write to file: {}", e);
+            eprintln!(
+                "Couldn't write snapshot to file {}: {}",
+                filename.clone(),
+                e
+            );
         }
     }
 
@@ -115,11 +128,11 @@ impl Timeline {
         let mut labels_file = OpenOptions::new()
             .append(true)
             .create(true)
-            .open(filename)
+            .open(filename.clone())
             .unwrap();
 
         if let Err(e) = writeln!(labels_file, "{}", label_text) {
-            eprintln!("Couldn't write to file: {}", e);
+            eprintln!("Couldn't write label to file {}: {}", filename.clone(), e);
         }
     }
 
