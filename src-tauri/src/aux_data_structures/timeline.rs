@@ -21,8 +21,8 @@ impl Timeline {
     pub fn new(config_fields: HashMap<&str, &str>) -> Timeline {
         let mut curr_timeline_id = 0;
 
-        let timeline_data_dir = config_fields.get("timeline_data_dir").unwrap(); // data/timelines
-        let timeline_label_dir = config_fields.get("timeline_label_dir").unwrap(); // data/timeline_labels
+        let timeline_data_dir = config_fields.get("timeline_data_dir").unwrap();
+        let timeline_label_dir = config_fields.get("timeline_label_dir").unwrap();
 
         let paths = fs::read_dir(timeline_data_dir).unwrap();
         for path in paths {
@@ -94,7 +94,6 @@ impl Timeline {
         let mut snapshot_string = take_snapshot_of_graph(curr_snapshot).clone();
         snapshot_string.push_str("\n");
 
-        let snapshot_id = self.curr_snapshot_id;
         let timeline_id = self.curr_timeline_id;
 
         let filename = format!("{}/{}.txt", self.data_dir, timeline_id);

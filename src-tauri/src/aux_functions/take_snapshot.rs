@@ -70,7 +70,6 @@ fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
         a_distance.partial_cmp(&b_distance).unwrap()
     });
 
-    //let mut ordering: String = "".to_owned();
     let mut ordering_counter = 0;
     let order = graph.get_order();
 
@@ -123,15 +122,10 @@ pub fn take_snapshot_of_graph(graph: &Graph) -> String {
 }
 
 pub fn take_snapshot_of_node_fts(graph: &Graph) -> HashMap<String, String> {
-    let mut node_fts_txt: String = "".to_owned();
-
     let mut node_fts: HashMap<String, String> = HashMap::new();
 
     for node in graph.get_nodes() {
         let mut node_ft_txt: String = "".to_owned();
-
-        node_fts_txt.push_str(&node.name);
-        node_fts_txt.push_str(" ");
         node_ft_txt.push_str("lat ");
         node_ft_txt.push_str(&node.latitude.to_string());
 
