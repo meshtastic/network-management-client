@@ -6,7 +6,6 @@ mod mesh;
 mod mocks;
 
 use app::protobufs;
-use aux_functions::commands::{run_articulation_point, run_global_mincut, run_stoer_wagner};
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use std::sync::Arc;
 use tauri::{async_runtime, Manager};
@@ -32,11 +31,6 @@ fn main() {
                 mesh::device::MeshDevice::new(),
             ))),
         })
-        .invoke_handler(tauri::generate_handler![
-            run_articulation_point,
-            run_global_mincut,
-            run_stoer_wagner
-        ])
         .invoke_handler(tauri::generate_handler![
             get_all_serial_ports,
             connect_to_serial_port,
