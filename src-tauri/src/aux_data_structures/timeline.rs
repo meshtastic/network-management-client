@@ -34,13 +34,13 @@ impl Timeline {
         let timeline_label_dir = config_fields.get("timeline_label_dir").unwrap();
 
         let paths = fs::read_dir(timeline_data_dir).unwrap();
-        for path in paths {
-            let path = path.unwrap().path();
+        for res_path in paths {
+            let path = res_path.unwrap().path();
             let filename = path.file_name().unwrap().to_str().unwrap();
             let filename = filename.split('.').collect::<Vec<&str>>()[0];
-            let filename = filename.parse::<i32>().unwrap();
-            if filename > curr_timeline_id {
-                curr_timeline_id = filename;
+            let prev_timeline_id = filename.parse::<i32>().unwrap();
+            if prev_timeline_id > curr_timeline_id {
+                curr_timeline_id = prev_timeline_id;
             };
         }
 

@@ -39,7 +39,7 @@ pub fn total_distance(lat1: f64, lon1: f64, alt1: f64, lat2: f64, lon2: f64, alt
 
 fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
     let mut nodes = graph.get_nodes().clone();
-    let node_fts: HashMap<String, String> = take_snapshot_of_node_fts(graph);
+    let node_fts = take_snapshot_of_node_fts(graph);
 
     let smallest_longitude_node = nodes.iter().fold(nodes[0].clone(), |acc, node| {
         if node.longitude < acc.longitude {
