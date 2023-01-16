@@ -1,84 +1,49 @@
 use std::collections::HashMap;
+use std::fs;
+use std::fs::OpenOptions;
+use std::io::prelude::*;
 
 // A data structure to represent the timeline of graph snapshots.
 use crate::aux_functions::take_snapshot::{take_snapshot_of_graph, take_snapshot_of_node_fts};
 use crate::graph::graph_ds::Graph;
-use postgres::{Client, NoTls};
 
 // Created at the beginning of each rescue attempt.
 pub struct Timeline {
     curr_snapshot: Option<Graph>,
-    client: Client,
     label: i32,
     curr_timeline_id: i32,
     curr_snapshot_id: i32,
-    training_table_name: String,
-    timeline_ft_table_name: String,
+    label_dir: String,
+    data_dir: String,
 }
 
 impl Timeline {
     pub fn new(config_fields: HashMap<&str, &str>) -> Timeline {
-        let mut config = postgres::Config::new();
-
-        config
-            .user(config_fields.get("user").unwrap())
-            .password(config_fields.get("password").unwrap())
-            .dbname(config_fields.get("dbname").unwrap())
-            .host(config_fields.get("host").unwrap())
-            .port(config_fields.get("port").unwrap().parse::<u16>().unwrap());
-
-        let mut client = config.connect(NoTls).unwrap();
         let mut curr_timeline_id = 0;
 
-        let create_training_table_query = format!(
-            "CREATE TABLE IF NOT EXISTS {} (
-                timeline_id INT,
-                label INT
-            )",
-            config_fields.get("training_table_name").unwrap()
-        );
+        let timeline_data_dir = config_fields.get("timeline_data_dir").unwrap(); // data/timelines
+        let timeline_label_dir = config_fields.get("timeline_label_dir").unwrap(); // data/timeline_labels
 
-        client.execute(&create_training_table_query, &[]).unwrap();
-
-        let create_timeline_ft_table_query = format!(
-            "CREATE TABLE IF NOT EXISTS {} (
-                timeline_id integer,
-                snapshot_id integer,
-                node_fts_prim jsonb,
-                snapshot_txt varchar,
-                misc jsonb
-            )",
-            config_fields.get("ft_table_name").unwrap()
-        );
-
-        client
-            .execute(&create_timeline_ft_table_query, &[])
-            .unwrap();
-
-        let max_timeline_id_query = format!(
-            "SELECT MAX(timeline_id) FROM {}",
-            config_fields.get("training_table_name").unwrap()
-        );
-
-        for row in client
-            .query(&max_timeline_id_query, &[])
-            .unwrap_or(Vec::new())
-        {
-            let timeline_id: i32 = row.get(0);
-            curr_timeline_id = timeline_id + 1;
+        let paths = fs::read_dir(timeline_data_dir).unwrap();
+        for path in paths {
+            let path = path.unwrap().path();
+            let filename = path.file_name().unwrap().to_str().unwrap();
+            let filename = filename.split('.').collect::<Vec<&str>>()[0];
+            let filename = filename.parse::<i32>().unwrap();
+            if filename > curr_timeline_id {
+                curr_timeline_id = filename;
+            };
         }
+
+        curr_timeline_id += 1;
 
         Timeline {
             curr_snapshot: None,
-            client,
             label: 1,
             curr_timeline_id,
             curr_snapshot_id: 0,
-            training_table_name: config_fields
-                .get("training_table_name")
-                .unwrap()
-                .to_string(),
-            timeline_ft_table_name: config_fields.get("ft_table_name").unwrap().to_string(),
+            label_dir: timeline_label_dir.to_string(),
+            data_dir: timeline_data_dir.to_string(),
         }
     }
 
@@ -89,17 +54,12 @@ impl Timeline {
             }
             Some(_curr_snapshot) => {
                 let is_connected = self.check_connection(&snapshot);
-                self.write();
+                self.write_snapshot();
                 self.curr_snapshot = Some(snapshot);
                 if !is_connected {
                     self.label = 0;
-                    let query = format!(
-                        "INSERT INTO {} (timeline_id, label) VALUES ($1, $2)",
-                        self.training_table_name
-                    );
-                    self.client
-                        .execute(&query, &[&self.curr_timeline_id, &self.label])
-                        .unwrap();
+                    self.write_timeline_label();
+
                     self.curr_timeline_id += 1;
                 }
             }
@@ -129,38 +89,39 @@ impl Timeline {
         }
     }
 
-    pub fn write(&mut self) {
+    pub fn write_snapshot(&mut self) {
         let curr_snapshot = self.curr_snapshot.as_ref().expect("msg");
-        let snapshot_string = take_snapshot_of_graph(curr_snapshot);
+        let mut snapshot_string = take_snapshot_of_graph(curr_snapshot).clone();
+        snapshot_string.push_str("\n");
 
         let snapshot_id = self.curr_snapshot_id;
         let timeline_id = self.curr_timeline_id;
 
-        let snapshot_of_node_fts = take_snapshot_of_node_fts(curr_snapshot);
-
-        let snapshot_of_node_fts = serde_json::to_string(&snapshot_of_node_fts).unwrap();
-        let snapshot_of_node_fts_json: serde_json::Value =
-            serde_json::from_str(&snapshot_of_node_fts)
-                .expect("Error converting snapshot_of_node_fts to serde_json::Value");
-
-        let query_str =
-            format!("INSERT INTO {} (timeline_id, snapshot_id, node_fts_prim, snapshot_txt, misc) VALUES ($1, $2, $3, $4, $5)", self.timeline_ft_table_name);
-
-        // create empty serde_json value
-        let empty_json = serde_json::Value::Object(serde_json::Map::new());
-
-        self.client
-            .execute(
-                &query_str,
-                &[
-                    &timeline_id,
-                    &snapshot_id,
-                    &snapshot_of_node_fts_json,
-                    &snapshot_string,
-                    &empty_json,
-                ],
-            )
+        let filename = format!("{}/{}.txt", self.data_dir, timeline_id);
+        let mut file = OpenOptions::new()
+            .append(true)
+            .create(true)
+            .open(filename)
             .unwrap();
+
+        if let Err(e) = writeln!(file, "{}", snapshot_string) {
+            eprintln!("Couldn't write to file: {}", e);
+        }
+    }
+
+    pub fn write_timeline_label(&mut self) {
+        let label_text = format!("{},{}", self.curr_timeline_id, self.label);
+        let filename = format!("{}/labels.txt", self.label_dir);
+
+        let mut labels_file = OpenOptions::new()
+            .append(true)
+            .create(true)
+            .open(filename)
+            .unwrap();
+
+        if let Err(e) = writeln!(labels_file, "{}", label_text) {
+            eprintln!("Couldn't write to file: {}", e);
+        }
     }
 
     pub fn clear(&mut self) {
@@ -168,15 +129,9 @@ impl Timeline {
     }
 
     pub fn conclude_timeline(&mut self) {
-        self.write();
+        self.write_snapshot();
         self.label = 1;
-        let query = format!(
-            "INSERT INTO {} (timeline_id, label) VALUES ($1, $2)",
-            self.training_table_name
-        );
-        self.client
-            .execute(&query, &[&self.curr_timeline_id, &self.label])
-            .unwrap();
+        self.write_timeline_label();
     }
 }
 
@@ -190,13 +145,8 @@ mod tests {
     fn test_timeline() {
         let mut config_fields = HashMap::new();
 
-        config_fields.insert("user", "barkin");
-        config_fields.insert("password", "zbRH6C32$f2N");
-        config_fields.insert("dbname", "timelines1");
-        config_fields.insert("host", "localhost");
-        config_fields.insert("port", "5432");
-        config_fields.insert("ft_table_name", "timelinestable2");
-        config_fields.insert("training_table_name", "trainingtable2");
+        config_fields.insert("timeline_data_dir", "data/timelines");
+        config_fields.insert("timeline_label_dir", "data");
 
         let mut timeline = Timeline::new(config_fields);
 
