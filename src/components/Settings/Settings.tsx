@@ -25,7 +25,25 @@ const Settings = () => {
     activeNode ? activeNode.data.user!.shortName : "No device selected"
   );
 
+  const mac = activeNode ? activeNode.data.user!.macaddr : "No device selected";
+
+  const hwModel = activeNode
+    ? activeNode.data.user!.hwModel
+    : "No device selected";
+  const isLicensed = activeNode
+    ? activeNode.data.user!.isLicensed
+    : "No device selected";
+
+  // value={
+  //   base16
+  //     .stringify(activeNode?.data.user?.macaddr ?? [])
+  //     .match(/.{1,2}/g)
+  //     ?.join(":") ?? ""
+  // }
+  // From web mesh
+
   // Submits the form. Triggered by pressing the save button
+
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
   };
@@ -102,6 +120,20 @@ const Settings = () => {
                 disabled={!activeNode}
               />
             </div>
+            {activeNode ? (
+              <div>
+                <div className="flex pl-[4%] pt-[6%] pl-2 text-base justify-center">
+                  Details:
+                </div>
+                <div className="text-sm pl-[4%]">MAC Address: {mac}</div>
+                <div className="text-sm pl-[4%]">Hardware Model: {hwModel}</div>
+                <div className="text-sm pl-[4%]">
+                  Licensed?: {isLicensed ? "Yes" : "No"}
+                </div>
+              </div>
+            ) : (
+              <div></div>
+            )}
             {/* Meshtastic Web Client has two more options - MAC Address and Hardware type. Since both are not changeable, we will not make the UI for these. */}
             <div className="flex justify-center pt-[6%] pb-[3%]">
               <button
