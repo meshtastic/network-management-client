@@ -2,6 +2,7 @@ use super::edge_factory::edge_factory;
 use super::take_snapshot::total_distance;
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use crate::aux_functions::conversion_factors::*;
+use crate::graph::edge;
 use crate::graph::graph_ds::Graph;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
@@ -23,6 +24,7 @@ pub fn load_graph(packets: Vec<NeighborInfo>, mut loc_hashmap: HashMap<u32, Mesh
     let mut edge_right_endpoints = Vec::<NodeIndex>::new();
     let mut edge_distances = Vec::<f64>::new();
     let mut edge_radio_quality = Vec::<f64>::new();
+    let mut snr_hashmap = HashMap::<(u32, u32), (f64, u64)>::new();
 
     for packet in packets {
         // Add node to graph if not initialized
@@ -53,7 +55,23 @@ pub fn load_graph(packets: Vec<NeighborInfo>, mut loc_hashmap: HashMap<u32, Mesh
                 neighbor_position.longitude_i,
                 neighbor_position.altitude,
             );
-            let radio_quality = neighbor.snr;
+            // If a previous snr exists, take it if it's timestamp is more recent
+            let mut radio_quality = neighbor.snr;
+            let edge_exists = snr_hashmap.contains_key(&(neighbor.id, packet.id));
+            if edge_exists {
+                let alternate_snr = snr_hashmap.get_mut(&(neighbor.id, packet.id)).unwrap().0;
+                let alternate_timestamp = snr_hashmap.get_mut(&(neighbor.id, packet.id)).unwrap().1;
+                if neighbor.timestamp <= alternate_timestamp {
+                    snr_hashmap
+                        .insert((neighbor.id, packet.id), (neighbor.snr, neighbor.timestamp));
+                } else {
+                    radio_quality = alternate_snr;
+                }
+            } else {
+                // Because our node will be the next node's neighbor, add it to the hashmap in reverse order
+                snr_hashmap.insert((packet.id, neighbor.id), (neighbor.snr, neighbor.timestamp));
+            }
+            // Add edge to lists
             edge_left_endpoints.push(node_index);
             edge_right_endpoints.push(nbr_index);
             edge_distances.push(distance);
