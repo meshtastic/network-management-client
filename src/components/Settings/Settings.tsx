@@ -7,6 +7,17 @@ import { Input } from "@material-tailwind/react";
 
 import { selectActiveNode } from "@features/device/deviceSelectors";
 
+// Function to convert decimal MAC address to hex
+function convertMacAddr(macAddr: number[]) {
+  let result = macAddr[0].toString(16);
+
+  for (let i = 1; i < macAddr.length; i = i + 1) {
+    const item = macAddr[i].toString(16);
+    result = result + ":" + item;
+  }
+  return result.toUpperCase();
+}
+
 const Settings = () => {
   // Allows for navigation upon pressing "x"
   const navigateTo = useNavigate();
@@ -25,8 +36,10 @@ const Settings = () => {
     activeNode ? activeNode.data.user!.shortName : "No device selected"
   );
 
-  const mac = activeNode ? activeNode.data.user!.macaddr : "No device selected";
-
+  // MAC, Hardware, and Licensing. Even though they are not displayed when null, the check prevents an error on assignment
+  const mac = activeNode
+    ? convertMacAddr(activeNode.data.user!.macaddr)
+    : "No device selected";
   const hwModel = activeNode
     ? activeNode.data.user!.hwModel
     : "No device selected";
@@ -34,16 +47,7 @@ const Settings = () => {
     ? activeNode.data.user!.isLicensed
     : "No device selected";
 
-  // value={
-  //   base16
-  //     .stringify(activeNode?.data.user?.macaddr ?? [])
-  //     .match(/.{1,2}/g)
-  //     ?.join(":") ?? ""
-  // }
-  // From web mesh
-
   // Submits the form. Triggered by pressing the save button
-
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
   };
