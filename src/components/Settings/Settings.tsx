@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, FormEventHandler } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +26,7 @@ const Settings = () => {
   );
 
   // Submits the form. Triggered by pressing the save button
-  const handleSubmit = (e) => {
+  const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
   };
 
