@@ -55,8 +55,13 @@ pub fn diffusion_centrality(g: &Graph, T: u32) -> Option<HashMap<String, HashMap
             }
 
             for (i, row) in H.row_iter().enumerate() {
+                let row_sum = row.sum();
+
+                // divide the row by the sum of the row
+                let row_normalized = row.map(|x| x / row_sum);
+
                 let mut node_to_diffcen_inner = HashMap::new();
-                for (j, col) in row.iter().enumerate() {
+                for (j, col) in row_normalized.iter().enumerate() {
                     if i == j {
                         let sum = row.sum();
                         node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), sum);
@@ -100,7 +105,7 @@ mod tests {
         G1.add_edge(u.clone(), w.clone(), 7 as f64);
         G1.add_edge(v.clone(), w.clone(), 35 as f64);
 
-        let diff_cents = diffusion_centrality(&G1, 5);
+        let diff_cents = diffusion_centrality(&G1, 1);
         println!("{:?}", diff_cents);
         assert!(diff_cents.is_some());
     }
