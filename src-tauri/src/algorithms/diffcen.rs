@@ -15,7 +15,7 @@ use nalgebra::DMatrix;
 /// # Returns
 ///
 /// * `Option<HashMap<String, HashMap<String, f64>>>` - A hashmap of node ids to a hashmap of node ids to diffusion centrality values.
-pub fn diffusion_centrality(g: &Graph) -> Option<HashMap<String, HashMap<String, f64>>> {
+pub fn diffusion_centrality(g: &Graph, T: u32) -> Option<HashMap<String, HashMap<String, f64>>> {
     let (adj_matrix, int_to_node_id) = convert_to_adj_matrix(g);
     let mut node_to_diffcen = HashMap::new();
 
@@ -50,7 +50,7 @@ pub fn diffusion_centrality(g: &Graph) -> Option<HashMap<String, HashMap<String,
 
             let mut H = DMatrix::zeros(g.get_nodes().len(), g.get_nodes().len());
 
-            for t in 1..6 {
+            for t in 1..T + 1 {
                 H += (q * &matrix).pow(t) * &identity_matrix;
             }
 
@@ -100,7 +100,7 @@ mod tests {
         G1.add_edge(u.clone(), w.clone(), 7 as f64);
         G1.add_edge(v.clone(), w.clone(), 35 as f64);
 
-        let diff_cents = diffusion_centrality(&G1);
+        let diff_cents = diffusion_centrality(&G1, 5);
         println!("{:?}", diff_cents);
         assert!(diff_cents.is_some());
     }
