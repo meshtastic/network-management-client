@@ -1,6 +1,15 @@
 use crate::graph::graph_ds::Graph;
 use std::collections::HashMap;
 
+/// Converts a graph to an adjacency matrix.
+///
+/// # Arguments
+///
+/// * `graph` - a graph
+///
+/// # Returns
+///
+/// * `Vec<Vec<f64>>` - an adjacency matrix
 pub fn convert_to_adj_matrix(graph: &Graph) -> Vec<Vec<f64>> {
     let mut adj_matrix: Vec<Vec<f64>> = Vec::new();
     let nodes = graph.get_nodes();
@@ -70,7 +79,6 @@ mod tests {
         d_node.set_gps(-72.28085, 43.71235, 1.0);
         let d_idx = G1.add_node_from_struct(d_node);
 
-        // 0: a, 1: b, 2: c, 3: d
         let a_b = Edge::new(a_idx, b_idx, 0.51);
         G1.add_edge_from_struct(a_b);
 
