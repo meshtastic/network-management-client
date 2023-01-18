@@ -4,6 +4,17 @@ use crate::aux_functions::adj_matrix::convert_to_adj_matrix;
 use crate::graph::graph_ds::Graph;
 use nalgebra::DMatrix;
 
+/// Calculates the diffusion centrality of each node in the graph.
+/// Diffusion centrality is a measure of how much information a node
+/// can diffuse to other nodes in the graph.
+///
+/// # Arguments
+///
+/// * `g` - The graph to calculate diffusion centrality for.
+///
+/// # Returns
+///
+/// * `Option<HashMap<String, HashMap<String, f64>>>` - A hashmap of node ids to a hashmap of node ids to diffusion centrality values.
 pub fn diffusion_centrality(g: &Graph) -> Option<HashMap<String, HashMap<String, f64>>> {
     let (adj_matrix, int_to_node_id) = convert_to_adj_matrix(g);
     let mut node_to_diffcen = HashMap::new();
