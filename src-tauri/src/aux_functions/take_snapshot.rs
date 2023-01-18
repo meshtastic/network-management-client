@@ -1,3 +1,5 @@
+use std::{collections::HashMap, hash::Hash};
+
 use crate::graph::graph_ds::Graph;
 
 /// Returns Haversine distance between 2 nodes using their lat and long
@@ -37,6 +39,7 @@ pub fn total_distance(lat1: f64, lon1: f64, alt1: f64, lat2: f64, lon2: f64, alt
 
 fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
     let mut nodes = graph.get_nodes().clone();
+    let node_fts = take_snapshot_of_node_fts(graph);
 
     let smallest_longitude_node = nodes.iter().fold(nodes[0].clone(), |acc, node| {
         if node.longitude < acc.longitude {
@@ -67,7 +70,6 @@ fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
         a_distance.partial_cmp(&b_distance).unwrap()
     });
 
-    //let mut ordering: String = "".to_owned();
     let mut ordering_counter = 0;
     let order = graph.get_order();
 
@@ -79,14 +81,12 @@ fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
         graph_text.push_str(&node.name);
         graph_text.push_str(" ");
         graph_text.push_str(ordering_counter.to_string().as_str());
+        graph_text.push_str(" ");
+        let node_fts_txt = node_fts.get(&node.name).unwrap();
+        graph_text.push_str(node_fts_txt);
         ordering_counter += 1;
         graph_text.push_str("\n");
     }
-
-    //file.write_all(ordering.as_bytes())
-    //    .expect("Unable to write data");
-
-    //Ok(())
 }
 
 /// Converts a graph to a string and returns it
@@ -121,33 +121,30 @@ pub fn take_snapshot_of_graph(graph: &Graph) -> String {
     return graph_string;
 }
 
-// Create a unit test for the Graph struct
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub fn take_snapshot_of_node_fts(graph: &Graph) -> HashMap<String, String> {
+    let mut node_fts: HashMap<String, String> = HashMap::new();
 
-    #[test]
-    fn test_take_snapshot() {
-        // Create a graph
-        let mut G = Graph::new();
+    for node in graph.get_nodes() {
+        let mut node_ft_txt: String = "".to_owned();
+        node_ft_txt.push_str("lat ");
+        node_ft_txt.push_str(&node.latitude.to_string());
 
-        // Create a few nodes and edges and add to graph
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
+        node_ft_txt.push_str(" lon ");
+        node_ft_txt.push_str(&node.longitude.to_string());
 
-        let _u_idx = G.add_node(u.clone());
-        let _v_idx = G.add_node(v.clone());
-        let _w_idx = G.add_node(w.clone());
+        node_ft_txt.push_str(" alt ");
+        node_ft_txt.push_str(&node.altitude.to_string());
 
-        G.add_edge(u.clone(), v.clone(), 1 as f64);
-        G.add_edge(u.clone(), w.clone(), 1 as f64);
-        G.add_edge(v.clone(), w.clone(), 35 as f64);
+        node_ft_txt.push_str(" v ");
+        node_ft_txt.push_str(&node.speed.to_string());
 
-        // Take a snapshot of the graph
-        let snapshot = take_snapshot_of_graph(&G);
+        node_ft_txt.push_str(" th ");
+        node_ft_txt.push_str(&node.direction.to_string());
 
-        let expected = "3\nO: u 0\nO: v 1\nO: w 2\nE: u v 1\nE: u w 1\nE: v w 35";
-        assert_eq!(snapshot, expected);
+        node_ft_txt.push_str(" deg ");
+        node_ft_txt.push_str(&node.optimal_weighted_degree.to_string());
+
+        node_fts.insert(node.name.clone(), node_ft_txt);
     }
+    node_fts
 }

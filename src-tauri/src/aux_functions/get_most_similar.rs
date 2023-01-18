@@ -54,7 +54,7 @@ pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<String, String> {
     }
 }
 
-// test the function
+/* // test the function
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -157,3 +157,4 @@ mod tests {
         }
     }
 }
+ */

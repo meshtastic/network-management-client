@@ -5,6 +5,8 @@ pub struct Node {
     pub longitude: f64,
     pub latitude: f64,
     pub altitude: f64,
+    pub speed: f64,
+    pub direction: f64,
 }
 
 impl Node {
@@ -15,6 +17,8 @@ impl Node {
             longitude: 0.0,
             latitude: 0.0,
             altitude: 0.0,
+            speed: 0.0,
+            direction: 0.0,
         }
     }
 
@@ -34,6 +38,8 @@ impl Clone for Node {
             longitude: self.longitude,
             latitude: self.latitude,
             altitude: self.altitude,
+            speed: self.speed,
+            direction: self.direction,
         }
     }
 }
