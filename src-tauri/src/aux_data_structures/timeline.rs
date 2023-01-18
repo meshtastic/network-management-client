@@ -31,18 +31,20 @@ impl Timeline {
     pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> Timeline {
         let mut curr_timeline_id = 0;
 
-        let timeline_data_dir = config_fields.get("timeline_data_dir").unwrap();
-        let timeline_label_dir = config_fields.get("timeline_label_dir").unwrap();
+        let timeline_data_dir = config_fields.get("timeline_data_dir").unwrap_or(&"");
+        let timeline_label_dir = config_fields.get("timeline_label_dir").unwrap_or(&"");
 
-        let paths = fs::read_dir(timeline_data_dir).unwrap();
-        for res_path in paths {
-            let path = res_path.unwrap().path();
-            let filename = path.file_name().unwrap().to_str().unwrap();
-            let filename = filename.split('.').collect::<Vec<&str>>()[0];
-            let prev_timeline_id = filename.parse::<i32>().unwrap();
-            if prev_timeline_id > curr_timeline_id {
-                curr_timeline_id = prev_timeline_id;
-            };
+        if is_save {
+            let paths = fs::read_dir(timeline_data_dir).unwrap();
+            for res_path in paths {
+                let path = res_path.unwrap().path();
+                let filename = path.file_name().unwrap().to_str().unwrap();
+                let filename = filename.split('.').collect::<Vec<&str>>()[0];
+                let prev_timeline_id = filename.parse::<i32>().unwrap();
+                if prev_timeline_id > curr_timeline_id {
+                    curr_timeline_id = prev_timeline_id;
+                };
+            }
         }
 
         curr_timeline_id += 1;
