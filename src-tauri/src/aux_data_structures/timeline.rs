@@ -15,6 +15,7 @@ pub struct Timeline {
     curr_snapshot_id: i32,
     label_dir: String,
     data_dir: String,
+    save: bool,
 }
 
 impl Timeline {
@@ -27,7 +28,7 @@ impl Timeline {
     /// # Returns
     ///
     /// * `Timeline` - a new timeline
-    pub fn new(config_fields: HashMap<&str, &str>) -> Timeline {
+    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> Timeline {
         let mut curr_timeline_id = 0;
 
         let timeline_data_dir = config_fields.get("timeline_data_dir").unwrap();
@@ -53,6 +54,7 @@ impl Timeline {
             curr_snapshot_id: 0,
             label_dir: timeline_label_dir.to_string(),
             data_dir: timeline_data_dir.to_string(),
+            save: is_save,
         }
     }
 
@@ -63,12 +65,15 @@ impl Timeline {
             }
             Some(_curr_snapshot) => {
                 let is_connected = self.check_connection(&snapshot);
-                self.write_snapshot();
+                if self.save {
+                    self.write_snapshot();
+                }
                 self.curr_snapshot = Some(snapshot);
                 if !is_connected {
                     self.label = 0;
-                    self.write_timeline_label();
-
+                    if self.save {
+                        self.write_timeline_label();
+                    }
                     self.curr_timeline_id += 1;
                 }
             }
@@ -162,7 +167,7 @@ mod tests {
         config_fields.insert("timeline_data_dir", "data/timelines");
         config_fields.insert("timeline_label_dir", "data");
 
-        let mut timeline = Timeline::new(config_fields);
+        let mut timeline = Timeline::new(config_fields, true);
 
         let mut G1 = Graph::new();
 
