@@ -10,16 +10,19 @@ use std::collections::HashMap;
 /// # Returns
 ///
 /// * `Vec<Vec<f64>>` - an adjacency matrix
-pub fn convert_to_adj_matrix(graph: &Graph) -> Vec<Vec<f64>> {
+pub fn convert_to_adj_matrix(graph: &Graph) -> (Vec<Vec<f64>>, HashMap<usize, String>) {
     let mut adj_matrix: Vec<Vec<f64>> = Vec::new();
+
     let nodes = graph.get_nodes();
     let edges = graph.get_edges();
 
     let mut ordering_counter = 0 as usize;
     let mut node_id_to_int = HashMap::new();
+    let mut int_to_node_id = HashMap::new();
 
     for node in nodes.clone() {
         node_id_to_int.insert(node.name.clone(), ordering_counter);
+        int_to_node_id.insert(ordering_counter, node.name.clone());
         ordering_counter += 1;
     }
 
@@ -44,7 +47,7 @@ pub fn convert_to_adj_matrix(graph: &Graph) -> Vec<Vec<f64>> {
         adj_matrix[*v_id][*u_id] = weight;
     }
 
-    return adj_matrix;
+    return (adj_matrix, int_to_node_id);
 }
 
 #[cfg(test)]
@@ -91,7 +94,7 @@ mod tests {
         let b_d = Edge::new(b_idx, d_idx, 0.6);
         G1.add_edge_from_struct(b_d);
 
-        let adj_matrix = convert_to_adj_matrix(&G1);
+        let (adj_matrix, int_to_node_if) = convert_to_adj_matrix(&G1);
 
         // print out the adjacency matrix
         for row in adj_matrix {
