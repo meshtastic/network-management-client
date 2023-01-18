@@ -24,6 +24,7 @@ impl Timeline {
     /// # Arguments
     ///
     /// * `config_fields` - a HashMap containing the config fields: timeline_data_dir (location of data/timelines) and timeline_label_dir (location of data)
+    /// * `is_save` - a boolean indicating whether the timeline should be saved or not
     ///
     /// # Returns
     ///
