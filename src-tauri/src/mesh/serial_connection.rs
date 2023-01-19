@@ -183,8 +183,14 @@ impl MeshConnection for SerialConnection {
             protobufs::from_radio::PayloadVariant::Packet(p) => {
                 device_updated = SerialConnection::handle_mesh_packet(p, device).await?;
             }
+            protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
+                // println!("Queue status data: {:#?}", q);
+            }
             protobufs::from_radio::PayloadVariant::Rebooted(_r) => {
                 // println!("Rebooted data: {:#?}", r);
+            }
+            protobufs::from_radio::PayloadVariant::XmodemPacket(_p) => {
+                // println!("Xmodem packet: {:#?}", p);
             }
         };
 
