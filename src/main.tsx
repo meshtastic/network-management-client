@@ -5,7 +5,7 @@ import { listen } from "@tauri-apps/api/event";
 import { BrowserRouter } from "react-router-dom";
 
 import { Provider as AlertProvider } from "react-alert";
-import AlertTemplate from "react-alert-template-basic";
+import AlertTemplate from "react-alert-template-mui";
 
 import App from "@app/App";
 import { store } from "@store/index";

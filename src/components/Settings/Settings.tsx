@@ -1,21 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, FormEventHandler } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
+import { selectActiveNode } from "@features/device/deviceSelectors";
+
+// Function to convert decimal MAC address to hex
+function convertMacAddr(macAddr: number[]) {
+  let result = macAddr[0].toString(16);
+
+  for (let i = 1; i < macAddr.length; i = i + 1) {
+    const item = macAddr[i].toString(16);
+    result = result + ":" + item;
+  }
+  return result.toUpperCase();
+}
+
 const Settings = () => {
+  // Allows for navigation upon pressing "x"
   const navigateTo = useNavigate();
 
-  const [deviceID, setDeviceID] = useState("Default Device ID");
-  const [deviceName, setDeviceName] = useState("Mr. Meshtastic");
-  const [deviceNickname, setDeviceNickname] = useState("MRM");
+  // Type: Meshnode. (The currently active one)
+  const activeNode = useSelector(selectActiveNode());
 
-  const handleSubmit = (e) => {
+  // Functions to set device info. Forbidden non-null suppressed, but I checked if a device is connected.
+  const [deviceID, setDeviceID] = useState(
+    activeNode ? activeNode.data.user!.id : "No device selected"
+  );
+  const [deviceName, setDeviceName] = useState(
+    activeNode ? activeNode.data.user!.longName : "No device selected"
+  );
+  const [deviceNickname, setDeviceNickname] = useState(
+    activeNode ? activeNode.data.user!.shortName : "No device selected"
+  );
+
+  // MAC, Hardware, and Licensing. Even though they are not displayed when null, the check prevents an error on assignment
+  const mac = activeNode
+    ? convertMacAddr(activeNode.data.user!.macaddr)
+    : "No device selected";
+  const hwModel = activeNode
+    ? activeNode.data.user!.hwModel
+    : "No device selected";
+  const isLicensed = activeNode
+    ? activeNode.data.user!.isLicensed
+    : "No device selected";
+
+  // Submits the form. Triggered by pressing the save button
+  const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    const deviceInfoTest = { deviceID, deviceNickname, deviceName };
-    console.log(deviceInfoTest);
   };
 
+  // Render the popup.
   return (
     // Create darker screen
     <div className="drop-shadow font-sans h-screen bg-black/50 z-50 pl-[15%] pt-[3%]">
@@ -40,7 +77,6 @@ const Settings = () => {
         <div className="text-sm flex justify-center">
           Note: This is just the UI, and is not currently connected to backend
         </div>
-
         {/* Make a form where we put the options */}
         <div className="overflow-y-scroll h-4/5 mt-2">
           <form onSubmit={handleSubmit}>
@@ -53,7 +89,7 @@ const Settings = () => {
                 label="Unique preset identifier for this device."
                 value={deviceID}
                 onChange={(e) => setDeviceID(e.target.value)}
-                disabled
+                disabled={true}
               />
             </div>
             <label className="flex pl-[4%] pt-[6%] pl-2 text-xl">
@@ -68,6 +104,7 @@ const Settings = () => {
                 label="Personalised name for this device."
                 value={deviceName}
                 onChange={(e) => setDeviceName(e.target.value)}
+                disabled={!activeNode}
               />
             </div>
             <label className="flex pl-[4%] pt-[6%] pl-2 text-xl">
@@ -84,8 +121,23 @@ const Settings = () => {
                 minLength={1}
                 value={deviceNickname}
                 onChange={(e) => setDeviceNickname(e.target.value)}
+                disabled={!activeNode}
               />
             </div>
+            {activeNode ? (
+              <div>
+                <div className="flex pl-[4%] pt-[6%] pl-2 text-base justify-center">
+                  Details:
+                </div>
+                <div className="text-sm pl-[4%]">MAC Address: {mac}</div>
+                <div className="text-sm pl-[4%]">Hardware Model: {hwModel}</div>
+                <div className="text-sm pl-[4%]">
+                  Licensed?: {isLicensed ? "Yes" : "No"}
+                </div>
+              </div>
+            ) : (
+              <div></div>
+            )}
             {/* Meshtastic Web Client has two more options - MAC Address and Hardware type. Since both are not changeable, we will not make the UI for these. */}
             <div className="flex justify-center pt-[6%] pb-[3%]">
               <button
