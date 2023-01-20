@@ -151,9 +151,11 @@ impl Timeline {
     }
 
     pub fn conclude_timeline(&mut self) {
-        self.write_snapshot();
-        self.label = 1;
-        self.write_timeline_label();
+        if self.save {
+            self.write_snapshot();
+            self.label = 1;
+            self.write_timeline_label();
+        }
     }
 }
 
@@ -170,7 +172,7 @@ mod tests {
         config_fields.insert("timeline_data_dir", "data/timelines");
         config_fields.insert("timeline_label_dir", "data");
 
-        let mut timeline = Timeline::new(config_fields, true);
+        let mut timeline = Timeline::new(config_fields, false);
 
         let mut G1 = Graph::new();
 
