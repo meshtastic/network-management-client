@@ -96,7 +96,34 @@ impl Graph {
         let node1_idx = self.get_node_idx(node1);
         let node2_idx = self.get_node_idx(node2);
 
-        return self.edge_idx_map.contains_key(&(node1_idx, node2_idx));
+        return self.edge_idx_map.contains_key(&(node1_idx, node2_idx))
+            && self
+                .edge_idx_map
+                .get(&(node1_idx, node2_idx))
+                .unwrap()
+                .len()
+                > 0;
+    }
+
+    /// Returns the edge between two nodes
+    ///
+    /// # Arguments
+    ///
+    /// * `node1` - Name of the first node
+    /// * `node2` - Name of the second node
+    ///
+    /// # Returns
+    ///
+    /// * `Option<Edge>` - The edge between the two nodes if it exists
+    pub fn get_edge(&mut self, node1: String, node2: String) -> Option<Edge> {
+        if self.contains_edge(node1.clone(), node2.clone()) {
+            let node1_idx = self.get_node_idx(node1);
+            let node2_idx = self.get_node_idx(node2);
+
+            let edge_idx = self.edge_idx_map.get(&(node1_idx, node2_idx)).unwrap()[0];
+            return Some(self.g.edge_weight(edge_idx).unwrap().clone());
+        }
+        None
     }
 
     /// Adds the edge to the graph and insert the edge index into the edge_idx_map
