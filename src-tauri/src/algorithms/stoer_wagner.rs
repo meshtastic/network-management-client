@@ -2,8 +2,9 @@
 
 use std::collections::HashMap;
 
-use crate::aux_data_structures::{
-    binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
+use crate::{
+    aux_data_structures::{binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph},
+    graph::edge::Edge,
 };
 
 pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
@@ -64,10 +65,7 @@ pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Option<Cut> {
     }
 }
 
-pub fn recover_mincut(
-    graph: &mut StoerWagnerGraph,
-    all_nodes: Vec<String>,
-) -> (Vec<String>, Vec<String>) {
+pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> Vec<Edge> {
     let mut parent_map = HashMap::new();
 
     for node in all_nodes {
@@ -81,10 +79,24 @@ pub fn recover_mincut(
     let s = keys[0];
     let t = keys[1];
 
-    return (
-        (*parent_map.get(s).unwrap().clone()).to_vec(),
-        (*parent_map.get(t).unwrap().clone()).to_vec(),
-    );
+    let s_cut = parent_map.get(s).unwrap().clone();
+    let t_cut = parent_map.get(t).unwrap().clone();
+
+    let mut st_cut_edges = Vec::new();
+
+    for node_s in s_cut {
+        for node_t in &t_cut {
+            let edge = graph.graph.get_edge(node_s.clone(), node_t.clone());
+            match edge {
+                Some(e) => {
+                    st_cut_edges.push(e.clone());
+                }
+                None => {}
+            }
+        }
+    }
+
+    return st_cut_edges;
 }
 
 // Create a unit test for the stoer-wagner algorithm
@@ -133,20 +145,12 @@ mod tests {
 
         let graph_sw = &mut StoerWagnerGraph::new(g.clone());
         let _mincut = stoer_wagner(graph_sw).unwrap();
-
-        println!("Weight of mincut: {}\n", _mincut.get_weight());
+        assert_eq!(_mincut.get_weight(), 1.0);
 
         let nodes = vec![u, v, w, x, y, z, a, b];
-        let (s, t) = recover_mincut(graph_sw, nodes);
+        let mincut_edges = recover_mincut(graph_sw, nodes);
 
-        let mut mincut_edges: Vec<String> = Vec::new();
-
-        // print nodes in s
-        println!("Nodes in s: {:?}\n", s);
-        println!("Nodes in t: {:?}\n", t);
-
-        assert!(s.len() + t.len() == 8);
-        assert!(s.iter().all(|x| !t.contains(x)));
+        assert_eq!(mincut_edges.len(), 1);
 
         for _ in 0..100 {
             let graph_sw = &mut StoerWagnerGraph::new(g.clone());
@@ -161,10 +165,6 @@ mod tests {
             }
         }
 
-        println!(
-            "Correct mincut weight count: {}",
-            correct_mincut_weight_count
-        );
         assert_eq!(correct_mincut_weight_count, 100);
     }
 }
