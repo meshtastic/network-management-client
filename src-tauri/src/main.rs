@@ -177,7 +177,7 @@ async fn send_text(
 
     device.add_message(mesh::device::TextPacket {
         packet: protobufs::MeshPacket {
-            rx_time: mesh::device::get_current_time_u32(),
+            rx_time: mesh::device::helpers::get_current_time_u32(),
             channel,
             ..Default::default()
         },

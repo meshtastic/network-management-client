@@ -202,7 +202,7 @@ impl MeshConnection for SerialConnection {
             protobufs::from_radio::PayloadVariant::Channel(c) => {
                 device.add_channel(device::MeshChannel {
                     config: c,
-                    last_interaction: device::get_current_time_u32(),
+                    last_interaction: device::helpers::get_current_time_u32(),
                     messages: vec![],
                 });
                 device_updated = true;
