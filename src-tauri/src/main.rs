@@ -58,6 +58,10 @@ async fn connect_to_serial_port(
         .connect(port_name, 115_200)
         .expect("Could not connect to serial port at 115_200 baud");
 
+    connection
+        .configure(connection.config_id)
+        .expect("Could not configure serial device");
+
     let mut decoded_listener = connection
         .on_decoded_packet
         .as_ref()

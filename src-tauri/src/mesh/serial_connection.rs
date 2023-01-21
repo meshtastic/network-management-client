@@ -26,13 +26,13 @@ pub struct SerialConnection {
     pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
     pub my_node_info: Option<protobufs::MyNodeInfo>,
     write_input_tx: Option<sync::mpsc::Sender<Vec<u8>>>,
-    config_id: u32,
+    pub config_id: u32,
 }
 
 #[async_trait]
 pub trait MeshConnection {
     fn new(config_id: u32) -> Self;
-    fn configure(&mut self) -> Result<(), Box<dyn Error>>;
+    fn configure(&mut self, config_id: u32) -> Result<(), Box<dyn Error>>;
 
     fn send_text(
         &mut self,
@@ -83,11 +83,9 @@ impl MeshConnection for SerialConnection {
         }
     }
 
-    fn configure(&mut self) -> Result<(), Box<dyn Error>> {
+    fn configure(&mut self, config_id: u32) -> Result<(), Box<dyn Error>> {
         let to_radio = protobufs::ToRadio {
-            payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(
-                self.config_id,
-            )),
+            payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),
         };
 
         let mut packet_buf: Vec<u8> = vec![];
@@ -529,8 +527,6 @@ impl SerialConnection {
         });
 
         thread::sleep(Duration::from_millis(200)); // Device stability
-
-        self.configure()?;
 
         Ok((
             serial_write_handle,
