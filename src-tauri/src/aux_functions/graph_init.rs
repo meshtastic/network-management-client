@@ -55,16 +55,18 @@ pub fn load_graph(packets: Vec<NeighborInfo>, mut loc_hashmap: HashMap<u32, Mesh
                 neighbor_position.longitude_i,
                 neighbor_position.altitude,
             );
-            // If a previous snr exists, take it if it's timestamp is more recent
+            // If we have previously seen the snr for this edge, use it if its timestamp is more recent
             let mut radio_quality = neighbor.snr;
             let edge_exists = snr_hashmap.contains_key(&(neighbor.id, packet.id));
             if edge_exists {
                 let alternate_snr = snr_hashmap.get_mut(&(neighbor.id, packet.id)).unwrap().0;
                 let alternate_timestamp = snr_hashmap.get_mut(&(neighbor.id, packet.id)).unwrap().1;
                 if neighbor.timestamp <= alternate_timestamp {
+                    // Use the new snr
                     snr_hashmap
                         .insert((neighbor.id, packet.id), (neighbor.snr, neighbor.timestamp));
                 } else {
+                    // Use the old snr
                     radio_quality = alternate_snr;
                 }
             } else {
@@ -115,6 +117,8 @@ fn calculate_converted_distance(x: i32, y: i32, z: i32, nbr_x: i32, nbr_y: i32, 
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use super::*;
 
     fn generate_zeroed_position() -> protobufs::Position {
@@ -275,5 +279,124 @@ mod tests {
         assert_eq!(graph.get_order(), 4);
         // Check that the graph has the correct number of edges
         assert_eq!(graph.get_size(), 12);
+    }
+
+    #[test]
+    fn test_prioritize_earlier_snr() {
+        let neighbor_1 = Neighbor {
+            id: 1,
+            timestamp: 100,
+            snr: 0.1,
+        };
+        let neighbor_2 = Neighbor {
+            id: 2,
+            timestamp: 0,
+            snr: 0.9,
+        };
+        let neighbor_3 = Neighbor {
+            id: 3,
+            timestamp: 0,
+            snr: 1.0,
+        };
+        let neighbor_4 = Neighbor {
+            id: 4,
+            timestamp: 0,
+            snr: 1.0,
+        };
+        let neighbor_info_1 = NeighborInfo {
+            id: 1,
+            timestamp: 0,
+            neighbors: vec![neighbor_2.clone(), neighbor_3.clone(), neighbor_4.clone()],
+        };
+        let neighbor_info_2: NeighborInfo = NeighborInfo {
+            id: 2,
+            timestamp: 0,
+            neighbors: vec![neighbor_1.clone(), neighbor_3.clone(), neighbor_4.clone()],
+        };
+        let neighbor_info_3: NeighborInfo = NeighborInfo {
+            id: 3,
+            timestamp: 0,
+            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_4.clone()],
+        };
+        let neighbor_info_4: NeighborInfo = NeighborInfo {
+            id: 4,
+            timestamp: 0,
+            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_3.clone()],
+        };
+        let meshnode_1: MeshNode = MeshNode {
+            device_metrics: vec![],
+            environment_metrics: vec![],
+            data: protobufs::NodeInfo {
+                num: 1,
+                user: Some(generate_test_user()),
+                position: Some(generate_zeroed_position()),
+                snr: 0.0,
+                last_heard: 0,
+                device_metrics: Some(generate_zeroed_device_metrics()),
+            },
+        };
+        let meshnode_2: MeshNode = MeshNode {
+            device_metrics: vec![],
+            environment_metrics: vec![],
+            data: protobufs::NodeInfo {
+                num: 2,
+                user: Some(generate_test_user()),
+                position: Some(generate_zeroed_position()),
+                snr: 0.0,
+                last_heard: 0,
+                device_metrics: Some(generate_zeroed_device_metrics()),
+            },
+        };
+        let meshnode_3 = MeshNode {
+            device_metrics: vec![],
+            environment_metrics: vec![],
+            data: protobufs::NodeInfo {
+                num: 3,
+                user: Some(generate_test_user()),
+                position: Some(generate_zeroed_position()),
+                snr: 0.0,
+                last_heard: 0,
+                device_metrics: Some(generate_zeroed_device_metrics()),
+            },
+        };
+        let meshnode_4 = MeshNode {
+            device_metrics: vec![],
+            environment_metrics: vec![],
+            data: protobufs::NodeInfo {
+                num: 4,
+                user: Some(generate_test_user()),
+                position: Some(generate_zeroed_position()),
+                snr: 0.0,
+                last_heard: 0,
+                device_metrics: Some(generate_zeroed_device_metrics()),
+            },
+        };
+        let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
+        loc_hashmap.insert(1, meshnode_1);
+        loc_hashmap.insert(2, meshnode_2);
+        loc_hashmap.insert(3, meshnode_3);
+        loc_hashmap.insert(4, meshnode_4);
+        let mut graph = load_graph(
+            vec![
+                neighbor_info_1,
+                neighbor_info_2,
+                neighbor_info_3,
+                neighbor_info_4,
+            ],
+            loc_hashmap,
+        );
+        // Check that the graph has the correct number of nodes
+        assert_eq!(graph.get_order(), 4);
+        // Check that the graph has the correct number of edges
+        assert_eq!(graph.get_size(), 12);
+        // Assert that the 1-2 edge is the correct (smaller) SNR
+        let first_edge_weight = graph.get_edge_weight(
+            neighbor_1.id.to_string(),
+            neighbor_2.id.to_string(),
+            None,
+            Some(true),
+        );
+        println!("Edge 1-2: {:?}", first_edge_weight);
+        assert_eq!(first_edge_weight, neighbor_1.snr);
     }
 }
