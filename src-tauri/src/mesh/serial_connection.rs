@@ -14,24 +14,45 @@ use tokio::sync::broadcast;
 use super::device;
 use app::protobufs;
 
+#[derive(Clone, Copy, Debug, Default)]
+pub enum PacketDestination {
+    SELF,
+    #[default]
+    BROADCAST,
+    Node(u32),
+}
+
 pub struct SerialConnection {
     pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
+    pub my_node_info: Option<protobufs::MyNodeInfo>,
     write_input_tx: Option<sync::mpsc::Sender<Vec<u8>>>,
     config_id: u32,
 }
 
 #[async_trait]
 pub trait MeshConnection {
-    fn new() -> Self;
+    fn new(config_id: u32) -> Self;
     fn configure(&mut self) -> Result<(), Box<dyn Error>>;
 
-    fn send_text(&mut self, text: impl Into<String>, channel: u32) -> Result<(), Box<dyn Error>>;
+    fn send_text(
+        &mut self,
+        text: impl Into<String>,
+        destination: PacketDestination,
+        want_ack: bool,
+        channel: u32,
+    ) -> Result<(), Box<dyn Error>>;
+
     fn send_packet(
         &mut self,
         byte_data: Vec<u8>,
         port_num: protobufs::PortNum,
-        destination: u32,
-        channel: u32,
+        destination: PacketDestination,
+        channel: u32, // TODO this should be scoped to 0-7
+        want_ack: bool,
+        want_response: bool,
+        echo_response: bool,
+        reply_id: Option<u32>,
+        emoji: Option<u32>,
     ) -> Result<(), Box<dyn Error>>;
     fn send_raw(&mut self, data: Vec<u8>) -> Result<(), Box<dyn Error>>;
     fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), Box<dyn Error>>;
@@ -53,11 +74,12 @@ pub trait MeshConnection {
 
 #[async_trait]
 impl MeshConnection for SerialConnection {
-    fn new() -> Self {
+    fn new(config_id: u32) -> Self {
         SerialConnection {
             write_input_tx: None,
+            my_node_info: None,
             on_decoded_packet: None,
-            config_id: SerialConnection::generate_rand_id(),
+            config_id: config_id,
         }
     }
 
@@ -75,9 +97,26 @@ impl MeshConnection for SerialConnection {
         Ok(())
     }
 
-    fn send_text(&mut self, text: impl Into<String>, channel: u32) -> Result<(), Box<dyn Error>> {
+    fn send_text(
+        &mut self,
+        text: impl Into<String>,
+        destination: PacketDestination,
+        want_ack: bool,
+        channel: u32,
+    ) -> Result<(), Box<dyn Error>> {
         let byte_data = text.into().into_bytes();
-        self.send_packet(byte_data, protobufs::PortNum::TextMessageApp, 0, channel)?;
+        self.send_packet(
+            byte_data,
+            protobufs::PortNum::TextMessageApp,
+            destination,
+            channel,
+            want_ack,
+            true,
+            false,
+            None,
+            None,
+        )?;
+
         Ok(())
     }
 
@@ -85,32 +124,43 @@ impl MeshConnection for SerialConnection {
         &mut self,
         byte_data: Vec<u8>,
         port_num: protobufs::PortNum,
-        destination: u32,
-        channel: u32,
+        destination: PacketDestination,
+        channel: u32, // TODO this should be scoped to 0-7
+        want_ack: bool,
+        want_response: bool,
+        echo_response: bool,
+        reply_id: Option<u32>,
+        emoji: Option<u32>,
     ) -> Result<(), Box<dyn Error>> {
+        let packet_destination: u32 = match destination {
+            PacketDestination::SELF => self.my_node_info.as_ref().unwrap().my_node_num,
+            PacketDestination::BROADCAST => 0xffffffff,
+            PacketDestination::Node(id) => id,
+        };
+
         let packet = protobufs::MeshPacket {
             payload_variant: Some(protobufs::mesh_packet::PayloadVariant::Decoded(
                 protobufs::Data {
                     portnum: port_num as i32,
                     payload: byte_data,
-                    want_response: false,
-                    dest: destination,
                     source: self.config_id,
-                    request_id: 0,
-                    reply_id: 0,
-                    emoji: 0,
+                    want_response,
+                    emoji: emoji.unwrap_or_default(),
+                    dest: 0,       // TODO change this
+                    request_id: 0, // TODO change this
+                    reply_id: 0,   // TODO change this
                 },
             )),
-            rx_time: 0,           // not transmitted
-            rx_snr: 0.0,          // not transmitted
-            hop_limit: 0,         // not transmitted
-            priority: 0,          // not transmitted
-            rx_rssi: 0,           // not transmitted
-            delayed: 0,           // not transmitted
-            from: self.config_id, // random
-            to: 4294967295,       // broadcast
-            id: 0,                // random
-            want_ack: false,
+            rx_time: 0,   // * not transmitted
+            rx_snr: 0.0,  // * not transmitted
+            hop_limit: 0, // * not transmitted
+            priority: 0,  // * not transmitted
+            rx_rssi: 0,   // * not transmitted
+            delayed: 0,   // * not transmitted
+            from: self.my_node_info.as_ref().unwrap().my_node_num,
+            to: packet_destination,
+            id: SerialConnection::generate_rand_id(),
+            want_ack,
             channel,
         };
 

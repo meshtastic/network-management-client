@@ -53,7 +53,7 @@ async fn connect_to_serial_port(
     mesh_device: tauri::State<'_, ActiveMeshDevice>,
     serial_connection: tauri::State<'_, ActiveSerialConnection>,
 ) -> Result<(), String> {
-    let mut connection = SerialConnection::new();
+    let mut connection = SerialConnection::new(SerialConnection::generate_rand_id());
     connection
         .connect(port_name, 115_200)
         .expect("Could not connect to serial port at 115_200 baud");
@@ -156,7 +156,12 @@ async fn send_text(
     let mut guard = serial_connection.inner.lock().await;
     let connection = guard.as_mut().expect("Connection not initialized");
     connection
-        .send_text(text.clone(), 0)
+        .send_text(
+            text.clone(),
+            mesh::serial_connection::PacketDestination::BROADCAST,
+            true,
+            0,
+        )
         .map_err(|e| e.to_string())?;
 
     let mut device_guard = mesh_device.inner.lock().await;
