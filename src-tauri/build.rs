@@ -2,7 +2,7 @@ use prost_build;
 use walkdir::WalkDir;
 
 fn main() -> std::io::Result<()> {
-    let protobufs_dir = "protobufs/meshtastic/";
+    let protobufs_dir = "protobufs/";
     println!("cargo:rerun-if-changed={}", protobufs_dir);
 
     // Allows protobuf compilation without installing the `protoc` binary
