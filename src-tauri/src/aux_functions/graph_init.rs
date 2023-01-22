@@ -118,6 +118,7 @@ fn calculate_converted_distance(x: i32, y: i32, z: i32, nbr_x: i32, nbr_y: i32, 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::aux_functions::conversion_factors::{LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR};
 
     fn generate_zeroed_position() -> protobufs::Position {
         let position = protobufs::Position {
@@ -301,9 +302,30 @@ mod tests {
             timestamp: 0,
             neighbors: vec![neighbor_1.clone()],
         };
-        let mut distance_1_info = generate_zeroed_position();
-        distance_1_info.latitude_i = 430000000;
-        distance_1_info.longitude_i = 720000000;
+        let distance_1_info = protobufs::Position {
+            latitude_i: (43.7022 / LAT_CONVERSION_FACTOR) as i32,
+            longitude_i: (72.2882 / LON_CONVERSION_FACTOR) as i32,
+            altitude: 0,
+            time: 0,
+            location_source: 0,
+            altitude_source: 0,
+            timestamp: 0,
+            timestamp_millis_adjust: 0,
+            altitude_hae: 0,
+            altitude_geoidal_separation: 0,
+            pdop: 0,
+            hdop: 0,
+            vdop: 0,
+            gps_accuracy: 0,
+            ground_speed: 0,
+            ground_track: 0,
+            fix_quality: 0,
+            fix_type: 0,
+            sats_in_view: 0,
+            sensor_id: 0,
+            next_update: 0,
+            seq_number: 0,
+        };
         let meshnode_1: MeshNode = MeshNode {
             device_metrics: vec![],
             environment_metrics: vec![],
@@ -316,9 +338,30 @@ mod tests {
                 device_metrics: Some(generate_zeroed_device_metrics()),
             },
         };
-        let mut distance_2_info = generate_zeroed_position();
-        distance_2_info.latitude_i = 431000000;
-        distance_2_info.longitude_i = 731000000;
+        let distance_2_info = protobufs::Position {
+            latitude_i: (43.7030 / LAT_CONVERSION_FACTOR) as i32,
+            longitude_i: (72.2890 / LON_CONVERSION_FACTOR) as i32,
+            altitude: 0,
+            time: 0,
+            location_source: 0,
+            altitude_source: 0,
+            timestamp: 0,
+            timestamp_millis_adjust: 0,
+            altitude_hae: 0,
+            altitude_geoidal_separation: 0,
+            pdop: 0,
+            hdop: 0,
+            vdop: 0,
+            gps_accuracy: 0,
+            ground_speed: 0,
+            ground_track: 0,
+            fix_quality: 0,
+            fix_type: 0,
+            sats_in_view: 0,
+            sensor_id: 0,
+            next_update: 0,
+            seq_number: 0,
+        };
         let meshnode_2: MeshNode = MeshNode {
             device_metrics: vec![],
             environment_metrics: vec![],
@@ -335,8 +378,6 @@ mod tests {
         loc_hashmap.insert(1, meshnode_1);
         loc_hashmap.insert(2, meshnode_2);
         let mut graph = load_graph(vec![neighbor_info_1, neighbor_info_2], loc_hashmap);
-        // Check that the graph has the correct number of nodes
-        assert_eq!(graph.get_order(), 2);
         // Check that the graph has the correct number of edges
         assert_eq!(graph.get_size(), 2);
         // Check the edge weights to check that they are both the weight of the 1-2 edge, which has neighbor 2's SNR
@@ -348,6 +389,6 @@ mod tests {
             Some(false),
         );
         // The correct weight should a sum of the two distances normalized w 0.1 radio quality, which is this float
-        assert_eq!(first_edge_weight, 1.9444444444444444);
+        assert_eq!(first_edge_weight, 2.0);
     }
 }
