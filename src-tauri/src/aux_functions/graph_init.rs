@@ -80,6 +80,11 @@ pub fn load_graph(packets: Vec<NeighborInfo>, mut loc_hashmap: HashMap<u32, Mesh
                         (neighbor_packet.snr, neighbor_packet.timestamp),
                     );
                 }
+            } else {
+                snr_hashmap.insert(
+                    as_key(node_id, neighbor_id),
+                    (neighbor_packet.snr, neighbor_packet.timestamp),
+                );
             }
         }
     }
@@ -389,6 +394,6 @@ mod tests {
             Some(false),
         );
         // The correct weight should a sum of the two distances normalized w 0.1 radio quality, which is this float
-        assert_eq!(first_edge_weight, 2.0);
+        assert_eq!(first_edge_weight, 1.0);
     }
 }
