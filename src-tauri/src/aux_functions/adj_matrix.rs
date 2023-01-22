@@ -10,21 +10,24 @@ use std::collections::HashMap;
 /// # Returns
 ///
 /// * `Vec<Vec<f64>>` - an adjacency matrix
-pub fn convert_to_adj_matrix(graph: &Graph) -> Vec<Vec<f64>> {
-    let mut adj_matrix: Vec<Vec<f64>> = Vec::new();
+pub fn convert_to_adj_matrix(graph: &Graph) -> (Vec<Vec<f64>>, HashMap<usize, String>) {
+    let mut adj_matrix = Vec::new();
+
     let nodes = graph.get_nodes();
     let edges = graph.get_edges();
 
     let mut ordering_counter = 0 as usize;
     let mut node_id_to_int = HashMap::new();
+    let mut int_to_node_id = HashMap::new();
 
-    for node in nodes.clone() {
+    for node in &nodes {
         node_id_to_int.insert(node.name.clone(), ordering_counter);
+        int_to_node_id.insert(ordering_counter, node.name.clone());
         ordering_counter += 1;
     }
 
     for _ in 0..nodes.len() {
-        let mut row: Vec<f64> = Vec::new();
+        let mut row = Vec::new();
         for _ in 0..nodes.len() {
             row.push(0.0);
         }
@@ -44,7 +47,7 @@ pub fn convert_to_adj_matrix(graph: &Graph) -> Vec<Vec<f64>> {
         adj_matrix[*v_id][*u_id] = weight;
     }
 
-    return adj_matrix;
+    return (adj_matrix, int_to_node_id);
 }
 
 #[cfg(test)]
@@ -58,10 +61,10 @@ mod tests {
         let mut G1 = Graph::new();
 
         // Create a few nodes and edges and add to graph
-        let a: String = "a".to_string();
-        let b: String = "b".to_string();
-        let c: String = "c".to_string();
-        let d: String = "d".to_string();
+        let a = "a".to_string();
+        let b = "b".to_string();
+        let c = "c".to_string();
+        let d = "d".to_string();
 
         let mut a_node = Node::new(a.clone());
         a_node.set_gps(-72.28486, 43.71489, 1.0);
@@ -91,14 +94,17 @@ mod tests {
         let b_d = Edge::new(b_idx, d_idx, 0.6);
         G1.add_edge_from_struct(b_d);
 
-        let adj_matrix = convert_to_adj_matrix(&G1);
+        let (adj_matrix, int_to_node_if) = convert_to_adj_matrix(&G1);
 
-        // print out the adjacency matrix
-        for row in adj_matrix {
-            for col in row {
-                print!("{} ", col);
-            }
-            println!();
-        }
+        // assert that the adjacency matrix is correct
+        assert_eq!(
+            adj_matrix,
+            vec![
+                vec![0.0, 0.51, 0.39, 0.0],
+                vec![0.51, 0.0, 0.4, 0.6],
+                vec![0.39, 0.4, 0.0, 0.0],
+                vec![0.0, 0.6, 0.0, 0.0]
+            ]
+        );
     }
 }
