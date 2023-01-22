@@ -3,7 +3,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
 
+use self::helpers::generate_rand_id;
+
 pub mod connection;
+pub mod handlers;
 pub mod helpers;
 pub mod state;
 
@@ -133,7 +136,7 @@ pub struct ChannelMessageWithAck {
 #[ts(rename_all = "camelCase")]
 #[ts(export)]
 pub struct MeshDevice {
-    pub id: u32,                                      // unique id of device
+    pub config_id: u32,                               // unique id of device
     pub ready: bool,                                  // is device configured to participate in mesh
     pub status: MeshDeviceStatus,                     // current config status of device
     pub channels: HashMap<u32, MeshChannel>,          // channels device is able to access
@@ -143,4 +146,15 @@ pub struct MeshDevice {
     pub region_unset: bool,            // flag for whether device has an unset LoRa region
     pub device_metrics: protobufs::DeviceMetrics, // information about functioning of device (e.g. battery level)
     pub waypoints: HashMap<u32, protobufs::Waypoint>, // updatable GPS positions managed by this device
+}
+
+impl MeshDevice {
+    pub fn new() -> Self {
+        MeshDevice {
+            config_id: generate_rand_id(),
+            ready: false,
+            region_unset: true,
+            ..Default::default()
+        }
+    }
 }

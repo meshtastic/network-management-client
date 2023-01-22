@@ -1,6 +1,6 @@
+use app::protobufs;
 use async_trait::async_trait;
 use prost::Message;
-use rand::{distributions::Standard, prelude::Distribution, Rng};
 use serialport::SerialPort;
 use std::{
     error::Error,
@@ -11,9 +11,6 @@ use std::{
 };
 use tokio::sync::broadcast;
 
-use super::device;
-use app::protobufs;
-
 #[derive(Clone, Copy, Debug, Default)]
 pub enum PacketDestination {
     SELF,
@@ -22,148 +19,35 @@ pub enum PacketDestination {
     Node(u32),
 }
 
+#[derive(Debug, Default)]
 pub struct SerialConnection {
     pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
     pub my_node_info: Option<protobufs::MyNodeInfo>,
     write_input_tx: Option<sync::mpsc::Sender<Vec<u8>>>,
-    pub config_id: u32,
 }
 
 #[async_trait]
 pub trait MeshConnection {
-    fn new(config_id: u32) -> Self;
+    fn new() -> Self;
     fn configure(&mut self, config_id: u32) -> Result<(), Box<dyn Error>>;
 
-    fn send_text(
-        &mut self,
-        text: impl Into<String>,
-        destination: PacketDestination,
-        want_ack: bool,
-        channel: u32,
-    ) -> Result<(), Box<dyn Error>>;
-
-    fn send_packet(
-        &mut self,
-        byte_data: Vec<u8>,
-        port_num: protobufs::PortNum,
-        destination: PacketDestination,
-        channel: u32, // TODO this should be scoped to 0-7
-        want_ack: bool,
-        want_response: bool,
-        echo_response: bool,
-        reply_id: Option<u32>,
-        emoji: Option<u32>,
-    ) -> Result<(), Box<dyn Error>>;
     fn send_raw(&mut self, data: Vec<u8>) -> Result<(), Box<dyn Error>>;
     fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), Box<dyn Error>>;
-
-    async fn handle_packet_from_radio(
-        variant: app::protobufs::from_radio::PayloadVariant,
-        device: &mut device::MeshDevice,
-    ) -> Result<bool, Box<dyn Error>>;
-
-    async fn handle_mesh_packet(
-        packet: protobufs::MeshPacket,
-        device: &mut device::MeshDevice,
-    ) -> Result<bool, Box<dyn Error>>;
-
-    fn generate_rand_id<T>() -> T
-    where
-        Standard: Distribution<T>;
 }
 
 #[async_trait]
 impl MeshConnection for SerialConnection {
-    fn new(config_id: u32) -> Self {
+    fn new() -> Self {
         SerialConnection {
             write_input_tx: None,
             my_node_info: None,
             on_decoded_packet: None,
-            config_id: config_id,
         }
     }
 
     fn configure(&mut self, config_id: u32) -> Result<(), Box<dyn Error>> {
         let to_radio = protobufs::ToRadio {
             payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),
-        };
-
-        let mut packet_buf: Vec<u8> = vec![];
-        to_radio.encode::<Vec<u8>>(&mut packet_buf)?;
-        self.send_raw(packet_buf)?;
-
-        Ok(())
-    }
-
-    fn send_text(
-        &mut self,
-        text: impl Into<String>,
-        destination: PacketDestination,
-        want_ack: bool,
-        channel: u32,
-    ) -> Result<(), Box<dyn Error>> {
-        let byte_data = text.into().into_bytes();
-        self.send_packet(
-            byte_data,
-            protobufs::PortNum::TextMessageApp,
-            destination,
-            channel,
-            want_ack,
-            true,
-            false,
-            None,
-            None,
-        )?;
-
-        Ok(())
-    }
-
-    fn send_packet(
-        &mut self,
-        byte_data: Vec<u8>,
-        port_num: protobufs::PortNum,
-        destination: PacketDestination,
-        channel: u32, // TODO this should be scoped to 0-7
-        want_ack: bool,
-        want_response: bool,
-        echo_response: bool,
-        reply_id: Option<u32>,
-        emoji: Option<u32>,
-    ) -> Result<(), Box<dyn Error>> {
-        let packet_destination: u32 = match destination {
-            PacketDestination::SELF => self.my_node_info.as_ref().unwrap().my_node_num,
-            PacketDestination::BROADCAST => 0xffffffff,
-            PacketDestination::Node(id) => id,
-        };
-
-        let packet = protobufs::MeshPacket {
-            payload_variant: Some(protobufs::mesh_packet::PayloadVariant::Decoded(
-                protobufs::Data {
-                    portnum: port_num as i32,
-                    payload: byte_data,
-                    source: self.config_id,
-                    want_response,
-                    emoji: emoji.unwrap_or_default(),
-                    dest: 0,       // TODO change this
-                    request_id: 0, // TODO change this
-                    reply_id: 0,   // TODO change this
-                },
-            )),
-            rx_time: 0,   // * not transmitted
-            rx_snr: 0.0,  // * not transmitted
-            hop_limit: 0, // * not transmitted
-            priority: 0,  // * not transmitted
-            rx_rssi: 0,   // * not transmitted
-            delayed: 0,   // * not transmitted
-            from: self.my_node_info.as_ref().unwrap().my_node_num,
-            to: packet_destination,
-            id: SerialConnection::generate_rand_id(),
-            want_ack,
-            channel,
-        };
-
-        let to_radio = protobufs::ToRadio {
-            payload_variant: Some(protobufs::to_radio::PayloadVariant::Packet(packet)),
         };
 
         let mut packet_buf: Vec<u8> = vec![];
@@ -190,158 +74,6 @@ impl MeshConnection for SerialConnection {
         port.write(message_buffer)?;
 
         Ok(())
-    }
-
-    async fn handle_packet_from_radio(
-        variant: app::protobufs::from_radio::PayloadVariant,
-        device: &mut device::MeshDevice,
-    ) -> Result<bool, Box<dyn Error>> {
-        let mut device_updated = false;
-
-        match variant {
-            protobufs::from_radio::PayloadVariant::Channel(c) => {
-                device.add_channel(device::MeshChannel {
-                    config: c,
-                    last_interaction: device::helpers::get_current_time_u32(),
-                    messages: vec![],
-                });
-                device_updated = true;
-            }
-            protobufs::from_radio::PayloadVariant::Config(c) => {
-                device.set_config(c.clone());
-                device_updated = true;
-            }
-            protobufs::from_radio::PayloadVariant::ConfigCompleteId(_c) => {
-                // println!("Config complete id data: {:#?}", c);
-            }
-            protobufs::from_radio::PayloadVariant::LogRecord(_l) => {
-                // println!("Log record data: {:#?}", l);
-            }
-            protobufs::from_radio::PayloadVariant::ModuleConfig(_m) => {
-                // println!("Module config data: {:#?}", m);
-            }
-            protobufs::from_radio::PayloadVariant::MyInfo(m) => {
-                device.set_hardware_info(m.clone());
-                device_updated = true;
-            }
-            protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
-                device.add_node_info(n.clone());
-                device_updated = true;
-            }
-            protobufs::from_radio::PayloadVariant::Packet(p) => {
-                device_updated = SerialConnection::handle_mesh_packet(p, device).await?;
-            }
-            protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
-                // println!("Queue status data: {:#?}", q);
-            }
-            protobufs::from_radio::PayloadVariant::Rebooted(_r) => {
-                // println!("Rebooted data: {:#?}", r);
-            }
-            protobufs::from_radio::PayloadVariant::XmodemPacket(_p) => {
-                // println!("Xmodem packet: {:#?}", p);
-            }
-        };
-
-        Ok(device_updated)
-    }
-
-    async fn handle_mesh_packet(
-        packet: protobufs::MeshPacket,
-        device: &mut device::MeshDevice,
-    ) -> Result<bool, Box<dyn Error>> {
-        let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
-        let mut device_updated = false;
-
-        match variant {
-            protobufs::mesh_packet::PayloadVariant::Decoded(data) => match data.portnum() {
-                protobufs::PortNum::AdminApp => {
-                    println!("Admin application not yet supported in Rust");
-                }
-                protobufs::PortNum::AtakForwarder => {
-                    println!("ATAK forwarder not yet supported in Rust");
-                }
-                protobufs::PortNum::AudioApp => {
-                    println!("Audio app not yet supported in Rust");
-                }
-                protobufs::PortNum::IpTunnelApp => {
-                    println!("IP tunnel app not yet supported in Rust");
-                }
-                protobufs::PortNum::NodeinfoApp => {
-                    let data = protobufs::User::decode(data.payload.as_slice())
-                        .expect("Error decoding NodeInfo MeshPacket");
-                    device.add_user(device::UserPacket { packet, data });
-                    device_updated = true;
-                }
-                protobufs::PortNum::PositionApp => {
-                    let data = protobufs::Position::decode(data.payload.as_slice())?;
-                    device.add_position(device::PositionPacket { packet, data });
-                    device_updated = true;
-                }
-                protobufs::PortNum::PrivateApp => {
-                    println!("Private app not yet supported in Rust");
-                }
-                protobufs::PortNum::RangeTestApp => {
-                    println!("Range test app not yet supported in Rust");
-                }
-                protobufs::PortNum::RemoteHardwareApp => {
-                    println!("Remote hardware app not yet supported in Rust");
-                }
-                protobufs::PortNum::ReplyApp => {
-                    println!("Reply app not yet supported in Rust");
-                }
-                protobufs::PortNum::RoutingApp => {
-                    println!("Routing app not yet supported in Rust");
-                }
-                protobufs::PortNum::SerialApp => {
-                    println!("Serial app not yet supported in Rust");
-                }
-                protobufs::PortNum::SimulatorApp => {
-                    println!("Simulator app not yet supported in Rust");
-                }
-                protobufs::PortNum::StoreForwardApp => {
-                    println!("Store forward packets not yet supported in Rust");
-                }
-                protobufs::PortNum::TelemetryApp => {
-                    let data = protobufs::Telemetry::decode(data.payload.as_slice())?;
-                    device.set_device_metrics(device::TelemetryPacket { packet, data });
-                    device_updated = true;
-                }
-                protobufs::PortNum::TextMessageApp => {
-                    let data = String::from_utf8(data.payload)?;
-
-                    device.add_message(device::TextPacket { packet, data });
-                    device_updated = true;
-                }
-                protobufs::PortNum::TextMessageCompressedApp => {
-                    eprintln!("Compressed text data not yet supported in Rust");
-                }
-                protobufs::PortNum::WaypointApp => {
-                    let data = protobufs::Waypoint::decode(data.payload.as_slice())?;
-                    device.add_waypoint(data.clone());
-                    device.add_waypoint_message(device::WaypointPacket { packet, data });
-                    device_updated = true;
-                }
-                protobufs::PortNum::ZpsApp => {
-                    println!("ZPS app not yet supported in Rust");
-                }
-                _ => {
-                    println!("Unknown packet received");
-                }
-            },
-            protobufs::mesh_packet::PayloadVariant::Encrypted(e) => {
-                eprintln!("Encrypted packets not yet supported in Rust: {:#?}", e);
-            }
-        }
-
-        Ok(device_updated)
-    }
-
-    fn generate_rand_id<T>() -> T
-    where
-        Standard: Distribution<T>,
-    {
-        let mut rng = rand::thread_rng();
-        rng.gen::<T>()
     }
 }
 

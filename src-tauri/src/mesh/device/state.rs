@@ -1,6 +1,5 @@
 use app::protobufs;
 
-use super::super::serial_connection::{MeshConnection, SerialConnection};
 use super::helpers::get_current_time_u32;
 use super::{
     ChannelMessagePayload, ChannelMessageWithAck, MeshChannel, MeshDevice, MeshDeviceStatus,
@@ -9,15 +8,6 @@ use super::{
 };
 
 impl MeshDevice {
-    pub fn new() -> Self {
-        MeshDevice {
-            id: SerialConnection::generate_rand_id(),
-            ready: false,
-            region_unset: true,
-            ..Default::default()
-        }
-    }
-
     pub fn set_ready(&mut self, ready: bool) {
         println!("Set ready: {:?}", ready);
         self.ready = ready;
