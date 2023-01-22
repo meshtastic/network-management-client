@@ -3,6 +3,7 @@ mod aux_data_structures;
 mod aux_functions;
 mod graph;
 mod mesh;
+mod meta;
 mod mocks;
 
 use app::protobufs;
