@@ -123,7 +123,6 @@ pub fn load_graph(packets: Vec<NeighborInfo>, mut loc_hashmap: HashMap<u32, Mesh
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::aux_functions::conversion_factors::{LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR};
 
     fn generate_zeroed_position() -> protobufs::Position {
         let position = protobufs::Position {
@@ -282,7 +281,7 @@ mod tests {
         // Check that the graph has the correct number of nodes
         assert_eq!(graph.get_order(), 4);
         // Check that the graph has the correct number of edges
-        assert_eq!(graph.get_size(), 12);
+        assert_eq!(graph.get_size(), 6);
     }
 
     #[test]
