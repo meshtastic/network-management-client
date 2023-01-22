@@ -5,6 +5,7 @@ mod graph;
 mod mesh;
 mod mocks;
 
+use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use std::sync::Arc;
 use tauri::{async_runtime, Manager};
@@ -34,7 +35,9 @@ fn main() {
             get_all_serial_ports,
             connect_to_serial_port,
             disconnect_from_serial_port,
-            send_text
+            send_text,
+            update_device_config,
+            update_device_user
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -176,11 +179,63 @@ async fn send_text(
             text.clone(),
             mesh::serial_connection::PacketDestination::BROADCAST,
             true,
-            0,
+            channel,
         )
         .map_err(|e| e.to_string())?;
 
     dispatch_updated_device(app_handle, device.clone()).map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn update_device_config(
+    config: protobufs::Config,
+    mesh_device: tauri::State<'_, ActiveMeshDevice>,
+    serial_connection: tauri::State<'_, ActiveSerialConnection>,
+) -> Result<(), String> {
+    let mut serial_guard = serial_connection.inner.lock().await;
+    let mut device_guard = mesh_device.inner.lock().await;
+
+    let connection = serial_guard
+        .as_mut()
+        .ok_or("Connection not initialized")
+        .map_err(|e| e.to_string())?;
+
+    let device = device_guard
+        .as_mut()
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device
+        .update_device_config(connection, config)
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn update_device_user(
+    user: protobufs::User,
+    mesh_device: tauri::State<'_, ActiveMeshDevice>,
+    serial_connection: tauri::State<'_, ActiveSerialConnection>,
+) -> Result<(), String> {
+    let mut serial_guard = serial_connection.inner.lock().await;
+    let mut device_guard = mesh_device.inner.lock().await;
+
+    let connection = serial_guard
+        .as_mut()
+        .ok_or("Connection not initialized")
+        .map_err(|e| e.to_string())?;
+
+    let device = device_guard
+        .as_mut()
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device
+        .update_device_user(connection, user)
+        .map_err(|e| e.to_string())?;
 
     Ok(())
 }

@@ -42,6 +42,60 @@ impl MeshDevice {
         Ok(())
     }
 
+    pub fn update_device_config(
+        &mut self,
+        connection: &mut SerialConnection,
+        config: protobufs::Config,
+    ) -> Result<(), Box<dyn Error>> {
+        let config_packet = protobufs::AdminMessage {
+            payload_variant: Some(protobufs::admin_message::PayloadVariant::SetConfig(config)),
+        };
+
+        let byte_data = config_packet.encode_to_vec();
+
+        self.send_packet(
+            connection,
+            byte_data,
+            protobufs::PortNum::AdminApp,
+            PacketDestination::SELF,
+            0,
+            true,
+            true,
+            false,
+            None,
+            None,
+        )?;
+
+        Ok(())
+    }
+
+    pub fn update_device_user(
+        &mut self,
+        connection: &mut SerialConnection,
+        user: protobufs::User,
+    ) -> Result<(), Box<dyn Error>> {
+        let user_packet = protobufs::AdminMessage {
+            payload_variant: Some(protobufs::admin_message::PayloadVariant::SetOwner(user)),
+        };
+
+        let byte_data = user_packet.encode_to_vec();
+
+        self.send_packet(
+            connection,
+            byte_data,
+            protobufs::PortNum::AdminApp,
+            PacketDestination::SELF,
+            0,
+            true,
+            true,
+            false,
+            None,
+            None,
+        )?;
+
+        Ok(())
+    }
+
     pub fn send_packet(
         &mut self,
         connection: &mut SerialConnection,
@@ -56,7 +110,7 @@ impl MeshDevice {
         emoji: Option<u32>,
     ) -> Result<(), Box<dyn Error>> {
         // let own_node_id: u32 = self.my_node_info.as_ref().unwrap().my_node_num;
-        let own_node_id: u32 = 0;
+        let own_node_id: u32 = self.my_node_info.my_node_num;
 
         let packet_destination: u32 = match destination {
             PacketDestination::SELF => own_node_id,

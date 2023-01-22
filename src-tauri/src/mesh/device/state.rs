@@ -59,7 +59,7 @@ impl MeshDevice {
 
     pub fn set_hardware_info(&mut self, info: protobufs::MyNodeInfo) {
         println!("Setting own hardware info: {:?}", info);
-        self.hardware_info = info;
+        self.my_node_info = info;
     }
 
     pub fn set_device_metrics(&mut self, metrics: TelemetryPacket) {
