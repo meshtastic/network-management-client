@@ -1,7 +1,10 @@
 use super::edge_factory::edge_factory;
 use super::take_snapshot::total_distance;
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
-use crate::aux_functions::conversion_factors::*;
+use crate::aux_functions::conversion_factors::{
+    ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
+    LON_CONVERSION_FACTOR,
+};
 use crate::graph::graph_ds::Graph;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
