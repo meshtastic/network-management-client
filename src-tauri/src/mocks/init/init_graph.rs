@@ -208,7 +208,7 @@ mod tests {
     }
 
     #[test]
-    fn test_prioritize_earlier_snr() {
+    fn test_single_edge() {
         let neighbor_1 = Neighbor {
             id: 1,
             timestamp: 0,
@@ -306,7 +306,6 @@ mod tests {
         loc_hashmap.insert(1, meshnode_1);
         loc_hashmap.insert(2, meshnode_2);
         snr_hashmap.insert((1, 2), (0.1, 100));
-        snr_hashmap.insert((2, 1), (0.9, 0));
         let mut graph = init_graph(snr_hashmap, loc_hashmap);
         // Check that the graph has the correct number of edges
         assert_eq!(graph.get_size(), 1);

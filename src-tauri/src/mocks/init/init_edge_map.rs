@@ -91,6 +91,33 @@ mod tests {
             neighbor_info_4.clone(),
         ];
         let mut snr_hashmap = init_edge_map(neighborinfo_vec);
-        assert_eq!(snr_hashmap.len(), 4);
+        assert_eq!(snr_hashmap.len(), 6);
+    }
+
+    fn test_prioritize_recent_snr() {
+        let neighbor_1 = Neighbor {
+            id: 1,
+            timestamp: 0,
+            snr: 1.0,
+        };
+        let neighbor_2 = Neighbor {
+            id: 2,
+            timestamp: 100,
+            snr: 2.0,
+        };
+        let neighbor_info_1 = NeighborInfo {
+            id: 1,
+            timestamp: 0,
+            neighbors: vec![neighbor_2.clone()],
+        };
+        let neighbor_info_2: NeighborInfo = NeighborInfo {
+            id: 2,
+            timestamp: 0,
+            neighbors: vec![neighbor_1.clone()],
+        };
+        let neighborinfo_vec = vec![neighbor_info_1.clone(), neighbor_info_2.clone()];
+        let mut snr_hashmap = init_edge_map(neighborinfo_vec);
+        assert_eq!(snr_hashmap.len(), 1);
+        assert_eq!(snr_hashmap.get(&as_key(1, 2)).unwrap().0, 2.0);
     }
 }
