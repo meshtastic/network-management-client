@@ -121,6 +121,7 @@ pub fn mock_edge_map_from_loc_info(
     nodes: HashMap<u32, MeshNode>,
 ) -> HashMap<(u32, u32), (f64, u64)> {
     //TODO: Implement
+    return HashMap::new();
 }
 
 #[cfg(test)]
@@ -128,10 +129,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_init_three_nodes() {
+    fn test_init_neighborinfo_packets() {
         let neighborinfo = mock_neighborinfo_packets(3, 0.8);
         // run unittests with -- --nocapture to print the structs
         println!("{:?}", neighborinfo);
         assert_eq!(neighborinfo.len(), 3);
+    }
+
+    #[test]
+    fn test_init_meshnode_packets() {
+        let meshnodes = mock_meshnode_packets(3);
+        println!("{:?}", meshnodes);
+        assert_eq!(meshnodes.len(), 3);
     }
 }

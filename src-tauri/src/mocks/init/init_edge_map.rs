@@ -41,4 +41,56 @@ pub fn as_key(node_1: u32, node_2: u32) -> (u32, u32) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    pub fn test_init_edge_map() {
+        let neighbor_1 = Neighbor {
+            id: 1,
+            timestamp: 0,
+            snr: 1.0,
+        };
+        let neighbor_2 = Neighbor {
+            id: 2,
+            timestamp: 0,
+            snr: 2.0,
+        };
+        let neighbor_3 = Neighbor {
+            id: 3,
+            timestamp: 0,
+            snr: 3.0,
+        };
+        let neighbor_4 = Neighbor {
+            id: 4,
+            timestamp: 0,
+            snr: 4.0,
+        };
+        let neighbor_info_1 = NeighborInfo {
+            id: 1,
+            timestamp: 0,
+            neighbors: vec![neighbor_2.clone(), neighbor_3.clone(), neighbor_4.clone()],
+        };
+        let neighbor_info_2: NeighborInfo = NeighborInfo {
+            id: 2,
+            timestamp: 0,
+            neighbors: vec![neighbor_1.clone(), neighbor_3.clone(), neighbor_4.clone()],
+        };
+        let neighbor_info_3: NeighborInfo = NeighborInfo {
+            id: 3,
+            timestamp: 0,
+            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_4.clone()],
+        };
+        let neighbor_info_4: NeighborInfo = NeighborInfo {
+            id: 4,
+            timestamp: 0,
+            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_3.clone()],
+        };
+        let neighborinfo_vec = vec![
+            neighbor_info_1.clone(),
+            neighbor_info_2.clone(),
+            neighbor_info_3.clone(),
+            neighbor_info_4.clone(),
+        ];
+        let mut snr_hashmap = init_edge_map(neighborinfo_vec);
+        assert_eq!(snr_hashmap.len(), 4);
+    }
 }

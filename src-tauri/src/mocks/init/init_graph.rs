@@ -1,10 +1,10 @@
-use super::edge_factory::edge_factory;
-use super::take_snapshot::total_distance;
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use crate::aux_functions::conversion_factors::{
     ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
     LON_CONVERSION_FACTOR,
 };
+use crate::aux_functions::edge_factory::edge_factory;
+use crate::aux_functions::take_snapshot::total_distance;
 use crate::graph::graph_ds::Graph;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
@@ -140,46 +140,6 @@ mod tests {
 
     #[test]
     fn test_init_graph() {
-        let neighbor_1 = Neighbor {
-            id: 1,
-            timestamp: 0,
-            snr: 1.0,
-        };
-        let neighbor_2 = Neighbor {
-            id: 2,
-            timestamp: 0,
-            snr: 2.0,
-        };
-        let neighbor_3 = Neighbor {
-            id: 3,
-            timestamp: 0,
-            snr: 3.0,
-        };
-        let neighbor_4 = Neighbor {
-            id: 4,
-            timestamp: 0,
-            snr: 4.0,
-        };
-        let neighbor_info_1 = NeighborInfo {
-            id: 1,
-            timestamp: 0,
-            neighbors: vec![neighbor_2.clone(), neighbor_3.clone(), neighbor_4.clone()],
-        };
-        let neighbor_info_2: NeighborInfo = NeighborInfo {
-            id: 2,
-            timestamp: 0,
-            neighbors: vec![neighbor_1.clone(), neighbor_3.clone(), neighbor_4.clone()],
-        };
-        let neighbor_info_3: NeighborInfo = NeighborInfo {
-            id: 3,
-            timestamp: 0,
-            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_4.clone()],
-        };
-        let neighbor_info_4: NeighborInfo = NeighborInfo {
-            id: 4,
-            timestamp: 0,
-            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_3.clone()],
-        };
         let meshnode_1: MeshNode = MeshNode {
             device_metrics: vec![],
             environment_metrics: vec![],
@@ -229,19 +189,18 @@ mod tests {
             },
         };
         let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
+        let mut snr_hashmap: HashMap<(u32, u32), (f64, u64)> = HashMap::new();
         loc_hashmap.insert(1, meshnode_1);
         loc_hashmap.insert(2, meshnode_2);
         loc_hashmap.insert(3, meshnode_3);
         loc_hashmap.insert(4, meshnode_4);
-        let graph = init_graph(
-            vec![
-                neighbor_info_1,
-                neighbor_info_2,
-                neighbor_info_3,
-                neighbor_info_4,
-            ],
-            loc_hashmap,
-        );
+        snr_hashmap.insert((1, 2), (0.9, 0));
+        snr_hashmap.insert((1, 3), (0.9, 0));
+        snr_hashmap.insert((1, 4), (0.9, 0));
+        snr_hashmap.insert((2, 3), (0.9, 0));
+        snr_hashmap.insert((2, 4), (0.9, 0));
+        snr_hashmap.insert((3, 4), (0.9, 0));
+        let graph = init_graph(snr_hashmap, loc_hashmap);
         // Check that the graph has the correct number of nodes
         assert_eq!(graph.get_order(), 4);
         // Check that the graph has the correct number of edges
@@ -343,9 +302,12 @@ mod tests {
             },
         };
         let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
+        let mut snr_hashmap: HashMap<(u32, u32), (f64, u64)> = HashMap::new();
         loc_hashmap.insert(1, meshnode_1);
         loc_hashmap.insert(2, meshnode_2);
-        let mut graph = init_graph(vec![neighbor_info_1, neighbor_info_2], loc_hashmap);
+        snr_hashmap.insert((1, 2), (0.1, 100));
+        snr_hashmap.insert((2, 1), (0.9, 0));
+        let mut graph = init_graph(snr_hashmap, loc_hashmap);
         // Check that the graph has the correct number of edges
         assert_eq!(graph.get_size(), 1);
         // Check the edge weights to check that they are both the weight of the 1-2 edge, which has neighbor 2's SNR
