@@ -8,16 +8,9 @@ use app::protobufs;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
 use std::collections::HashMap;
-/*
-Generate a randomly connected graph with the degree of connectedness specified by percent_connected.
 
-Note: this graph does not currently have location info attached. Location info will be retrieved
-by mapping the node id to its location info.
-*/
-pub fn generate_loc_independent_packets(
-    num_nodes: i32,
-    percent_connected: f64,
-) -> Vec<NeighborInfo> {
+// Generate a list of neighborinfo packets for a graph with given number of nodes and percent connectedness.
+pub fn mock_neighborinfo_packets(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInfo> {
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
         let mut new_neighbor = NeighborInfo {
@@ -60,9 +53,8 @@ pub fn generate_loc_independent_packets(
     neighborinfo_vec
 }
 
-/* Create a vector of location info that can be mapped to by sequential node ids */
-pub fn generate_loc_info(num_nodes: i32) -> HashMap<u32, MeshNode> {
-    let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
+pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
+    let mut meshnode_vec = Vec::new();
     for node_id in 0..num_nodes {
         let rand_lat: f64 =
             HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01 / LAT_CONVERSION_FACTOR;
@@ -120,9 +112,15 @@ pub fn generate_loc_info(num_nodes: i32) -> HashMap<u32, MeshNode> {
             environment_metrics: vec![],
             data: node_info,
         };
-        loc_hashmap.insert(node_id as u32, meshnode);
+        meshnode_vec.push(meshnode);
     }
-    loc_hashmap
+    meshnode_vec
+}
+
+pub fn mock_edge_map_from_loc_info(
+    nodes: HashMap<u32, MeshNode>,
+) -> HashMap<(u32, u32), (f64, u64)> {
+    //TODO: Implement
 }
 
 #[cfg(test)]
@@ -131,7 +129,7 @@ mod tests {
 
     #[test]
     fn test_init_three_nodes() {
-        let neighborinfo = generate_loc_independent_packets(3, 0.8);
+        let neighborinfo = mock_neighborinfo_packets(3, 0.8);
         // run unittests with -- --nocapture to print the structs
         println!("{:?}", neighborinfo);
         assert_eq!(neighborinfo.len(), 3);

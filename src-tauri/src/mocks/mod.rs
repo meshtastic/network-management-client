@@ -1,1 +1,2 @@
-pub(crate) mod mock_generator;
+pub(crate) mod init;
+pub(crate) mod mocks;
