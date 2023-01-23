@@ -91,6 +91,8 @@ impl MeshDevice {
                 protobufs::PortNum::PositionApp => {
                     let data = protobufs::Position::decode(data.payload.as_slice())?;
                     self.add_position(PositionPacket { packet, data });
+                    // TODO: because we have no neighborinfo packets, pretend position packets are also neighborinfo packets
+                    self.update_edges();
                     device_updated = true;
                 }
                 protobufs::PortNum::PrivateApp => {

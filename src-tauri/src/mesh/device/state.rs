@@ -283,4 +283,8 @@ impl MeshDevice {
             }
         }
     }
+
+    pub fn update_edges(&mut self) {
+        // TODO: randomly generate edges in hashmap, or at least update them with new packet
+    }
 }
