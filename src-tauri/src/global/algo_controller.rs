@@ -19,6 +19,15 @@ impl AlgoController {
         Self {}
     }
 
+    /// Runs all algorithms that are activated in the AlgoConfig.
+    /// The results are stored in the AlgoStore and the History is updated.
+    ///
+    /// # Arguments
+    ///
+    /// * `graph` - The graph on which the algorithms are run.
+    /// * `algo_conf` - The configuration of the algorithms [`super::algos_config::AlgoConfig`].
+    /// * `history` - The history of the algorithms [`super::history::History`].
+    /// * `store` - The store of the algorithms [`super::algo_store::AlgoStore`].
     pub fn run_algos(
         &mut self,
         graph: &Graph,
@@ -49,10 +58,30 @@ impl AlgoController {
         }
     }
 
+    /// Runs the articulation point algorithm.
+    ///
+    /// # Arguments
+    ///
+    /// * `graph` - The graph on which the algorithm is run.
+    /// * `params` - The parameters [`super::algos_config::Params`] of the algorithm.
+    ///
+    /// # Returns
+    ///
+    /// APResult - The result of the algorithm. Can be an error too.
     pub fn run_ap(&mut self, graph: &Graph, params: &Params) -> APResult {
         articulation_point(graph)
     }
 
+    /// Runs the mincut algorithm.
+    ///
+    /// # Arguments
+    ///
+    /// * `graph` - The graph on which the algorithm is run.
+    /// * `params` - The parameters [`super::algos_config::Params`] of the algorithm.
+    ///
+    /// # Returns
+    ///
+    /// MinCutResult - The result of the algorithm. Can be an error too.
     pub fn run_mincut(&mut self, g: &Graph, params: &Params) -> MinCutResult {
         let sw_graph = &mut StoerWagnerGraph::new(g.clone());
         let _mincut_res = stoer_wagner(sw_graph);
@@ -69,15 +98,25 @@ impl AlgoController {
         }
     }
 
+    /// Runs the diffusion centrality algorithm.
+    ///
+    /// # Arguments
+    ///
+    /// * `graph` - The graph on which the algorithm is run.
+    /// * `params` - The parameters [`super::algos_config::Params`] of the algorithm.
+    ///
+    /// # Returns
+    ///
+    /// DiffCenResult - The result of the algorithm. Can be an error too.
     pub fn run_diff_cent(&mut self, g: &Graph, params: &Params) -> DiffCenResult {
         let n = g.get_order();
         let (_, int_to_node_id, d_adj) = g.convert_to_adj_matrix();
         let eigenvals_res = g.eigenvals(&d_adj);
-        let T = params.get("T").unwrap_or(&(5 as u32));
 
         match eigenvals_res {
             EigenvalsResult::Success(eigenvals_vec) => {
-                let diff_cent = diffusion_centrality(&d_adj, int_to_node_id, *T, eigenvals_vec, n);
+                let diff_cent =
+                    diffusion_centrality(&d_adj, int_to_node_id, params, eigenvals_vec, n);
                 DiffCenResult::Success(diff_cent)
             }
             EigenvalsResult::Error(er_str) => DiffCenResult::Error(er_str),

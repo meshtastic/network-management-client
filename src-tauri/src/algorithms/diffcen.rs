@@ -1,6 +1,8 @@
 use nalgebra::DMatrix;
 use std::collections::HashMap;
 
+use crate::global::algos_config::Params;
+
 /// Calculates the diffusion centrality of each node in the graph.
 /// Diffusion centrality is a measure of how much information a node
 /// can diffuse to other nodes in the graph.
@@ -15,10 +17,12 @@ use std::collections::HashMap;
 pub fn diffusion_centrality(
     adj_matrix: &DMatrix<f64>,
     int_to_node_id: HashMap<usize, String>,
-    T: u32,
+    params: &Params,
     eigenvals: Vec<f64>,
     n: usize,
 ) -> HashMap<String, HashMap<String, f64>> {
+    let T = params.get("T").unwrap_or(&(5 as u32));
+
     let mut node_to_diffcen = HashMap::new();
 
     let largest_eigenvalue = eigenvals

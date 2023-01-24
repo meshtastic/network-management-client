@@ -7,6 +7,15 @@ use crate::state_err_enums::mincut::MinCutResult;
 use crate::state_err_enums::most_sim_timeline::MostSimTResult;
 use crate::state_err_enums::pred_state::PredStateResult;
 
+/// Stores the results of the algorithms.
+///
+/// # Fields
+///
+/// * `aps` - [`crate::state_err_enums::ap::APResult`] that stores Success/Error/Empty states of articulation point algorithm.
+/// * `mincut` - [`crate::state_err_enums::mincut::MinCutResult`] that stores Success/Error/Empty of minimum cut algorithm.
+/// * `diff_cent` - [`crate::state_err_enums::diff_cen::DiffCenResult`] that stores Success/Error/Empty of diffusion centrality algorithm.
+/// * `most_sim_t` - [`crate::state_err_enums::most_sim_timeline::MostSimTResult`] that stores Success/Error/Empty of most similar timeline algorithm.
+/// * `pred_state` - [`crate::state_err_enums::pred_state::PredStateResult`] that stores Success/Error/Empty of state prediction algorithm.
 pub struct AlgoStore {
     pub aps: APResult,
     pub mincut: MinCutResult,
