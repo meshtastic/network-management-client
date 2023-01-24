@@ -9,6 +9,7 @@ use crate::state_err_enums::ap::APResult;
 use crate::state_err_enums::diff_cen::DiffCenResult;
 use crate::state_err_enums::mincut::MinCutResult;
 use crate::state_err_enums::most_sim_timeline::MostSimTResult;
+use crate::state_err_enums::pred_state::PredStateResult;
 use petgraph::graph::NodeIndex;
 
 use crate::algorithms::articulation_point::articulation_point;
@@ -23,7 +24,7 @@ pub struct AlgoStore {
     pub mincut: MinCutResult,
     pub diff_cent: DiffCenResult,
     pub most_sim_t: MostSimTResult,
-    pub pred_state: Option<Graph>,
+    pub pred_state: PredStateResult,
 }
 
 impl AlgoStore {
@@ -33,7 +34,7 @@ impl AlgoStore {
             mincut: MinCutResult::Error("Empty".to_string()),
             diff_cent: DiffCenResult::Error("Empty".to_string()),
             most_sim_t: MostSimTResult::Error("Empty".to_string()),
-            pred_state: None,
+            pred_state: PredStateResult::Error("Empty".to_string()),
         }
     }
 
@@ -53,7 +54,7 @@ impl AlgoStore {
         &self.most_sim_t
     }
 
-    pub fn get_pred_state(&self) -> &Option<Graph> {
+    pub fn get_pred_state(&self) -> &PredStateResult {
         &self.pred_state
     }
 
@@ -74,6 +75,6 @@ impl AlgoStore {
     }
 
     pub fn set_pred_state(&mut self, pred_state: Graph) {
-        self.pred_state = Some(pred_state);
+        self.pred_state = PredStateResult::Success(pred_state);
     }
 }
