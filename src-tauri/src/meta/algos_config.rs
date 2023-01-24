@@ -20,7 +20,7 @@ impl AlgoConfig {
         }
     }
 
-    /// Returns the bitfield of the algorithms.
+    /// Sets which algos to run.
     ///
     /// # Arguments
     ///
