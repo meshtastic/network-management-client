@@ -769,6 +769,7 @@ mod tests {
         G.update_edge(u.clone(), v.clone(), 11 as f64, Some(0), None);
     }
 
+    #[test]
     fn test_adj_matrix() {
         let mut G1 = Graph::new();
 
