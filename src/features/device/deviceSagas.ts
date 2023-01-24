@@ -11,6 +11,7 @@ import {
   requestConnectToDevice,
   requestDisconnectFromDevice,
   requestSendMessage,
+  requestUpdateUser,
 } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
@@ -73,11 +74,22 @@ function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
   }
 }
 
+function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
+  try {
+    yield call(invoke, "update_device_user", {
+      user: action.payload.user,
+    });
+  } catch (error) {
+    yield put({ type: "GENERAL_ERROR", payload: error });
+  }
+}
+
 export function* devicesSaga() {
   yield all([
     takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
     takeEvery(requestConnectToDevice.type, connectToDeviceWorker),
     takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
     takeEvery(requestSendMessage.type, sendMessageWorker),
+    takeEvery(requestUpdateUser.type, updateUserConfig),
   ]);
 }
