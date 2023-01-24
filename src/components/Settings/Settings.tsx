@@ -1,5 +1,5 @@
 import React, { useState, FormEventHandler } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { XMarkIcon } from "@heroicons/react/24/solid";
@@ -7,7 +7,7 @@ import { Input } from "@material-tailwind/react";
 
 import { selectActiveNode } from "@features/device/deviceSelectors";
 import type { User } from "@bindings/protobufs/User";
-import { invoke } from "@tauri-apps/api/tauri";
+import { requestUpdateUser } from "@features/device/deviceActions";
 
 // Function to convert decimal MAC address to hex
 function convertMacAddr(macAddr: number[]) {
@@ -45,8 +45,11 @@ const Settings = () => {
   const hwModel = activeNode?.data.user?.hwModel ?? "No device selected";
   const isLicensed = activeNode?.data.user?.isLicensed ?? "No device selected";
 
+  const dispatch = useDispatch();
+
   // Submits the form. Triggered by pressing the save button
   const handleSubmit: FormEventHandler = (e) => {
+    // e.preventDefault();
     if (activeNode) {
       const updatedUser: User = {
         ...activeNode.data.user!,
@@ -54,9 +57,7 @@ const Settings = () => {
         shortName: deviceNickname,
       };
 
-      invoke("update_device_user", { user: updatedUser }).catch((e) => {
-        console.error(e);
-      });
+      dispatch(requestUpdateUser({ user: updatedUser }));
     } else {
       console.log("No active node selected");
     }
