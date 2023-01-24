@@ -10,7 +10,13 @@ use std::collections::HashMap;
 /// # Returns
 ///
 /// * `Vec<Vec<f64>>` - an adjacency matrix
-pub fn convert_to_adj_matrix(graph: &Graph) -> (Vec<Vec<f64>>, HashMap<usize, String>) {
+pub fn convert_to_adj_matrix(
+    graph: &Graph,
+) -> (
+    Vec<Vec<f64>>,
+    HashMap<usize, String>,
+    HashMap<String, usize>,
+) {
     let mut adj_matrix = Vec::new();
 
     let nodes = graph.get_nodes();
@@ -47,7 +53,7 @@ pub fn convert_to_adj_matrix(graph: &Graph) -> (Vec<Vec<f64>>, HashMap<usize, St
         adj_matrix[*v_id][*u_id] = weight;
     }
 
-    return (adj_matrix, int_to_node_id);
+    return (adj_matrix, int_to_node_id, node_id_to_int);
 }
 
 #[cfg(test)]
@@ -94,7 +100,7 @@ mod tests {
         let b_d = Edge::new(b_idx, d_idx, 0.6);
         G1.add_edge_from_struct(b_d);
 
-        let (adj_matrix, int_to_node_if) = convert_to_adj_matrix(&G1);
+        let (adj_matrix, int_to_node_id, node_id_to_int) = convert_to_adj_matrix(&G1);
 
         // assert that the adjacency matrix is correct
         assert_eq!(
