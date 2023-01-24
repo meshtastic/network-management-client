@@ -17,7 +17,7 @@ pub struct Params {
 }
 
 impl Params {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Params {
             params: HashMap::new(),
         }
@@ -29,10 +29,6 @@ impl Params {
 
     pub fn get<T: 'static>(&self, key: &str) -> Option<&T> {
         self.params.get(key).and_then(|v| v.downcast_ref::<T>())
-    }
-
-    pub fn get_all(&self) -> &HashMap<String, Box<dyn Any>> {
-        &self.params
     }
 }
 
@@ -68,7 +64,7 @@ impl Activation {
 #[derive(Debug)]
 pub struct APConf {
     activation: Activation,
-    params: Params,
+    pub params: Params,
 }
 
 /// Configuration for mincut algorithm.
@@ -79,7 +75,7 @@ pub struct APConf {
 #[derive(Debug)]
 pub struct MinCutConf {
     activation: Activation,
-    params: Params,
+    pub params: Params,
 }
 
 /// Configuration for diffusion centrality algorithm.
@@ -96,7 +92,7 @@ pub struct DiffCentConf {
 #[derive(Debug)]
 pub struct MostSimTConf {
     activation: Activation,
-    params: Params,
+    pub params: Params,
 }
 
 /// Configuration for predicted state algorithm.
@@ -105,7 +101,7 @@ pub struct MostSimTConf {
 #[derive(Debug)]
 pub struct PredStateConf {
     activation: Activation,
-    params: Params,
+    pub params: Params,
 }
 
 #[derive(Debug)]
