@@ -61,17 +61,17 @@ impl Timeline {
         }
     }
 
-    pub fn add_snapshot(&mut self, snapshot: Graph) {
+    pub fn add_snapshot(&mut self, snapshot: &Graph) {
         match &self.curr_snapshot {
             None => {
-                self.curr_snapshot = Some(snapshot);
+                self.curr_snapshot = Some(snapshot.clone());
             }
             Some(_curr_snapshot) => {
                 let is_connected = self.check_connection(&snapshot);
                 if self.save {
                     self.write_snapshot();
                 }
-                self.curr_snapshot = Some(snapshot);
+                self.curr_snapshot = Some(snapshot.clone());
                 if !is_connected {
                     self.label = 0;
                     if self.save {
@@ -251,7 +251,7 @@ mod tests {
         let graphs = vec![G1, G2];
 
         for graph in graphs {
-            timeline.add_snapshot(graph);
+            timeline.add_snapshot(&graph);
         }
 
         timeline.conclude_timeline();
