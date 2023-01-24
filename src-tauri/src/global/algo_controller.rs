@@ -1,6 +1,3 @@
-use std::any::Any;
-use std::collections::HashMap;
-
 use super::algo_store::AlgoStore;
 use super::algos_config::{AlgoConfig, Params};
 use super::history::History;
@@ -8,11 +5,12 @@ use crate::algorithms::articulation_point::articulation_point;
 use crate::algorithms::diffcen::diffusion_centrality;
 use crate::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
 use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
-use crate::graph::{edge::Edge, graph_ds::Graph};
+use crate::graph::graph_ds::Graph;
+use crate::state_err_enums::ap::APResult;
 use crate::state_err_enums::diff_cen::DiffCenResult;
 use crate::state_err_enums::eigenvals::EigenvalsResult;
-use nalgebra::DMatrix;
-use petgraph::graph::NodeIndex;
+use crate::state_err_enums::mincut::MinCutResult;
+use crate::state_err_enums::sw_cut::SWCutResult;
 
 pub struct AlgoController;
 
@@ -51,23 +49,29 @@ impl AlgoController {
         }
     }
 
-    pub fn run_ap(&mut self, graph: &Graph, params: &Params) -> Vec<NodeIndex> {
+    pub fn run_ap(&mut self, graph: &Graph, params: &Params) -> APResult {
         articulation_point(graph)
     }
 
-    pub fn run_mincut(&mut self, g: &Graph, params: &Params) -> Vec<Edge> {
+    pub fn run_mincut(&mut self, g: &Graph, params: &Params) -> MinCutResult {
         let sw_graph = &mut StoerWagnerGraph::new(g.clone());
-        let _mincut = stoer_wagner(sw_graph).unwrap();
-        let mut nodes_string = Vec::new();
-        for node in g.get_nodes() {
-            nodes_string.push(node.name.clone());
+        let _mincut_res = stoer_wagner(sw_graph);
+        match _mincut_res {
+            SWCutResult::Success(_mincut) => {
+                let mut nodes_string = Vec::new();
+                for node in g.get_nodes() {
+                    nodes_string.push(node.name.clone());
+                }
+                recover_mincut(sw_graph, nodes_string)
+            }
+            SWCutResult::Error(er_str) => return MinCutResult::Error(er_str),
+            SWCutResult::Empty(b) => return MinCutResult::Empty(b),
         }
-        recover_mincut(sw_graph, nodes_string)
     }
 
     pub fn run_diff_cent(&mut self, g: &Graph, params: &Params) -> DiffCenResult {
         let n = g.get_order();
-        let (adj_matrix, int_to_node_id, d_adj) = g.convert_to_adj_matrix();
+        let (_, int_to_node_id, d_adj) = g.convert_to_adj_matrix();
         let eigenvals_res = g.eigenvals(&d_adj);
         let T = params.get("T").unwrap_or(&(5 as u32));
 
@@ -76,7 +80,8 @@ impl AlgoController {
                 let diff_cent = diffusion_centrality(&d_adj, int_to_node_id, *T, eigenvals_vec, n);
                 DiffCenResult::Success(diff_cent)
             }
-            EigenvalsResult::Error(er_Str) => DiffCenResult::Error(er_Str),
+            EigenvalsResult::Error(er_str) => DiffCenResult::Error(er_str),
+            EigenvalsResult::Empty(b) => DiffCenResult::Empty(b),
         }
     }
 
@@ -92,13 +97,7 @@ impl AlgoController {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::algorithms::diffcen::diffusion_centrality;
     use crate::graph::graph_ds::Graph;
-    use crate::graph::node::Node;
-    use crate::state_err_enums::diff_cen;
-    use crate::state_err_enums::eigenvals::EigenvalsResult;
-    use nalgebra::DMatrix;
-    use petgraph::graph::NodeIndex;
 
     #[test]
     fn test_run_controller() {
@@ -133,6 +132,9 @@ mod tests {
             }
             DiffCenResult::Error(er_str) => {
                 panic!("Error in diffusion centrality: {}", er_str);
+            }
+            DiffCenResult::Empty(b) => {
+                panic!("Empty graph");
             }
         }
     }

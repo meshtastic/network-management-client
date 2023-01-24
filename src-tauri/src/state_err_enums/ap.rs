@@ -4,6 +4,7 @@ use petgraph::graph::NodeIndex;
 pub enum APResult {
     Success(Vec<NodeIndex>),
     Error(String),
+    Empty(bool),
 }
 
 impl Clone for APResult {
@@ -11,6 +12,7 @@ impl Clone for APResult {
         match self {
             APResult::Success(aps) => APResult::Success(aps.clone()),
             APResult::Error(err) => APResult::Error(err.clone()),
+            APResult::Empty(empty) => APResult::Empty(*empty),
         }
     }
 }

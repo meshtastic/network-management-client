@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::{any::Any, collections::HashMap, fmt::Display};
+use std::{any::Any, collections::HashMap};
 
 /// The activation struct is used to determine whether an algorithm should be run.
 ///

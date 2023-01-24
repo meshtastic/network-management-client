@@ -3,8 +3,6 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
-use nalgebra::DMatrix;
-
 use crate::aux_data_structures::timeline::Timeline;
 use crate::global::history::History;
 

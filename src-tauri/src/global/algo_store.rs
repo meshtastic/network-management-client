@@ -1,23 +1,11 @@
 #![allow(dead_code)]
 
-use nalgebra::DMatrix;
-use std::collections::HashMap;
-
-use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
-use crate::graph::{edge::Edge, graph_ds::Graph};
+use crate::graph::graph_ds::Graph;
 use crate::state_err_enums::ap::APResult;
 use crate::state_err_enums::diff_cen::DiffCenResult;
 use crate::state_err_enums::mincut::MinCutResult;
 use crate::state_err_enums::most_sim_timeline::MostSimTResult;
 use crate::state_err_enums::pred_state::PredStateResult;
-use petgraph::graph::NodeIndex;
-
-use crate::algorithms::articulation_point::articulation_point;
-use crate::algorithms::diffcen::diffusion_centrality;
-use crate::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
-
-use super::algos_config::AlgoConfig;
-use super::history::History;
 
 pub struct AlgoStore {
     pub aps: APResult,
@@ -30,11 +18,11 @@ pub struct AlgoStore {
 impl AlgoStore {
     pub fn new() -> Self {
         AlgoStore {
-            aps: APResult::Error("Empty".to_string()),
-            mincut: MinCutResult::Error("Empty".to_string()),
-            diff_cent: DiffCenResult::Error("Empty".to_string()),
-            most_sim_t: MostSimTResult::Error("Empty".to_string()),
-            pred_state: PredStateResult::Error("Empty".to_string()),
+            aps: APResult::Empty(true),
+            mincut: MinCutResult::Empty(true),
+            diff_cent: DiffCenResult::Empty(true),
+            most_sim_t: MostSimTResult::Empty(true),
+            pred_state: PredStateResult::Empty(true),
         }
     }
 
@@ -58,12 +46,12 @@ impl AlgoStore {
         &self.pred_state
     }
 
-    pub fn set_aps(&mut self, aps: Vec<NodeIndex>) {
-        self.aps = APResult::Success(aps);
+    pub fn set_aps(&mut self, aps: APResult) {
+        self.aps = aps;
     }
 
-    pub fn set_mincut(&mut self, mincut: Vec<Edge>) {
-        self.mincut = MinCutResult::Success(mincut);
+    pub fn set_mincut(&mut self, mincut: MinCutResult) {
+        self.mincut = mincut;
     }
 
     pub fn set_diff_cent(&mut self, diff_cent: DiffCenResult) {

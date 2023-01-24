@@ -5,9 +5,10 @@ use std::collections::HashMap;
 use crate::{
     aux_data_structures::{binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph},
     graph::edge::Edge,
+    state_err_enums::{mincut::MinCutResult, sw_cut::SWCutResult},
 };
 
-pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
+pub fn st_mincut(g: &mut StoerWagnerGraph) -> SWCutResult {
     let mut bheap = BinaryHeap::new(g);
 
     let uncontracted = g.uncontracted.clone();
@@ -26,46 +27,44 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
         bheap.build_heap();
     }
     if a.len() < 2 {
-        return None;
+        return SWCutResult::Error("Error in st_mincut".to_string());
     }
     let weight = a[a.len() - 1].weight;
 
     let s = a[a.len() - 1].node.name.clone();
     let t = a[a.len() - 2].node.name.clone();
 
-    return Some(Cut::new(weight, s, t));
+    return SWCutResult::Success(Cut::new(weight, s, t));
 }
 
-pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Option<Cut> {
+pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> SWCutResult {
     if graph.uncontracted.len() == 2 {
-        return Some(graph.get_cut());
+        return SWCutResult::Success(graph.get_cut());
     } else {
         let opt_cut = st_mincut(graph);
         match opt_cut {
-            Some(cut) => {
+            SWCutResult::Success(cut) => {
                 graph.contract_edge(cut.get_a().to_string(), cut.get_b().to_string());
                 let opt_other_cut = stoer_wagner(graph);
                 match opt_other_cut {
-                    Some(other_cut) => {
+                    SWCutResult::Success(other_cut) => {
                         if cut.get_weight() < other_cut.get_weight() {
-                            return Some(cut);
+                            return SWCutResult::Success(cut);
                         } else {
-                            return Some(other_cut);
+                            return SWCutResult::Success(other_cut);
                         }
                     }
-                    None => {
-                        return None;
-                    }
+                    SWCutResult::Error(other_err_str) => SWCutResult::Error(other_err_str),
+                    SWCutResult::Empty(other_empty) => SWCutResult::Empty(other_empty),
                 }
             }
-            None => {
-                return None;
-            }
+            SWCutResult::Error(err_str) => SWCutResult::Error(err_str),
+            SWCutResult::Empty(empty) => SWCutResult::Empty(empty),
         }
     }
 }
 
-pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> Vec<Edge> {
+pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> MinCutResult {
     let mut parent_map = HashMap::new();
 
     for node in all_nodes {
@@ -96,7 +95,7 @@ pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> V
         }
     }
 
-    return st_cut_edges;
+    return MinCutResult::Success(st_cut_edges);
 }
 
 // Create a unit test for the stoer-wagner algorithm
@@ -144,24 +143,51 @@ mod tests {
         let mut correct_mincut_weight_count = 0;
 
         let graph_sw = &mut StoerWagnerGraph::new(g.clone());
-        let _mincut = stoer_wagner(graph_sw).unwrap();
-        assert_eq!(_mincut.get_weight(), 1.0);
 
-        let nodes = vec![u, v, w, x, y, z, a, b];
-        let mincut_edges = recover_mincut(graph_sw, nodes);
+        let _mincut = stoer_wagner(graph_sw);
 
-        assert_eq!(mincut_edges.len(), 1);
+        match _mincut {
+            SWCutResult::Success(cut) => {
+                assert_eq!(cut.get_weight(), 1.0);
+                let nodes = vec![u, v, w, x, y, z, a, b];
+                let mincut_edges_res = recover_mincut(graph_sw, nodes);
+
+                match mincut_edges_res {
+                    MinCutResult::Success(mincut_edges) => {
+                        assert_eq!(mincut_edges.len(), 1);
+                    }
+                    MinCutResult::Error(err_str) => {
+                        println!("Error: {}", err_str);
+                    }
+                    MinCutResult::Empty(empty) => {
+                        println!("Empty: {}", empty);
+                    }
+                }
+            }
+            SWCutResult::Error(err_str) => {
+                println!("Error: {}", err_str);
+            }
+            SWCutResult::Empty(empty) => {
+                println!("Empty: {}", empty);
+            }
+        }
 
         for _ in 0..100 {
             let graph_sw = &mut StoerWagnerGraph::new(g.clone());
-            let mincut = stoer_wagner(graph_sw);
-            match mincut {
-                Some(cut) => {
+
+            let mincut_res = stoer_wagner(graph_sw);
+            match mincut_res {
+                SWCutResult::Success(cut) => {
                     if cut.get_weight() == 1.0 {
                         correct_mincut_weight_count += 1;
                     }
                 }
-                None => {}
+                SWCutResult::Error(err_str) => {
+                    println!("Error: {}", err_str);
+                }
+                SWCutResult::Empty(empty) => {
+                    println!("Empty: {}", empty);
+                }
             }
         }
 

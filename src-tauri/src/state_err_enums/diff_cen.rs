@@ -4,6 +4,7 @@ use std::collections::HashMap;
 pub enum DiffCenResult {
     Success(HashMap<String, HashMap<String, f64>>),
     Error(String),
+    Empty(bool),
 }
 
 impl Clone for DiffCenResult {
@@ -11,6 +12,7 @@ impl Clone for DiffCenResult {
         match self {
             DiffCenResult::Success(diff_cen_res) => DiffCenResult::Success(diff_cen_res.clone()),
             DiffCenResult::Error(err) => DiffCenResult::Error(err.clone()),
+            DiffCenResult::Empty(empty) => DiffCenResult::Empty(*empty),
         }
     }
 }
