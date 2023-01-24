@@ -4,6 +4,7 @@ use crate::aux_functions::conversion_factors::{
     LON_CONVERSION_FACTOR,
 };
 use crate::constructors::init::init_graph::get_distance;
+use crate::mesh::device::helpers::get_current_time_u32;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
 use rand::prelude::*;
@@ -136,7 +137,7 @@ pub fn mock_edge_map_from_loc_info(
                 let distance = get_distance(node.clone(), neighbor.clone());
                 if distance < r {
                     let snr = nodes.get(neighbor_id).unwrap().data.snr;
-                    let time = 0;
+                    let time = get_current_time_u32();
                     edge_map.insert((*node_id, *neighbor_id), (snr as f64, time as u64));
                 }
             }
