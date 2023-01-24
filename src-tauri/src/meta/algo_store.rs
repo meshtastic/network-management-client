@@ -2,8 +2,13 @@
 
 use std::collections::HashMap;
 
+use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use crate::graph::{edge::Edge, graph_ds::Graph};
 use petgraph::graph::NodeIndex;
+
+use crate::algorithms::articulation_point::articulation_point;
+use crate::algorithms::diffcen::diffusion_centrality;
+use crate::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
 
 pub struct AlgoStore {
     pub aps: Option<Vec<petgraph::graph::NodeIndex>>,
@@ -21,6 +26,34 @@ impl AlgoStore {
             diff_cent: None,
             most_sim_t: None,
             pred_state: None,
+        }
+    }
+
+    pub fn run_ap(&mut self, graph: &Graph) {
+        let aps = articulation_point(graph);
+        self.set_aps(aps);
+    }
+
+    pub fn run_mincut(&mut self, g: &Graph) {
+        let sw_graph = &mut StoerWagnerGraph::new(g.clone());
+        let _mincut = stoer_wagner(sw_graph).unwrap();
+        let mut nodes_string = Vec::new();
+        for node in g.get_nodes() {
+            nodes_string.push(node.name.clone());
+        }
+        let mincut_edges = recover_mincut(sw_graph, nodes_string);
+        self.set_mincut(mincut_edges);
+    }
+
+    pub fn run_diff_cent(&mut self, graph: &Graph, T: u32) {
+        let diff_cent = diffusion_centrality(graph, T);
+        match diff_cent {
+            Some(dc) => {
+                self.set_diff_cent(dc);
+            }
+            None => {
+                self.set_diff_cent(HashMap::new());
+            }
         }
     }
 
