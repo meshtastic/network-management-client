@@ -57,9 +57,9 @@ const Settings = () => {
         id: deviceID,
         longName: deviceName,
         shortName: deviceNickname,
-        macaddr: activeNode ? activeNode.data.user!.macaddr : [],
-        hwModel: activeNode ? activeNode.data.user!.hwModel : 0,
-        isLicensed: activeNode ? activeNode.data.user!.isLicensed : false,
+        macaddr: activeNode.data.user!.macaddr,
+        hwModel: activeNode.data.user!.hwModel,
+        isLicensed: activeNode.data.user!.isLicensed,
       };
 
       invoke("update_device_user", { user: updatedUser }).catch((e) => {
