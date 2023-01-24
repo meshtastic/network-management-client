@@ -29,37 +29,29 @@ const Settings = () => {
 
   // Functions to set device info. Forbidden non-null suppressed, but I checked if a device is connected.
   const [deviceID, setDeviceID] = useState(
-    activeNode ? activeNode.data.user!.id : "No device selected"
+    activeNode?.data.user?.id ?? "No device selected"
   );
   const [deviceName, setDeviceName] = useState(
-    activeNode ? activeNode.data.user!.longName : "No device selected"
+    activeNode?.data.user?.longName ?? "No device selected"
   );
   const [deviceNickname, setDeviceNickname] = useState(
-    activeNode ? activeNode.data.user!.shortName : "No device selected"
+    activeNode?.data.user?.shortName ?? "No device selected"
   );
 
   // MAC, Hardware, and Licensing. Even though they are not displayed when null, the check prevents an error on assignment
   const mac = activeNode
     ? convertMacAddr(activeNode.data.user!.macaddr)
     : "No device selected";
-  const hwModel = activeNode
-    ? activeNode.data.user!.hwModel
-    : "No device selected";
-  const isLicensed = activeNode
-    ? activeNode.data.user!.isLicensed
-    : "No device selected";
+  const hwModel = activeNode?.data.user?.hwModel ?? "No device selected";
+  const isLicensed = activeNode?.data.user?.isLicensed ?? "No device selected";
 
   // Submits the form. Triggered by pressing the save button
   const handleSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
     if (activeNode) {
       const updatedUser: User = {
-        id: deviceID,
+        ...activeNode.data.user!,
         longName: deviceName,
         shortName: deviceNickname,
-        macaddr: activeNode.data.user!.macaddr,
-        hwModel: activeNode.data.user!.hwModel,
-        isLicensed: activeNode.data.user!.isLicensed,
       };
 
       invoke("update_device_user", { user: updatedUser }).catch((e) => {
