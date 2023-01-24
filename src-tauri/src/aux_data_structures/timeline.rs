@@ -99,10 +99,10 @@ impl Timeline {
         }
     }
 
-    pub fn get_curr_snapshot(&self) -> Option<Graph> {
+    pub fn get_curr_snapshot(&self) -> Option<&Graph> {
         match self.curr_snapshot {
             None => None,
-            Some(ref curr_snapshot) => Some(curr_snapshot.clone()),
+            Some(ref curr_snapshot) => Some(curr_snapshot),
         }
     }
 
