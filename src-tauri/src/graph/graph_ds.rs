@@ -1,9 +1,10 @@
 #![allow(dead_code)]
 #![allow(non_snake_case)]
-
 use crate::graph::edge::Edge;
 use crate::graph::node::Node;
+use crate::state_err_enums::eigenvals::EigenvalsResult;
 
+use nalgebra::DMatrix;
 use petgraph::prelude::*;
 use petgraph::stable_graph::StableUnGraph;
 use std::collections::HashMap;
@@ -479,6 +480,80 @@ impl Graph {
         }
     }
 
+    /// Converts a graph to an adjacency matrix.
+    ///
+    /// # Arguments
+    ///
+    /// * `graph` - a graph
+    ///
+    /// # Returns
+    ///
+    /// * `Vec<Vec<f64>>` - an adjacency matrix
+    pub fn convert_to_adj_matrix(&self) -> (Vec<Vec<f64>>, HashMap<usize, String>, DMatrix<f64>) {
+        let mut adj_matrix = Vec::new();
+
+        let nodes = self.get_nodes();
+        let edges = self.get_edges();
+
+        let mut ordering_counter = 0 as usize;
+        let mut node_id_to_int = HashMap::new();
+        let mut int_to_node_id = HashMap::new();
+
+        for node in &nodes {
+            node_id_to_int.insert(node.name.clone(), ordering_counter);
+            int_to_node_id.insert(ordering_counter, node.name.clone());
+            ordering_counter += 1;
+        }
+
+        for _ in 0..nodes.len() {
+            let mut row = Vec::new();
+            for _ in 0..nodes.len() {
+                row.push(0.0);
+            }
+            adj_matrix.push(row);
+        }
+
+        for edge in edges {
+            let u_name = self.get_node(edge.get_u()).name.clone();
+            let v_name = self.get_node(edge.get_v()).name.clone();
+
+            let u_id = node_id_to_int.get(&u_name).unwrap();
+            let v_id = node_id_to_int.get(&v_name).unwrap();
+
+            let weight = edge.get_weight();
+
+            adj_matrix[*u_id][*v_id] = weight;
+            adj_matrix[*v_id][*u_id] = weight;
+        }
+
+        let n = self.get_order();
+        let flattened_matrix = &adj_matrix
+            .iter()
+            .map(|row| row.iter())
+            .flatten()
+            .map(|x| *x)
+            .collect::<Vec<f64>>();
+
+        let d_adj_matrix = DMatrix::from_row_slice(n, n, flattened_matrix);
+
+        return (adj_matrix, int_to_node_id, d_adj_matrix);
+    }
+
+    pub fn eigenvals(&self, adj_matrix: &DMatrix<f64>) -> EigenvalsResult {
+        let n = self.get_order();
+        let schur = adj_matrix.clone().schur();
+        let eigenvalues_option = schur.eigenvalues();
+
+        match eigenvalues_option {
+            // If eigenvalues are real, then we can unwrap them
+            Some(eigenvalues) => {
+                let eigenvalues_vec: Vec<f64> = eigenvalues.data.as_vec().clone();
+                EigenvalsResult::Success(eigenvalues_vec)
+            }
+            None => EigenvalsResult::Error("Eigenvalues are not real.".to_string()),
+        }
+    }
+
     /// Returns the number of nodes in the graph.
     pub fn get_order(&self) -> usize {
         self.g.node_count()
@@ -681,5 +756,56 @@ mod tests {
 
         // update edge
         G.update_edge(u.clone(), v.clone(), 11 as f64, Some(0), None);
+    }
+
+    fn test_adj_matrix() {
+        let mut G1 = Graph::new();
+
+        // Create a few nodes and edges and add to graph
+        let a = "a".to_string();
+        let b = "b".to_string();
+        let c = "c".to_string();
+        let d = "d".to_string();
+
+        let mut a_node = Node::new(a.clone());
+        a_node.set_gps(-72.28486, 43.71489, 1.0);
+        let a_idx = G1.add_node_from_struct(a_node);
+
+        let mut b_node = Node::new(b.clone());
+        b_node.set_gps(-72.28239, 43.71584, 1.0);
+        let b_idx = G1.add_node_from_struct(b_node);
+
+        let mut c_node = Node::new(c.clone());
+        c_node.set_gps(-72.28332, 43.7114, 1.0);
+        let c_idx = G1.add_node_from_struct(c_node);
+
+        let mut d_node = Node::new(d.clone());
+        d_node.set_gps(-72.28085, 43.71235, 1.0);
+        let d_idx = G1.add_node_from_struct(d_node);
+
+        let a_b = Edge::new(a_idx, b_idx, 0.51);
+        G1.add_edge_from_struct(a_b);
+
+        let a_c = Edge::new(a_idx, c_idx, 0.39);
+        G1.add_edge_from_struct(a_c);
+
+        let b_c = Edge::new(b_idx, c_idx, 0.4);
+        G1.add_edge_from_struct(b_c);
+
+        let b_d = Edge::new(b_idx, d_idx, 0.6);
+        G1.add_edge_from_struct(b_d);
+
+        let (adj_matrix, int_to_node_id, node_id_to_int) = G1.convert_to_adj_matrix();
+
+        // assert that the adjacency matrix is correct
+        assert_eq!(
+            adj_matrix,
+            vec![
+                vec![0.0, 0.51, 0.39, 0.0],
+                vec![0.51, 0.0, 0.4, 0.6],
+                vec![0.39, 0.4, 0.0, 0.0],
+                vec![0.0, 0.6, 0.0, 0.0]
+            ]
+        );
     }
 }

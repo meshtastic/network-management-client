@@ -13,12 +13,12 @@ use std::collections::HashMap;
 ///
 /// * `Option<HashMap<String, HashMap<String, f64>>>` - A hashmap of node ids to a hashmap of node ids to diffusion centrality values.
 pub fn diffusion_centrality(
-    adj_matrix: DMatrix<f64>,
+    adj_matrix: &DMatrix<f64>,
     int_to_node_id: HashMap<usize, String>,
     T: u32,
     eigenvals: Vec<f64>,
     n: usize,
-) -> Option<HashMap<String, HashMap<String, f64>>> {
+) -> HashMap<String, HashMap<String, f64>> {
     let mut node_to_diffcen = HashMap::new();
 
     let largest_eigenvalue = eigenvals
@@ -33,7 +33,7 @@ pub fn diffusion_centrality(
     let mut H = DMatrix::zeros(n, n);
 
     for t in 1..T + 1 {
-        H += (q * &adj_matrix).pow(t) * &identity_matrix;
+        H += (q * adj_matrix).pow(t) * &identity_matrix;
     }
 
     for (i, row) in H.row_iter().enumerate() {
@@ -57,7 +57,7 @@ pub fn diffusion_centrality(
         );
     }
 
-    Some(node_to_diffcen)
+    node_to_diffcen
 }
 
 // add unit tests

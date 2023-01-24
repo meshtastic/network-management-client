@@ -5,16 +5,20 @@ use std::collections::HashMap;
 
 use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use crate::graph::{edge::Edge, graph_ds::Graph};
+use crate::state_err_enums::diff_cen::DiffCenResult;
 use petgraph::graph::NodeIndex;
 
 use crate::algorithms::articulation_point::articulation_point;
 use crate::algorithms::diffcen::diffusion_centrality;
 use crate::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
 
+use super::algos_config::AlgoConfig;
+use super::history::History;
+
 pub struct AlgoStore {
     pub aps: Option<Vec<petgraph::graph::NodeIndex>>,
     pub mincut: Option<Vec<Edge>>,
-    pub diff_cent: Option<HashMap<String, HashMap<String, f64>>>,
+    pub diff_cent: DiffCenResult,
     pub most_sim_t: Option<Graph>,
     pub pred_state: Option<Graph>,
 }
@@ -24,44 +28,9 @@ impl AlgoStore {
         AlgoStore {
             aps: None,
             mincut: None,
-            diff_cent: None,
+            diff_cent: DiffCenResult::Error("Empty".to_string()),
             most_sim_t: None,
             pred_state: None,
-        }
-    }
-
-    pub fn run_ap(&mut self, graph: &Graph) {
-        let aps = articulation_point(graph);
-        self.set_aps(aps);
-    }
-
-    pub fn run_mincut(&mut self, g: &Graph) {
-        let sw_graph = &mut StoerWagnerGraph::new(g.clone());
-        let _mincut = stoer_wagner(sw_graph).unwrap();
-        let mut nodes_string = Vec::new();
-        for node in g.get_nodes() {
-            nodes_string.push(node.name.clone());
-        }
-        let mincut_edges = recover_mincut(sw_graph, nodes_string);
-        self.set_mincut(mincut_edges);
-    }
-
-    pub fn run_diff_cent(
-        &mut self,
-        T: u32,
-        eigenvals: Vec<f64>,
-        n: usize,
-        int_to_node_id: HashMap<usize, String>,
-        adj_matrix: DMatrix<f64>,
-    ) {
-        let diff_cent = diffusion_centrality(adj_matrix, int_to_node_id, T, eigenvals, n);
-        match diff_cent {
-            Some(dc) => {
-                self.set_diff_cent(dc);
-            }
-            None => {
-                self.set_diff_cent(HashMap::new());
-            }
         }
     }
 
@@ -73,7 +42,7 @@ impl AlgoStore {
         &self.mincut
     }
 
-    pub fn get_diff_cent(&self) -> &Option<HashMap<String, HashMap<String, f64>>> {
+    pub fn get_diff_cent(&self) -> &DiffCenResult {
         &self.diff_cent
     }
 
@@ -93,8 +62,8 @@ impl AlgoStore {
         self.mincut = Some(mincut);
     }
 
-    pub fn set_diff_cent(&mut self, diff_cent: HashMap<String, HashMap<String, f64>>) {
-        self.diff_cent = Some(diff_cent);
+    pub fn set_diff_cent(&mut self, diff_cent: DiffCenResult) {
+        self.diff_cent = diff_cent;
     }
 
     pub fn set_most_sim_t(&mut self, most_sim_t: Graph) {
