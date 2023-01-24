@@ -6,7 +6,6 @@ use std::time::SystemTime;
 use nalgebra::DMatrix;
 
 use crate::aux_data_structures::timeline::Timeline;
-use crate::aux_functions::adj_matrix::convert_to_adj_matrix;
 use crate::global::history::History;
 
 use crate::global::algos_config::AlgoConfig;

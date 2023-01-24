@@ -795,7 +795,7 @@ mod tests {
         let b_d = Edge::new(b_idx, d_idx, 0.6);
         G1.add_edge_from_struct(b_d);
 
-        let (adj_matrix, int_to_node_id, node_id_to_int) = G1.convert_to_adj_matrix();
+        let (adj_matrix, int_to_node_id, d_adj) = G1.convert_to_adj_matrix();
 
         // assert that the adjacency matrix is correct
         assert_eq!(
