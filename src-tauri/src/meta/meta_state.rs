@@ -3,11 +3,10 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
+use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use crate::aux_data_structures::timeline::Timeline;
-use crate::meta::history::History;
 
-use crate::algorithms::articulation_point::articulation_point;
-use crate::algorithms::stoer_wagner::stoer_wagner;
+use crate::meta::history::History;
 
 use crate::meta::algos_config::AlgoConfig;
 
@@ -35,7 +34,7 @@ pub struct MetaState {
     time: SystemTime,
     algos_to_run: AlgoConfig,
     algos_run_mode_auto: bool,
-    algo_results: AlgoStore,
+    algo_store: AlgoStore,
 }
 
 impl MetaState {
@@ -59,10 +58,15 @@ impl MetaState {
             time: SystemTime::now(),
             algos_to_run: AlgoConfig::new(),
             algos_run_mode_auto: true,
-            algo_results: AlgoStore::new(),
+            algo_store: AlgoStore::new(),
         }
     }
 
+    /// Sets which algorithms should be run.
+    ///
+    /// # Arguments
+    ///
+    /// * `algos_bitfield` - A u8 representing the algorithms to run.
     pub fn set_algos(&mut self, algos_bitfield: u8) {
         self.algos_to_run.set_algos(algos_bitfield);
     }
