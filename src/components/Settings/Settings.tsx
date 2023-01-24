@@ -51,7 +51,7 @@ const Settings = () => {
 
   // Submits the form. Triggered by pressing the save button
   const handleSubmit: FormEventHandler = (e) => {
-    // e.preventDefault();
+    e.preventDefault();
     if (activeNode) {
       const updatedUser: User = {
         id: deviceID,
@@ -59,7 +59,7 @@ const Settings = () => {
         shortName: deviceNickname,
         macaddr: activeNode ? activeNode.data.user!.macaddr : [],
         hwModel: activeNode ? activeNode.data.user!.hwModel : 0,
-        isLicensed: activeNode ? activeNode.data.user!.isLicensed : true,
+        isLicensed: activeNode ? activeNode.data.user!.isLicensed : false,
       };
 
       invoke("update_device_user", { user: updatedUser }).catch((e) => {
@@ -160,6 +160,7 @@ const Settings = () => {
               <button
                 className="border-black border-1 bg-gray-300 px-[6%] py-[2%] text-xl rounded-md hover:bg-gray-400 hover:border-2"
                 type="submit"
+                disabled={!activeNode}
               >
                 Save
               </button>
