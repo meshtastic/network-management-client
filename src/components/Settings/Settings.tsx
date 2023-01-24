@@ -6,9 +6,7 @@ import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
 import { selectActiveNode } from "@features/device/deviceSelectors";
-
 import type { User } from "@bindings/protobufs/User";
-
 import { invoke } from "@tauri-apps/api/tauri";
 
 // Function to convert decimal MAC address to hex
