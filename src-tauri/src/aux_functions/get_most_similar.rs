@@ -6,7 +6,7 @@ use reqwest::Client;
 
 use serde_json::json;
 
-pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<String, String> {
+pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<Graph, String> {
     let client = Client::new();
 
     let mut snapshots = "".to_owned();
@@ -45,7 +45,7 @@ pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<String, String> {
             let graph_string = graph.to_string();
 
             println!("Next Graph State: \n{}", graph_string);
-            Ok("Success".into())
+            Ok(graph)
         } else {
             Err("Error: could not convert graph_json to a string".into())
         }

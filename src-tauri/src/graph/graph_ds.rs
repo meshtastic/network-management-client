@@ -18,6 +18,17 @@ pub struct Graph {
     >,
 }
 
+// implement debug for graph
+impl std::fmt::Debug for Graph {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Graph")
+            .field("g", &self.g)
+            .field("node_idx_map", &self.node_idx_map)
+            .field("edge_idx_map", &self.edge_idx_map)
+            .finish()
+    }
+}
+
 impl Graph {
     /// Creates a new graph and returns it.
     pub fn new() -> Graph {
