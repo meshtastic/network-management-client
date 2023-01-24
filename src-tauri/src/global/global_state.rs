@@ -69,11 +69,22 @@ impl GlobalState {
         }
     }
 
+    /// Adds a graph to the timeline.
+    ///
+    /// # Arguments
+    ///
+    /// * `graph` - A Graph object.
     pub fn add_graph(&mut self, graph: Graph) {
         self.timeline.add_snapshot(&graph);
         self.set_adj_matrix(&graph);
     }
 
+    /// Calculates and sets the adjacency matrix (with relevant aux data structures) for the current graph in timeline.
+    /// It also saves DMatrix representation of the adjacency matrix to be used by Eigens.
+    ///
+    /// # Arguments
+    ///
+    /// * `graph` - A Graph object.
     fn set_adj_matrix(&mut self, graph: &Graph) {
         let n = graph.get_order();
         let (adj_matrix, int_to_node_id, node_id_to_int) = convert_to_adj_matrix(graph);
@@ -90,6 +101,8 @@ impl GlobalState {
         self.d_adj_matrix = Some(DMatrix::from_row_slice(n, n, flattened_matrix));
     }
 
+    /// Calculates and sets (in self.eigens) the eigenvalues of the current graph in timeline.
+    /// It uses DMatrix representation hence we expect it to be called after set_adj_matrix.
     fn set_eigenvals_result(&mut self) {
         match self.timeline.get_curr_snapshot() {
             Some(graph) => {

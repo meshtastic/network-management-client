@@ -1,6 +1,15 @@
 #![allow(dead_code)]
 use std::time::SystemTime;
 
+/// A struct that stores the history of the last calculation of each algorithm.
+///
+/// # Fields
+///
+/// * `ap_history` - A Vec of SystemTimes representing the history of the last articulation point calculation.
+/// * `mincut_history` - A Vec of SystemTimes representing the history of the last mincut calculation.
+/// * `diff_cent_history` - A Vec of SystemTimes representing the history of the last diffusion centrality calculation.
+/// * `most_sim_t_history` - A Vec of SystemTimes representing the history of the last most similar timeline calculation.
+/// * `pred_stt_history` - A Vec of SystemTimes representing the history of the last predicted state calculation.
 pub struct History {
     ap_history: Vec<SystemTime>,
     mincut_history: Vec<SystemTime>,
