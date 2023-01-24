@@ -3,6 +3,7 @@ use crate::aux_functions::conversion_factors::{
     ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
     LON_CONVERSION_FACTOR,
 };
+use crate::constructors::init::init_graph::get_distance;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
 use rand::prelude::*;
@@ -126,8 +127,22 @@ pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
 pub fn mock_edge_map_from_loc_info(
     nodes: HashMap<u32, MeshNode>,
 ) -> HashMap<(u32, u32), (f64, u64)> {
-    //TODO: Implement
-    return HashMap::new();
+    // Connect nodes if their distance is less than a certain threshold radius, r
+    let r = 100.0;
+    let mut edge_map = HashMap::new();
+    for (node_id, node) in nodes.iter() {
+        for (neighbor_id, neighbor) in nodes.iter() {
+            if node_id != neighbor_id {
+                let distance = get_distance(node.clone(), neighbor.clone());
+                if distance < r {
+                    let snr = nodes.get(neighbor_id).unwrap().data.snr;
+                    let time = 0;
+                    edge_map.insert((*node_id, *neighbor_id), (snr as f64, time as u64));
+                }
+            }
+        }
+    }
+    edge_map
 }
 
 #[cfg(test)]
