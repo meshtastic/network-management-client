@@ -43,6 +43,12 @@ impl AlgoController {
             store.set_diff_cent(diff_cen_map);
             history.log_diff_cent();
         }
+        if algo_conf.get_most_sim_t_activation() {
+            // TODO
+        }
+        if algo_conf.get_pred_state_activation() {
+            // TODO
+        }
     }
 
     pub fn run_ap(&mut self, graph: &Graph, params: &Params) -> Vec<NodeIndex> {
@@ -72,6 +78,14 @@ impl AlgoController {
             }
             EigenvalsResult::Error(er_Str) => DiffCenResult::Error(er_Str),
         }
+    }
+
+    pub fn run_most_sim_t(&mut self, g: &Graph, params: &Params) {
+        // TODO
+    }
+
+    pub fn run_pred_state(&mut self, g: &Graph, params: &Params) {
+        // TODO
     }
 }
 
