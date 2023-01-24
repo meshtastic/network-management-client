@@ -143,7 +143,8 @@ pub struct MeshDevice {
     pub config: protobufs::LocalConfig, // local-only device configuration
     pub my_node_info: protobufs::MyNodeInfo, // debug information specific to device
     pub nodes: HashMap<u32, MeshNode>, // network devices this device has communicated with
-    pub region_unset: bool,       // flag for whether device has an unset LoRa region
+    pub edges: HashMap<(u32, u32), (f64, u64)>, // edges between nodes (node_id, neighbor_id) -> (snr, timestamp)
+    pub region_unset: bool,                     // flag for whether device has an unset LoRa region
     pub device_metrics: protobufs::DeviceMetrics, // information about functioning of device (e.g. battery level)
     pub waypoints: HashMap<u32, protobufs::Waypoint>, // updatable GPS positions managed by this device
 }
