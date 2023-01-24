@@ -57,7 +57,7 @@ pub fn articulation_point_helper(
     }
 }
 
-pub fn articulation_point(graph: Graph) -> Vec<petgraph::graph::NodeIndex> {
+pub fn articulation_point(graph: &Graph) -> Vec<petgraph::graph::NodeIndex> {
     let mut disc = DefaultHashMap::<String, i32>::new();
     let mut low = DefaultHashMap::<String, i32>::new();
     let mut visited = DefaultHashMap::<String, bool>::new();
@@ -132,7 +132,7 @@ mod tests {
         println!("\n");
 
         // Test the articulation point function
-        let articulation_points = articulation_point(g.clone());
+        let articulation_points = articulation_point(&g);
         let len_articulation_points = articulation_points.len();
         for node in articulation_points.clone() {
             let node = g.g.node_weight(node).unwrap();
