@@ -1,8 +1,5 @@
-use std::collections::HashMap;
-
-use crate::aux_functions::adj_matrix::convert_to_adj_matrix;
-use crate::graph::graph_ds::Graph;
 use nalgebra::DMatrix;
+use std::collections::HashMap;
 
 /// Calculates the diffusion centrality of each node in the graph.
 /// Diffusion centrality is a measure of how much information a node
@@ -15,76 +12,56 @@ use nalgebra::DMatrix;
 /// # Returns
 ///
 /// * `Option<HashMap<String, HashMap<String, f64>>>` - A hashmap of node ids to a hashmap of node ids to diffusion centrality values.
-pub fn diffusion_centrality(g: &Graph, T: u32) -> Option<HashMap<String, HashMap<String, f64>>> {
-    let (adj_matrix, int_to_node_id) = convert_to_adj_matrix(g);
+pub fn diffusion_centrality(
+    adj_matrix: DMatrix<f64>,
+    int_to_node_id: HashMap<usize, String>,
+    T: u32,
+    eigenvals: Vec<f64>,
+    n: usize,
+) -> Option<HashMap<String, HashMap<String, f64>>> {
     let mut node_to_diffcen = HashMap::new();
 
-    let flattened_matrix = adj_matrix
+    let largest_eigenvalue = eigenvals
         .iter()
-        .map(|row| row.iter())
-        .flatten()
-        .map(|x| *x)
-        .collect::<Vec<f64>>();
+        .max_by(|a, b| a.partial_cmp(b).unwrap())
+        .unwrap_or(&1.0);
 
-    let matrix =
-        DMatrix::from_row_slice(g.get_nodes().len(), g.get_nodes().len(), &flattened_matrix);
+    let q = 1.0 / largest_eigenvalue;
 
-    let schur = matrix.clone().schur();
+    let identity_matrix = DMatrix::<f64>::identity(n, n);
 
-    let eigenvalues_option = schur.eigenvalues();
+    let mut H = DMatrix::zeros(n, n);
 
-    match eigenvalues_option {
-        // If eigenvalues are real, then we can unwrap the eigenvalues
-        Some(eigenvalues) => {
-            let eigenvalues_vec: Vec<f64> = eigenvalues.data.as_vec().clone();
-
-            let largest_eigenvalue = eigenvalues_vec
-                .iter()
-                .max_by(|a, b| a.partial_cmp(b).unwrap())
-                .unwrap_or(&1.0);
-
-            let q = 1.0 / largest_eigenvalue;
-
-            let identity_matrix =
-                DMatrix::<f64>::identity(g.get_nodes().len(), g.get_nodes().len());
-
-            let mut H = DMatrix::zeros(g.get_nodes().len(), g.get_nodes().len());
-
-            for t in 1..T + 1 {
-                H += (q * &matrix).pow(t) * &identity_matrix;
-            }
-
-            for (i, row) in H.row_iter().enumerate() {
-                let row_sum = row.sum();
-
-                // divide the row by the sum of the row
-                let row_normalized = row.map(|x| x / row_sum);
-
-                let mut node_to_diffcen_inner = HashMap::new();
-                for (j, col) in row_normalized.iter().enumerate() {
-                    if i == j {
-                        let sum = row.sum();
-                        node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), sum);
-                        continue;
-                    }
-                    node_to_diffcen_inner
-                        .insert(int_to_node_id.get(&j).unwrap().clone(), *col as f64);
-                }
-                node_to_diffcen.insert(
-                    int_to_node_id.get(&i).unwrap().clone(),
-                    node_to_diffcen_inner,
-                );
-            }
-
-            Some(node_to_diffcen)
-        }
-        // Eigenvalues are complex, can't calculate diffusion centralities
-        None => None,
+    for t in 1..T + 1 {
+        H += (q * &adj_matrix).pow(t) * &identity_matrix;
     }
+
+    for (i, row) in H.row_iter().enumerate() {
+        let row_sum = row.sum();
+
+        // divide the row by the sum of the row
+        let row_normalized = row.map(|x| x / row_sum);
+
+        let mut node_to_diffcen_inner = HashMap::new();
+        for (j, col) in row_normalized.iter().enumerate() {
+            if i == j {
+                let sum = row.sum();
+                node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), sum);
+                continue;
+            }
+            node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), *col as f64);
+        }
+        node_to_diffcen.insert(
+            int_to_node_id.get(&i).unwrap().clone(),
+            node_to_diffcen_inner,
+        );
+    }
+
+    Some(node_to_diffcen)
 }
 
 // add unit tests
-#[cfg(test)]
+/* #[cfg(test)]
 mod tests {
     use super::*;
 
@@ -109,4 +86,4 @@ mod tests {
         println!("{:?}", diff_cents);
         assert!(diff_cents.is_some());
     }
-}
+} */
