@@ -3,12 +3,15 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
-use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
-use crate::aux_data_structures::timeline::Timeline;
+use nalgebra::DMatrix;
 
+use crate::aux_data_structures::eigens::Eigens;
+use crate::aux_data_structures::timeline::Timeline;
+use crate::aux_functions::adj_matrix::convert_to_adj_matrix;
 use crate::global::history::History;
 
 use crate::global::algos_config::AlgoConfig;
+use crate::graph::graph_ds::Graph;
 
 use super::algo_store::AlgoStore;
 
@@ -27,7 +30,9 @@ use super::algo_store::AlgoStore;
 /// * `algos_run_mode_auto` - A boolean indicating whether the algorithms should be run automatically or not.
 pub struct GlobalState {
     timeline: Timeline,
+    eigens: Eigens,
     adj_matrix: Vec<Vec<f64>>,
+    d_adj_matrix: Option<DMatrix<f64>>,
     int_to_node_id: HashMap<usize, String>,
     node_id_to_int: HashMap<String, usize>,
     history: History,
@@ -48,10 +53,12 @@ impl GlobalState {
     /// # Returns
     ///
     /// * `GlobalState` - A new GlobalState object.
-    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> Self {
+    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> GlobalState {
         GlobalState {
             timeline: Timeline::new(config_fields, is_save),
+            eigens: Eigens::new(),
             adj_matrix: Vec::new(),
+            d_adj_matrix: None,
             int_to_node_id: HashMap::new(),
             node_id_to_int: HashMap::new(),
             history: History::new(),
@@ -59,6 +66,37 @@ impl GlobalState {
             algos_to_run: AlgoConfig::new(),
             algos_run_mode_auto: true,
             algo_store: AlgoStore::new(),
+        }
+    }
+
+    pub fn add_graph(&mut self, graph: Graph) {
+        self.timeline.add_snapshot(&graph);
+        self.set_adj_matrix(&graph);
+    }
+
+    fn set_adj_matrix(&mut self, graph: &Graph) {
+        let n = graph.get_order();
+        let (adj_matrix, int_to_node_id, node_id_to_int) = convert_to_adj_matrix(graph);
+        self.adj_matrix = adj_matrix.clone();
+        self.int_to_node_id = int_to_node_id;
+        self.node_id_to_int = node_id_to_int;
+        let flattened_matrix = &adj_matrix
+            .iter()
+            .map(|row| row.iter())
+            .flatten()
+            .map(|x| *x)
+            .collect::<Vec<f64>>();
+
+        self.d_adj_matrix = Some(DMatrix::from_row_slice(n, n, flattened_matrix));
+    }
+
+    fn set_eigenvals_result(&mut self) {
+        match self.timeline.get_curr_snapshot() {
+            Some(graph) => {
+                self.eigens
+                    .calc_and_set_eigenvals(self.d_adj_matrix.clone().unwrap());
+            }
+            None => {}
         }
     }
 

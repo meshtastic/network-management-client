@@ -5,6 +5,7 @@ mod global;
 mod graph;
 mod mesh;
 mod mocks;
+mod state_err_enums;
 
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
