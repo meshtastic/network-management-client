@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+use nalgebra::DMatrix;
 use std::collections::HashMap;
 
 use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
@@ -45,8 +46,15 @@ impl AlgoStore {
         self.set_mincut(mincut_edges);
     }
 
-    pub fn run_diff_cent(&mut self, graph: &Graph, T: u32) {
-        let diff_cent = diffusion_centrality(graph, T);
+    pub fn run_diff_cent(
+        &mut self,
+        T: u32,
+        eigenvals: Vec<f64>,
+        n: usize,
+        int_to_node_id: HashMap<usize, String>,
+        adj_matrix: DMatrix<f64>,
+    ) {
+        let diff_cent = diffusion_centrality(adj_matrix, int_to_node_id, T, eigenvals, n);
         match diff_cent {
             Some(dc) => {
                 self.set_diff_cent(dc);
