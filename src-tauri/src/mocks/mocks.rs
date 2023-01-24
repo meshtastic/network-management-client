@@ -9,8 +9,12 @@ use rand::prelude::*;
 use rand::seq::SliceRandom;
 use std::collections::HashMap;
 
-// Generate a list of neighborinfo packets for a graph with given number of nodes and percent connectedness.
-pub fn mock_neighborinfo_packets(num_nodes: i32, percent_connected: f64) -> Vec<NeighborInfo> {
+// Generate a list of neighborinfo packets for a given number of nodes and optional percent connectedness
+pub fn mock_neighborinfo_packets(
+    num_nodes: i32,
+    opt_percent_connected: Option<f64>,
+) -> Vec<NeighborInfo> {
+    let percent_connected = opt_percent_connected.unwrap_or(1.0);
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
         let mut new_neighbor = NeighborInfo {
@@ -39,8 +43,8 @@ pub fn mock_neighborinfo_packets(num_nodes: i32, percent_connected: f64) -> Vec<
         let first_neighbor_id = all_edges_vec[edge_num as usize].0;
         let second_neighbor_id = all_edges_vec[edge_num as usize].1;
         let mut rng = rand::thread_rng();
-        let rand_nbr_snr: f64 = rng.gen(); // generates a float between 0 and 1
-                                           // Push a copy of the second neighbor into the first neighbor's neighbor list
+        let rand_nbr_snr: f64 = rng.gen();
+        // Push a copy of the second neighbor into the first neighbor's neighbor list
         let edge_neighbor = Neighbor {
             id: neighborinfo_vec[second_neighbor_id as usize].id,
             snr: rand_nbr_snr,
@@ -53,6 +57,7 @@ pub fn mock_neighborinfo_packets(num_nodes: i32, percent_connected: f64) -> Vec<
     neighborinfo_vec
 }
 
+// Generate a list of meshnode packets for a given number of nodes
 pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
     let mut meshnode_vec = Vec::new();
     for node_id in 0..num_nodes {
@@ -117,6 +122,7 @@ pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
     meshnode_vec
 }
 
+// Generate a map of edges and their weights from the current location info for mocking purposes
 pub fn mock_edge_map_from_loc_info(
     nodes: HashMap<u32, MeshNode>,
 ) -> HashMap<(u32, u32), (f64, u64)> {
@@ -130,7 +136,7 @@ mod tests {
 
     #[test]
     fn test_init_neighborinfo_packets() {
-        let neighborinfo = mock_neighborinfo_packets(3, 0.8);
+        let neighborinfo = mock_neighborinfo_packets(3, Some(0.8));
         // run unittests with -- --nocapture to print the structs
         println!("{:?}", neighborinfo);
         assert_eq!(neighborinfo.len(), 3);

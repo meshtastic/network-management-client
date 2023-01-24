@@ -1,6 +1,7 @@
 use crate::mesh::device::MeshNode;
 use std::collections::HashMap;
 
+// This function takes a vector of MeshNodes and returns a HashMap of MeshNodes, keyed by node id.
 pub fn init_node_map(meshnode_vec: Vec<MeshNode>) -> HashMap<u32, MeshNode> {
     let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
     for meshnode in meshnode_vec {

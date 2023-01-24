@@ -1,21 +1,19 @@
-use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use crate::aux_functions::conversion_factors::{
-    ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
-    LON_CONVERSION_FACTOR,
+    ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR,
 };
 use crate::aux_functions::edge_factory::edge_factory;
 use crate::aux_functions::take_snapshot::total_distance;
 use crate::graph::graph_ds::Graph;
 use crate::mesh::device::MeshNode;
-use app::protobufs;
 use petgraph::graph::NodeIndex;
 use std::collections::HashMap;
 
+// Create a graph from a hashmap of edge info and a hashmap of node location info
+// Hashmaps will be stored in our `MeshDevice` struct
 pub fn init_graph(
     mut snr_hashmap: HashMap<(u32, u32), (f64, u64)>,
     mut loc_hashmap: HashMap<u32, MeshNode>,
 ) -> Graph {
-    // Traverse the array of packets once, adding nodes and edges to our lists
     let mut graph = Graph::new();
     let mut edge_left_endpoints = Vec::<NodeIndex>::new();
     let mut edge_right_endpoints = Vec::<NodeIndex>::new();
@@ -38,8 +36,6 @@ pub fn init_graph(
         edge_distances.push(distance);
         edge_radio_quality.push(snr);
     }
-
-    // Create the edges
     let edges = edge_factory(
         edge_left_endpoints,
         edge_right_endpoints,
@@ -48,7 +44,6 @@ pub fn init_graph(
         None,
         None,
     );
-    // Add the edges to the graph
     for edge in edges {
         graph.add_edge_from_struct(edge);
     }
@@ -87,6 +82,8 @@ pub fn get_distance(node_1: MeshNode, node_2: MeshNode) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+    use app::protobufs;
 
     fn generate_zeroed_position() -> protobufs::Position {
         let position = protobufs::Position {

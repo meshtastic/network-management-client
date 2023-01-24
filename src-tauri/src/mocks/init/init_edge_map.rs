@@ -1,6 +1,8 @@
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use std::collections::HashMap;
 
+// Create a hashmap of edges and their SNR values from a vector of NeighborInfo packets.
+// The hashmap is of form (node_id_1, node_id_2) -> (SNR, timestamp).
 pub fn init_edge_map(packets: Vec<NeighborInfo>) -> HashMap<(u32, u32), (f64, u64)> {
     let mut snr_hashmap = HashMap::<(u32, u32), (f64, u64)>::new();
     for node_packet in packets {
@@ -30,6 +32,7 @@ pub fn init_edge_map(packets: Vec<NeighborInfo>) -> HashMap<(u32, u32), (f64, u6
     snr_hashmap
 }
 
+// helper function to prevent (A, B) (B, A) duplicates in the hashmap
 pub fn as_key(node_1: u32, node_2: u32) -> (u32, u32) {
     if node_1 < node_2 {
         (node_1, node_2)
