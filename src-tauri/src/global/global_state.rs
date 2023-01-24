@@ -6,13 +6,13 @@ use std::time::SystemTime;
 use crate::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use crate::aux_data_structures::timeline::Timeline;
 
-use crate::meta::history::History;
+use crate::global::history::History;
 
-use crate::meta::algos_config::AlgoConfig;
+use crate::global::algos_config::AlgoConfig;
 
 use super::algo_store::AlgoStore;
 
-/// The MetaState struct contains all the data that is not specific to a particular algorithm.
+/// The GlobalState struct contains all the data that is not specific to a particular algorithm.
 /// It is used to store the state of the application.
 ///
 /// # Fields
@@ -25,7 +25,7 @@ use super::algo_store::AlgoStore;
 /// * `time` - A SystemTime object.
 /// * `algos_to_run` - A Vec of Strings representing the algorithms to run.
 /// * `algos_run_mode_auto` - A boolean indicating whether the algorithms should be run automatically or not.
-pub struct MetaState {
+pub struct GlobalState {
     timeline: Timeline,
     adj_matrix: Vec<Vec<f64>>,
     int_to_node_id: HashMap<usize, String>,
@@ -37,8 +37,8 @@ pub struct MetaState {
     algo_store: AlgoStore,
 }
 
-impl MetaState {
-    /// Creates a new MetaState object.
+impl GlobalState {
+    /// Creates a new GlobalState object.
     ///
     /// # Arguments
     ///
@@ -47,9 +47,9 @@ impl MetaState {
     ///
     /// # Returns
     ///
-    /// * `MetaState` - A new MetaState object.
+    /// * `GlobalState` - A new GlobalState object.
     pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> Self {
-        MetaState {
+        GlobalState {
             timeline: Timeline::new(config_fields, is_save),
             adj_matrix: Vec::new(),
             int_to_node_id: HashMap::new(),
