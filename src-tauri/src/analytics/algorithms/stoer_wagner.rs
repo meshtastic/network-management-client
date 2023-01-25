@@ -1,12 +1,10 @@
 #![allow(dead_code)]
 
-use std::collections::HashMap;
-
-use crate::{
-    aux_data_structures::{binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph},
-    graph::edge::Edge,
-    state_err_enums::{mincut::MinCutResult, sw_cut::SWCutResult},
+use super::super::algo_result_enums::{mincut::MinCutResult, sw_cut::SWCutResult};
+use super::super::aux_data_structures::{
+    binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
 };
+use std::collections::HashMap;
 
 pub fn st_mincut(g: &mut StoerWagnerGraph) -> SWCutResult {
     let mut bheap = BinaryHeap::new(g);

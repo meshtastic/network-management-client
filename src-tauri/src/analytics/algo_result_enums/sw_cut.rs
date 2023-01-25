@@ -1,4 +1,4 @@
-use crate::aux_data_structures::cut::Cut;
+use crate::analytics::aux_data_structures::cut::Cut;
 
 #[derive(Debug)]
 pub enum SWCutResult {

@@ -1,12 +1,8 @@
-mod algorithms;
 mod analytics;
-mod aux_data_structures;
-mod aux_functions;
 mod constructors;
 mod data_conversion;
 mod graph;
 mod mesh;
-mod state_err_enums;
 
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};

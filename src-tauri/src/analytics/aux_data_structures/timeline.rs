@@ -4,7 +4,9 @@ use std::fs::OpenOptions;
 use std::io::prelude::*;
 
 // A data structure to represent the timeline of graph snapshots.
-use crate::aux_functions::take_snapshot::{take_snapshot_of_graph, take_snapshot_of_node_fts};
+use crate::analytics::aux_functions::take_snapshot::{
+    take_snapshot_of_graph, take_snapshot_of_node_fts,
+};
 use crate::graph::graph_ds::Graph;
 
 // Created at the beginning of each rescue attempt.

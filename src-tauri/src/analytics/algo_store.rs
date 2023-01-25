@@ -1,11 +1,11 @@
 #![allow(dead_code)]
 
+use super::algo_result_enums::ap::APResult;
+use super::algo_result_enums::diff_cen::DiffCenResult;
+use super::algo_result_enums::mincut::MinCutResult;
+use super::algo_result_enums::most_sim_timeline::MostSimTResult;
+use super::algo_result_enums::pred_state::PredStateResult;
 use crate::graph::graph_ds::Graph;
-use crate::state_err_enums::ap::APResult;
-use crate::state_err_enums::diff_cen::DiffCenResult;
-use crate::state_err_enums::mincut::MinCutResult;
-use crate::state_err_enums::most_sim_timeline::MostSimTResult;
-use crate::state_err_enums::pred_state::PredStateResult;
 
 /// Stores the results of the algorithms.
 ///

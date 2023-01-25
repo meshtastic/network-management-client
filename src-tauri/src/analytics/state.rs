@@ -3,8 +3,8 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
+use super::aux_data_structures::timeline::Timeline;
 use crate::analytics::history::History;
-use crate::aux_data_structures::timeline::Timeline;
 
 use super::algos_config::AlgoConfig;
 use crate::graph::graph_ds::Graph;
@@ -25,7 +25,7 @@ use super::algo_store::AlgoStore;
 /// * `time` - A SystemTime object.
 /// * `algos_to_run` - A Vec of Strings representing the algorithms to run.
 /// * `algos_run_mode_auto` - A boolean indicating whether the algorithms should be run automatically or not.
-pub struct GlobalState {
+pub struct State {
     timeline: Timeline,
     history: History,
     time: SystemTime,
@@ -35,7 +35,7 @@ pub struct GlobalState {
     algo_controller: AlgoController,
 }
 
-impl GlobalState {
+impl State {
     /// Creates a new GlobalState object.
     ///
     /// # Arguments
@@ -46,8 +46,8 @@ impl GlobalState {
     /// # Returns
     ///
     /// * `GlobalState` - A new GlobalState object.
-    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> GlobalState {
-        GlobalState {
+    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> State {
+        State {
             timeline: Timeline::new(config_fields, is_save),
             history: History::new(),
             time: SystemTime::now(),

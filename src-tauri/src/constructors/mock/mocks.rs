@@ -1,4 +1,4 @@
-use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use crate::analytics::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use crate::data_conversion::distance_conversion::gps_degrees_to_protobuf_field;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
