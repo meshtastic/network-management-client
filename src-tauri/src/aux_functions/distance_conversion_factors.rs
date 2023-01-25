@@ -19,3 +19,8 @@ See https://gis.stackexchange.com/questions/8650/measuring-accuracy-of-latitude-
 */
 pub const HANOVER_LON_PREFIX: f64 = 43.70;
 pub const HANOVER_LAT_PREFIX: f64 = 72.28;
+
+/*
+Typical Meshtastic device range; conservatively estimated to 1 km
+*/
+pub const MESHTASTIC_DEVICE_RANGE: f64 = 1.0;

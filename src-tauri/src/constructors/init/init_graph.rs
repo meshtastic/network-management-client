@@ -1,4 +1,4 @@
-use crate::aux_functions::conversion_factors::{
+use crate::aux_functions::distance_conversion_factors::{
     ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR,
 };
 use crate::aux_functions::edge_factory::edge_factory;
@@ -63,6 +63,7 @@ pub fn add_node_to_graph_if_not_exists(graph: &mut Graph, node_id: u32) {
 * Conversion function:
 * Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
 * Altitude: in meters above sea level, no conversion needed
+* Returns distance in kilometers
 */
 pub fn get_distance(node_1: MeshNode, node_2: MeshNode) -> f64 {
     let node_1_data = node_1.data;

@@ -1,7 +1,7 @@
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
-use crate::aux_functions::conversion_factors::{
+use crate::aux_functions::distance_conversion_factors::{
     ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
-    LON_CONVERSION_FACTOR,
+    LON_CONVERSION_FACTOR, MESHTASTIC_DEVICE_RANGE,
 };
 use crate::constructors::init::init_edge_map::as_key;
 use crate::constructors::init::init_graph::get_distance;
@@ -17,7 +17,7 @@ pub fn mock_neighborinfo_packets(
     num_nodes: i32,
     opt_percent_connected: Option<f64>,
 ) -> Vec<NeighborInfo> {
-    let percent_connected = opt_percent_connected.unwrap_or(1.0);
+    let percent_connected = opt_percent_connected.unwrap_or(MESHTASTIC_DEVICE_RANGE);
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
         let mut new_neighbor = NeighborInfo {
@@ -131,7 +131,7 @@ pub fn mock_edge_map_from_loc_info(
     nodes: HashMap<u32, MeshNode>,
     radius: Option<f64>,
 ) -> HashMap<(u32, u32), (f64, u64)> {
-    // Connect nodes if their distance is less than a certain threshold radius, r
+    // Connect nodes if their distance is less than a certain threshold radius, r, in km
     let r = radius.unwrap_or(100.0);
     let mut edge_map = HashMap::new();
     for (node_id, node) in nodes.iter() {
