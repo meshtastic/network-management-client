@@ -70,6 +70,25 @@ self.algo_controller.run_algos(
 
 which itself calls the activated algorithms, stores their results as `Enum` in `AlgoStore` and logs the time in `History` object for each of the algorithms.
 
+To retrieve algorithm results:
+
+```rust
+state.get_algo_results();
+let ap_algo_res = algo_results.get_aps();
+match ap_algo_res {
+    APResult::Success(aps) => {
+        println!("AP algorithm returned: {:?}", aps);
+        assert_eq!(aps.len(), 0);
+    }
+    APResult::Error(err_str) => {
+        panic!("Error running AP algorithm: {}", err_str);
+    }
+    APResult::Empty(b) => {
+        panic!("AP algorithm returned empty result: {}", b);
+    }
+}
+```
+
 &nbsp;
 
 ### **AlgoStore**
