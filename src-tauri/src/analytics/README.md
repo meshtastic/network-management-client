@@ -2,6 +2,10 @@
 
 Module for interacting with the network / graph.
 
+&nbsp;
+
+### **State**
+
 The entry-point of this module is `State` struct in [state.rs](./state.rs). `State` accepts two parameters: `config_fields: HashMap<&str, &str>` and `is_save: bool` both of which are passed down to [Timeline](./aux_data_structures/timeline.rs). Former is a hashmap with two keys "timeline_data_dir" and "timeline_label_dir" representing the directory locations in which the data will be saved if `is_save` is true.
 
 &nbsp;
@@ -65,3 +69,38 @@ self.algo_controller.run_algos(
 ```
 
 which itself calls the activated algorithms, stores their results as `Enum` in `AlgoStore` and logs the time in `History` object for each of the algorithms.
+
+&nbsp;
+
+### **AlgoStore**
+
+This `Struct` saves the result of activated algorithms represented by their respective `Enum`s. It should be noted that the `AlgoStore` saves the latest results and not all of them. So if an algorithm is run 5 times, `AlgoStore` will only save the last one.
+
+&nbsp;
+
+### **AlgoController**
+
+This `Struct` doesn't have any field but contains a group of functions that run algorithms and save and log their results. Only `State` interacts with `AlgoController` and no other module should interact with it.
+
+&nbsp;
+
+### **History**
+
+For each algorithm `History` stores the time and elapsed time since prior time each algorithm was run.
+
+&nbsp;
+
+### **Enums**
+
+For each algorithm, we implement an `Enum` that can take on any one of the three values: Success: Any, Error: String, Empty: bool. For example, for articulation point algorithm result, we have the following `Enum`:
+
+```rust
+#[derive(Debug)]
+pub enum APResult {
+    Success(Vec<NodeIndex>),
+    Error(String),
+    Empty(bool),
+}
+```
+
+The type of `APResult::Success` is `Vec<NodeIndex>` because that's what articulation_point algorithm returns if there is no problem. The same concept applies to all other algorithm results.
