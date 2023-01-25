@@ -1,11 +1,13 @@
 import React, { useState, FormEventHandler } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
 import { selectActiveNode } from "@features/device/deviceSelectors";
+import type { User } from "@bindings/protobufs/User";
+import { requestUpdateUser } from "@features/device/deviceActions";
 
 // Function to convert decimal MAC address to hex
 function convertMacAddr(macAddr: number[]) {
@@ -27,29 +29,38 @@ const Settings = () => {
 
   // Functions to set device info. Forbidden non-null suppressed, but I checked if a device is connected.
   const [deviceID, setDeviceID] = useState(
-    activeNode ? activeNode.data.user!.id : "No device selected"
+    activeNode?.data.user?.id ?? "No device selected"
   );
   const [deviceName, setDeviceName] = useState(
-    activeNode ? activeNode.data.user!.longName : "No device selected"
+    activeNode?.data.user?.longName ?? "No device selected"
   );
   const [deviceNickname, setDeviceNickname] = useState(
-    activeNode ? activeNode.data.user!.shortName : "No device selected"
+    activeNode?.data.user?.shortName ?? "No device selected"
   );
 
   // MAC, Hardware, and Licensing. Even though they are not displayed when null, the check prevents an error on assignment
   const mac = activeNode
     ? convertMacAddr(activeNode.data.user!.macaddr)
     : "No device selected";
-  const hwModel = activeNode
-    ? activeNode.data.user!.hwModel
-    : "No device selected";
-  const isLicensed = activeNode
-    ? activeNode.data.user!.isLicensed
-    : "No device selected";
+  const hwModel = activeNode?.data.user?.hwModel ?? "No device selected";
+  const isLicensed = activeNode?.data.user?.isLicensed ?? "No device selected";
+
+  const dispatch = useDispatch();
 
   // Submits the form. Triggered by pressing the save button
   const handleSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
+    if (activeNode) {
+      const updatedUser: User = {
+        ...activeNode.data.user!,
+        longName: deviceName,
+        shortName: deviceNickname,
+      };
+
+      dispatch(requestUpdateUser({ user: updatedUser }));
+    } else {
+      console.log("No active node selected");
+    }
   };
 
   // Render the popup.
@@ -75,7 +86,7 @@ const Settings = () => {
           </div>
         </div>
         <div className="text-sm flex justify-center">
-          Note: This is just the UI, and is not currently connected to backend
+          Note: App will be reloaded on save
         </div>
         {/* Make a form where we put the options */}
         <div className="overflow-y-scroll h-4/5 mt-2">
@@ -138,11 +149,11 @@ const Settings = () => {
             ) : (
               <div></div>
             )}
-            {/* Meshtastic Web Client has two more options - MAC Address and Hardware type. Since both are not changeable, we will not make the UI for these. */}
             <div className="flex justify-center pt-[6%] pb-[3%]">
               <button
                 className="border-black border-1 bg-gray-300 px-[6%] py-[2%] text-xl rounded-md hover:bg-gray-400 hover:border-2"
                 type="submit"
+                disabled={!activeNode}
               >
                 Save
               </button>

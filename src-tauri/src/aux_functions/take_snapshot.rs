@@ -1,41 +1,7 @@
 use std::{collections::HashMap, hash::Hash};
 
+use crate::data_conversion::distance_conversion::{get_distance, total_distance};
 use crate::graph::graph_ds::Graph;
-
-/// Returns Haversine distance between 2 nodes using their lat and long
-/// https://en.wikipedia.org/wiki/Haversine_formula
-///
-/// # Arguments
-///
-/// * `lat1` - latitude of node 1
-/// * `lon1` - longitude of node 1
-/// * `lat2` - latitude of node 2
-/// * `lon2` - longitude of node 2
-fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
-    let r = 6371.0; // radius of the earth in km
-    let d_lat = (lat2 - lat1).to_radians();
-    let d_lon = (lon2 - lon1).to_radians();
-    let a = (d_lat / 2.0).sin().powi(2)
-        + (d_lon / 2.0).sin().powi(2) * lat1.to_radians().cos() * lat2.to_radians().cos();
-    let c = 2.0 * a.sqrt().atan2((1.0 - a).sqrt());
-    r * c
-}
-
-/// Returns total distance between 2 nodes using euclidean of haversine and altitude difference.
-///
-/// # Arguments
-///
-/// * `lat1` - latitude of node 1
-/// * `lon1` - longitude of node 1
-/// * `alt1` - altitude of node 1
-/// * `lat2` - latitude of node 2
-/// * `lon2` - longitude of node 2
-/// * `alt2` - altitude of node 2
-pub fn total_distance(lat1: f64, lon1: f64, alt1: f64, lat2: f64, lon2: f64, alt2: f64) -> f64 {
-    let haversine_distance = haversine_distance(lat1, lon1, lat2, lon2).powi(2);
-    let alt_difference = (alt1 - alt2).powi(2);
-    (haversine_distance + alt_difference).sqrt()
-}
 
 fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
     let mut nodes = graph.get_nodes().clone();
