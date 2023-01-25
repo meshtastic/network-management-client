@@ -19,3 +19,6 @@ See https://gis.stackexchange.com/questions/8650/measuring-accuracy-of-latitude-
 */
 pub const HANOVER_LON_PREFIX: f64 = 43.70;
 pub const HANOVER_LAT_PREFIX: f64 = 72.28;
+
+// radius of the earth in km
+pub const RADIUS_EARTH_KM: f64 = 6371.0;
