@@ -1,6 +1,6 @@
 use std::{collections::HashMap, hash::Hash};
 
-use crate::distance_conversion::get_distance;
+use crate::data_conversion::distance_conversion::{get_distance, total_distance};
 use crate::graph::graph_ds::Graph;
 
 fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {

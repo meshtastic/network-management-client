@@ -1,20 +1,15 @@
-use super::distance_constants::{
+use crate::data_conversion::distance_constants::{
     ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR, RADIUS_EARTH_KM,
 };
-use crate::aux_functions::edge_factory::edge_factory;
-use crate::aux_functions::take_snapshot::total_distance;
-use crate::graph::graph_ds::Graph;
 use crate::mesh::device::MeshNode;
-use petgraph::graph::NodeIndex;
-use std::collections::HashMap;
 
 /*
 * Calculates the distance between two points on a sphere using helpers in graph snapshot
+* Returns distance in kilometers
 *
 * Conversion function:
 * Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
 * Altitude: in meters above sea level, no conversion needed
-* Returns distance in kilometers
 */
 pub fn get_distance(node_1: MeshNode, node_2: MeshNode) -> f64 {
     let node_1_data = node_1.data;
@@ -66,9 +61,10 @@ fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
     r * c
 }
 
-// Convert gps degrees to protobuf field
-pub fn gps_degrees_to_protobuf_field(lat: f64, lon: f64) -> (i32, i32) {
+// Convert gps degrees to protobuf position field
+pub fn gps_degrees_to_protobuf_field(lat: f64, lon: f64, alt: f64) -> (i32, i32, i32) {
     let lat_i = (lat / LAT_CONVERSION_FACTOR) as i32;
     let lon_i = (lon / LON_CONVERSION_FACTOR) as i32;
-    (lat_i, lon_i)
+    let alt_i: i32 = (alt / ALT_CONVERSION_FACTOR) as i32;
+    (lat_i, lon_i, alt_i)
 }
