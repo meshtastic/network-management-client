@@ -1,8 +1,5 @@
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
-use crate::aux_functions::conversion_factors::{
-    ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
-    LON_CONVERSION_FACTOR,
-};
+use crate::data_conversion::distance_conversion::gps_degrees_to_protobuf_field;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
 use rand::prelude::*;
@@ -57,19 +54,21 @@ pub fn mock_neighborinfo_packets(
     neighborinfo_vec
 }
 
-// Generate a list of meshnode packets for a given number of nodes
+// Generate a list of meshnode packets for a given number of nodes, within the Hanover area
 pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
     let mut meshnode_vec = Vec::new();
     for node_id in 0..num_nodes {
-        let rand_lat: f64 =
-            HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01 / LAT_CONVERSION_FACTOR;
-        let rand_long: f64 =
-            HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01 / LON_CONVERSION_FACTOR;
-        let rand_alt: f64 = rand::random::<f64>() * 100.0 / ALT_CONVERSION_FACTOR;
+        const HANOVER_LAT_PREFIX: f64 = 43.70;
+        const HANOVER_LON_PREFIX: f64 = 72.28;
+        let latlngalt: (i32, i32, i32) = gps_degrees_to_protobuf_field(
+            HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01,
+            HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01,
+            rand::random::<f64>() * 100.0,
+        );
         let position = protobufs::Position {
-            latitude_i: rand_lat as i32,
-            longitude_i: rand_long as i32,
-            altitude: rand_alt as i32,
+            latitude_i: latlngalt.0,
+            longitude_i: latlngalt.1,
+            altitude: latlngalt.2,
             time: 0,
             location_source: 0,
             altitude_source: 0,

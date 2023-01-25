@@ -1,8 +1,5 @@
-use crate::aux_functions::conversion_factors::{
-    ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR,
-};
 use crate::aux_functions::edge_factory::edge_factory;
-use crate::aux_functions::take_snapshot::total_distance;
+use crate::data_conversion::distance_conversion::get_distance;
 use crate::graph::graph_ds::Graph;
 use crate::mesh::device::MeshNode;
 use petgraph::graph::NodeIndex;
@@ -57,32 +54,11 @@ pub fn add_node_to_graph_if_not_exists(graph: &mut Graph, node_id: u32) {
     }
 }
 
-/*
-* Calculates the distance between two points on a sphere using helpers in graph snapshot
-*
-* Conversion function:
-* Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
-* Altitude: in meters above sea level, no conversion needed
-*/
-pub fn get_distance(node_1: MeshNode, node_2: MeshNode) -> f64 {
-    let node_1_data = node_1.data;
-    let node_2_data = node_2.data;
-    let node_1_pos = node_1_data.position.unwrap();
-    let node_2_pos = node_2_data.position.unwrap();
-    total_distance(
-        node_1_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
-        node_1_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,
-        node_1_pos.altitude as f64 * ALT_CONVERSION_FACTOR,
-        node_2_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
-        node_2_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,
-        node_2_pos.altitude as f64 * ALT_CONVERSION_FACTOR,
-    )
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+    use crate::data_conversion::distance_conversion::gps_degrees_to_protobuf_field;
     use app::protobufs;
 
     fn generate_zeroed_position() -> protobufs::Position {
@@ -226,10 +202,14 @@ mod tests {
             timestamp: 0,
             neighbors: vec![neighbor_1.clone()],
         };
+        let lat_1 = 43.7022;
+        let lng_1 = 72.2882;
+        let alt_1 = 0.0;
+        let proto_latlng1 = gps_degrees_to_protobuf_field(lat_1, lng_1, alt_1);
         let distance_1_info = protobufs::Position {
-            latitude_i: (43.7022 / LAT_CONVERSION_FACTOR) as i32,
-            longitude_i: (72.2882 / LON_CONVERSION_FACTOR) as i32,
-            altitude: 0,
+            latitude_i: proto_latlng1.0,
+            longitude_i: proto_latlng1.1,
+            altitude: proto_latlng1.2,
             time: 0,
             location_source: 0,
             altitude_source: 0,
@@ -262,10 +242,14 @@ mod tests {
                 device_metrics: Some(generate_zeroed_device_metrics()),
             },
         };
+        let lat_2 = 43.7030;
+        let lng_2 = 72.2890;
+        let alt_2 = 0.0;
+        let proto_latlng2 = gps_degrees_to_protobuf_field(lat_2, lng_2, alt_2);
         let distance_2_info = protobufs::Position {
-            latitude_i: (43.7030 / LAT_CONVERSION_FACTOR) as i32,
-            longitude_i: (72.2890 / LON_CONVERSION_FACTOR) as i32,
-            altitude: 0,
+            latitude_i: proto_latlng2.0,
+            longitude_i: proto_latlng2.1,
+            altitude: proto_latlng2.2,
             time: 0,
             location_source: 0,
             altitude_source: 0,

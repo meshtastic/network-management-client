@@ -2,6 +2,7 @@ mod algorithms;
 mod aux_data_structures;
 mod aux_functions;
 mod constructors;
+mod data_conversion;
 mod graph;
 mod mesh;
 
