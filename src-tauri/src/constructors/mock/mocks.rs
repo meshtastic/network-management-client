@@ -3,6 +3,7 @@ use crate::aux_functions::conversion_factors::{
     ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
     LON_CONVERSION_FACTOR,
 };
+use crate::constructors::init::init_edge_map::as_key;
 use crate::constructors::init::init_graph::get_distance;
 use crate::mesh::device::helpers::get_current_time_u32;
 use crate::mesh::device::MeshNode;
@@ -125,6 +126,7 @@ pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
 }
 
 // Generate a map of edges and their weights from the current location info for mocking purposes
+// Do not repeat edges
 pub fn mock_edge_map_from_loc_info(
     nodes: HashMap<u32, MeshNode>,
 ) -> HashMap<(u32, u32), (f64, u64)> {
@@ -134,11 +136,13 @@ pub fn mock_edge_map_from_loc_info(
     for (node_id, node) in nodes.iter() {
         for (neighbor_id, neighbor) in nodes.iter() {
             if node_id != neighbor_id {
-                let distance = get_distance(node.clone(), neighbor.clone());
-                if distance < r {
-                    let snr = nodes.get(neighbor_id).unwrap().data.snr;
-                    let time = get_current_time_u32();
-                    edge_map.insert((*node_id, *neighbor_id), (snr as f64, time as u64));
+                if !edge_map.contains_key(&as_key(*neighbor_id, *node_id)) {
+                    let distance = get_distance(node.clone(), neighbor.clone());
+                    if distance < r {
+                        let snr = nodes.get(neighbor_id).unwrap().data.snr;
+                        let time = get_current_time_u32();
+                        edge_map.insert(as_key(*node_id, *neighbor_id), (snr as f64, time as u64));
+                    }
                 }
             }
         }
@@ -163,5 +167,17 @@ mod tests {
         let meshnodes = mock_meshnode_packets(3);
         println!("{:?}", meshnodes);
         assert_eq!(meshnodes.len(), 3);
+    }
+
+    #[test]
+    fn test_mock_edge_map_from_loc_info() {
+        let meshnodes = mock_meshnode_packets(3);
+        let mut nodes = HashMap::new();
+        for node in meshnodes {
+            nodes.insert(node.data.num, node);
+        }
+        let edge_map = mock_edge_map_from_loc_info(nodes);
+        println!("{:?}", edge_map);
+        assert_eq!(edge_map.len(), 3);
     }
 }
