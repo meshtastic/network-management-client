@@ -1,7 +1,7 @@
 use nalgebra::DMatrix;
 use std::collections::HashMap;
 
-use crate::global::algos_config::Params;
+use crate::analytics::algos_config::Params;
 
 /// Calculates the diffusion centrality of each node in the graph.
 /// Diffusion centrality is a measure of how much information a node

@@ -1,7 +1,7 @@
 mod algorithms;
+mod analytics;
 mod aux_data_structures;
 mod aux_functions;
-mod global;
 mod graph;
 mod mesh;
 mod mocks;

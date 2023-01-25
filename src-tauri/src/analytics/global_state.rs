@@ -3,10 +3,10 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
+use crate::analytics::history::History;
 use crate::aux_data_structures::timeline::Timeline;
-use crate::global::history::History;
 
-use crate::global::algos_config::AlgoConfig;
+use super::algos_config::AlgoConfig;
 use crate::graph::graph_ds::Graph;
 
 use super::algo_controller::AlgoController;
