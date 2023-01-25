@@ -106,7 +106,7 @@ impl State {
 /// Unit test
 #[cfg(test)]
 mod tests {
-    use crate::analytics::algo_result_enums::ap::APResult;
+    use crate::analytics::algo_result_enums::{ap::APResult, diff_cen::DiffCenResult};
 
     use super::*;
 
@@ -145,6 +145,48 @@ mod tests {
             }
             APResult::Empty(b) => {
                 panic!("AP algorithm returned empty result: {}", b);
+            }
+        }
+    }
+
+    #[test]
+    fn test_diffusion_centrality() {
+        let mut state = State::new(HashMap::new(), false);
+
+        let mut G1 = Graph::new();
+
+        // Create a few nodes and edges and add to graph
+        let u: String = "u".to_string();
+        let v: String = "v".to_string();
+        let w: String = "w".to_string();
+
+        let _u_idx = G1.add_node(u.clone());
+        let _v_idx = G1.add_node(v.clone());
+        let _w_idx = G1.add_node(w.clone());
+
+        G1.add_edge(u.clone(), v.clone(), 1 as f64);
+        G1.add_edge(u.clone(), w.clone(), 7 as f64);
+        G1.add_edge(v.clone(), w.clone(), 35 as f64);
+
+        state.add_graph(&G1);
+        state.set_algos(0b00100);
+        state.run_algos();
+
+        let algo_results = state.get_algo_results();
+
+        let diff_cents_res = algo_results.get_diff_cent();
+        match diff_cents_res {
+            DiffCenResult::Success(diff_cents) => {
+                println!("Diffusion centrality algorithm returned: {:?}", diff_cents);
+            }
+            DiffCenResult::Error(err_str) => {
+                panic!("Error running diffusion centrality algorithm: {}", err_str);
+            }
+            DiffCenResult::Empty(b) => {
+                panic!(
+                    "Diffusion centrality algorithm returned empty result: {}",
+                    b
+                );
             }
         }
     }
