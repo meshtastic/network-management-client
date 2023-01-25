@@ -157,7 +157,6 @@ mod tests {
     #[test]
     fn test_init_neighborinfo_packets() {
         let neighborinfo = mock_neighborinfo_packets(3, Some(0.8));
-        // run unittests with -- --nocapture to print the structs
         println!("{:?}", neighborinfo);
         assert_eq!(neighborinfo.len(), 3);
     }
@@ -192,6 +191,7 @@ mod tests {
         assert_eq!(edge_map.len(), 0);
     }
 
+    // Set radius to 0.1 km (100 m)
     fn test_mock_edge_map_with_small_radius() {
         let meshnodes = mock_meshnode_packets(3);
         let mut nodes = HashMap::new();
