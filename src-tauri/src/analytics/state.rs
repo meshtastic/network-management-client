@@ -63,8 +63,8 @@ impl State {
     /// # Arguments
     ///
     /// * `graph` - A Graph object.
-    pub fn add_graph(&mut self, graph: Graph) {
-        self.timeline.add_snapshot(&graph);
+    pub fn add_graph(&mut self, graph: &Graph) {
+        self.timeline.add_snapshot(graph);
     }
 
     /// Sets which algorithms should be run.
