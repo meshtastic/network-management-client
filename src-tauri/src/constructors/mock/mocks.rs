@@ -1,23 +1,17 @@
 use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
-use crate::aux_functions::conversion_factors::{
-    ALT_CONVERSION_FACTOR, HANOVER_LAT_PREFIX, HANOVER_LON_PREFIX, LAT_CONVERSION_FACTOR,
-    LON_CONVERSION_FACTOR,
-};
+use crate::data_conversion::distance_conversion::gps_degrees_to_protobuf_field;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
 use std::collections::HashMap;
-/*
-Generate a randomly connected graph with the degree of connectedness specified by percent_connected.
 
-Note: this graph does not currently have location info attached. Location info will be retrieved
-by mapping the node id to its location info.
-*/
-pub fn generate_loc_independent_packets(
+// Generate a list of neighborinfo packets for a given number of nodes and optional percent connectedness
+pub fn mock_neighborinfo_packets(
     num_nodes: i32,
-    percent_connected: f64,
+    opt_percent_connected: Option<f64>,
 ) -> Vec<NeighborInfo> {
+    let percent_connected = opt_percent_connected.unwrap_or(1.0);
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
         let mut new_neighbor = NeighborInfo {
@@ -46,8 +40,8 @@ pub fn generate_loc_independent_packets(
         let first_neighbor_id = all_edges_vec[edge_num as usize].0;
         let second_neighbor_id = all_edges_vec[edge_num as usize].1;
         let mut rng = rand::thread_rng();
-        let rand_nbr_snr: f64 = rng.gen(); // generates a float between 0 and 1
-                                           // Push a copy of the second neighbor into the first neighbor's neighbor list
+        let rand_nbr_snr: f64 = rng.gen();
+        // Push a copy of the second neighbor into the first neighbor's neighbor list
         let edge_neighbor = Neighbor {
             id: neighborinfo_vec[second_neighbor_id as usize].id,
             snr: rand_nbr_snr,
@@ -60,19 +54,21 @@ pub fn generate_loc_independent_packets(
     neighborinfo_vec
 }
 
-/* Create a vector of location info that can be mapped to by sequential node ids */
-pub fn generate_loc_info(num_nodes: i32) -> HashMap<u32, MeshNode> {
-    let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
+// Generate a list of meshnode packets for a given number of nodes, within the Hanover area
+pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
+    let mut meshnode_vec = Vec::new();
     for node_id in 0..num_nodes {
-        let rand_lat: f64 =
-            HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01 / LAT_CONVERSION_FACTOR;
-        let rand_long: f64 =
-            HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01 / LON_CONVERSION_FACTOR;
-        let rand_alt: f64 = rand::random::<f64>() * 100.0 / ALT_CONVERSION_FACTOR;
+        const HANOVER_LAT_PREFIX: f64 = 43.70;
+        const HANOVER_LON_PREFIX: f64 = 72.28;
+        let latlngalt: (i32, i32, i32) = gps_degrees_to_protobuf_field(
+            HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01,
+            HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01,
+            rand::random::<f64>() * 100.0,
+        );
         let position = protobufs::Position {
-            latitude_i: rand_lat as i32,
-            longitude_i: rand_long as i32,
-            altitude: rand_alt as i32,
+            latitude_i: latlngalt.0,
+            longitude_i: latlngalt.1,
+            altitude: latlngalt.2,
             time: 0,
             location_source: 0,
             altitude_source: 0,
@@ -120,9 +116,17 @@ pub fn generate_loc_info(num_nodes: i32) -> HashMap<u32, MeshNode> {
             environment_metrics: vec![],
             data: node_info,
         };
-        loc_hashmap.insert(node_id as u32, meshnode);
+        meshnode_vec.push(meshnode);
     }
-    loc_hashmap
+    meshnode_vec
+}
+
+// Generate a map of edges and their weights from the current location info for mocking purposes
+pub fn mock_edge_map_from_loc_info(
+    nodes: HashMap<u32, MeshNode>,
+) -> HashMap<(u32, u32), (f64, u64)> {
+    //TODO: Implement
+    return HashMap::new();
 }
 
 #[cfg(test)]
@@ -130,10 +134,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_init_three_nodes() {
-        let neighborinfo = generate_loc_independent_packets(3, 0.8);
+    fn test_init_neighborinfo_packets() {
+        let neighborinfo = mock_neighborinfo_packets(3, Some(0.8));
         // run unittests with -- --nocapture to print the structs
         println!("{:?}", neighborinfo);
         assert_eq!(neighborinfo.len(), 3);
+    }
+
+    #[test]
+    fn test_init_meshnode_packets() {
+        let meshnodes = mock_meshnode_packets(3);
+        println!("{:?}", meshnodes);
+        assert_eq!(meshnodes.len(), 3);
     }
 }
