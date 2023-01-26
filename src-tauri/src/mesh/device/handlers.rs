@@ -7,6 +7,8 @@ use super::{
     TextPacket, UserPacket, WaypointPacket,
 };
 
+use crate::constructors::mock::mocks;
+
 impl MeshDevice {
     pub fn handle_packet_from_radio(
         &mut self,
@@ -91,6 +93,8 @@ impl MeshDevice {
                 protobufs::PortNum::PositionApp => {
                     let data = protobufs::Position::decode(data.payload.as_slice())?;
                     self.add_position(PositionPacket { packet, data });
+                    //TODO: edge map generation from position packets should be temporary
+                    self.edges = mocks::mock_edge_map_from_loc_info(self.nodes.clone(), None);
                     device_updated = true;
                 }
                 protobufs::PortNum::PrivateApp => {
