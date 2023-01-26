@@ -12,7 +12,7 @@ const middleware = [sagaMiddleware, logger];
 export const store = configureStore({
   reducer: {
     devices: deviceReducer,
-    request: requestReducer,
+    requests: requestReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(middleware),

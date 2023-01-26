@@ -16,16 +16,16 @@ export const requestSlice = createSlice({
   name: "request",
   initialState: InitialRequestState,
   reducers: {
-    setActionIdle: (state, action: PayloadAction<{ type: string }>) => {
+    setRequestIdle: (state, action: PayloadAction<{ type: string }>) => {
       state.status[action.payload.type] = { status: "IDLE" };
     },
-    setActionPending: (state, action: PayloadAction<{ type: string }>) => {
+    setRequestPending: (state, action: PayloadAction<{ type: string }>) => {
       state.status[action.payload.type] = { status: "PENDING" };
     },
-    setActionSuccessful: (state, action: PayloadAction<{ type: string }>) => {
+    setRequestSuccessful: (state, action: PayloadAction<{ type: string }>) => {
       state.status[action.payload.type] = { status: "SUCCESSFUL" };
     },
-    setActionFailed: (
+    setRequestFailed: (
       state,
       action: PayloadAction<{ type: string; message: string }>
     ) => {
@@ -34,7 +34,7 @@ export const requestSlice = createSlice({
         message: action.payload.message,
       };
     },
-    clearActionState: (state, action: PayloadAction<{ type: string }>) => {
+    clearRequestState: (state, action: PayloadAction<{ type: string }>) => {
       delete state.status[action.payload.type];
     },
   },

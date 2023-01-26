@@ -29,7 +29,7 @@ function* getAvailableSerialPortsWorker(
   action: ReturnType<typeof requestAvailablePorts>
 ) {
   try {
-    yield put(requestSliceActions.setActionPending({ type: action.type }));
+    yield put(requestSliceActions.setRequestPending({ type: action.type }));
 
     const serialPorts = (yield call(
       invoke,
@@ -37,10 +37,10 @@ function* getAvailableSerialPortsWorker(
     )) as string[];
 
     yield put(deviceSliceActions.setAvailableSerialPorts(serialPorts));
-    yield put(requestSliceActions.setActionSuccessful({ type: action.type }));
+    yield put(requestSliceActions.setRequestSuccessful({ type: action.type }));
   } catch (error) {
     yield put(
-      requestSliceActions.setActionFailed({
+      requestSliceActions.setRequestFailed({
         type: action.type,
         message: (error as Error).message,
       })
@@ -52,7 +52,7 @@ function* connectToDeviceWorker(
   action: ReturnType<typeof requestConnectToDevice>
 ) {
   try {
-    yield put(requestSliceActions.setActionPending({ type: action.type }));
+    yield put(requestSliceActions.setRequestPending({ type: action.type }));
 
     yield call(disconnectFromDeviceWorker);
     yield call(invoke, "connect_to_serial_port", { portName: action.payload });
@@ -61,10 +61,10 @@ function* connectToDeviceWorker(
     yield put(requestSendMessage({ channel: 0, text: "Device Initialized" }));
     yield call(subscribeAll);
 
-    yield put(requestSliceActions.setActionSuccessful({ type: action.type }));
+    yield put(requestSliceActions.setRequestSuccessful({ type: action.type }));
   } catch (error) {
     yield put(
-      requestSliceActions.setActionFailed({
+      requestSliceActions.setRequestFailed({
         type: action.type,
         message: (error as Error).message,
       })
@@ -85,17 +85,17 @@ function* disconnectFromDeviceWorker() {
 
 function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
   try {
-    yield put(requestSliceActions.setActionPending({ type: action.type }));
+    yield put(requestSliceActions.setRequestPending({ type: action.type }));
 
     yield call(invoke, "send_text", {
       channel: action.payload.channel,
       text: action.payload.text,
     });
 
-    yield put(requestSliceActions.setActionSuccessful({ type: action.type }));
+    yield put(requestSliceActions.setRequestSuccessful({ type: action.type }));
   } catch (error) {
     yield put(
-      requestSliceActions.setActionFailed({
+      requestSliceActions.setRequestFailed({
         type: action.type,
         message: (error as Error).message,
       })
@@ -105,16 +105,16 @@ function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
 
 function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
   try {
-    yield put(requestSliceActions.setActionPending({ type: action.type }));
+    yield put(requestSliceActions.setRequestPending({ type: action.type }));
 
     yield call(invoke, "update_device_user", {
       user: action.payload.user,
     });
 
-    yield put(requestSliceActions.setActionSuccessful({ type: action.type }));
+    yield put(requestSliceActions.setRequestSuccessful({ type: action.type }));
   } catch (error) {
     yield put(
-      requestSliceActions.setActionFailed({
+      requestSliceActions.setRequestFailed({
         type: action.type,
         message: (error as Error).message,
       })
