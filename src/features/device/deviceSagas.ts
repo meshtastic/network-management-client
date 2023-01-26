@@ -56,12 +56,13 @@ function* connectToDeviceWorker(
 
     yield call(disconnectFromDeviceWorker);
     yield call(invoke, "connect_to_serial_port", { portName: action.payload });
-
     yield put(deviceSliceActions.setActiveSerialPort(action.payload));
-    yield put(requestSendMessage({ channel: 0, text: "Device Initialized" }));
-    yield call(subscribeAll);
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
+
+    yield put(requestSendMessage({ channel: 0, text: "Device Initialized" }));
+
+    yield call(subscribeAll);
   } catch (error) {
     yield put(
       requestSliceActions.setRequestFailed({
