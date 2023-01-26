@@ -16,35 +16,26 @@ export const requestSlice = createSlice({
   name: "request",
   initialState: InitialRequestState,
   reducers: {
-    setActionIdle: (state, action: PayloadAction<{ actionName: string }>) => {
-      state.status[action.payload.actionName] = { status: "IDLE" };
+    setActionIdle: (state, action: PayloadAction<{ type: string }>) => {
+      state.status[action.payload.type] = { status: "IDLE" };
     },
-    setActionPending: (
-      state,
-      action: PayloadAction<{ actionName: string }>
-    ) => {
-      state.status[action.payload.actionName] = { status: "PENDING" };
+    setActionPending: (state, action: PayloadAction<{ type: string }>) => {
+      state.status[action.payload.type] = { status: "PENDING" };
     },
-    setActionSuccessful: (
-      state,
-      action: PayloadAction<{ actionName: string }>
-    ) => {
-      state.status[action.payload.actionName] = { status: "SUCCESSFUL" };
+    setActionSuccessful: (state, action: PayloadAction<{ type: string }>) => {
+      state.status[action.payload.type] = { status: "SUCCESSFUL" };
     },
     setActionFailed: (
       state,
-      action: PayloadAction<{ actionName: string; errorMessage: string }>
+      action: PayloadAction<{ type: string; message: string }>
     ) => {
-      state.status[action.payload.errorMessage] = {
+      state.status[action.payload.message] = {
         status: "FAILED",
-        message: action.payload.errorMessage,
+        message: action.payload.message,
       };
     },
-    clearActionState: (
-      state,
-      action: PayloadAction<{ actionName: string }>
-    ) => {
-      delete state.status[action.payload.actionName];
+    clearActionState: (state, action: PayloadAction<{ type: string }>) => {
+      delete state.status[action.payload.type];
     },
   },
 });
