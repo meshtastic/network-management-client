@@ -4,6 +4,7 @@ use crate::data_conversion::distance_conversion::{get_distance, gps_degrees_to_p
 use crate::mesh::device::helpers::get_current_time_u32;
 use crate::mesh::device::MeshNode;
 use app::protobufs;
+use rand::distributions::Uniform;
 use rand::prelude::*;
 use rand::seq::SliceRandom;
 use std::collections::HashMap;
@@ -124,20 +125,20 @@ pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
 }
 
 // Generate a map of edges and their weights from the current location info for mocking purposes
-// Do not repeat edges
+// Do not repeat edges.
 pub fn mock_edge_map_from_loc_info(
     nodes: HashMap<u32, MeshNode>,
     radius: Option<f64>,
 ) -> HashMap<(u32, u32), (f64, u64)> {
     // Connect nodes if their distance is less than a certain threshold radius, r, in km
-    let r = radius.unwrap_or(100.0);
+    let default_radius = Uniform::from(1..100).sample(&mut rand::thread_rng()) as f64;
+    let r = radius.unwrap_or(default_radius);
     let mut edge_map = HashMap::new();
     for (node_id, node) in nodes.iter() {
         for (neighbor_id, neighbor) in nodes.iter() {
             if node_id != neighbor_id {
                 if !edge_map.contains_key(&as_key(*neighbor_id, *node_id)) {
                     let distance = get_distance(node.clone(), neighbor.clone());
-                    println!("Distance: {}", distance);
                     if distance < r {
                         let snr = nodes.get(neighbor_id).unwrap().data.snr;
                         let time = get_current_time_u32();
@@ -177,9 +178,10 @@ mod tests {
         }
         let edge_map = mock_edge_map_from_loc_info(nodes, None);
         println!("{:?}", edge_map);
-        assert_eq!(edge_map.len(), 3);
+        assert!(edge_map.len() <= 3);
     }
 
+    #[test]
     fn test_mock_edge_map_with_single_node() {
         let meshnodes = mock_meshnode_packets(1);
         let mut nodes = HashMap::new();
@@ -191,14 +193,15 @@ mod tests {
         assert_eq!(edge_map.len(), 0);
     }
 
-    // Set radius to 0.1 km (100 m)
+    // Set radius to 1 cm. No edges should be generated, although statistically there is a tiny chance we get one
+    #[test]
     fn test_mock_edge_map_with_small_radius() {
         let meshnodes = mock_meshnode_packets(3);
         let mut nodes = HashMap::new();
         for node in meshnodes {
             nodes.insert(node.data.num, node);
         }
-        let edge_map = mock_edge_map_from_loc_info(nodes, Some(0.1));
+        let edge_map = mock_edge_map_from_loc_info(nodes, Some(0.00001));
         println!("{:?}", edge_map);
         assert_eq!(edge_map.len(), 0);
     }
