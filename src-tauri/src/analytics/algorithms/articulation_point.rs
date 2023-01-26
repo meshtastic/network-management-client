@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 #![allow(non_snake_case)]
-
+use super::super::algo_result_enums::ap::APResult;
 use crate::graph::graph_ds::Graph;
 use core::cmp::min;
 use defaultdict::DefaultHashMap;
@@ -57,7 +57,7 @@ pub fn articulation_point_helper(
     }
 }
 
-pub fn articulation_point(graph: Graph) -> Vec<petgraph::graph::NodeIndex> {
+pub fn articulation_point(graph: &Graph) -> APResult {
     let mut disc = DefaultHashMap::<String, i32>::new();
     let mut low = DefaultHashMap::<String, i32>::new();
     let mut visited = DefaultHashMap::<String, bool>::new();
@@ -86,7 +86,7 @@ pub fn articulation_point(graph: Graph) -> Vec<petgraph::graph::NodeIndex> {
             articulation_points.push(graph.get_node_idx(key.to_string()));
         }
     }
-    return articulation_points;
+    return APResult::Success(articulation_points);
 }
 
 // Create a unit test for the Graph struct
@@ -132,22 +132,22 @@ mod tests {
         println!("\n");
 
         // Test the articulation point function
-        let articulation_points = articulation_point(g.clone());
-        let len_articulation_points = articulation_points.len();
-        for node in articulation_points.clone() {
-            let node = g.g.node_weight(node).unwrap();
-            println!("Articulation Point: {}", node.name);
+        let articulation_points_res = articulation_point(&g);
+        match articulation_points_res {
+            APResult::Success(aps) => {
+                let len_articulation_points = aps.len();
+                assert_eq!(len_articulation_points, 3);
+                // Check if node u is an articulation point
+                assert_eq!(aps.contains(&g.get_node_idx(u.clone())), false);
+                assert_eq!(aps.contains(&g.get_node_idx(x.clone())), true);
+                println!("Articulation Points: {:?}", aps);
+            }
+            APResult::Error(aps) => {
+                println!("Articulation Points: {:?}", aps);
+            }
+            APResult::Empty(b) => {
+                println!("This won't happen. {:?}", b);
+            }
         }
-        assert_eq!(len_articulation_points, 3);
-
-        // Check if node u is an articulation point
-        assert_eq!(
-            articulation_points.contains(&g.get_node_idx(u.clone())),
-            false
-        );
-        assert_eq!(
-            articulation_points.contains(&g.get_node_idx(x.clone())),
-            true
-        );
     }
 }

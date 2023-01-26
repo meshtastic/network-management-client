@@ -4,7 +4,9 @@ use std::fs::OpenOptions;
 use std::io::prelude::*;
 
 // A data structure to represent the timeline of graph snapshots.
-use crate::aux_functions::take_snapshot::{take_snapshot_of_graph, take_snapshot_of_node_fts};
+use crate::analytics::aux_functions::take_snapshot::{
+    take_snapshot_of_graph, take_snapshot_of_node_fts,
+};
 use crate::graph::graph_ds::Graph;
 
 // Created at the beginning of each rescue attempt.
@@ -61,17 +63,17 @@ impl Timeline {
         }
     }
 
-    pub fn add_snapshot(&mut self, snapshot: Graph) {
+    pub fn add_snapshot(&mut self, snapshot: &Graph) {
         match &self.curr_snapshot {
             None => {
-                self.curr_snapshot = Some(snapshot);
+                self.curr_snapshot = Some(snapshot.clone());
             }
             Some(_curr_snapshot) => {
                 let is_connected = self.check_connection(&snapshot);
                 if self.save {
                     self.write_snapshot();
                 }
-                self.curr_snapshot = Some(snapshot);
+                self.curr_snapshot = Some(snapshot.clone());
                 if !is_connected {
                     self.label = 0;
                     if self.save {
@@ -99,10 +101,10 @@ impl Timeline {
         }
     }
 
-    pub fn get_curr_snapshot(&self) -> Option<Graph> {
+    pub fn get_curr_snapshot(&self) -> Option<&Graph> {
         match self.curr_snapshot {
             None => None,
-            Some(ref curr_snapshot) => Some(curr_snapshot.clone()),
+            Some(ref curr_snapshot) => Some(curr_snapshot),
         }
     }
 
@@ -151,9 +153,11 @@ impl Timeline {
     }
 
     pub fn conclude_timeline(&mut self) {
-        self.write_snapshot();
-        self.label = 1;
-        self.write_timeline_label();
+        if self.save {
+            self.write_snapshot();
+            self.label = 1;
+            self.write_timeline_label();
+        }
     }
 }
 
@@ -170,7 +174,7 @@ mod tests {
         config_fields.insert("timeline_data_dir", "data/timelines");
         config_fields.insert("timeline_label_dir", "data");
 
-        let mut timeline = Timeline::new(config_fields, true);
+        let mut timeline = Timeline::new(config_fields, false);
 
         let mut G1 = Graph::new();
 
@@ -249,7 +253,7 @@ mod tests {
         let graphs = vec![G1, G2];
 
         for graph in graphs {
-            timeline.add_snapshot(graph);
+            timeline.add_snapshot(&graph);
         }
 
         timeline.conclude_timeline();

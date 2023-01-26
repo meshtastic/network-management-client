@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 
-use std::collections::HashMap;
-
-use crate::aux_data_structures::{
+use super::super::algo_result_enums::{mincut::MinCutResult, sw_cut::SWCutResult};
+use super::super::aux_data_structures::{
     binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
 };
+use std::collections::HashMap;
 
-pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
+pub fn st_mincut(g: &mut StoerWagnerGraph) -> SWCutResult {
     let mut bheap = BinaryHeap::new(g);
 
     let uncontracted = g.uncontracted.clone();
@@ -25,49 +25,44 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> Option<Cut> {
         bheap.build_heap();
     }
     if a.len() < 2 {
-        return None;
+        return SWCutResult::Error("Error in st_mincut".to_string());
     }
     let weight = a[a.len() - 1].weight;
 
     let s = a[a.len() - 1].node.name.clone();
     let t = a[a.len() - 2].node.name.clone();
 
-    return Some(Cut::new(weight, s, t));
+    return SWCutResult::Success(Cut::new(weight, s, t));
 }
 
-pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> Option<Cut> {
+pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> SWCutResult {
     if graph.uncontracted.len() == 2 {
-        return Some(graph.get_cut());
+        return SWCutResult::Success(graph.get_cut());
     } else {
         let opt_cut = st_mincut(graph);
         match opt_cut {
-            Some(cut) => {
+            SWCutResult::Success(cut) => {
                 graph.contract_edge(cut.get_a().to_string(), cut.get_b().to_string());
                 let opt_other_cut = stoer_wagner(graph);
                 match opt_other_cut {
-                    Some(other_cut) => {
+                    SWCutResult::Success(other_cut) => {
                         if cut.get_weight() < other_cut.get_weight() {
-                            return Some(cut);
+                            return SWCutResult::Success(cut);
                         } else {
-                            return Some(other_cut);
+                            return SWCutResult::Success(other_cut);
                         }
                     }
-                    None => {
-                        return None;
-                    }
+                    SWCutResult::Error(other_err_str) => SWCutResult::Error(other_err_str),
+                    SWCutResult::Empty(other_empty) => SWCutResult::Empty(other_empty),
                 }
             }
-            None => {
-                return None;
-            }
+            SWCutResult::Error(err_str) => SWCutResult::Error(err_str),
+            SWCutResult::Empty(empty) => SWCutResult::Empty(empty),
         }
     }
 }
 
-pub fn recover_mincut(
-    graph: &mut StoerWagnerGraph,
-    all_nodes: Vec<String>,
-) -> (Vec<String>, Vec<String>) {
+pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> MinCutResult {
     let mut parent_map = HashMap::new();
 
     for node in all_nodes {
@@ -81,10 +76,24 @@ pub fn recover_mincut(
     let s = keys[0];
     let t = keys[1];
 
-    return (
-        (*parent_map.get(s).unwrap().clone()).to_vec(),
-        (*parent_map.get(t).unwrap().clone()).to_vec(),
-    );
+    let s_cut = parent_map.get(s).unwrap().clone();
+    let t_cut = parent_map.get(t).unwrap().clone();
+
+    let mut st_cut_edges = Vec::new();
+
+    for node_s in s_cut {
+        for node_t in &t_cut {
+            let edge = graph.graph.get_edge(node_s.clone(), node_t.clone());
+            match edge {
+                Some(e) => {
+                    st_cut_edges.push(e.clone());
+                }
+                None => {}
+            }
+        }
+    }
+
+    return MinCutResult::Success(st_cut_edges);
 }
 
 // Create a unit test for the stoer-wagner algorithm
@@ -132,39 +141,54 @@ mod tests {
         let mut correct_mincut_weight_count = 0;
 
         let graph_sw = &mut StoerWagnerGraph::new(g.clone());
-        let _mincut = stoer_wagner(graph_sw).unwrap();
 
-        println!("Weight of mincut: {}\n", _mincut.get_weight());
+        let _mincut = stoer_wagner(graph_sw);
 
-        let nodes = vec![u, v, w, x, y, z, a, b];
-        let (s, t) = recover_mincut(graph_sw, nodes);
+        match _mincut {
+            SWCutResult::Success(cut) => {
+                assert_eq!(cut.get_weight(), 1.0);
+                let nodes = vec![u, v, w, x, y, z, a, b];
+                let mincut_edges_res = recover_mincut(graph_sw, nodes);
 
-        let mut mincut_edges: Vec<String> = Vec::new();
-
-        // print nodes in s
-        println!("Nodes in s: {:?}\n", s);
-        println!("Nodes in t: {:?}\n", t);
-
-        assert!(s.len() + t.len() == 8);
-        assert!(s.iter().all(|x| !t.contains(x)));
+                match mincut_edges_res {
+                    MinCutResult::Success(mincut_edges) => {
+                        assert_eq!(mincut_edges.len(), 1);
+                    }
+                    MinCutResult::Error(err_str) => {
+                        println!("Error: {}", err_str);
+                    }
+                    MinCutResult::Empty(empty) => {
+                        println!("Empty: {}", empty);
+                    }
+                }
+            }
+            SWCutResult::Error(err_str) => {
+                println!("Error: {}", err_str);
+            }
+            SWCutResult::Empty(empty) => {
+                println!("Empty: {}", empty);
+            }
+        }
 
         for _ in 0..100 {
             let graph_sw = &mut StoerWagnerGraph::new(g.clone());
-            let mincut = stoer_wagner(graph_sw);
-            match mincut {
-                Some(cut) => {
+
+            let mincut_res = stoer_wagner(graph_sw);
+            match mincut_res {
+                SWCutResult::Success(cut) => {
                     if cut.get_weight() == 1.0 {
                         correct_mincut_weight_count += 1;
                     }
                 }
-                None => {}
+                SWCutResult::Error(err_str) => {
+                    println!("Error: {}", err_str);
+                }
+                SWCutResult::Empty(empty) => {
+                    println!("Empty: {}", empty);
+                }
             }
         }
 
-        println!(
-            "Correct mincut weight count: {}",
-            correct_mincut_weight_count
-        );
         assert_eq!(correct_mincut_weight_count, 100);
     }
 }

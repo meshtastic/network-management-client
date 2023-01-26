@@ -1,4 +1,4 @@
-use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use crate::analytics::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use std::collections::HashMap;
 
 // Create a hashmap of edges and their SNR values from a vector of NeighborInfo packets.

@@ -1,4 +1,4 @@
-use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+use crate::analytics::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use crate::constructors::init::init_edge_map::as_key;
 use crate::data_conversion::distance_conversion::{get_distance, gps_degrees_to_protobuf_field};
 use crate::mesh::device::helpers::get_current_time_u32;

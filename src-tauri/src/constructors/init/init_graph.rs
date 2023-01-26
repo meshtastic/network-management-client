@@ -1,4 +1,4 @@
-use crate::aux_functions::edge_factory::edge_factory;
+use crate::analytics::aux_functions::edge_factory::edge_factory;
 use crate::data_conversion::distance_conversion::get_distance;
 use crate::graph::graph_ds::Graph;
 use crate::mesh::device::MeshNode;
@@ -57,7 +57,7 @@ pub fn add_node_to_graph_if_not_exists(graph: &mut Graph, node_id: u32) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+    use crate::analytics::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
     use crate::data_conversion::distance_conversion::gps_degrees_to_protobuf_field;
     use app::protobufs;
 
