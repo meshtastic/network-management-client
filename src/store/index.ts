@@ -3,6 +3,7 @@ import createSagaMiddleware from "redux-saga";
 import { logger } from "redux-logger";
 
 import { deviceReducer } from "@features/device/deviceSlice";
+import { requestReducer } from "@features/requests/requestReducer";
 import rootSaga from "@store/saga";
 
 const sagaMiddleware = createSagaMiddleware();
@@ -11,6 +12,7 @@ const middleware = [sagaMiddleware, logger];
 export const store = configureStore({
   reducer: {
     devices: deviceReducer,
+    request: requestReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(middleware),
