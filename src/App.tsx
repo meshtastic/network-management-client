@@ -11,6 +11,9 @@ const AppWrapper = () => (
   <>
     <Sidebar />
     <Outlet />
+
+    {/* TODO: add onboard route in next ticket*/}
+    {/* <OnboardPage /> */}
   </>
 );
 
