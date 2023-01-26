@@ -16,26 +16,26 @@ export const requestSlice = createSlice({
   name: "request",
   initialState: InitialRequestState,
   reducers: {
-    setRequestIdle: (state, action: PayloadAction<{ type: string }>) => {
-      state.status[action.payload.type] = { status: "IDLE" };
+    setRequestIdle: (state, action: PayloadAction<{ name: string }>) => {
+      state.status[action.payload.name] = { status: "IDLE" };
     },
-    setRequestPending: (state, action: PayloadAction<{ type: string }>) => {
-      state.status[action.payload.type] = { status: "PENDING" };
+    setRequestPending: (state, action: PayloadAction<{ name: string }>) => {
+      state.status[action.payload.name] = { status: "PENDING" };
     },
-    setRequestSuccessful: (state, action: PayloadAction<{ type: string }>) => {
-      state.status[action.payload.type] = { status: "SUCCESSFUL" };
+    setRequestSuccessful: (state, action: PayloadAction<{ name: string }>) => {
+      state.status[action.payload.name] = { status: "SUCCESSFUL" };
     },
     setRequestFailed: (
       state,
-      action: PayloadAction<{ type: string; message: string }>
+      action: PayloadAction<{ name: string; message: string }>
     ) => {
       state.status[action.payload.message] = {
         status: "FAILED",
         message: action.payload.message,
       };
     },
-    clearRequestState: (state, action: PayloadAction<{ type: string }>) => {
-      delete state.status[action.payload.type];
+    clearRequestState: (state, action: PayloadAction<{ name: string }>) => {
+      delete state.status[action.payload.name];
     },
   },
 });
