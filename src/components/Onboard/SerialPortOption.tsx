@@ -8,9 +8,14 @@ import {
 export interface ISerialPortOptions {
   name: string;
   state: string;
+  connection_error: string;
 }
 
-const SerialPortOption = ({ name, state }: ISerialPortOptions) => {
+const SerialPortOption = ({
+  name,
+  state,
+  connection_error,
+}: ISerialPortOptions) => {
   switch (state) {
     case "IDLE":
       return (
@@ -65,8 +70,8 @@ const SerialPortOption = ({ name, state }: ISerialPortOptions) => {
               </h1>
             </div>
             <h1 className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 mt-0.5">
-              Could not connect to serial port on {name}, failed with error
-              “Access Denied.”
+              Could not connect to serial port on {name}, failed with error “
+              {connection_error}”
             </h1>
           </div>
         </div>

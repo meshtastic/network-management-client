@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../../../.."
+		},
+		{
+			"name": "Meshtastic-emergency-response-client",
+			"path": "../../.."
+		}
+	],
+	"settings": {}
+}

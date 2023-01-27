@@ -6,7 +6,11 @@ import SerialPortOption from "../Onboard/SerialPortOption";
 type PortState = "IDLE" | "LOADING" | "SUCCESS" | "FAILURE";
 type PortType = { name: string; state: PortState };
 
-const OnboardPage = () => {
+export interface IOnboardPageProps {
+  unmountSelf: () => void;
+}
+
+const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
   const mockPorts: PortType[] = [
     {
       name: "port1",
@@ -26,8 +30,12 @@ const OnboardPage = () => {
     },
   ];
 
+  const moveToMain = () => {
+    unmountSelf();
+  };
+
   return (
-    <div className="flex flex-row h-screen w-screen">
+    <div className="flex flex-row h-screen w-screen absolute z-40 bg-white">
       <div className="flex flex-col flex-1">
         <div className="flex justify-center">
           <div className="h-1/8">
@@ -56,13 +64,14 @@ const OnboardPage = () => {
           </h1>
         </div>
         <div className="mt-10 flex flex-col">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4" onClick={moveToMain}>
             {mockPorts.map((port) => {
               return (
                 <SerialPortOption
                   key={port.name}
                   name={port.name}
                   state={port.state}
+                  connection_error={"Access Denied."}
                 />
               );
             })}
