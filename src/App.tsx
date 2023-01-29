@@ -6,6 +6,7 @@ import Sidebar from "@components/Sidebar/Sidebar";
 import HomePage from "@components/pages/HomePage";
 import SerialConnectPage from "@components/pages/SerialConnectPage";
 import FallbackPage from "@components/pages/FallbackPage";
+import OnboardPage from "./components/pages/OnboardPage";
 
 const AppWrapper = () => (
   <>
@@ -16,11 +17,20 @@ const AppWrapper = () => (
 
 const App = () => {
   const [isSplashMounted, setSplashMounted] = useState(true);
+  const [isOnboardMounted, setOnboardMounted] = useState(true);
 
   return (
     <div className="flex flex-row relative">
       {isSplashMounted && (
-        <SplashScreen unmountSelf={() => setSplashMounted(false)} />
+        <SplashScreen
+          unmountSelf={() => {
+            setSplashMounted(false);
+          }}
+        />
+      )}
+
+      {isOnboardMounted && (
+        <OnboardPage unmountSelf={() => setOnboardMounted(false)} />
       )}
 
       <Routes>
