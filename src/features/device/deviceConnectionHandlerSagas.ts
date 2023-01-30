@@ -31,8 +31,6 @@ export function* handleDeviceUpdateChannel(channel: DeviceUpdateChannel) {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const meshDevice: MeshDevice = yield take(channel);
-      console.log("updated device", meshDevice);
-
       yield put(deviceSliceActions.setDevice(meshDevice));
     }
   } catch (error) {
