@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
@@ -8,6 +8,7 @@ import { selectDeviceChannels } from '@features/device/deviceSelectors';
 
 const MessagingPage = () => {
   const channels = useSelector(selectDeviceChannels());
+  const [activeChannel, setActiveChannel] = useState<number | null>(null);
 
   return (
     <div className='flex flex-row w-full height-full'>
@@ -24,10 +25,17 @@ const MessagingPage = () => {
             </button>
           </div>
 
-          <div className='flex flex-col flex-1 gap-6'>
+          <div className='flex flex-col flex-1 gap-3'>
             {channels
               .filter(c => c.config.role !== 0) // * ignore DISABLED role
-              .map(c => <ChannelListElement key={c.config.index} channel={c} isSelected={false} />)}
+              .map(c => (
+                <ChannelListElement
+                  key={c.config.index}
+                  setActiveChannel={setActiveChannel}
+                  channel={c}
+                  isSelected={c.config.index === activeChannel}
+                />
+              ))}
           </div>
         </div>
       </div>
