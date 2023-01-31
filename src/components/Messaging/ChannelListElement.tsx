@@ -11,7 +11,7 @@ const ChannelListElement = ({ channel, setActiveChannel, isSelected }: IChannelL
   const lastMessage = channel.messages.at(-1) ?? null;
   const timeLastMessageReceived: string = lastMessage ?
     new Intl.DateTimeFormat("en-us", { hour: 'numeric', minute: "numeric", hour12: true })
-      .format(new Date(lastMessage?.payload.text.packet.rxTime ?? 0 * 1000))
+      .format(new Date(channel.lastInteraction * 1000))
     : "N/A";
 
   const getChannelName = (): string => {
