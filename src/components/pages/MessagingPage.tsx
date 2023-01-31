@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+
 import NavigationBacktrace from '@components/NavigationBacktrace';
 import ChannelListElement from '@components/Messaging/ChannelListElement';
+import ChannelDetailView from '@components/Messaging/ChannelDetailView';
+
 import { selectDeviceChannels } from '@features/device/deviceSelectors';
 
 const MessagingPage = () => {
   const channels = useSelector(selectDeviceChannels());
-  const [activeChannel, setActiveChannel] = useState<number | null>(null);
+  const [activeChannelIdx, setActiveChannelIdx] = useState<number | null>(null);
 
   return (
     <div className='flex flex-row w-full height-full'>
@@ -31,15 +33,16 @@ const MessagingPage = () => {
               .map(c => (
                 <ChannelListElement
                   key={c.config.index}
-                  setActiveChannel={setActiveChannel}
+                  setActiveChannel={setActiveChannelIdx}
                   channel={c}
-                  isSelected={c.config.index === activeChannel}
+                  isSelected={c.config.index === activeChannelIdx}
                 />
               ))}
           </div>
         </div>
       </div>
-      <div className='flex flex-1'>Other stuff</div>
+
+      {activeChannelIdx != null && !!channels[activeChannelIdx] ? <ChannelDetailView channel={channels[activeChannelIdx]} className="flex-1" /> : 'No channels selected'}
     </div>
   );
 };

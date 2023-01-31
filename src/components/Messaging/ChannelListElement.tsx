@@ -1,5 +1,6 @@
 import React from "react";
 import type { MeshChannel } from "@bindings/MeshChannel";
+import { getChannelName } from "@utils/messaging";
 
 export interface IChannelListElementProps {
   channel: MeshChannel;
@@ -14,10 +15,6 @@ const ChannelListElement = ({ channel, setActiveChannel, isSelected }: IChannelL
       .format(new Date(channel.lastInteraction * 1000))
     : "N/A";
 
-  const getChannelName = (): string => {
-    if (channel.config.role === 1) return "Primary";
-    return channel.config.settings?.name ?? "Unnamed Channel";
-  }
 
   if (isSelected) {
     return (
@@ -25,7 +22,7 @@ const ChannelListElement = ({ channel, setActiveChannel, isSelected }: IChannelL
         <div className="absolute bg-gray-700 rounded-lg h-full -z-10" style={{ width: 'calc(100% + 30px)', top: '0px', left: '-15px' }} />
         <div className="flex flex-row justify-between items-baseline">
           <p className="flex flex-row gap-2 items-baseline text-gray-50">
-            <span className="text-base font-semibold">{getChannelName()}</span>
+            <span className="text-base font-semibold">{getChannelName(channel)}</span>
             <span className="text-sm font-normal">(ch {channel.config.index})</span>
           </p>
           <p className="text-xs font-normal text-gray-100">{timeLastMessageReceived}</p>
@@ -41,7 +38,7 @@ const ChannelListElement = ({ channel, setActiveChannel, isSelected }: IChannelL
     <button type="button" onClick={() => setActiveChannel(channel.config.index)} className="py-2">
       <div className="flex flex-row justify-between items-baseline">
         <p className="flex flex-row gap-2 items-baseline text-gray-700">
-          <span className="text-base font-semibold ">{getChannelName()}</span>
+          <span className="text-base font-semibold ">{getChannelName(channel)}</span>
           <span className="text-sm font-normal">(ch {channel.config.index})</span>
         </p>
         <p className="text-xs font-normal text-gray-400">{timeLastMessageReceived}</p>
