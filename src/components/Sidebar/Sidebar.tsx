@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
@@ -31,9 +30,9 @@ const Sidebar = () => {
           />
           <SidebarIcon
             isActive={
-              location.pathname === "/" && location.hash === "#messages"
+              location.pathname === "/messaging"
             }
-            onClick={() => navigateTo("/#messages")}
+            onClick={() => navigateTo("/messaging")}
             renderIcon={() => (
               <ChatBubbleBottomCenterTextIcon className="w-6" />
             )}

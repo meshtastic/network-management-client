@@ -3,6 +3,7 @@ import type { ChannelMessageWithAck } from "@bindings/ChannelMessageWithAck";
 import type { MeshDevice } from "@bindings/MeshDevice";
 import type { MeshNode } from "@bindings/MeshNode";
 import type { User } from "@bindings/protobufs/User";
+import type { MeshChannel } from "@bindings/MeshChannel";
 
 export const selectAvailablePorts =
   () =>
@@ -70,3 +71,8 @@ export const selectUserByNodeId =
   (nodeId: number) =>
   (state: RootState): User | null =>
     selectNodeById(nodeId)(state)?.data.user ?? null;
+
+export const selectDeviceChannels =
+  () =>
+  (state: RootState): MeshChannel[] =>
+    Object.values(selectDevice()(state)?.channels ?? []);

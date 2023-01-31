@@ -2,7 +2,7 @@ import React, { FormEventHandler, ReactNode, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-import ChatBubble from "@components/Messages/ChatBubble";
+import ChatBubble from "@app/components/Messaging/ChatBubble";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import MapIconButton from "@components/Map/MapIconButton";
 import { requestSendMessage } from "@features/device/deviceActions";
