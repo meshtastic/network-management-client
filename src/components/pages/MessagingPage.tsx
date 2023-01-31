@@ -1,12 +1,13 @@
-import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import React from 'react';
+import { Cog6ToothIcon } from '@heroicons/react/24/outline';
+import NavigationBacktrace from '@components/NavigationBacktrace';
 
 const MessagingPage = () => {
   return (
     <div className='flex flex-row w-full height-full'>
       <div className='flex flex-col w-96 shadow-lg'>
         <div className='flex justify-center align-middle px-9 h-20 border-b border-gray-100'>
-          <div className='my-auto mr-auto'>Backtrace here</div>
+          <NavigationBacktrace className='my-auto mr-auto' levels={["Messaging"]} />
         </div>
 
         <div className='flex flex-col flex-1 px-9 py-6'>
