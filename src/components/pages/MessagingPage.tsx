@@ -1,8 +1,13 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import NavigationBacktrace from '@components/NavigationBacktrace';
+import { selectDeviceChannels } from '@features/device/deviceSelectors';
 
 const MessagingPage = () => {
+  const channels = useSelector(selectDeviceChannels());
+
   return (
     <div className='flex flex-row w-full height-full'>
       <div className='flex flex-col w-96 shadow-lg'>
@@ -18,8 +23,12 @@ const MessagingPage = () => {
             </button>
           </div>
 
-          <div className='flex-1 bg-gray-400'>
-            channels will go here
+          <div className='flex flex-col flex-1 bg-gray-400'>
+            {channels
+              .filter(c => c.config.role !== 0) // DISABLED
+              .map(c => (
+                <div key={c.config.index} className="">{JSON.stringify(c.config)}</div>
+              ))}
           </div>
         </div>
       </div>
