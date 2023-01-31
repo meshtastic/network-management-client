@@ -2,4 +2,4 @@
 import type { TextPacket } from "./TextPacket";
 import type { WaypointPacket } from "./WaypointPacket";
 
-export type ChannelMessagePayload = { text: TextPacket } | { waypoint: WaypointPacket };
+export type ChannelMessagePayload = { text: TextPacket };

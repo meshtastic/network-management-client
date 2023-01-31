@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import NavigationBacktrace from '@components/NavigationBacktrace';
+import ChannelListElement from '@components/Messaging/ChannelListElement';
 import { selectDeviceChannels } from '@features/device/deviceSelectors';
 
 const MessagingPage = () => {
@@ -23,12 +24,10 @@ const MessagingPage = () => {
             </button>
           </div>
 
-          <div className='flex flex-col flex-1 bg-gray-400'>
+          <div className='flex flex-col flex-1 gap-6'>
             {channels
-              .filter(c => c.config.role !== 0) // DISABLED
-              .map(c => (
-                <div key={c.config.index} className="">{JSON.stringify(c.config)}</div>
-              ))}
+              .filter(c => c.config.role !== 0) // * ignore DISABLED role
+              .map(c => <ChannelListElement key={c.config.index} channel={c} isSelected={false} />)}
           </div>
         </div>
       </div>
