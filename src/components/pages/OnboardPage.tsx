@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 import SerialPortOption from "../Onboard/SerialPortOption";
 
-type PortState = "IDLE" | "LOADING" | "SUCCESS" | "FAILURE";
+import { requestAvailablePorts } from "@features/device/deviceActions";
+import { selectAvailablePorts } from "@app/features/device/deviceSelectors";
+
+
+type PortState = "IDLE" | "PENDING" | "SUCCESS" | "FAILURE";
 type PortType = { name: string; state: PortState };
 
 export interface IOnboardPageProps {
@@ -11,26 +16,21 @@ export interface IOnboardPageProps {
 }
 
 const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
-  const mockPorts: PortType[] = [
-    {
-      name: "port1",
-      state: "FAILURE",
-    },
-    {
-      name: "port2",
-      state: "IDLE",
-    },
-    {
-      name: "port3",
-      state: "SUCCESS",
-    },
-    {
-      name: "port4",
-      state: "LOADING",
-    },
-  ];
 
-  const moveToMain = () => {
+  const availableSerialPorts = useSelector(selectAvailablePorts());  
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(requestAvailablePorts());
+  }, [dispatch]);
+
+  const activePorts = availableSerialPorts?.map((port) : PortType => ({
+    name: port,
+    state: "IDLE",
+  }));
+
+  // Move to main page upon successful port connection (need to trigger when port is succesfully connected)
+  const portSuccessfullyConnected = () => {
     unmountSelf();
   };
 
@@ -64,17 +64,20 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
           </h1>
         </div>
         <div className="mt-10 flex flex-col">
-          <div className="flex flex-col gap-4" onClick={moveToMain}>
-            {mockPorts.map((port) => {
-              return (
-                <SerialPortOption
-                  key={port.name}
-                  name={port.name}
-                  state={port.state}
-                  connection_error={"Access Denied."}
-                />
-              );
-            })}
+          <div className="flex flex-col gap-4">
+            {activePorts ? (
+              activePorts.map((port) => (
+                  <SerialPortOption
+                    key={port.name}
+                    name={port.name}
+                    state={port.state}
+                    connection_error={"Null."}
+                    onSuccess={portSuccessfullyConnected}
+                  />
+                ))
+            ) : (
+              <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center"> No ports detected. </p>
+            )}
           </div>
         </div>
       </div>
@@ -88,5 +91,4 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
     </div>
   );
 };
-
 export default OnboardPage;

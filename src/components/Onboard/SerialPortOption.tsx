@@ -1,33 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   RadioIcon,
   CheckCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/24/outline";
+import { requestConnectToDevice } from "@app/features/device/deviceActions";
+import { selectDeviceConnected } from "@app/features/device/deviceSelectors";
+import { selectRequestStateByName } from "@app/features/requests/requestSelectors";
 
 export interface ISerialPortOptions {
   name: string;
   state: string;
   connection_error: string;
+  onSuccess: () => void;
 }
 
 const SerialPortOption = ({
   name,
-  state,
   connection_error,
+  onSuccess
 }: ISerialPortOptions) => {
-  switch (state) {
+
+  const dispatch = useDispatch();
+  const isDeviceConnected = useSelector(selectDeviceConnected());
+  const statusOfConnect = useSelector(selectRequestStateByName(name));
+  const [portState, setPortState] = useState("IDLE");
+
+  const portSelected = (portName : string) => {
+    setPortState("PENDING");
+    dispatch(requestConnectToDevice(portName));
+  }
+
+  useEffect(() => {
+
+    if (statusOfConnect != null){
+      if (statusOfConnect.status === "SUCCESSFUL" && isDeviceConnected === true) {
+        setPortState("SUCCESS");
+        onSuccess();
+      }
+      else if (statusOfConnect.status === "FAILED") {
+        setPortState("FAILURE");
+      }
+    }
+  });
+
+  switch (portState) {
     case "IDLE":
       return (
         <div>
-          <div className={`flex justify-center`}>
-            <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg hover:cursor-pointer">
-              <RadioIcon className="text-gray-500 w-6 h-6" />
-              <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
-                Serial port on {name}
-              </h1>
+            <div onClick={() => portSelected(name)}>
+              <div className={`flex justify-center`}>
+                <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg hover:cursor-pointer">
+                  <RadioIcon className="text-gray-500 w-6 h-6" />
+                  <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
+                    Serial port on {name}
+                  </h1>
+               </div>
+              </div>
             </div>
-          </div>
         </div>
       );
 
