@@ -1,5 +1,4 @@
 import React from "react";
-import ScrollableFeed from "react-scrollable-feed";
 import { MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
 
 import type { MeshChannel } from "@bindings/MeshChannel";
@@ -35,16 +34,14 @@ const ChannelDetailView = ({
       </div>
 
       <div className="p-9">
-        <ScrollableFeed>
-          {channel.messages.map((m) => (
-            <div
-              key={m.payload.text.packet.id}
-              className="mx-9 first:mt-9 last:mb-9 mb-6"
-            >
-              <TextMessageBubble message={m} />
-            </div>
-          ))}
-        </ScrollableFeed>
+        {channel.messages.map((m) => (
+          <div
+            key={m.payload.text.packet.id}
+            className="mx-9 first:mt-9 last:mb-9 mb-6"
+          >
+            <TextMessageBubble message={m} />
+          </div>
+        ))}
 
         <div className="flex flex-row gap-4">
           <MessagingInput
