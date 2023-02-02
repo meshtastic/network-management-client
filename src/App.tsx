@@ -19,7 +19,7 @@ const AppWrapper = () => (
 
 const App = () => {
   // Prevents the onboarding screen. Change this to true before pushing
-  const developing = true;
+  const developing = false;
 
   const [isSplashMounted, setSplashMounted] = useState(!developing);
   const [isOnboardMounted, setOnboardMounted] = useState(!developing);
