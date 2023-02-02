@@ -1,11 +1,12 @@
 import React from "react";
-import { MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
+// import { MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { PencilIcon } from "@heroicons/react/24/outline";
 
 import type { MeshChannel } from "@bindings/MeshChannel";
 import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
-import MapIconButton from "../Map/MapIconButton";
+// import MapIconButton from "@components/Map/MapIconButton";
 
 export interface IChannelDetailViewProps {
   channel: MeshChannel;
@@ -49,12 +50,12 @@ const ChannelDetailView = ({
             onSubmit={(m) => console.log("Channel message:", m)}
             className="w-full flex-1"
           />
-          <MapIconButton
+          {/* <MapIconButton
             className="w-12 h-12 no-shadow"
             onClick={() => console.log('Clicked "send waypoint" button')}
           >
             <MapPinIcon className="m-auto w-6 h-6 text-gray-400" />
-          </MapIconButton>
+          </MapIconButton> */}
         </div>
       </div>
     </div>

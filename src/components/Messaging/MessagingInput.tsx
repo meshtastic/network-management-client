@@ -23,7 +23,7 @@ const MessagingInput = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`${className} flex flex-row bg-white rounded-lg gap-3 border border-gray-200`}
+      className={`${className} flex flex-row bg-white rounded-lg gap-3 border h-12 border-gray-200`}
     >
       <input
         type="text"
