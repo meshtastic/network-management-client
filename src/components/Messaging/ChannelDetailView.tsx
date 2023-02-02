@@ -1,5 +1,5 @@
 import React from "react";
-import ScrollableFeed from 'react-scrollable-feed';
+import ScrollableFeed from "react-scrollable-feed";
 import { PencilIcon } from "@heroicons/react/24/outline";
 
 import type { MeshChannel } from "@bindings/MeshChannel";
@@ -11,14 +11,24 @@ export interface IChannelDetailViewProps {
   className?: string;
 }
 
-const ChannelDetailView = ({ channel, className = "" }: IChannelDetailViewProps) => {
+const ChannelDetailView = ({
+  channel,
+  className = "",
+}: IChannelDetailViewProps) => {
   return (
-    <div className={`${className} flex w-full h-full bg-gray-100`} style={{ flexFlow: 'column' }}>
+    <div
+      className={`${className} flex w-full h-full bg-gray-100`}
+      style={{ flexFlow: "column" }}
+    >
       <div className="contents">
         <div className="flex-initial flex flex-row justify-between items-center px-9 min-h-[5rem] h-20 bg-white border-b border-l border-gray-100">
           <div>
-            <h2 className="text-sm font-semibold text-gray-700">{getChannelName(channel)}</h2>
-            <p className="text-xs font-normal text-gray-400">{getNumMessagesText(channel.messages.length)}</p>
+            <h2 className="text-sm font-semibold text-gray-700">
+              {getChannelName(channel)}
+            </h2>
+            <p className="text-xs font-normal text-gray-400">
+              {getNumMessagesText(channel.messages.length)}
+            </p>
           </div>
 
           <button type="button" onClick={() => alert("incomplete feature")}>
@@ -26,10 +36,16 @@ const ChannelDetailView = ({ channel, className = "" }: IChannelDetailViewProps)
           </button>
         </div>
 
-        <div className="flex-auto flex overflow-y-auto relative" style={{ flexFlow: 'column' }}>
+        <div
+          className="flex-auto flex overflow-y-auto relative"
+          style={{ flexFlow: "column" }}
+        >
           <ScrollableFeed>
-            {channel.messages.map(m => (
-              <div key={m.payload.text.packet.id} className="mx-9 first:mt-9 last:mb-9 mb-6">
+            {channel.messages.map((m) => (
+              <div
+                key={m.payload.text.packet.id}
+                className="mx-9 first:mt-9 last:mb-9 mb-6"
+              >
                 <TextMessageBubble message={m} />
               </div>
             ))}
@@ -41,7 +57,7 @@ const ChannelDetailView = ({ channel, className = "" }: IChannelDetailViewProps)
         </div>
       </div>
     </div>
-  )
+  );
 };
 
 export default ChannelDetailView;
