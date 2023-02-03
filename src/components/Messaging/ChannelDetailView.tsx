@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 // import { MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/outline";
 
@@ -6,6 +7,7 @@ import type { MeshChannel } from "@bindings/MeshChannel";
 import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
+import { requestSendMessage } from "@app/features/device/deviceActions";
 // import MapIconButton from "@components/Map/MapIconButton";
 
 export interface IChannelDetailViewProps {
@@ -17,6 +19,12 @@ const ChannelDetailView = ({
   channel,
   className = "",
 }: IChannelDetailViewProps) => {
+  const dispatch = useDispatch();
+
+  const handleMessageSubmit = (message: string) => {
+    dispatch(requestSendMessage({ text: message, channel: 0 }));
+  };
+
   return (
     <div className={`${className} flex flex-col w-full h-full bg-gray-100`}>
       <div className="flex-initial flex flex-row justify-between items-center px-9 min-h-[5rem] h-20 bg-white border-b border-l border-gray-100">
@@ -35,19 +43,16 @@ const ChannelDetailView = ({
       </div>
 
       <div className="p-9">
-        {channel.messages.map((m) => (
-          <div
-            key={m.payload.text.packet.id}
-            className="mx-9 first:mt-9 last:mb-9 mb-6"
-          >
-            <TextMessageBubble message={m} />
-          </div>
-        ))}
+        <div className="flex flex-col gap-6 mb-9">
+          {channel.messages.map((m) => (
+            <TextMessageBubble message={m} key={m.payload.text.packet.id} />
+          ))}
+        </div>
 
         <div className="flex flex-row gap-4">
           <MessagingInput
             placeholder="Send message"
-            onSubmit={(m) => console.log("Channel message:", m)}
+            onSubmit={handleMessageSubmit}
             className="w-full flex-1"
           />
           {/* <MapIconButton

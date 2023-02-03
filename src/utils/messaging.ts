@@ -5,6 +5,15 @@ export const getChannelName = (channel: MeshChannel): string => {
   return channel.config.settings?.name ?? "Unnamed Channel";
 };
 
+export const formatMessageUsername = (
+  longName: string | undefined,
+  from: number
+): { displayText: string; isSelf: boolean } => {
+  if (from === 0) return { displayText: "You", isSelf: true };
+  if (!longName) return { displayText: `${from}`, isSelf: false };
+  return { displayText: longName, isSelf: false };
+};
+
 export const formatMessageTime = (time: number): string => {
   return new Intl.DateTimeFormat("en-us", {
     hour: "numeric",
