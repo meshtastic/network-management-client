@@ -1,14 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import { Provider, connect, useSelector, useDispatch } from "react-redux";
-
-import { ExpandedIcon, CollapsedIcon } from "@components/Sidebar/SidebarIcon";
-// import SidebarCollapsed from "@components/Sidebar/SidebarCollapsed";
-// import tabList, { tabGroup } from "@components/Sidebar/TabList";
-
-import { useLocation, useNavigate } from "react-router-dom";
-
-// import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
-
 import {
   // Overview
   MapIcon,
@@ -36,6 +26,17 @@ import {
   BeakerIcon,
 } from "@heroicons/react/24/outline";
 
+import { ExpandedIcon, CollapsedIcon } from "@components/Sidebar/SidebarIcon";
+// import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
+
+import renderTabs from "./RenderTabs";
+import {
+  overviewGroup,
+  networkGroup,
+  configGroup,
+  settingsGroup,
+} from "@components/Sidebar/TabList";
+
 // TODO:
 // 1. Sidebar should be overlaid instead of on the Side; on opening, it should not scrunch the map over
 //    On this point; there's something wrong with messaging. I'm guessing it's because Message flex is overwriting the sidebar size somehow? But
@@ -50,42 +51,16 @@ const Sidebar = () => {
   // Icon for expanded sidebar
 
   return (
-    // Flex col tells it that we want them aligned vertically
     <div className="bg-white text-base flex flex-col overflow-y-auto h-screen">
       <div className="justify-start">
         {isSidebarExpand ? (
           <div className="px-5 text-xs text-gray-500 font-semibold w-62">
             OPEN
             <div className="py-2">
-              <div>
-                OVERVIEW
-                {ExpandedIcon("View Map", "/", <MapIcon />)}
-                {ExpandedIcon(
-                  "Messaging",
-                  "/messaging",
-                  <ChatBubbleBottomCenterTextIcon />
-                )}
-              </div>
-              <div>
-                NETWORK
-                {ExpandedIcon("Manage Nodes", "/TODO", <CircleStackIcon />)}
-              </div>
-              <div>
-                CONFIGURATION
-                {ExpandedIcon(
-                  "Radio Configuration",
-                  "/serial-connect",
-                  <RadioIcon />
-                )}
-              </div>
-              <div>
-                SETTINGS
-                {ExpandedIcon(
-                  "Application Settings",
-                  "/settings",
-                  <Cog8ToothIcon />
-                )}
-              </div>
+              <div>{renderTabs(overviewGroup, isSidebarExpand)}</div>
+              <div>{renderTabs(networkGroup, isSidebarExpand)}</div>
+              <div>{renderTabs(configGroup, isSidebarExpand)}</div>
+              <div>{renderTabs(settingsGroup, isSidebarExpand)}</div>
             </div>
           </div>
         ) : (
@@ -93,36 +68,10 @@ const Sidebar = () => {
           <div className="px-5 text-xs text-gray-500 font-semibold w-62">
             Closed
             <div className="py-2">
-              <div>
-                ...
-                <br />
-                {CollapsedIcon("Miew Vap", "/", <MapIcon />)}
-                {CollapsedIcon(
-                  "Saggingmess",
-                  "/messaging",
-                  <ChatBubbleBottomCenterTextIcon />
-                )}
-              </div>
-              <div>
-                ...
-                {CollapsedIcon("Nanage Modes", "/TODO", <CircleStackIcon />)}
-              </div>
-              <div className="">
-                ...
-                {CollapsedIcon(
-                  "Radio Configuration",
-                  "/serial-connect",
-                  <RadioIcon />
-                )}
-              </div>
-              <div>
-                ...
-                {CollapsedIcon(
-                  "Application Settings",
-                  "/settings",
-                  <Cog8ToothIcon />
-                )}
-              </div>
+              <div>{renderTabs(overviewGroup, isSidebarExpand)}</div>
+              <div>{renderTabs(networkGroup, isSidebarExpand)}</div>
+              <div>{renderTabs(configGroup, isSidebarExpand)}</div>
+              <div>{renderTabs(settingsGroup, isSidebarExpand)}</div>
             </div>
           </div>
         )}
