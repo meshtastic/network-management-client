@@ -1,7 +1,7 @@
 use super::super::serial_connection::{MeshConnection, PacketDestination, SerialConnection};
 
 use super::helpers::{generate_rand_id, get_current_time_u32};
-use super::{MeshDevice, TextPacket};
+use super::MeshDevice;
 use app::protobufs;
 use prost::Message;
 use std::error::Error;
@@ -24,20 +24,11 @@ impl MeshDevice {
             destination,
             channel,
             want_ack,
+            false, // TODO this is a known bug with firmware (#2254), set to 'true' once resolved
             true,
-            false,
             None,
             None,
         )?;
-
-        self.add_message(TextPacket {
-            packet: protobufs::MeshPacket {
-                rx_time: get_current_time_u32(),
-                channel,
-                ..Default::default()
-            },
-            data: text.into(),
-        });
 
         Ok(())
     }
@@ -118,17 +109,17 @@ impl MeshDevice {
             PacketDestination::Node(id) => id,
         };
 
-        let packet = protobufs::MeshPacket {
+        let mut packet = protobufs::MeshPacket {
             payload_variant: Some(protobufs::mesh_packet::PayloadVariant::Decoded(
                 protobufs::Data {
                     portnum: port_num as i32,
                     payload: byte_data,
-                    source: self.config_id,
                     want_response,
-                    emoji: emoji.unwrap_or_default(),
+                    reply_id: reply_id.unwrap_or(0),
+                    emoji: emoji.unwrap_or(0),
                     dest: 0,       // TODO change this
                     request_id: 0, // TODO change this
-                    reply_id: 0,   // TODO change this
+                    source: 0,     // TODO change this
                 },
             )),
             rx_time: 0,   // * not transmitted
@@ -143,6 +134,11 @@ impl MeshDevice {
             want_ack,
             channel,
         };
+
+        if echo_response {
+            packet.rx_time = get_current_time_u32();
+            self.handle_mesh_packet(packet.clone())?;
+        }
 
         let to_radio = protobufs::ToRadio {
             payload_variant: Some(protobufs::to_radio::PayloadVariant::Packet(packet)),

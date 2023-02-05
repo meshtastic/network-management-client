@@ -26,7 +26,9 @@ const ChannelDetailView = ({
   };
 
   return (
-    <div className={`${className} flex flex-col w-full h-full bg-gray-100`}>
+    <div
+      className={`${className} flex flex-col w-full h-full bg-gray-100 overflow-auto`}
+    >
       <div className="flex-initial flex flex-row justify-between items-center px-9 min-h-[5rem] h-20 bg-white border-b border-l border-gray-100">
         <div>
           <h2 className="text-sm font-semibold text-gray-700">
@@ -42,8 +44,8 @@ const ChannelDetailView = ({
         </button>
       </div>
 
-      <div className="p-9">
-        <div className="flex flex-col gap-6 mb-9">
+      <div className="p-9 flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col gap-6 mb-9">
           {channel.messages.map((m) => (
             <TextMessageBubble message={m} key={m.payload.text.packet.id} />
           ))}

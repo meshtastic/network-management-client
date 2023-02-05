@@ -7,9 +7,11 @@ export const getChannelName = (channel: MeshChannel): string => {
 
 export const formatMessageUsername = (
   longName: string | undefined,
+  ownNodeId: number,
   from: number
 ): { displayText: string; isSelf: boolean } => {
-  if (from === 0) return { displayText: "You", isSelf: true };
+  if (from === 0 || from == ownNodeId)
+    return { displayText: "You", isSelf: true };
   if (!longName) return { displayText: `${from}`, isSelf: false };
   return { displayText: longName, isSelf: false };
 };

@@ -60,8 +60,6 @@ function* connectToDeviceWorker(
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
 
-    yield put(requestSendMessage({ channel: 0, text: "Device Initialized" }));
-
     yield call(subscribeAll);
   } catch (error) {
     yield put(
