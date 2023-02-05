@@ -46,3 +46,19 @@ This file contains the icons for each individual tabs, in both collapsed and exp
 ## RenderTabs.tsx
 
 This file contains a function to render a `tabGroup` from `Tablist.tsx`
+
+# Me notes/ TODOs:
+
+In order of priority (as of 2/4, 7:11 pm):
+
+1.  Sidebar should be overlaid instead of on the side. On expansion, it should not scrunch the map over. This should(?) be edited in `App.tsx`
+2.  Related: Settings and Messaging each overwrite the sidebar size. I'm guessing it's either because their sizes are also defined to fit the width, and that Sidebar takes a lower priority (Sidebar icons get made smaller). Should be fixed either by changing Messaging and Settings (and future files); or by changing Sidebar. I'm leaning towards the former.
+3.  Propose new buttons: <ChevronDoubleLeftIcon\> and <ChevronDoubleRightIcon\> for collapse and expand sidebar respectively. The current icon looks a lot like logout to me.
+4.  Clean up and leave comments/documentation on files.
+
+- [ ] `Sidebar.tsx`
+- [ ] `SidebarIcon.tsx`
+- [x] `TabList.tsx`
+- [ ] `RenderTabs.tsx`
+
+5. Remove the #messaging and #settings from main menu, and clean up all references to them.

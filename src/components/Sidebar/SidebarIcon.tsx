@@ -7,7 +7,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 //    1. The name of the tab
 //    2. The path name for the tab
 //    3. The SVG icon for the tab
-//
 
 const ExpandedIcon = (name: string, pathname: string, icon: JSX.Element) => {
   // Icon for expanded sidebar
@@ -38,7 +37,7 @@ const ExpandedIcon = (name: string, pathname: string, icon: JSX.Element) => {
 
           {/* Display the name of the tab */}
           <div
-            className={`px-2 self-center
+            className={`px-2 self-center whitespace-nowrap 
             ${isActive ? "text-gray-100" : "text-gray-600"}
             `}
           >

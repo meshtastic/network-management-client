@@ -9,6 +9,7 @@ import SerialConnectPage from "@components/pages/SerialConnectPage";
 import FallbackPage from "@components/pages/FallbackPage";
 import OnboardPage from "@components/pages/OnboardPage";
 import MessagingPage from "@components/pages/MessagingPage";
+import Settings from "@components/Settings/Settings";
 
 const AppWrapper = () => (
   <>
@@ -43,6 +44,7 @@ const App = () => {
           <Route index element={<HomePage />} />
           <Route path="messaging" element={<MessagingPage />} />
           <Route path="serial-connect" element={<SerialConnectPage />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>
