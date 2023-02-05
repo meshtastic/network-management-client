@@ -24,7 +24,7 @@ impl MeshDevice {
             destination,
             channel,
             want_ack,
-            false, // TODO this is a known bug with firmware (#2254), set to 'true' once resolved
+            false,
             true,
             None,
             None,
