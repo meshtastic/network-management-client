@@ -51,14 +51,17 @@ const MessagingPage = () => {
         </div>
       </div>
 
-      {activeChannelIdx != null && !!channels[activeChannelIdx] ? (
-        <ChannelDetailView
-          channel={channels[activeChannelIdx]}
-          className="flex-1"
-        />
-      ) : (
-        <p>No channels selected</p>
-      )}
+      <div className="flex-1">
+        {activeChannelIdx != null && !!channels[activeChannelIdx] ? (
+          <ChannelDetailView channel={channels[activeChannelIdx]} />
+        ) : (
+          <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
+            <p className="m-auto text-base font-normal text-gray-700">
+              No channels selected
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
