@@ -24,6 +24,10 @@ body {
   @apply bg-white;
   @apply rounded-lg;
   @apply border;
-  @apply border-gray-100;
+  @apply border-gray-200;
   @apply shadow-lg;
+}
+
+.default-overlay.no-shadow {
+  @apply shadow-none;
 }
