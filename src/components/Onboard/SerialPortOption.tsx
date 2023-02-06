@@ -12,36 +12,38 @@ import { selectRequestStateByName } from "@app/features/requests/requestSelector
 export interface ISerialPortOptions {
   name: string;
   state: string;
-  connection_error: string;
-  onSuccess: () => void;
+  isActive: boolean;
+  onSelection: () => void;
 }
 
 const SerialPortOption = ({
   name,
-  connection_error,
-  onSuccess
+  state,
+  isActive,
+  onSelection,
 }: ISerialPortOptions) => {
-
   const dispatch = useDispatch();
   const isDeviceConnected = useSelector(selectDeviceConnected());
   const statusOfConnect = useSelector(selectRequestStateByName(name));
-  const [portState, setPortState] = useState("IDLE");
+  const [portState, setPortState] = useState(state);
+  const [connectionError, setConnectionError] = useState("NULL.");
 
-  const portSelected = (portName : string) => {
-    setPortState("PENDING");
+  const portSelected = (portName: string) => {
     dispatch(requestConnectToDevice(portName));
-  }
+    setPortState("PENDING");
+  };
 
   useEffect(() => {
-
-    if (statusOfConnect != null){
-      if (statusOfConnect.status === "SUCCESSFUL" && isDeviceConnected === true) {
-        setPortState("SUCCESS");
-        onSuccess();
+    if (isDeviceConnected) {
+      onSelection();
+    } else {
+      if (statusOfConnect?.status === "FAILED") {
+        setPortState("FAILED");
+        setConnectionError(statusOfConnect.message);
       }
-      else if (statusOfConnect.status === "FAILED") {
-        setPortState("FAILURE");
-      }
+    }
+    if (isActive) {
+      setPortState("SUCCESS");
     }
   });
 
@@ -49,20 +51,20 @@ const SerialPortOption = ({
     case "IDLE":
       return (
         <div>
-            <div onClick={() => portSelected(name)}>
-              <div className={`flex justify-center`}>
-                <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg hover:cursor-pointer">
-                  <RadioIcon className="text-gray-500 w-6 h-6" />
-                  <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
-                    Serial port on {name}
-                  </h1>
-               </div>
+          <div onClick={() => portSelected(name)}>
+            <div className={`flex justify-center`}>
+              <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg hover:cursor-pointer">
+                <RadioIcon className="text-gray-500 w-6 h-6" />
+                <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
+                  Serial port on {name}
+                </h1>
               </div>
             </div>
+          </div>
         </div>
       );
 
-    case "LOADING":
+    case "PENDING":
       return (
         <div>
           <div className={`flex justify-center`}>
@@ -90,7 +92,7 @@ const SerialPortOption = ({
         </div>
       );
 
-    case "FAILURE":
+    case "FAILED":
       return (
         <div className="flex justify-center">
           <div className=" border rounded-lg border-red-500 bg-red-50 pl-4 pt-5 pb-5 pr-4 w-6/12 ">
@@ -101,8 +103,8 @@ const SerialPortOption = ({
               </h1>
             </div>
             <h1 className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 mt-0.5">
-              Could not connect to serial port on {name}, failed with error “
-              {connection_error}”
+              Could not connect to serial port on {name}, failed with error:{" "}
+              {connectionError}
             </h1>
           </div>
         </div>

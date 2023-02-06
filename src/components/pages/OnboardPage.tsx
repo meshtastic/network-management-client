@@ -7,8 +7,7 @@ import SerialPortOption from "../Onboard/SerialPortOption";
 import { requestAvailablePorts } from "@features/device/deviceActions";
 import { selectAvailablePorts } from "@app/features/device/deviceSelectors";
 
-
-type PortState = "IDLE" | "PENDING" | "SUCCESS" | "FAILURE";
+type PortState = "IDLE" | "PENDING" | "SUCCESS" | "FAILED";
 type PortType = { name: string; state: PortState };
 
 export interface IOnboardPageProps {
@@ -16,23 +15,20 @@ export interface IOnboardPageProps {
 }
 
 const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
-
-  const availableSerialPorts = useSelector(selectAvailablePorts());  
+  const availableSerialPorts = useSelector(selectAvailablePorts());
   const dispatch = useDispatch();
+  const [activeNode, setActiveNode] = useState(-1);
 
   useEffect(() => {
     dispatch(requestAvailablePorts());
   }, [dispatch]);
 
-  const activePorts = availableSerialPorts?.map((port) : PortType => ({
-    name: port,
-    state: "IDLE",
-  }));
-
-  // Move to main page upon successful port connection (need to trigger when port is succesfully connected)
-  const portSuccessfullyConnected = () => {
-    unmountSelf();
-  };
+  const activePorts = availableSerialPorts?.map(
+    (port): PortType => ({
+      name: port,
+      state: "IDLE",
+    })
+  );
 
   return (
     <div className="flex flex-row h-screen w-screen absolute z-40 bg-white">
@@ -66,17 +62,25 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
         <div className="mt-10 flex flex-col">
           <div className="flex flex-col gap-4">
             {activePorts ? (
-              activePorts.map((port) => (
-                  <SerialPortOption
-                    key={port.name}
-                    name={port.name}
-                    state={port.state}
-                    connection_error={"Null."}
-                    onSuccess={portSuccessfullyConnected}
-                  />
-                ))
+              activePorts.map((port, index) => (
+                <SerialPortOption
+                  key={port.name}
+                  name={port.name}
+                  state={port.state}
+                  isActive={activeNode === index}
+                  onSelection={() => {
+                    setActiveNode(index);
+                    setTimeout(() => {
+                      unmountSelf();
+                    }, 1500);
+                  }}
+                />
+              ))
             ) : (
-              <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center"> No ports detected. </p>
+              <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
+                {" "}
+                No ports detected.{" "}
+              </p>
             )}
           </div>
         </div>
