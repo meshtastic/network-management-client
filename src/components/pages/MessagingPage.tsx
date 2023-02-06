@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+
+import NavigationBacktrace from "@components/NavigationBacktrace";
+import ChannelListElement from "@components/Messaging/ChannelListElement";
+import ChannelDetailView from "@components/Messaging/ChannelDetailView";
 
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import NavigationBacktrace from "@components/NavigationBacktrace";
@@ -8,10 +13,10 @@ import { selectDeviceChannels } from "@features/device/deviceSelectors";
 
 const MessagingPage = () => {
   const channels = useSelector(selectDeviceChannels());
-  const [activeChannel, setActiveChannel] = useState<number | null>(null);
+  const [activeChannelIdx, setActiveChannelIdx] = useState<number | null>(null);
 
   return (
-    <div className="flex flex-row w-fill height-full">
+    <div className="flex flex-row w-full h-screen">
       <div className="flex flex-col w-96 shadow-lg">
         <div className="flex justify-center align-middle px-9 h-20 border-b border-gray-100">
           <NavigationBacktrace
@@ -40,15 +45,26 @@ const MessagingPage = () => {
               .map((c) => (
                 <ChannelListElement
                   key={c.config.index}
-                  setActiveChannel={setActiveChannel}
+                  setActiveChannel={setActiveChannelIdx}
                   channel={c}
-                  isSelected={c.config.index === activeChannel}
+                  isSelected={c.config.index === activeChannelIdx}
                 />
               ))}
           </div>
         </div>
       </div>
-      <div className="flex flex-1">Other stuff</div>
+
+      <div className="flex-1">
+        {activeChannelIdx != null && !!channels[activeChannelIdx] ? (
+          <ChannelDetailView channel={channels[activeChannelIdx]} />
+        ) : (
+          <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
+            <p className="m-auto text-base font-normal text-gray-700">
+              No channels selected
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -20,6 +20,12 @@ export const selectDevice =
   (state: RootState): MeshDevice | null =>
     state.devices.device;
 
+export const selectConnectedDeviceNodeId =
+  () =>
+  (state: RootState): number | null =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    state.devices.device?.myNodeInfo.myNodeNum ?? null;
+
 export const selectDeviceConnected =
   () =>
   (state: RootState): boolean =>

@@ -58,9 +58,12 @@ impl MeshConnection for SerialConnection {
     }
 
     fn send_raw(&mut self, data: Vec<u8>) -> Result<(), Box<dyn Error>> {
-        if let Some(channel) = self.write_input_tx.as_ref() {
-            channel.send(data)?;
-        }
+        let channel = self
+            .write_input_tx
+            .as_ref()
+            .expect("Could not open channel");
+
+        channel.send(data)?;
 
         Ok(())
     }
