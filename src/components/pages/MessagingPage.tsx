@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
-import NavigationBacktrace from "@components/NavigationBacktrace";
-import ChannelListElement from "@components/Messaging/ChannelListElement";
 import ChannelDetailView from "@components/Messaging/ChannelDetailView";
 
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";

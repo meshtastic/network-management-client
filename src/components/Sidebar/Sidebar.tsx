@@ -25,17 +25,17 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`py-5 bg-white text-base overflow-y-auto h-screen flex flex-col ${
-        isSidebarExpand ? "text-gray-500" : "text-white"
+      className={`py-5 px-5  bg-emerald-200 text-base overflow-y-auto h-screen flex flex-col font-semibold z-50 ${
+        isSidebarExpand ? "w-80 text-gray-500" : "w-30 text-white"
       }`}
     >
-      <div className={`px-5 text-xs font-semibold h-full space-y-4 `}>
+      <div className="text-xs h-full space-y-4 ">
         {isSidebarExpand ? <div>Open :3</div> : <div>Closed</div>}
         <div>{renderTabs(overviewGroup, isSidebarExpand)}</div>
         <div>{renderTabs(networkGroup, isSidebarExpand)}</div>
         <div>{renderTabs(configGroup, isSidebarExpand)}</div>
       </div>
-      <div className={`px-5 text-xs font-semibold `}>
+      <div className="text-xs ">
         <div>{renderTabs(settingsGroup, isSidebarExpand)}</div>
         <button
           className="w-full"
