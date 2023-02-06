@@ -1,5 +1,9 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+} from "@heroicons/react/24/solid";
 
 // This file contains the code for each individual tab in the sidebar.
 // There are two forms: one for each of when the sidebar is expanded and collapsed.
@@ -80,6 +84,27 @@ const CollapsedIcon = (name: string, pathname: string, icon: JSX.Element) => {
     </div>
   );
 };
+
+const ChangeSidebarIcon = (isExpand: boolean) => {
+  const icon = isExpand ? (
+    <ChevronDoubleLeftIcon />
+  ) : (
+    <ChevronDoubleRightIcon />
+  );
+
+  return (
+    <div className="flex flex-row font-semibold text-base px-2 py-3">
+      <div className="px-1 w-9 text-gray-400">{icon}</div>
+      {isExpand ? (
+        <div className="px-2 self-center text-gray-600">CoIIapse Sidebar</div>
+      ) : (
+        <div />
+      )}
+    </div>
+  );
+};
+
+export { ChangeSidebarIcon };
 
 export { ExpandedIcon };
 export { CollapsedIcon };

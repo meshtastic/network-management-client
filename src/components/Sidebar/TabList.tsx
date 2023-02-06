@@ -16,7 +16,6 @@ import {
   // Settings
   DocumentArrowDownIcon,
   Cog8ToothIcon,
-  ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 
 import type { iconInfo, tabGroup } from "@components/Sidebar/RenderTabs";
@@ -79,13 +78,6 @@ const appSettings: iconInfo = {
   pathname: "/settings",
   icon: <Cog8ToothIcon />,
 };
-const collapseSidebar: iconInfo = {
-  name: "Collapse Sidebar",
-  pathname: "/TODO",
-  icon: <ArrowLeftOnRectangleIcon />,
-};
-
-//
 
 // 2. Tab Groups
 export const overviewGroup: tabGroup = {
@@ -102,5 +94,5 @@ export const configGroup: tabGroup = {
 };
 export const settingsGroup: tabGroup = {
   title: "Settings",
-  tabs: [exportData, appSettings, collapseSidebar],
+  tabs: [exportData, appSettings],
 };
