@@ -1,59 +1,48 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 
+import renderTabs from "./RenderTabs";
 import {
-  ChatBubbleBottomCenterTextIcon,
-  MagnifyingGlassIcon,
-  DocumentTextIcon,
-  Cog8ToothIcon,
-  RadioIcon,
-} from "@heroicons/react/24/outline";
+  overviewGroup,
+  networkGroup,
+  configGroup,
+  settingsGroup,
+} from "@components/Sidebar/TabList";
+import { ChangeSidebarIcon, MeshLogo } from "./SidebarIcon";
 
-import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
-import SidebarIcon from "@components/Sidebar/SidebarIcon";
+// Contains Main sidebar component. Called in App.tsx
+// This file calls from RenderTabs.tsx to display all of the tabs from Tablist.tsx
 
 const Sidebar = () => {
-  const location = useLocation();
-  const navigateTo = useNavigate();
+  const [isSidebarExpand, setIsSidebarExpand] = useState(true);
 
   return (
-    <div className="h-screen flex flex-col justify-between shadow-lg">
-      <div>
-        <div className="flex bg-gray-800 w-14 h-14">
-          <img src={LogoWhiteSVG} className="m-auto pl-2 pr-2 pt-3 pb-3"></img>{" "}
+    <div
+      className={`text-base overflow-y-auto h-screen flex flex-col font-semibold shrink-0 shadow-md ${
+        isSidebarExpand ? "w-72 text-gray-500" : "w-30 text-white"
+      }`}
+    >
+      {/* Top icons, including the logo */}
+      {MeshLogo(isSidebarExpand)}
+      <div className="px-5">
+        <div className="text-xs h-full space-y-4">
+          <hr />
+          <div>{renderTabs(overviewGroup, isSidebarExpand)}</div>
+          <div>{renderTabs(networkGroup, isSidebarExpand)}</div>
+          <div>{renderTabs(configGroup, isSidebarExpand)}</div>
         </div>
-        <div className="flex flex-col">
-          <SidebarIcon
-            isActive={location.pathname === "/" && !location.hash}
-            onClick={() => navigateTo("/")}
-            renderIcon={() => <MagnifyingGlassIcon className="w-6" />}
-          />
-          <SidebarIcon
-            isActive={
-              location.pathname === "/messaging"
-            }
-            onClick={() => navigateTo("/messaging")}
-            renderIcon={() => (
-              <ChatBubbleBottomCenterTextIcon className="w-6" />
-            )}
-          />
-          <SidebarIcon
-            isActive={location.pathname === "/info"}
-            onClick={() => navigateTo("/info")}
-            renderIcon={() => <DocumentTextIcon className="w-6" />}
-          />
-          <SidebarIcon
-            isActive={location.pathname === "/serial-connect"}
-            onClick={() => navigateTo("/serial-connect")}
-            renderIcon={() => <RadioIcon className="w-6" />}
-          />
+
+        {/* Bottom icons */}
+        <div className="text-xs space-y-2 ">
+          <div>{renderTabs(settingsGroup, isSidebarExpand)}</div>
+          <hr />
+          <button
+            className="w-full"
+            onClick={() => setIsSidebarExpand(!isSidebarExpand)}
+          >
+            {ChangeSidebarIcon(isSidebarExpand)}
+          </button>
         </div>
       </div>
-      <SidebarIcon
-        isActive={location.pathname === "/" && location.hash === "#settings"}
-        onClick={() => navigateTo("/#settings")}
-        renderIcon={() => <Cog8ToothIcon className="w-6" />}
-      />
     </div>
   );
 };
