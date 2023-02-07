@@ -19,11 +19,11 @@ const AppWrapper = () => (
 );
 
 const App = () => {
-  // Prevents the onboarding screen. Change this to true before pushing
-  const developing = false;
+  // Bool to allow/disallow the splash screen at startup
+  const splashEnabled = true;
 
-  const [isSplashMounted, setSplashMounted] = useState(!developing);
-  const [isOnboardMounted, setOnboardMounted] = useState(!developing);
+  const [isSplashMounted, setSplashMounted] = useState(splashEnabled);
+  const [isOnboardMounted, setOnboardMounted] = useState(splashEnabled);
 
   return (
     <div className="flex flex-row relative">

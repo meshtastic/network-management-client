@@ -111,12 +111,10 @@ const ChangeSidebarIcon = (isExpand: boolean) => {
   );
 };
 
-const MeshLogo = (isExpand: boolean) => {
+const MeshLogo = (isSidebarExpanded: boolean) => {
   // Logo at top of sidebar.
 
-  // isExpand is a boolean referring to the status of th sidebar.
-
-  if (isExpand) {
+  if (isSidebarExpanded) {
     return (
       <div className="p-5 pr-3 flex flex-row">
         <div>
