@@ -3,16 +3,13 @@ import {
   // Overview
   MapIcon,
   ChatBubbleBottomCenterTextIcon,
-
   // Network
   CircleStackIcon,
   MapPinIcon,
-
   // Config
   RadioIcon,
   CubeIcon,
   EnvelopeIcon,
-
   // Settings
   DocumentArrowDownIcon,
   Cog8ToothIcon,
@@ -23,7 +20,6 @@ import type { iconInfo, tabGroup } from "@components/Sidebar/RenderTabs";
 // This file contains:
 //    1. A iconInfo type formatting of all of the pages that appear as tabs on the sidebar
 //    2. All of the tab groups (e.g. Management, Settings, etc.)
-//
 
 // 1. Pages:
 //// Overview

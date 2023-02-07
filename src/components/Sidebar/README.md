@@ -1,11 +1,5 @@
 # Sidebar
 
-[ INSERT PICTURE HERE ]
-
-\
-\
-\
-\
 Use `tablist.tsx`to edit the tabs contained within the sidebar:
 
 ## Add a new tab
@@ -25,19 +19,15 @@ In `tablist.tsx`, there is a list of `tabGroup` objects. Add your new tab in the
 There are four files in the Sidebar directory.
 
 1. `Sidebar.tsx`
-2. `Tablist.tsx`
-3. `SidebarIcon.tsx`
-4. `RenderTabs.tsx`
+2. `SidebarIcon.tsx`
+3. `RenderTabs.tsx`
+4. `Tablist.tsx`
 
 ## Sidebar.tsx
 
 This file contains the main structure for how the sidebar is rendered. \
 \
  It calls `renderTabs` from `renderTabs.tsx` for each of the groups found in `Tablist.tsx`
-
-## Tablist.tsx
-
-This file contains a list of all individual tabs on the sidebar, as well as the `tabGroup`that they are organized in.
 
 ## SidebarIcon.tsx
 
@@ -47,23 +37,23 @@ This file contains the icons for each individual tabs, in both collapsed and exp
 
 This file contains a function to render a `tabGroup` from `Tablist.tsx`
 
-# Me notes/ TODOs:
+## Tablist.tsx
 
-In order of priority (as of 2/4, 7:11 pm):
+This file contains a list of all individual tabs on the sidebar, as well as the `tabGroup`that they are organized in.
 
-1.  Sidebar should be overlaid instead of on the side. On expansion, it should not scrunch the map over. This should(?) be edited in `App.tsx`
+### Routing
 
-- 1.5: Related: Settings and Messaging each overwrite the sidebar size. I'm guessing it's either because their sizes are also defined to fit the width, and that Sidebar takes a lower priority (Sidebar icons get made smaller). Should be fixed either by changing Messaging and Settings (and future files); or by changing Sidebar. I'm leaning towards the latter.
+The Tablist contains the routing between the sidebar and other pages. These are the routes currently (Feb. 6) set up:
 
-2. 5.5 Make Map width-full. Then see if Map does the same thing that `Settings` and `Messaging` does.
+- View Map: "/"
+- Messaging: "/messaging"
+- Radio Configuration: "/serial-connect"
+- Application Settings: "/settings"
 
-3. Clean up and leave comments/documentation on files.
+These are currently routed to "/TODO":
 
-- [ ] `Sidebar.tsx`
-- [ ] `SidebarIcon.tsx`
-- [x] `TabList.tsx`
-- [ ] `RenderTabs.tsx`
-
-5. Remove the #messaging and #settings from main menu, and clean up all references to them.
-
-6. Ask: is the white "..." an acceptable way to make them line up?
+- Manage Nodes
+- Manage Waypoints
+- Plugin Configuration
+- Channel Configuration
+- Export Data
