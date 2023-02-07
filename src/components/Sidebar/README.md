@@ -45,12 +45,12 @@ This file contains a list of all individual tabs on the sidebar, as well as the 
 
 The Tablist contains the routing between the sidebar and other pages. These are the routes currently (Feb. 6) set up:
 
-- View Map: "/"
-- Messaging: "/messaging"
-- Radio Configuration: "/serial-connect"
-- Application Settings: "/settings"
+- View Map: `"/"`
+- Messaging: `"/messaging"`
+- Radio Configuration: `"/serial-connect"`
+- Application Settings: `"/settings"`
 
-These are currently routed to "/TODO":
+These are currently routed to `"/TODO"`:
 
 - Manage Nodes
 - Manage Waypoints
