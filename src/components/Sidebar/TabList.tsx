@@ -49,7 +49,7 @@ const manageWaypoints: iconInfo = {
 //// CONFIGURATION
 const radioConfig: iconInfo = {
   name: "Radio Configuration",
-  pathname: "/serial-connect",
+  pathname: "/TODO",
   icon: <RadioIcon />,
 };
 const pluginConfig: iconInfo = {

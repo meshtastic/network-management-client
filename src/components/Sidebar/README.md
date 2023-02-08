@@ -47,13 +47,13 @@ The Tablist contains the routing between the sidebar and other pages. These are 
 
 - View Map: `"/"`
 - Messaging: `"/messaging"`
-- Radio Configuration: `"/serial-connect"`
 - Application Settings: `"/settings"`
 
 These are currently routed to `"/TODO"`:
 
 - Manage Nodes
 - Manage Waypoints
+- Radio Configuration
 - Plugin Configuration
 - Channel Configuration
 - Export Data

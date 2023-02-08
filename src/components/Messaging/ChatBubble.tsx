@@ -30,7 +30,7 @@ const ChatBubble = ({
         </p>
       </div>
       <p
-        className={`px-3 py-2 rounded-lg break-normal ${
+        className={`px-3 py-2 rounded-lg break-words ${
           fromSelf
             ? "bg-blue-500 text-white font-bold"
             : "bg-gray-100 text-gray-800 font-normal"
