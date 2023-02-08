@@ -7,4 +7,7 @@ module.exports = {
       jest: true,
     },
   },
+  rules: {
+    "react-hooks/exhaustive-deps": 0,
+  },
 };

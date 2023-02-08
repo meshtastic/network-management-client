@@ -7,7 +7,7 @@ import {
   configGroup,
   settingsGroup,
 } from "@components/Sidebar/TabList";
-import { ChangeSidebarIcon, MeshLogo } from "./SidebarIcon";
+import { ChangeSidebarIcon, MeshLogo } from "@components/Sidebar/SidebarIcon";
 
 // Contains Main sidebar component. Called in App.tsx
 // This file calls from RenderTabs.tsx to display all of the tabs from Tablist.tsx
