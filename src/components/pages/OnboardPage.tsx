@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { open } from "@tauri-apps/api/shell";
 
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 import SerialPortOption from "@components/Onboard/SerialPortOption";
-
-import "@components/SplashScreen/SplashScreen.css";
-
 import {
   requestAvailablePorts,
   requestConnectToDevice,
@@ -15,6 +13,8 @@ import { selectAvailablePorts } from "@features/device/deviceSelectors";
 
 import { selectRequestStateByName } from "@features/requests/requestSelectors";
 import type { IRequestState } from "@features/requests/requestReducer";
+
+import "@components/SplashScreen/SplashScreen.css";
 
 export interface IOnboardPageProps {
   unmountSelf: () => void;
@@ -39,13 +39,17 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(requestConnectToDevice(portName));
   };
 
+  const openExternalLink = (url: string) => () => {
+    void open(url);
+  };
+
   // Wait to allow user to recognize serial connection succeeded
   useEffect(() => {
     if (activePortState.status !== "SUCCESSFUL") return;
 
     const delayHandle = setTimeout(() => {
       setScreenActive(false);
-    }, 1200);
+    }, 600);
 
     return () => {
       clearTimeout(delayHandle);
@@ -121,11 +125,31 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
         </div>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 relative">
         <img
           className="w-full h-full object-cover object-center"
           src={Hero_Image}
-        ></img>
+        />
+        <p className="landing-screen-opacity-transition absolute bottom-3 right-3 text-right text-sm text-gray-600">
+          Photo by{" "}
+          <button
+            className="hover:underline"
+            onClick={openExternalLink(
+              "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+            )}
+          >
+            Jordan Steranka
+          </button>{" "}
+          on{" "}
+          <button
+            className="hover:underline"
+            onClick={openExternalLink(
+              "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+            )}
+          >
+            Unsplash
+          </button>
+        </p>
       </div>
     </div>
   );
