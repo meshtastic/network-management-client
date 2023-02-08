@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { open } from "@tauri-apps/api/shell";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 import SerialPortOption from "@components/Onboard/SerialPortOption";
+
 import {
   requestAvailablePorts,
   requestConnectToDevice,
 } from "@features/device/deviceActions";
 import { selectAvailablePorts } from "@features/device/deviceSelectors";
-
 import { selectRequestStateByName } from "@features/requests/requestSelectors";
 import type { IRequestState } from "@features/requests/requestReducer";
 
@@ -30,9 +31,9 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
     selectRequestStateByName(requestConnectToDevice.type)
   ) ?? { status: "IDLE" };
 
-  useEffect(() => {
+  const requestPorts = () => {
     dispatch(requestAvailablePorts());
-  }, []);
+  };
 
   const handlePortSelected = (portName: string) => {
     setSelectedPortName(portName);
@@ -42,6 +43,10 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
   const openExternalLink = (url: string) => () => {
     void open(url);
   };
+
+  useEffect(() => {
+    requestPorts();
+  }, []);
 
   // Wait to allow user to recognize serial connection succeeded
   useEffect(() => {
@@ -54,7 +59,7 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
     return () => {
       clearTimeout(delayHandle);
     };
-  }, [activePortState, unmountSelf]);
+  }, [activePortState]);
 
   // Move to main page upon successful port connection (need to trigger when port is succesfully connected)
   useEffect(() => {
@@ -67,7 +72,7 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
     return () => {
       clearTimeout(unmountHandle);
     };
-  }, [activePortState, unmountSelf]);
+  }, [isScreenActive, unmountSelf]);
 
   return (
     <div
@@ -83,11 +88,13 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
             ></img>
           </div>
         </div>
+
         <div className="flex justify-center mt-10">
           <h1 className="text-4xl font-semibold leading-10 text-gray-800">
             Connect a radio
           </h1>
         </div>
+
         <div className="flex justify-center mt-5">
           <h1 className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
             Connect a supported Meshtastic radio to your computer via USB
@@ -101,6 +108,7 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
             .
           </h1>
         </div>
+
         <div className="mt-10 flex flex-col">
           <div className="flex flex-col gap-4">
             {availableSerialPorts?.length ? (
@@ -123,6 +131,15 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
             )}
           </div>
         </div>
+
+        <button
+          type="button"
+          className="flex flex-row justify-center align-middle gap-4 mt-5"
+          onClick={() => requestPorts()}
+        >
+          <ArrowPathIcon className="text-gray-400 w-6 h-6 hover:cursor-pointer" />
+          <p className="my-auto text-gray-500">Refresh ports</p>
+        </button>
       </div>
 
       <div className="flex-1 relative">
