@@ -39,7 +39,7 @@ const TextMessageBubble = ({
           </span>
         </p>
 
-        <p className="ml-auto px-3 py-2 w-fit max-w-[40%] rounded-l-lg rounded-br-lg bg-gray-700 text-sm font-medium text-gray-100 border border-gray-400">
+        <p className="ml-auto px-3 py-2 w-fit max-w-[40%] rounded-l-lg rounded-br-lg bg-gray-700 text-sm font-medium text-gray-100 border border-gray-400 break-words">
           {message.payload.text.data}
         </p>
       </div>
@@ -56,7 +56,7 @@ const TextMessageBubble = ({
         </span>
       </p>
 
-      <p className="mr-auto px-3 py-2 w-fit max-w-[40%] rounded-r-lg rounded-bl-lg bg-white text-sm font-normal text-gray-700 border border-gray-200">
+      <p className="mr-auto px-3 py-2 w-fit max-w-[40%] rounded-r-lg rounded-bl-lg bg-white text-sm font-normal text-gray-700 border border-gray-200 break-words">
         {message.payload.text.data}
       </p>
     </div>
