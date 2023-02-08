@@ -241,6 +241,9 @@ impl MeshDevice {
                 "Adding text message to channel {:?}: {:?}",
                 message.packet.channel, message.data
             );
+
+            ch.last_interaction = get_current_time_u32();
+
             ch.messages.push(ChannelMessageWithAck {
                 payload: ChannelMessagePayload::Text(message),
                 ack: false,
@@ -256,6 +259,9 @@ impl MeshDevice {
                 "Adding waypoint message to channel {:?}: {:?}",
                 message.packet.channel, message.data
             );
+
+            ch.last_interaction = get_current_time_u32();
+
             ch.messages.push(ChannelMessageWithAck {
                 payload: ChannelMessagePayload::Waypoint(message),
                 ack: false,

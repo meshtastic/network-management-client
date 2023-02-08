@@ -3,9 +3,12 @@ import { Routes, Route, Outlet } from "react-router-dom";
 
 import SplashScreen from "@components/SplashScreen/SplashScreen";
 import Sidebar from "@components/Sidebar/Sidebar";
+
 import HomePage from "@components/pages/HomePage";
 import FallbackPage from "@components/pages/FallbackPage";
-import OnboardPage from "./components/pages/OnboardPage";
+import OnboardPage from "@components/pages/OnboardPage";
+import MessagingPage from "@components/pages/MessagingPage";
+import Settings from "@components/Settings/Settings";
 
 const AppWrapper = () => (
   <>
@@ -15,8 +18,11 @@ const AppWrapper = () => (
 );
 
 const App = () => {
-  const [isSplashMounted, setSplashMounted] = useState(true);
-  const [isOnboardMounted, setOnboardMounted] = useState(true);
+  // Bool to allow/disallow the splash screen at startup
+  const splashEnabled = true;
+
+  const [isSplashMounted, setSplashMounted] = useState(splashEnabled);
+  const [isOnboardMounted, setOnboardMounted] = useState(splashEnabled);
 
   return (
     <div className="flex flex-row relative">
@@ -35,6 +41,8 @@ const App = () => {
       <Routes>
         <Route path="*" element={<AppWrapper />}>
           <Route index element={<HomePage />} />
+          <Route path="messaging" element={<MessagingPage />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>

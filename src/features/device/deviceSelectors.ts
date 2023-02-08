@@ -3,6 +3,7 @@ import type { ChannelMessageWithAck } from "@bindings/ChannelMessageWithAck";
 import type { MeshDevice } from "@bindings/MeshDevice";
 import type { MeshNode } from "@bindings/MeshNode";
 import type { User } from "@bindings/protobufs/User";
+import type { MeshChannel } from "@bindings/MeshChannel";
 
 export const selectAvailablePorts =
   () =>
@@ -18,6 +19,12 @@ export const selectDevice =
   () =>
   (state: RootState): MeshDevice | null =>
     state.devices.device;
+
+export const selectConnectedDeviceNodeId =
+  () =>
+  (state: RootState): number | null =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    state.devices.device?.myNodeInfo.myNodeNum ?? null;
 
 export const selectDeviceConnected =
   () =>
@@ -70,3 +77,8 @@ export const selectUserByNodeId =
   (nodeId: number) =>
   (state: RootState): User | null =>
     selectNodeById(nodeId)(state)?.data.user ?? null;
+
+export const selectDeviceChannels =
+  () =>
+  (state: RootState): MeshChannel[] =>
+    Object.values(selectDevice()(state)?.channels ?? []);

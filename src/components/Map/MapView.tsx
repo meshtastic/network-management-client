@@ -8,7 +8,7 @@ import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import Settings from "@components/Settings/Settings";
-import Messages from "@components/Messages/Messages";
+import Messages from "@app/components/Messaging/Messages";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
 import {
