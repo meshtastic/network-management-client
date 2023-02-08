@@ -103,7 +103,7 @@ const ChangeSidebarIcon = (isExpand: boolean) => {
     <div className="flex flex-row font-semibold text-base px-2 py-3">
       <div className="px-1 w-9 text-gray-400">{icon}</div>
       {isExpand ? (
-        <div className="px-2 self-center text-gray-600">CoIIapse Sidebar</div>
+        <div className="px-2 self-center text-gray-600">Collapse Sidebar</div>
       ) : (
         <div />
       )}
