@@ -4,35 +4,43 @@ import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 import SerialPortOption from "../Onboard/SerialPortOption";
 
-import { requestAvailablePorts } from "@features/device/deviceActions";
-import { selectAvailablePorts } from "@app/features/device/deviceSelectors";
+import {
+  requestAvailablePorts,
+  requestConnectToDevice,
+} from "@features/device/deviceActions";
+import { selectAvailablePorts } from "@features/device/deviceSelectors";
 
-
-type PortState = "IDLE" | "PENDING" | "SUCCESS" | "FAILURE";
-type PortType = { name: string; state: PortState };
+import { selectRequestStateByName } from "@features/requests/requestSelectors";
+import type { IRequestState } from "@features/requests/requestReducer";
 
 export interface IOnboardPageProps {
   unmountSelf: () => void;
 }
 
 const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
-
-  const availableSerialPorts = useSelector(selectAvailablePorts());  
   const dispatch = useDispatch();
+  const availableSerialPorts = useSelector(selectAvailablePorts());
+  const [selectedPortName, setSelectedPortName] = useState("");
+
+  const activePortState: IRequestState = useSelector(
+    selectRequestStateByName(requestConnectToDevice.type)
+  ) ?? { status: "IDLE" };
 
   useEffect(() => {
     dispatch(requestAvailablePorts());
-  }, [dispatch]);
+  }, []);
 
-  const activePorts = availableSerialPorts?.map((port) : PortType => ({
-    name: port,
-    state: "IDLE",
-  }));
+  const handlePortSelected = (portName: string) => {
+    setSelectedPortName(portName);
+    dispatch(requestConnectToDevice(portName));
+  };
 
   // Move to main page upon successful port connection (need to trigger when port is succesfully connected)
-  const portSuccessfullyConnected = () => {
-    unmountSelf();
-  };
+  useEffect(() => {
+    if (activePortState.status === "SUCCESSFUL") {
+      unmountSelf();
+    }
+  }, [activePortState]);
 
   return (
     <div className="flex flex-row h-screen w-screen absolute z-40 bg-white">
@@ -65,18 +73,23 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
         </div>
         <div className="mt-10 flex flex-col">
           <div className="flex flex-col gap-4">
-            {activePorts ? (
-              activePorts.map((port) => (
-                  <SerialPortOption
-                    key={port.name}
-                    name={port.name}
-                    state={port.state}
-                    connection_error={"Null."}
-                    onSuccess={portSuccessfullyConnected}
-                  />
-                ))
+            {availableSerialPorts?.length ? (
+              availableSerialPorts.map((portName) => (
+                <SerialPortOption
+                  key={portName}
+                  name={portName}
+                  connectionState={
+                    selectedPortName === portName
+                      ? activePortState
+                      : { status: "IDLE" }
+                  }
+                  onClick={handlePortSelected}
+                />
+              ))
             ) : (
-              <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center"> No ports detected. </p>
+              <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
+                No ports detected.
+              </p>
             )}
           </div>
         </div>
