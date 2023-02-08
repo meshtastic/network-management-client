@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
-import SerialPortOption from "../Onboard/SerialPortOption";
+import SerialPortOption from "@components/Onboard/SerialPortOption";
+
+import "@components/SplashScreen/SplashScreen.css";
 
 import {
   requestAvailablePorts,
@@ -21,6 +24,7 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const [selectedPortName, setSelectedPortName] = useState("");
+  const [isScreenActive, setScreenActive] = useState(true);
 
   const activePortState: IRequestState = useSelector(
     selectRequestStateByName(requestConnectToDevice.type)
@@ -35,15 +39,37 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(requestConnectToDevice(portName));
   };
 
+  // Wait to allow user to recognize serial connection succeeded
+  useEffect(() => {
+    if (activePortState.status !== "SUCCESSFUL") return;
+
+    const delayHandle = setTimeout(() => {
+      setScreenActive(false);
+    }, 1200);
+
+    return () => {
+      clearTimeout(delayHandle);
+    };
+  }, [activePortState, unmountSelf]);
+
   // Move to main page upon successful port connection (need to trigger when port is succesfully connected)
   useEffect(() => {
-    if (activePortState.status === "SUCCESSFUL") {
+    if (isScreenActive) return;
+
+    const unmountHandle = setTimeout(() => {
       unmountSelf();
-    }
-  }, [activePortState]);
+    }, 900);
+
+    return () => {
+      clearTimeout(unmountHandle);
+    };
+  }, [activePortState, unmountSelf]);
 
   return (
-    <div className="flex flex-row h-screen w-screen absolute z-40 bg-white">
+    <div
+      className="landing-screen-opacity-transition absolute flex flex-row h-screen w-screen z-40 bg-white"
+      style={{ opacity: isScreenActive ? 1 : 0 }}
+    >
       <div className="flex flex-col flex-1">
         <div className="flex justify-center">
           <div className="h-1/8">

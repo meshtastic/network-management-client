@@ -8,7 +8,7 @@ import RainierSplashBackground from "@app/assets/rainier_splash_background.jpg";
 import { options } from "@components/SplashScreen/SplashScreenParticlesOptions";
 import SplashScreenLogo from "@components/SplashScreen/SplashScreenLogo";
 
-import "./SplashScreen.css";
+import "@components/SplashScreen/SplashScreen.css";
 
 export interface ISplashScreenProps {
   unmountSelf: () => void;
@@ -73,7 +73,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
 
   return (
     <div
-      className="splash-screen-opacity absolute top-0 left-0 w-screen h-screen z-50"
+      className="landing-screen-opacity-transition absolute top-0 left-0 w-screen h-screen z-50"
       style={{ opacity: isScreenActive ? 1 : 0 }}
     >
       <img
@@ -119,12 +119,12 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
       )}
 
       <div
-        className="splash-screen-opacity absolute w-full h-full bg-white transition-all"
+        className="landing-screen-opacity-transition absolute w-full h-full bg-white transition-all"
         style={{ opacity: isScreenLoaded ? 0 : 1 }}
       />
 
       <p
-        className="splash-screen-opacity absolute bottom-3 right-3 text-right text-sm text-gray-600"
+        className="landing-screen-opacity-transition absolute bottom-3 right-3 text-right text-sm text-gray-600"
         style={{ opacity: isScreenLoaded ? 1 : 0 }}
       >
         Photo by{" "}
