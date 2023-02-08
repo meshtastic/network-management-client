@@ -43,11 +43,6 @@ const Sidebar = () => {
             onClick={() => navigateTo("/info")}
             renderIcon={() => <DocumentTextIcon className="w-6" />}
           />
-          <SidebarIcon
-            isActive={location.pathname === "/serial-connect"}
-            onClick={() => navigateTo("/serial-connect")}
-            renderIcon={() => <RadioIcon className="w-6" />}
-          />
         </div>
       </div>
       <SidebarIcon

@@ -4,7 +4,6 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import SplashScreen from "@components/SplashScreen/SplashScreen";
 import Sidebar from "@components/Sidebar/Sidebar";
 import HomePage from "@components/pages/HomePage";
-import SerialConnectPage from "@components/pages/SerialConnectPage";
 import FallbackPage from "@components/pages/FallbackPage";
 import OnboardPage from "./components/pages/OnboardPage";
 
@@ -36,7 +35,6 @@ const App = () => {
       <Routes>
         <Route path="*" element={<AppWrapper />}>
           <Route index element={<HomePage />} />
-          <Route path="serial-connect" element={<SerialConnectPage />} />
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>
