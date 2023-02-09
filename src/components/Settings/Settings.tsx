@@ -40,7 +40,7 @@ const Settings = () => {
 
   // MAC, Hardware, and Licensing. Even though they are not displayed when null, the check prevents an error on assignment
   const mac = activeNode
-    ? convertMacAddr(activeNode.data.user!.macaddr)
+    ? convertMacAddr(activeNode.data.user?.macaddr ?? [])
     : "No device selected";
   const hwModel = activeNode?.data.user?.hwModel ?? "No device selected";
   const isLicensed = activeNode?.data.user?.isLicensed ?? "No device selected";

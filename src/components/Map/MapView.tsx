@@ -2,13 +2,10 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
 import { Map, NavigationControl, ScaleControl } from "react-map-gl";
-import { useLocation, Location as RouterLocation } from "react-router-dom";
 
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
-import Settings from "@components/Settings/Settings";
-import Messages from "@app/components/Messaging/Messages";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
 import {
@@ -17,30 +14,12 @@ import {
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
-import "./MapView.css";
-
-interface _IMapViewLeftPanel {
-  location: RouterLocation;
-}
-
-const _MapViewLeftPanel = ({ location }: _IMapViewLeftPanel) => {
-  switch (location.hash) {
-    case "#messages":
-      return <Messages />;
-
-    case "#settings":
-      return <Settings />;
-
-    default:
-      return <NodeSearchDock />;
-  }
-};
+import "@components/Map/MapView.css";
 
 export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
-  const location = useLocation();
 
   const updateActiveNode = (nodeId: number | null) => {
     dispatch(deviceSliceActions.setActiveNode(nodeId));
@@ -67,7 +46,7 @@ export const MapView = () => {
         ))}
 
         <MapSelectedNodeMenu />
-        <_MapViewLeftPanel location={location} />
+        <NodeSearchDock />
         <MapInteractionPane />
       </Map>
     </div>

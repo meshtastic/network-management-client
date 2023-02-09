@@ -6,7 +6,7 @@ import Sidebar from "@components/Sidebar/Sidebar";
 
 import HomePage from "@components/pages/HomePage";
 import FallbackPage from "@components/pages/FallbackPage";
-import OnboardPage from "@components/pages/OnboardPage";
+import SerialConnectPage from "@app/components/pages/SerialConnectPage";
 import MessagingPage from "@components/pages/MessagingPage";
 import Settings from "@components/Settings/Settings";
 
@@ -35,7 +35,7 @@ const App = () => {
       )}
 
       {isOnboardMounted && (
-        <OnboardPage unmountSelf={() => setOnboardMounted(false)} />
+        <SerialConnectPage unmountSelf={() => setOnboardMounted(false)} />
       )}
 
       <Routes>

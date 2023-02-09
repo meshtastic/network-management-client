@@ -21,7 +21,7 @@ export interface IOnboardPageProps {
   unmountSelf: () => void;
 }
 
-const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
+const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const [selectedPortName, setSelectedPortName] = useState("");
@@ -171,4 +171,4 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
     </div>
   );
 };
-export default OnboardPage;
+export default SerialConnectPage;
