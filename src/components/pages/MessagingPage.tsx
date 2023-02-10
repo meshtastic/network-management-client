@@ -14,7 +14,7 @@ const MessagingPage = () => {
 
   return (
     <div className="flex flex-row flex-1 w-full h-screen">
-      <div className="flex flex-col w-96 shadow-lg">
+      <div className="flex flex-col w-96 after:shadow-lg">
         <div className="flex justify-center align-middle px-9 h-20 border-b border-gray-100">
           <NavigationBacktrace
             className="my-auto mr-auto"
