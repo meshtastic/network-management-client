@@ -1,13 +1,17 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
-const FallbackPage = () => (
-  <div>
-    <p>404: page not found :/</p>
+const FallbackPage = () => {
+  const location = useLocation();
+
+  return (
     <div>
-      <NavLink to="/">Go home</NavLink>
+      <p>404: page not found at &quot;{location.pathname}&quot;</p>
+      <div>
+        <NavLink to="/">Go home</NavLink>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default FallbackPage;
