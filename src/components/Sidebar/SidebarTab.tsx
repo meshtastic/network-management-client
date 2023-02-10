@@ -1,31 +1,25 @@
 import React from "react";
 import type { ReactNode } from "react";
 
-// This file contains:
-// 1. Interfaces for individual tabs, and for groups of tabs. These are called in TabList.tsx for easier understanding.
-// 2. Function to render a whole tabGroup. This is called in the main Sidebar.tsx, once for each group
-
-//
-export interface iconInfo {
-  name: string;
-  pathname: string;
-  icon: JSX.Element;
-}
-
-export interface tabGroup {
-  title: string;
-  tabs: iconInfo[];
-}
+import "@components/Sidebar/Sidebar.css";
 
 export interface ISidebarTabProps {
   title: string;
+  isSidebarExpanded: boolean;
   children: ReactNode;
 }
 
-const SidebarTab = ({ title, children }: ISidebarTabProps) => {
+const SidebarTab = ({
+  title,
+  isSidebarExpanded,
+  children,
+}: ISidebarTabProps) => {
   return (
     <div>
-      <p className="mb-2 text-[9px] text-gray-500 uppercase font-semibold">
+      <p
+        className="sidebar-opacity-transition mb-2 text-[9px] text-gray-500 uppercase font-semibold"
+        style={isSidebarExpanded ? { opacity: 1 } : { opacity: 0 }}
+      >
         {title}
       </p>
       <div>{children}</div>
