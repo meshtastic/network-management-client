@@ -5,7 +5,7 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 
 import type { MeshChannel } from "@bindings/MeshChannel";
 
-import ConfigTitle from "@app/components/config/ConfigTitle";
+import ConfigTitlebar from "@app/components/config/ConfigTitlebar";
 // import MapIconButton from "@components/Map/MapIconButton";
 import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
@@ -35,7 +35,7 @@ const ChannelDetailView = ({
 
   return (
     <div className={`${className} flex-1`}>
-      <ConfigTitle
+      <ConfigTitlebar
         title={getChannelName(channel)}
         subtitle={getNumMessagesText(channel.messages.length)}
         renderIcon={(c) => <PencilIcon className={`${c}`} />}
@@ -60,7 +60,7 @@ const ChannelDetailView = ({
             <MapPinIcon className="m-auto w-6 h-6 text-gray-400" />
           </MapIconButton> */}
         </div>
-      </ConfigTitle>
+      </ConfigTitlebar>
     </div>
   );
 };
