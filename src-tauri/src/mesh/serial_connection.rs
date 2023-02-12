@@ -94,12 +94,20 @@ impl SerialConnection {
 
     pub fn connect(
         &mut self,
-        port_name: impl Into<String>,
+        port_name: String,
         baud_rate: u32,
-    ) -> Result<(JoinHandle<()>, JoinHandle<()>, JoinHandle<()>), Box<dyn Error>> {
-        let mut port = serialport::new(port_name.into(), baud_rate)
+    ) -> Result<(JoinHandle<()>, JoinHandle<()>, JoinHandle<()>), String> {
+        let mut port = serialport::new(port_name.clone(), baud_rate)
             .timeout(Duration::from_millis(10))
-            .open()?;
+            .open()
+            .map_err(|e| {
+                format!(
+                    "Could not open serial port \"{}\": {}",
+                    port_name.clone(),
+                    e.to_string()
+                )
+                .to_owned()
+            })?;
 
         let (write_input_tx, write_input_rx) = sync::mpsc::channel::<Vec<u8>>();
         let (read_output_tx, read_output_rx) = sync::mpsc::channel::<Vec<u8>>();
@@ -108,7 +116,14 @@ impl SerialConnection {
         self.write_input_tx = Some(write_input_tx);
         self.on_decoded_packet = Some(decoded_packet_rx);
 
-        let mut read_port = port.try_clone().expect("Could not clone read port");
+        let mut read_port = port.try_clone().map_err(|e| {
+            format!(
+                "Could not clone serial port \"{}\": {}",
+                port_name.clone(),
+                e.to_string()
+            )
+            .to_owned()
+        })?;
 
         let serial_write_handle = thread::spawn(move || loop {
             if let Ok(data) = write_input_rx.recv() {

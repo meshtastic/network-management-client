@@ -59,7 +59,7 @@ async fn connect_to_serial_port(
 
     connection
         .connect(port_name, 115_200)
-        .expect("Could not connect to serial port at 115_200 baud");
+        .map_err(|e| e.to_string())?;
 
     connection
         .configure(new_device.config_id)

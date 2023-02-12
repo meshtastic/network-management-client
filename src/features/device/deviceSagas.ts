@@ -42,7 +42,7 @@ function* getAvailableSerialPortsWorker(
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
-        message: (error as Error).message,
+        message: error as string,
       })
     );
   }
@@ -65,7 +65,7 @@ function* connectToDeviceWorker(
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
-        message: (error as Error).message,
+        message: error as string,
       })
     );
   }
@@ -96,7 +96,7 @@ function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
-        message: (error as Error).message,
+        message: error as string,
       })
     );
   }
@@ -115,7 +115,7 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
-        message: (error as Error).message,
+        message: error as string,
       })
     );
   }
