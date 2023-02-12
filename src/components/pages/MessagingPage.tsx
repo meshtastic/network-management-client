@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 
-import ConfigLayout from "@components/Config/ConfigLayout";
+import ConfigLayout from "@app/components/config/ConfigLayout";
 import ChannelDetailView from "@components/Messaging/ChannelDetailView";
 import ChannelListElement from "@components/Messaging/ChannelListElement";
 
