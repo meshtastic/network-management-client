@@ -6,9 +6,12 @@ import Sidebar from "@components/Sidebar/Sidebar";
 
 import HomePage from "@components/pages/HomePage";
 import FallbackPage from "@components/pages/FallbackPage";
-import SerialConnectPage from "@app/components/pages/SerialConnectPage";
+import SerialConnectPage from "@components/pages/SerialConnectPage";
 import MessagingPage from "@components/pages/MessagingPage";
 import Settings from "@components/Settings/Settings";
+import RadioConfigPage from "@components/pages/config/RadioConfigPage";
+import PluginConfigPage from "@components/pages/config/PluginConfigPage";
+import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
 
 const AppWrapper = () => (
   <>
@@ -43,6 +46,9 @@ const App = () => {
           <Route index element={<HomePage />} />
           <Route path="messaging" element={<MessagingPage />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="config/radio" element={<RadioConfigPage />} />
+          <Route path="config/plugin" element={<PluginConfigPage />} />
+          <Route path="config/channel" element={<ChannelConfigPage />} />
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>

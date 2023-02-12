@@ -49,17 +49,17 @@ const manageWaypoints: iconInfo = {
 //// CONFIGURATION
 const radioConfig: iconInfo = {
   name: "Radio Configuration",
-  pathname: "/TODO",
+  pathname: "/config/radio",
   icon: <RadioIcon />,
 };
 const pluginConfig: iconInfo = {
   name: "Plugin Configuration",
-  pathname: "/TODO",
+  pathname: "/config/plugin",
   icon: <CubeIcon />,
 };
 const channelConfig: iconInfo = {
   name: "Channel Configuration",
-  pathname: "/TODO",
+  pathname: "/config/channel",
   icon: <EnvelopeIcon />,
 };
 
