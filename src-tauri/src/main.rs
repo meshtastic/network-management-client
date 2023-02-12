@@ -61,9 +61,7 @@ async fn connect_to_serial_port(
         .connect(port_name, 115_200)
         .map_err(|e| e.to_string())?;
 
-    connection
-        .configure(new_device.config_id)
-        .expect("Could not configure serial device");
+    connection.configure(new_device.config_id)?;
 
     let mut decoded_listener = connection
         .on_decoded_packet

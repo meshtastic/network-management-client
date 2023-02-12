@@ -3,7 +3,6 @@ use async_trait::async_trait;
 use prost::Message;
 use serialport::SerialPort;
 use std::{
-    error::Error,
     io::ErrorKind::TimedOut,
     sync,
     thread::{self, JoinHandle},
@@ -29,10 +28,9 @@ pub struct SerialConnection {
 #[async_trait]
 pub trait MeshConnection {
     fn new() -> Self;
-    fn configure(&mut self, config_id: u32) -> Result<(), Box<dyn Error>>;
-
-    fn send_raw(&mut self, data: Vec<u8>) -> Result<(), Box<dyn Error>>;
-    fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), Box<dyn Error>>;
+    fn configure(&mut self, config_id: u32) -> Result<(), String>;
+    fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
+    fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), String>;
 }
 
 #[async_trait]
@@ -45,36 +43,39 @@ impl MeshConnection for SerialConnection {
         }
     }
 
-    fn configure(&mut self, config_id: u32) -> Result<(), Box<dyn Error>> {
+    fn configure(&mut self, config_id: u32) -> Result<(), String> {
         let to_radio = protobufs::ToRadio {
             payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),
         };
 
         let mut packet_buf: Vec<u8> = vec![];
-        to_radio.encode::<Vec<u8>>(&mut packet_buf)?;
+        to_radio
+            .encode::<Vec<u8>>(&mut packet_buf)
+            .map_err(|e| e.to_string())?;
+
         self.send_raw(packet_buf)?;
 
         Ok(())
     }
 
-    fn send_raw(&mut self, data: Vec<u8>) -> Result<(), Box<dyn Error>> {
+    fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String> {
         let channel = self
             .write_input_tx
             .as_ref()
-            .expect("Could not open channel");
+            .ok_or("Could not send message to write channel")
+            .map_err(|e| e.to_string())?;
 
-        channel.send(data)?;
-
+        channel.send(data).map_err(|e| e.to_string())?;
         Ok(())
     }
 
-    fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), Box<dyn Error>> {
+    fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), String> {
         let magic_buffer = [0x94, 0xc3, 0x00, data.len() as u8];
         let packet_slice = data.as_slice();
 
         let binding = [&magic_buffer, packet_slice].concat();
         let message_buffer: &[u8] = binding.as_slice();
-        port.write(message_buffer)?;
+        port.write(message_buffer).map_err(|e| e.to_string())?;
 
         Ok(())
     }
@@ -285,7 +286,7 @@ impl SerialConnection {
         ))
     }
 
-    // pub async fn disconnect() -> Result<(), Box<dyn Error>> {
+    // pub async fn disconnect() -> Result<(), String> {
     //     Ok(())
     // }
 }

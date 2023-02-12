@@ -134,7 +134,7 @@ impl MeshDevice {
                 .config
                 .index
                 .try_into()
-                .expect("channel id out of u32 range"),
+                .expect("Channel id out of u32 range"),
             channel,
         );
     }
