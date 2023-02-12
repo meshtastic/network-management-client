@@ -14,7 +14,6 @@ const ChannelListElement = ({
   isSelected,
 }: IChannelListElementProps) => {
   const lastMessage = channel.messages.at(-1) ?? null;
-  console.log(lastMessage);
   const timeLastMessageReceived: string = lastMessage
     ? new Intl.DateTimeFormat("en-us", {
         hour: "numeric",
