@@ -15,6 +15,7 @@ import {
 } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestSliceActions } from "@features/requests/requestReducer";
+import type { CommandError } from "@utils/errors";
 
 function* subscribeAll() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -42,7 +43,7 @@ function* getAvailableSerialPortsWorker(
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
-        message: (error as Error).message,
+        message: (error as CommandError).message,
       })
     );
   }
@@ -65,7 +66,7 @@ function* connectToDeviceWorker(
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
-        message: (error as Error).message,
+        message: (error as CommandError).message,
       })
     );
   }
@@ -96,7 +97,7 @@ function* sendMessageWorker(action: ReturnType<typeof requestSendMessage>) {
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
-        message: (error as Error).message,
+        message: (error as CommandError).message,
       })
     );
   }
@@ -115,7 +116,7 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
-        message: (error as Error).message,
+        message: (error as CommandError).message,
       })
     );
   }
