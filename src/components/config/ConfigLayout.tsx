@@ -27,7 +27,7 @@ const ConfigLayout = ({
           <NavigationBacktrace className="my-auto mr-auto" levels={backtrace} />
         </div>
 
-        <div className="flex flex-col flex-1 px-9 py-6">
+        <div className="flex flex-col flex-1 px-9 py-6 overflow-y-auto">
           <div className="flex flex-row justify-between align-middle mb-6">
             <h1 className="text-4xl leading-10 font-semibold text-gray-700">
               {title}
