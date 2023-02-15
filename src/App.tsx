@@ -13,6 +13,8 @@ import RadioConfigPage from "@components/pages/config/RadioConfigPage";
 import PluginConfigPage from "@components/pages/config/PluginConfigPage";
 import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
 
+import { AppRoutes } from "@utils/routing";
+
 const AppWrapper = () => (
   <>
     <Sidebar />
@@ -42,13 +44,22 @@ const App = () => {
       )}
 
       <Routes>
-        <Route path="*" element={<AppWrapper />}>
+        <Route path="/" element={<AppWrapper />}>
           <Route index element={<HomePage />} />
-          <Route path="messaging" element={<MessagingPage />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="config/radio" element={<RadioConfigPage />} />
-          <Route path="config/plugin" element={<PluginConfigPage />} />
-          <Route path="config/channel" element={<ChannelConfigPage />} />
+          <Route path={AppRoutes.MESSAGING} element={<MessagingPage />} />
+          <Route path={AppRoutes.APPLICATION_SETTINGS} element={<Settings />} />
+          <Route
+            path={AppRoutes.CONFIGURE_RADIO}
+            element={<RadioConfigPage />}
+          />
+          <Route
+            path={AppRoutes.CONFIGURE_PLUGINS}
+            element={<PluginConfigPage />}
+          />
+          <Route
+            path={AppRoutes.CONFIGURE_CHANNELS}
+            element={<ChannelConfigPage />}
+          />
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>
