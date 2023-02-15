@@ -35,6 +35,7 @@ bytes = "1.2.1"
 async-trait = "0.1.60"
 time = { version = "0.3.17", features = ["macros", "serde"] }
 ts-rs = "6.2.1"
+thiserror = "1.0.38"
 
 [features]
 # by default Tauri runs in production mode

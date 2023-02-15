@@ -1,6 +1,5 @@
 use app::protobufs;
 use prost::Message;
-use std::error::Error;
 
 use super::{
     helpers::get_current_time_u32, MeshChannel, MeshDevice, PositionPacket, TelemetryPacket,
@@ -13,7 +12,7 @@ impl MeshDevice {
     pub fn handle_packet_from_radio(
         &mut self,
         variant: app::protobufs::from_radio::PayloadVariant,
-    ) -> Result<bool, Box<dyn Error>> {
+    ) -> Result<bool, String> {
         let mut device_updated = false;
 
         match variant {
@@ -63,10 +62,7 @@ impl MeshDevice {
         Ok(device_updated)
     }
 
-    pub fn handle_mesh_packet(
-        &mut self,
-        packet: protobufs::MeshPacket,
-    ) -> Result<bool, Box<dyn Error>> {
+    pub fn handle_mesh_packet(&mut self, packet: protobufs::MeshPacket) -> Result<bool, String> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
         let mut device_updated = false;
 
@@ -86,12 +82,15 @@ impl MeshDevice {
                 }
                 protobufs::PortNum::NodeinfoApp => {
                     let data = protobufs::User::decode(data.payload.as_slice())
-                        .expect("Error decoding NodeInfo MeshPacket");
+                        .map_err(|e| e.to_string())?;
+
                     self.add_user(UserPacket { packet, data });
                     device_updated = true;
                 }
                 protobufs::PortNum::PositionApp => {
-                    let data = protobufs::Position::decode(data.payload.as_slice())?;
+                    let data = protobufs::Position::decode(data.payload.as_slice())
+                        .map_err(|e| e.to_string())?;
+
                     self.add_position(PositionPacket { packet, data });
                     //TODO: edge map generation from position packets should be temporary
                     self.edges = mocks::mock_edge_map_from_loc_info(self.nodes.clone(), None);
@@ -122,12 +121,14 @@ impl MeshDevice {
                     println!("Store forward packets not yet supported in Rust");
                 }
                 protobufs::PortNum::TelemetryApp => {
-                    let data = protobufs::Telemetry::decode(data.payload.as_slice())?;
+                    let data = protobufs::Telemetry::decode(data.payload.as_slice())
+                        .map_err(|e| e.to_string())?;
+
                     self.set_device_metrics(TelemetryPacket { packet, data });
                     device_updated = true;
                 }
                 protobufs::PortNum::TextMessageApp => {
-                    let data = String::from_utf8(data.payload)?;
+                    let data = String::from_utf8(data.payload).map_err(|e| e.to_string())?;
                     self.add_message(TextPacket { packet, data });
                     device_updated = true;
                 }
@@ -135,7 +136,9 @@ impl MeshDevice {
                     eprintln!("Compressed text data not yet supported in Rust");
                 }
                 protobufs::PortNum::WaypointApp => {
-                    let data = protobufs::Waypoint::decode(data.payload.as_slice())?;
+                    let data = protobufs::Waypoint::decode(data.payload.as_slice())
+                        .map_err(|e| e.to_string())?;
+
                     self.add_waypoint(data.clone());
                     self.add_waypoint_message(WaypointPacket { packet, data });
                     device_updated = true;

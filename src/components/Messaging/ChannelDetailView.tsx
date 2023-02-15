@@ -4,11 +4,14 @@ import { useDispatch } from "react-redux";
 import { PencilIcon } from "@heroicons/react/24/outline";
 
 import type { MeshChannel } from "@bindings/MeshChannel";
+
+import ConfigTitlebar from "@app/components/config/ConfigTitlebar";
+// import MapIconButton from "@components/Map/MapIconButton";
 import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
+
+import { requestSendMessage } from "@features/device/deviceActions";
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
-import { requestSendMessage } from "@app/features/device/deviceActions";
-// import MapIconButton from "@components/Map/MapIconButton";
 
 export interface IChannelDetailViewProps {
   channel: MeshChannel;
@@ -31,25 +34,12 @@ const ChannelDetailView = ({
   };
 
   return (
-    <div className={`${className} flex flex-col w-full h-full bg-gray-100`}>
-      <div className="flex-initial flex flex-row justify-between items-center px-9 min-h-[5rem] h-20 bg-white border-b border-l border-gray-100">
-        <div>
-          <h2 className="text-sm font-semibold text-gray-700">
-            {getChannelName(channel)}
-          </h2>
-          <p className="text-xs font-normal text-gray-400">
-            {getNumMessagesText(channel.messages.length)}
-          </p>
-        </div>
-
-        <button type="button" onClick={() => alert("incomplete feature")}>
-          <PencilIcon className="w-6 h-6 text-gray-400" />
-        </button>
-      </div>
-
-      <div
-        className="p-9 flex flex-1 flex-col overflow-auto"
-        style={{ height: "calc(100% - 5rem)" }}
+    <div className={`${className} flex-1`}>
+      <ConfigTitlebar
+        title={getChannelName(channel)}
+        subtitle={getNumMessagesText(channel.messages.length)}
+        renderIcon={(c) => <PencilIcon className={`${c}`} />}
+        onIconClick={() => alert("incomplete feature")}
       >
         <div className="flex flex-1 flex-col gap-6 mb-9">
           {channel.messages.map((m) => (
@@ -70,7 +60,7 @@ const ChannelDetailView = ({
             <MapPinIcon className="m-auto w-6 h-6 text-gray-400" />
           </MapIconButton> */}
         </div>
-      </div>
+      </ConfigTitlebar>
     </div>
   );
 };
