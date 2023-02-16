@@ -30,7 +30,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`sidebar-width-transition flex flex-col h-screen box-content shadow-lg overflow-y-auto no-scroll border-r border-gray-100 overflow-x-hidden ${isSidebarExpanded ? "w-[300px] text-gray-500" : "w-20 text-white"
+      className={`sidebar-width-transition flex flex-col h-screen box-content shadow-lg overflow-y-auto hide-scrollbar border-r border-gray-100 overflow-x-hidden ${isSidebarExpanded ? "w-[300px] text-gray-500" : "w-20 text-white"
         }`}
     >
       <SidebarLogo isSidebarExpanded={isSidebarExpanded} />
