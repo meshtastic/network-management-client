@@ -9,6 +9,8 @@ import FallbackPage from "@components/pages/FallbackPage";
 import OnboardPage from "@components/pages/OnboardPage";
 import MessagingPage from "@components/pages/MessagingPage";
 import Settings from "@components/Settings/Settings";
+import ManageWaypointPage from "@components/pages/ManageWaypointPage";
+import ManageNodePage from "@components/pages/ManageNodePage";
 
 const AppWrapper = () => (
   <>
@@ -43,6 +45,8 @@ const App = () => {
           <Route index element={<HomePage />} />
           <Route path="messaging" element={<MessagingPage />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="waypoints" element={<ManageWaypointPage />} />
+          <Route path="nodes" element={<ManageNodePage />} />
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>

@@ -37,12 +37,12 @@ const messaging: iconInfo = {
 //// Network
 const manageNodes: iconInfo = {
   name: "Manage Nodes",
-  pathname: "/TODO",
+  pathname: "/nodes",
   icon: <CircleStackIcon />,
 };
 const manageWaypoints: iconInfo = {
   name: "Manage Waypoints",
-  pathname: "/TODO",
+  pathname: "/waypoints",
   icon: <MapPinIcon />,
 };
 
