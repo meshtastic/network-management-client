@@ -7,5 +7,5 @@
 }
 
 .sidebar-background-color-transition {
-  transition: background-color 90ms ease-in-out;
+  transition: background-color 180ms ease-in-out;
 }
