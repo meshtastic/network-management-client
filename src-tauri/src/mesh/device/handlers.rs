@@ -3,8 +3,9 @@ use prost::Message;
 use tauri::api::notification::Notification;
 
 use super::{
-    helpers::get_current_time_u32, MeshChannel, MeshDevice, PositionPacket, TelemetryPacket,
-    TextPacket, UserPacket, WaypointPacket,
+    helpers::{get_channel_name, get_current_time_u32, get_node_user_name},
+    MeshChannel, MeshDevice, PositionPacket, TelemetryPacket, TextPacket, UserPacket,
+    WaypointPacket,
 };
 
 use crate::constructors::mock::mocks;
@@ -142,8 +143,14 @@ impl MeshDevice {
                     device_updated = true;
 
                     if let Some(handle) = app_handle {
+                        let from_user_name = get_node_user_name(self, &packet.from)
+                            .unwrap_or(packet.from.to_string());
+
+                        let channel_name = get_channel_name(self, &packet.channel)
+                            .unwrap_or("Unknown channel".into());
+
                         Notification::new(handle.config().tauri.bundle.identifier.clone())
-                            .title(format!("Message on channel {}", packet.channel))
+                            .title(format!("{} in {}", from_user_name, channel_name))
                             .body(data)
                             .notify(&handle)
                             .map_err(|e| e.to_string())?;
