@@ -164,8 +164,30 @@ impl MeshDevice {
                         .map_err(|e| e.to_string())?;
 
                     self.add_waypoint(data.clone());
-                    self.add_waypoint_message(WaypointPacket { packet, data });
+                    self.add_waypoint_message(WaypointPacket {
+                        packet: packet.clone(),
+                        data: data.clone(),
+                    });
                     device_updated = true;
+
+                    if let Some(handle) = app_handle {
+                        let from_user_name = get_node_user_name(self, &packet.from)
+                            .unwrap_or(packet.from.to_string());
+
+                        let channel_name = get_channel_name(self, &packet.channel)
+                            .unwrap_or("Unknown channel".into());
+
+                        Notification::new(handle.config().tauri.bundle.identifier.clone())
+                            .title(format!("{} in {}", from_user_name, channel_name))
+                            .body(format!(
+                                "Sent waypoint \"{}\" at {}, {}",
+                                data.name,
+                                data.latitude_i as f32 / 1e7,
+                                data.longitude_i as f32 / 1e7
+                            ))
+                            .notify(&handle)
+                            .map_err(|e| e.to_string())?;
+                    }
                 }
                 protobufs::PortNum::ZpsApp => {
                     println!("ZPS app not yet supported in Rust");
