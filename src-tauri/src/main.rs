@@ -119,13 +119,14 @@ async fn connect_to_serial_port(
                     }
                 };
 
-                let device_updated = match device.handle_packet_from_radio(variant) {
-                    Ok(d) => d,
-                    Err(e) => {
-                        eprintln!("Error transmitting packet: {}", e.to_string());
-                        continue;
-                    }
-                };
+                let device_updated =
+                    match device.handle_packet_from_radio(variant, Some(handle.clone())) {
+                        Ok(d) => d,
+                        Err(e) => {
+                            eprintln!("Error transmitting packet: {}", e.to_string());
+                            continue;
+                        }
+                    };
 
                 if device_updated {
                     match dispatch_updated_device(handle.clone(), device.clone()) {

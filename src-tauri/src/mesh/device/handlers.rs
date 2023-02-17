@@ -1,5 +1,6 @@
 use app::protobufs;
 use prost::Message;
+use tauri::api::notification::Notification;
 
 use super::{
     helpers::get_current_time_u32, MeshChannel, MeshDevice, PositionPacket, TelemetryPacket,
@@ -12,6 +13,7 @@ impl MeshDevice {
     pub fn handle_packet_from_radio(
         &mut self,
         variant: app::protobufs::from_radio::PayloadVariant,
+        app_handle: Option<tauri::AppHandle>,
     ) -> Result<bool, String> {
         let mut device_updated = false;
 
@@ -46,7 +48,7 @@ impl MeshDevice {
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::Packet(p) => {
-                device_updated = self.handle_mesh_packet(p)?;
+                device_updated = self.handle_mesh_packet(p, app_handle)?;
             }
             protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
                 // println!("Queue status data: {:#?}", q);
@@ -62,7 +64,11 @@ impl MeshDevice {
         Ok(device_updated)
     }
 
-    pub fn handle_mesh_packet(&mut self, packet: protobufs::MeshPacket) -> Result<bool, String> {
+    pub fn handle_mesh_packet(
+        &mut self,
+        packet: protobufs::MeshPacket,
+        app_handle: Option<tauri::AppHandle>,
+    ) -> Result<bool, String> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
         let mut device_updated = false;
 
@@ -129,8 +135,19 @@ impl MeshDevice {
                 }
                 protobufs::PortNum::TextMessageApp => {
                     let data = String::from_utf8(data.payload).map_err(|e| e.to_string())?;
-                    self.add_message(TextPacket { packet, data });
+                    self.add_text_message(TextPacket {
+                        packet: packet.clone(),
+                        data: data.clone(),
+                    });
                     device_updated = true;
+
+                    if let Some(handle) = app_handle {
+                        Notification::new(handle.config().tauri.bundle.identifier.clone())
+                            .title(format!("Message on channel {}", packet.channel))
+                            .body(data)
+                            .notify(&handle)
+                            .map_err(|e| e.to_string())?;
+                    }
                 }
                 protobufs::PortNum::TextMessageCompressedApp => {
                     eprintln!("Compressed text data not yet supported in Rust");
