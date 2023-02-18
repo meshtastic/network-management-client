@@ -23,7 +23,7 @@
   text-align: center;
   @apply border-gray-500 !important;
   @apply text-gray-500 !important;
-  @apply text-sm !important;
+  @apply text-xs !important;
 }
 
 /* Zoom Control Buttons */
