@@ -16,7 +16,6 @@ export const initialDeviceState: IDeviceState = {
   activeSerialPort: null,
 };
 
-/* eslint-disable no-param-reassign */
 export const deviceSlice = createSlice({
   name: "device",
   initialState: initialDeviceState,
@@ -41,7 +40,6 @@ export const deviceSlice = createSlice({
     },
   },
 });
-/* eslint-enable no-param-reassign */
 
 export const { actions: deviceSliceActions, reducer: deviceReducer } =
   deviceSlice;
