@@ -75,8 +75,13 @@ const NodeSearchResult = ({
             {timeSinceLastMessage} min
           </span>
         </p>
-        {/* <p>{Buffer.from(node.data.user?.macaddr ?? []).toString('hex')}</p> */}
-        <p className="text-sm font-light">demo mac address</p>
+        <p className="text-sm font-light">
+          {!!node.data.position?.latitudeI && !!node.data.position?.longitudeI
+            ? `${node.data.position.latitudeI / 1e7}, ${
+                node.data.position.longitudeI / 1e7
+              }`
+            : "No position lock, not displaying"}
+        </p>
       </div>
 
       <ViewfinderCircleIcon
