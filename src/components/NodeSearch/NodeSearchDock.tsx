@@ -2,7 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-import { MapIconButton } from "@components/Map/MapIconButton";
+
+import type { MeshNode } from "@bindings/MeshNode";
+import type { MeshDevice } from "@bindings/MeshDevice";
+
+import MapIconButton from "@components/Map/MapIconButton";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
@@ -11,10 +15,7 @@ import {
   selectDevice,
   selectAllNodes,
 } from "@features/device/deviceSelectors";
-
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import type { MeshNode } from "@bindings/MeshNode";
-import type { MeshDevice } from "@bindings/MeshDevice";
 
 interface _INodeSearchDockProps {
   filteredNodes: MeshNode[];
@@ -95,7 +96,9 @@ const NodeSearchDock = () => {
   }, [query, nodes, setFilteredNodes]);
 
   const handleNodeSelect = (nodeId: number) => {
-    dispatch(deviceSliceActions.setActiveNode(nodeId));
+    dispatch(
+      deviceSliceActions.setActiveNode(activeNodeId !== nodeId ? nodeId : null)
+    );
   };
 
   useEffect(() => {

@@ -24,21 +24,19 @@ const ChannelConfigPage = () => {
           )
         }
         renderOptions={() =>
-          channels
-            .filter((c) => c.config.role !== 0) // * ignore DISABLED role
-            .map((c) => (
-              <ConfigOption
-                key={c.config.index}
-                title={getChannelName(c)}
-                subtitle="0 unsaved changes"
-                isActive={activeChannel === c.config.index}
-                onClick={() =>
-                  setActiveChannel(
-                    activeChannel !== c.config.index ? c.config.index : null
-                  )
-                }
-              />
-            ))
+          channels.map((c) => (
+            <ConfigOption
+              key={c.config.index}
+              title={getChannelName(c) || `Channel ${c.config.index}`}
+              subtitle="0 unsaved changes"
+              isActive={activeChannel === c.config.index}
+              onClick={() =>
+                setActiveChannel(
+                  activeChannel !== c.config.index ? c.config.index : null
+                )
+              }
+            />
+          ))
         }
       >
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
