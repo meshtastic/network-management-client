@@ -35,15 +35,19 @@ export const MapView = () => {
         <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
         <NavigationControl position="bottom-right" showCompass={false} />
 
-        {nodes.map((node) => (
-          <MapNode
-            key={node.data.num}
-            onClick={updateActiveNode}
-            node={node}
-            isBase={false}
-            isActive={activeNodeId === node.data.num}
-          />
-        ))}
+        {nodes
+          .filter(
+            (n) => !!n.data.position?.latitudeI && !!n.data.position?.longitudeI
+          )
+          .map((node) => (
+            <MapNode
+              key={node.data.num}
+              onClick={updateActiveNode}
+              node={node}
+              isBase={false}
+              isActive={activeNodeId === node.data.num}
+            />
+          ))}
 
         <MapSelectedNodeMenu />
         <NodeSearchDock />
