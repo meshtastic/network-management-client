@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-import MapIconButton from "@components/Map/MapIconButton";
+import { MapIconButton } from "@components/Map/MapIconButton";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 

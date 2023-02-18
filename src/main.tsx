@@ -4,9 +4,6 @@ import { Provider } from "react-redux";
 import { listen } from "@tauri-apps/api/event";
 import { BrowserRouter } from "react-router-dom";
 
-import { Provider as AlertProvider } from "react-alert";
-import AlertTemplate from "react-alert-template-mui";
-
 import App from "@app/App";
 import { store } from "@store/index";
 
@@ -49,9 +46,7 @@ createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <AlertProvider template={AlertTemplate}>
-          <App />
-        </AlertProvider>
+        <App />
       </Provider>
     </BrowserRouter>
   </React.StrictMode>
