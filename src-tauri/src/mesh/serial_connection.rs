@@ -4,7 +4,7 @@ use prost::Message;
 use serialport::SerialPort;
 use std::{
     io::ErrorKind::TimedOut,
-    sync,
+    sync::{self, Arc, Mutex},
     thread::{self, JoinHandle},
     time::Duration,
 };
@@ -21,8 +21,12 @@ pub enum PacketDestination {
 #[derive(Debug, Default)]
 pub struct SerialConnection {
     pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
-    pub my_node_info: Option<protobufs::MyNodeInfo>,
     write_input_tx: Option<sync::mpsc::Sender<Vec<u8>>>,
+    is_connection_active: Arc<Mutex<bool>>,
+
+    serial_read_handle: Option<JoinHandle<()>>,
+    serial_write_handle: Option<JoinHandle<()>>,
+    message_processing_handle: Option<JoinHandle<()>>,
 }
 
 #[async_trait]
@@ -38,8 +42,12 @@ impl MeshConnection for SerialConnection {
     fn new() -> Self {
         SerialConnection {
             write_input_tx: None,
-            my_node_info: None,
             on_decoded_packet: None,
+            is_connection_active: Arc::new(Mutex::new(false)),
+
+            serial_read_handle: None,
+            serial_write_handle: None,
+            message_processing_handle: None,
         }
     }
 
@@ -93,11 +101,7 @@ impl SerialConnection {
         Ok(ports)
     }
 
-    pub fn connect(
-        &mut self,
-        port_name: String,
-        baud_rate: u32,
-    ) -> Result<(JoinHandle<()>, JoinHandle<()>, JoinHandle<()>), String> {
+    pub fn connect(&mut self, port_name: String, baud_rate: u32) -> Result<(), String> {
         let mut port = serialport::new(port_name.clone(), baud_rate)
             .timeout(Duration::from_millis(10))
             .open()
@@ -109,6 +113,18 @@ impl SerialConnection {
                 )
                 .to_owned()
             })?;
+
+        // Enable serial connection flag
+        // Don't hold the lock for longer than it takes to set the flag
+        {
+            let mut guard = self
+                .is_connection_active
+                .lock()
+                .map_err(|e| e.to_string())
+                .expect("Could not lock writer active mutex");
+
+            *guard = true;
+        }
 
         let (write_input_tx, write_input_rx) = sync::mpsc::channel::<Vec<u8>>();
         let (read_output_tx, read_output_rx) = sync::mpsc::channel::<Vec<u8>>();
@@ -126,16 +142,22 @@ impl SerialConnection {
             .to_owned()
         })?;
 
-        let serial_write_handle = thread::spawn(move || loop {
-            if let Ok(data) = write_input_rx.recv() {
-                match SerialConnection::write_to_radio(&mut port, data) {
-                    Ok(()) => (),
-                    Err(e) => eprintln!("Error writing to radio: {:?}", e.to_string()),
-                };
-            }
-        });
+        let is_connection_active = self.is_connection_active.clone();
 
-        let serial_read_handle = thread::spawn(move || loop {
+        self.serial_read_handle = Some(thread::spawn(move || loop {
+            // Kill thread if connection not active
+            // We only need this as a flag, don't want to keep lock past check
+            {
+                let guard = is_connection_active
+                    .lock()
+                    .map_err(|e| e.to_string())
+                    .expect("Could not lock reader active mutex");
+
+                if !*guard {
+                    break;
+                }
+            }
+
             let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
 
             let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
@@ -148,16 +170,55 @@ impl SerialConnection {
             };
 
             match read_output_tx.send(incoming_serial_buf[..recv_bytes].to_vec()) {
-                Ok(()) => (),
-                Err(e) => eprintln!("Error sending to recv channel: {:?}", e.to_string()),
+                Ok(_) => (),
+                Err(_) => continue,
             };
-        });
+        }));
 
-        let message_processing_handle = thread::spawn(move || {
+        let is_connection_active = self.is_connection_active.clone();
+
+        self.serial_write_handle = Some(thread::spawn(move || loop {
+            // Kill thread if connection not active
+            // We only need this as a flag, don't want to keep lock past check
+            {
+                let guard = is_connection_active
+                    .lock()
+                    .map_err(|e| e.to_string())
+                    .expect("Could not lock writer active mutex");
+
+                if !*guard {
+                    break;
+                }
+            }
+
+            if let Ok(data) = write_input_rx.recv_timeout(Duration::from_millis(10)) {
+                match SerialConnection::write_to_radio(&mut port, data) {
+                    Ok(()) => (),
+                    Err(e) => eprintln!("Error writing to radio: {:?}", e.to_string()),
+                };
+            }
+        }));
+
+        let is_connection_active = self.is_connection_active.clone();
+
+        self.message_processing_handle = Some(thread::spawn(move || {
             let mut transform_serial_buf: Vec<u8> = vec![0; 1024];
 
             loop {
-                if let Ok(message) = read_output_rx.recv() {
+                // Kill thread if connection not active
+                // We only need this as a flag, don't want to keep lock past check
+                {
+                    let guard = is_connection_active
+                        .lock()
+                        .map_err(|e| e.to_string())
+                        .expect("Could not lock processing active mutex");
+
+                    if !*guard {
+                        break;
+                    }
+                }
+
+                if let Ok(message) = read_output_rx.recv_timeout(Duration::from_millis(10)) {
                     let mut message = message.clone();
                     transform_serial_buf.append(&mut message);
                     let mut processing_exhausted = false;
@@ -271,22 +332,58 @@ impl SerialConnection {
                             }
                         };
 
-                        decoded_packet_tx.send(decoded_packet).unwrap();
+                        match decoded_packet_tx.send(decoded_packet) {
+                            Ok(_) => continue,
+                            Err(_) => break,
+                        };
                     }
                 }
             }
-        });
+        }));
 
         thread::sleep(Duration::from_millis(200)); // Device stability
 
-        Ok((
-            serial_write_handle,
-            serial_read_handle,
-            message_processing_handle,
-        ))
+        Ok(())
     }
 
-    // pub async fn disconnect() -> Result<(), String> {
-    //     Ok(())
-    // }
+    pub fn disconnect(&mut self) -> Result<(), String> {
+        // Close channels, which will kill held threads
+
+        self.on_decoded_packet = None;
+        self.write_input_tx = None;
+
+        // Tell worker threads to shut down
+        // We only need to set this flag, this will cause deadlock if the flag is not released
+        // This thread is dependent on the other threads joining, which can only happen if this lock is released
+        {
+            let mut guard = self
+                .is_connection_active
+                .lock()
+                .map_err(|e| e.to_string())?;
+
+            *guard = false;
+        }
+
+        // Wait for threads to close
+
+        if let Some(serial_read_handle) = self.serial_read_handle.take() {
+            serial_read_handle
+                .join()
+                .map_err(|_e| "Error joining serial_read_handle".to_string())?;
+        }
+
+        if let Some(serial_write_handle) = self.serial_write_handle.take() {
+            serial_write_handle
+                .join()
+                .map_err(|_e| "Error joining serial_write_handle".to_string())?;
+        }
+
+        if let Some(message_processing_handle) = self.message_processing_handle.take() {
+            message_processing_handle
+                .join()
+                .map_err(|_e| "Error joining message_processing_handle".to_string())?;
+        }
+
+        Ok(())
+    }
 }

@@ -151,7 +151,7 @@ pub struct MeshDevice {
 
 impl MeshDevice {
     pub fn new() -> Self {
-        MeshDevice {
+        Self {
             config_id: generate_rand_id(),
             ready: false,
             region_unset: true,

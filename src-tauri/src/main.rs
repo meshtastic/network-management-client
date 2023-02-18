@@ -136,6 +136,9 @@ async fn connect_to_serial_port(
                         }
                     };
                 }
+            } else {
+                // Kill thread on channel disconnect
+                break;
             }
         }
     });
@@ -153,14 +156,19 @@ async fn disconnect_from_serial_port(
     mesh_device: tauri::State<'_, ActiveMeshDevice>,
     serial_connection: tauri::State<'_, ActiveSerialConnection>,
 ) -> Result<(), CommandError> {
-    {
-        let mut state_connection = serial_connection.inner.lock().await;
-        *state_connection = None;
-    }
-
+    // Completely drop device memory
     {
         let mut state_device = mesh_device.inner.lock().await;
         *state_device = None;
+    }
+
+    // Clear serial connection state
+    {
+        let mut state_connection = serial_connection.inner.lock().await;
+
+        if let Some(connection) = state_connection.as_mut() {
+            connection.disconnect()?;
+        }
     }
 
     Ok(())
