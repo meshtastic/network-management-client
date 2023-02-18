@@ -7,10 +7,14 @@ import ChannelDetailView from "@components/Messaging/ChannelDetailView";
 import ChannelListElement from "@components/Messaging/ChannelListElement";
 
 import { selectDeviceChannels } from "@features/device/deviceSelectors";
+import { useNavigate } from "react-router-dom";
+import { AppRoutes } from "@utils/routing";
 
 const MessagingPage = () => {
   const channels = useSelector(selectDeviceChannels());
   const [activeChannelIdx, setActiveChannelIdx] = useState<number | null>(null);
+
+  const navigateTo = useNavigate();
 
   return (
     <div className="flex-1">
@@ -18,9 +22,7 @@ const MessagingPage = () => {
         title="Messaging"
         backtrace={["Messaging"]}
         renderTitleIcon={(c) => <Cog6ToothIcon className={`${c}`} />}
-        onTitleIconClick={() =>
-          console.warn("Messaging title icon onClick not implemented")
-        }
+        onTitleIconClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}
         renderOptions={() =>
           channels
             .filter((c) => c.config.role !== 0) // * ignore DISABLED role

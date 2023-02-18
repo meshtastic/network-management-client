@@ -57,14 +57,6 @@ export const selectActiveNode =
     return selectNodeById(activeNodeId)(state);
   };
 
-export const selectMessagesByChannel =
-  (channelId: number) =>
-  (state: RootState): ChannelMessageWithAck[] => {
-    const numChannels = state.devices.device?.hardwareInfo.maxChannels ?? 0;
-    if (!numChannels || channelId < 0 || numChannels <= channelId) return [];
-    return state.devices.device?.channels[channelId].messages ?? [];
-  };
-
 export const selectAllUsersByNodeIds =
   () =>
   (state: RootState): Record<number, User | null> =>
