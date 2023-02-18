@@ -80,7 +80,7 @@ const NodeSearchResult = ({
             ? `${node.data.position.latitudeI / 1e7}, ${
                 node.data.position.longitudeI / 1e7
               }`
-            : "No position lock, not displaying"}
+            : "No GPS lock, hidden from map"}
         </p>
       </div>
 
