@@ -31,6 +31,19 @@ impl std::fmt::Display for CommandError {
     }
 }
 
+impl From<String> for CommandError {
+    fn from(value: String) -> Self {
+        Self { message: value }
+    }
+}
+impl From<&str> for CommandError {
+    fn from(value: &str) -> Self {
+        Self {
+            message: value.into(),
+        }
+    }
+}
+
 fn main() {
     tracing_subscriber::fmt::init();
 
@@ -57,9 +70,8 @@ fn main() {
 
 #[tauri::command]
 fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
-    SerialConnection::get_available_ports().map_err(|e| CommandError {
-        message: e.to_string(),
-    })
+    let ports = SerialConnection::get_available_ports()?;
+    Ok(ports)
 }
 
 #[tauri::command]
@@ -72,25 +84,13 @@ async fn connect_to_serial_port(
     let mut connection = SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
 
-    connection
-        .connect(port_name, 115_200)
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
-
-    connection
-        .configure(new_device.config_id)
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
+    connection.connect(port_name, 115_200)?;
+    connection.configure(new_device.config_id)?;
 
     let mut decoded_listener = connection
         .on_decoded_packet
         .as_ref()
-        .ok_or("Decoded packet listener not open")
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?
+        .ok_or("Decoded packet listener not open")?
         .resubscribe();
 
     let handle = app_handle.app_handle().clone();
@@ -184,35 +184,18 @@ async fn send_text(
     let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
 
-    let connection = serial_guard
-        .as_mut()
-        .ok_or("Connection not initialized")
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
+    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
+    let device = device_guard.as_mut().ok_or("Device not connected")?;
 
-    let device = device_guard
-        .as_mut()
-        .ok_or("Device not connected")
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
+    device.send_text(
+        connection,
+        text.clone(),
+        mesh::serial_connection::PacketDestination::BROADCAST,
+        true,
+        channel,
+    )?;
 
-    device
-        .send_text(
-            connection,
-            text.clone(),
-            mesh::serial_connection::PacketDestination::BROADCAST,
-            true,
-            channel,
-        )
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
-
-    dispatch_updated_device(app_handle, device.clone()).map_err(|e| CommandError {
-        message: e.to_string(),
-    })?;
+    dispatch_updated_device(app_handle, device.clone()).map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -226,25 +209,10 @@ async fn update_device_config(
     let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
 
-    let connection = serial_guard
-        .as_mut()
-        .ok_or("Connection not initialized")
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
+    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
+    let device = device_guard.as_mut().ok_or("Device not connected")?;
 
-    let device = device_guard
-        .as_mut()
-        .ok_or("Device not connected")
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
-
-    device
-        .update_device_config(connection, config)
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
+    device.update_device_config(connection, config)?;
 
     Ok(())
 }
@@ -258,25 +226,10 @@ async fn update_device_user(
     let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
 
-    let connection = serial_guard
-        .as_mut()
-        .ok_or("Connection not initialized")
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
+    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
+    let device = device_guard.as_mut().ok_or("Device not connected")?;
 
-    let device = device_guard
-        .as_mut()
-        .ok_or("Device not connected")
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
-
-    device
-        .update_device_user(connection, user)
-        .map_err(|e| CommandError {
-            message: e.to_string(),
-        })?;
+    device.update_device_user(connection, user)?;
 
     Ok(())
 }
