@@ -30,7 +30,9 @@ const ChannelDetailView = ({
       return;
     }
 
-    dispatch(requestSendMessage({ text: message, channel: 0 }));
+    dispatch(
+      requestSendMessage({ text: message, channel: channel.config.index })
+    );
   };
 
   return (
