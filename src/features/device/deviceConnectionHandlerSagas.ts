@@ -63,6 +63,7 @@ export function* handleDeviceDisconnectChannel(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       yield take(channel);
       yield put(requestDisconnectFromDevice());
+      window.location.reload();
     }
   } catch (error) {
     yield call(handleSagaError, error);
