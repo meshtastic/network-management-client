@@ -24,20 +24,24 @@ const MapIconUnimplemented = ({
 
       {/* Appears when clicked */}
       <Dialog.Portal>
-        <Dialog.Overlay />
-        <Dialog.Content className="fixed top-1/4 left-1/3 rounded-lg bg-white drop-shadow-xl p-8">
-          <Dialog.Title className="text-lg font-semibold">Warning</Dialog.Title>
-          <Dialog.Description className="text-gray-500 my-4">
-            This functionality is not yet implemented.
-          </Dialog.Description>
-          <div className="mt-5 flex justify-end">
-            <Dialog.Close asChild>
-              <button className="rounded-md py-3 px-5 font-medium hover:bg-gray-200">
-                Close
-              </button>
-            </Dialog.Close>
-          </div>
-        </Dialog.Content>
+        <div className="bg-black">
+          <Dialog.Overlay className="" />
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white drop-shadow-2xl p-8 shadow-2xl">
+            <Dialog.Title className="text-lg font-semibold">
+              Warning
+            </Dialog.Title>
+            <Dialog.Description className="text-gray-500 my-4">
+              This functionality is not yet implemented.
+            </Dialog.Description>
+            <div className="mt-5 flex justify-end">
+              <Dialog.Close asChild>
+                <button className="rounded-md py-3 px-5 font-medium hover:bg-gray-200">
+                  Close
+                </button>
+              </Dialog.Close>
+            </div>
+          </Dialog.Content>
+        </div>
       </Dialog.Portal>
     </Dialog.Root>
   );
