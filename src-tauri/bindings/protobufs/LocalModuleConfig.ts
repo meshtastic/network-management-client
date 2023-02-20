@@ -4,8 +4,9 @@ import type { CannedMessageConfig } from "./CannedMessageConfig";
 import type { ExternalNotificationConfig } from "./ExternalNotificationConfig";
 import type { MqttConfig } from "./MqttConfig";
 import type { RangeTestConfig } from "./RangeTestConfig";
+import type { RemoteHardwareConfig } from "./RemoteHardwareConfig";
 import type { SerialConfig } from "./SerialConfig";
 import type { StoreForwardConfig } from "./StoreForwardConfig";
 import type { TelemetryConfig } from "./TelemetryConfig";
 
-export interface LocalModuleConfig { mqtt: MqttConfig | null, serial: SerialConfig | null, externalNotification: ExternalNotificationConfig | null, storeForward: StoreForwardConfig | null, rangeTest: RangeTestConfig | null, telemetry: TelemetryConfig | null, cannedMessage: CannedMessageConfig | null, audio: AudioConfig | null, version: number, }
+export interface LocalModuleConfig { mqtt: MqttConfig | null, serial: SerialConfig | null, externalNotification: ExternalNotificationConfig | null, storeForward: StoreForwardConfig | null, rangeTest: RangeTestConfig | null, telemetry: TelemetryConfig | null, cannedMessage: CannedMessageConfig | null, audio: AudioConfig | null, remoteHardware: RemoteHardwareConfig | null, version: number, }
