@@ -84,7 +84,7 @@ async fn connect_to_serial_port(
     let mut connection = SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
 
-    connection.connect(port_name, 115_200)?;
+    connection.connect(app_handle.clone(), port_name, 115_200)?;
     connection.configure(new_device.config_id)?;
 
     let mut decoded_listener = connection

@@ -4,7 +4,10 @@ import { all, call, put, takeEvery } from "redux-saga/effects";
 import {
   createDeviceUpdateChannel,
   handleDeviceUpdateChannel,
+  createDeviceDisconnectChannel,
+  handleDeviceDisconnectChannel,
   DeviceUpdateChannel,
+  DeviceDisconnectChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import {
   requestAvailablePorts,
@@ -23,7 +26,15 @@ function* subscribeAll() {
     createDeviceUpdateChannel
   );
 
-  yield all([call(handleDeviceUpdateChannel, deviceUpdateChannel)]);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const deviceDisconnectChannel: DeviceDisconnectChannel = yield call(
+    createDeviceDisconnectChannel
+  );
+
+  yield all([
+    call(handleDeviceUpdateChannel, deviceUpdateChannel),
+    call(handleDeviceDisconnectChannel, deviceDisconnectChannel),
+  ]);
 }
 
 function* getAvailableSerialPortsWorker(
