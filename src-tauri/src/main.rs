@@ -46,7 +46,6 @@ impl From<&str> for CommandError {
 
 fn main() {
     tracing_subscriber::fmt::init();
-
     tauri::Builder::default()
         .manage(ActiveSerialConnection {
             inner: Arc::new(async_runtime::Mutex::new(None)),
@@ -63,7 +62,7 @@ fn main() {
             send_text,
             update_device_config,
             update_device_user,
-            send_waypoint
+            send_waypoint,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
