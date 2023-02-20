@@ -169,7 +169,11 @@ impl SerialConnection {
             let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
                 Ok(o) => o,
                 Err(ref e) if e.kind() == ErrorKind::TimedOut => continue,
-                Err(ref e) if e.kind() == ErrorKind::BrokenPipe => {
+                Err(ref e)
+                    if e.kind() == ErrorKind::BrokenPipe // Linux disconnect
+                        || e.kind() == ErrorKind::PermissionDenied // Windows disconnect
+                        =>
+                {
                     app_handle
                         .app_handle()
                         .emit_all("device_disconnect", "")
