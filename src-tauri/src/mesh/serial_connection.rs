@@ -3,11 +3,12 @@ use async_trait::async_trait;
 use prost::Message;
 use serialport::SerialPort;
 use std::{
-    io::ErrorKind::TimedOut,
+    io::ErrorKind,
     sync::{self, Arc, Mutex},
     thread::{self, JoinHandle},
     time::Duration,
 };
+use tauri::Manager;
 use tokio::sync::broadcast;
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -101,7 +102,12 @@ impl SerialConnection {
         Ok(ports)
     }
 
-    pub fn connect(&mut self, port_name: String, baud_rate: u32) -> Result<(), String> {
+    pub fn connect(
+        &mut self,
+        app_handle: tauri::AppHandle,
+        port_name: String,
+        baud_rate: u32,
+    ) -> Result<(), String> {
         let mut port = serialport::new(port_name.clone(), baud_rate)
             .timeout(Duration::from_millis(10))
             .open()
@@ -162,7 +168,18 @@ impl SerialConnection {
 
             let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
                 Ok(o) => o,
-                Err(ref e) if e.kind() == TimedOut => continue,
+                Err(ref e) if e.kind() == ErrorKind::TimedOut => continue,
+                Err(ref e)
+                    if e.kind() == ErrorKind::BrokenPipe // Linux disconnect
+                        || e.kind() == ErrorKind::PermissionDenied // Windows disconnect
+                        =>
+                {
+                    app_handle
+                        .app_handle()
+                        .emit_all("device_disconnect", "")
+                        .expect("Could not dispatch disconnection event");
+                    break;
+                }
                 Err(err) => {
                     eprintln!("Read failed: {:?}", err);
                     continue;
