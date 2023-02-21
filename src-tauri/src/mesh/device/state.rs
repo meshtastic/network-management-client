@@ -233,7 +233,7 @@ impl MeshDevice {
         }
     }
 
-    pub fn add_message(&mut self, message: TextPacket) {
+    pub fn add_text_message(&mut self, message: TextPacket) {
         let channel = self.channels.get_mut(&message.packet.channel);
 
         if let Some(ch) = channel {
