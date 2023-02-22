@@ -9,7 +9,7 @@
     "ui:build": "tsc && vite build",
     "ui:preview": "vite preview",
     "ui:lint": "eslint src/*.{ts,tsx}",
-    "ui:format": "prettier --write 'src/**/*.ts' && eslint src/*.{ts,tsx}",
+    "ui:format": "prettier --write ./src && eslint src/*.{ts,tsx}",
     "ui:test": "jest --passWithNoTests",
     "rust:dev": "tauri dev",
     "rust:build": "tauri build --",
