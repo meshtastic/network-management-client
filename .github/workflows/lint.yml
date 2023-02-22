@@ -1,0 +1,27 @@
+name: lint
+on: [pull_request]
+
+env:
+  NODE_VERSION: 18
+
+jobs:
+  lint:
+    name: Lint Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v3
+
+      - name: PNPM Setup
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+
+      - name: Install NodeJS ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install

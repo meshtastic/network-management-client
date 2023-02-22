@@ -36,16 +36,20 @@ const ChannelDetailView = ({
   };
 
   return (
-    <div className={`${className} flex-1`}>
+    <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={getChannelName(channel)}
         subtitle={getNumMessagesText(channel.messages.length)}
         renderIcon={(c) => <PencilIcon className={`${c}`} />}
         onIconClick={() => alert("incomplete feature")}
       >
-        <div className="flex flex-1 flex-col gap-6 mb-9">
+        <div className="flex flex-1 flex-col gap-6 mb-9 overflow-y-auto">
           {channel.messages.map((m) => (
-            <TextMessageBubble message={m} key={m.payload.text.packet.id} />
+            <TextMessageBubble
+              className="pr-6"
+              message={m}
+              key={m.payload.text.packet.id}
+            />
           ))}
         </div>
 

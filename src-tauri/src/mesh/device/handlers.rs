@@ -99,8 +99,6 @@ impl MeshDevice {
                         .map_err(|e| e.to_string())?;
 
                     self.add_position(PositionPacket { packet, data });
-                    //TODO: edge map generation from position packets should be temporary
-                    self.edges = mocks::mock_edge_map_from_loc_info(self.nodes.clone(), None);
                     device_updated = true;
                 }
                 protobufs::PortNum::PrivateApp => {

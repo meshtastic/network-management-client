@@ -120,7 +120,7 @@ const MapSelectedNodeMenu = () => {
                 <span>UNK</span>
               ) : (
                 <span>
-                  {deviceSpeed} mph, {deviceDirection}&#176;
+                  {deviceSpeed} mph, {deviceDirection % 360}&#176;
                 </span>
               )}
             </h3>
