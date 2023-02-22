@@ -30,7 +30,7 @@ const ConfigTitle = ({
       </div>
 
       <div
-        className="p-9 flex flex-1 flex-col overflow-auto"
+        className="p-9 pr-3 flex flex-1 flex-col overflow-auto"
         style={{ height: "calc(100% - 5rem)" }}
       >
         {children}
