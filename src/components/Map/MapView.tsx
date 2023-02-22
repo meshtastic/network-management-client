@@ -13,9 +13,6 @@ import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
-import Waypoints from "@components/Waypoints/Waypoints";
-// import WaypointMenu from "@app/components/Waypoints/WaypointMenu";
-
 import {
   selectActiveNodeId,
   selectAllNodes,
@@ -75,9 +72,6 @@ export const MapView = () => {
               isActive={activeNodeId === node.data.num}
             />
           ))}
-
-        <Waypoints />
-        {/* <WaypointMenu /> */}
 
         <MapSelectedNodeMenu />
         <NodeSearchDock />
