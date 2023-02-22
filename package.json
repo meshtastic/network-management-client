@@ -13,7 +13,7 @@
     "ui:test": "jest --passWithNoTests",
     "rust:dev": "tauri dev",
     "rust:build": "tauri build --",
-    "rust:test": "cd ./src-tauri; rm -rf ./bindings && cargo test"
+    "rust:test": "cd src-tauri; cargo test"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
