@@ -250,7 +250,7 @@ async fn send_waypoint(
     app_handle: tauri::AppHandle,
     mesh_device: tauri::State<'_, ActiveMeshDevice>,
     serial_connection: tauri::State<'_, ActiveSerialConnection>,
-) -> Result<(), String> {
+) -> Result<(), CommandError> {
     let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
 
