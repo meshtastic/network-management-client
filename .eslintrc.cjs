@@ -10,4 +10,9 @@ module.exports = {
   rules: {
     "react-hooks/exhaustive-deps": 0,
   },
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
 };
