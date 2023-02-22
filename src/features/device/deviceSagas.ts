@@ -15,6 +15,7 @@ import {
   requestDisconnectFromDevice,
   requestSendMessage,
   requestUpdateUser,
+  requestNewWaypoint,
 } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestSliceActions } from "@features/requests/requestReducer";
@@ -133,6 +134,25 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
   }
 }
 
+function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
+  try {
+    yield put(requestSliceActions.setRequestPending({ name: action.type }));
+    yield call(invoke, "send_waypoint", {
+      waypoint: action.payload.waypoint,
+      channel: action.payload.channel,
+    });
+
+    yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
+  } catch (error) {
+    yield put(
+      requestSliceActions.setRequestFailed({
+        name: action.type,
+        message: (error as CommandError).message,
+      })
+    );
+  }
+}
+
 export function* devicesSaga() {
   yield all([
     takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
@@ -140,5 +160,6 @@ export function* devicesSaga() {
     takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
     takeEvery(requestSendMessage.type, sendMessageWorker),
     takeEvery(requestUpdateUser.type, updateUserConfig),
+    takeEvery(requestNewWaypoint.type, newWaypoint),
   ]);
 }
