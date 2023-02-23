@@ -32,6 +32,32 @@ impl MeshDevice {
         Ok(())
     }
 
+    pub fn send_waypoint(
+        &mut self,
+        connection: &mut SerialConnection,
+        waypoint: protobufs::Waypoint,
+        destination: PacketDestination,
+        want_ack: bool,
+        channel: u32,
+    ) -> Result<(), String> {
+        let byte_data = waypoint.encode_to_vec();
+
+        self.send_packet(
+            connection,
+            byte_data,
+            protobufs::PortNum::WaypointApp,
+            destination,
+            channel,
+            want_ack,
+            false,
+            true,
+            None,
+            None,
+        )?;
+
+        Ok(())
+    }
+
     pub fn update_device_config(
         &mut self,
         connection: &mut SerialConnection,

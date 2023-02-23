@@ -46,7 +46,6 @@ impl From<&str> for CommandError {
 
 fn main() {
     tracing_subscriber::fmt::init();
-
     tauri::Builder::default()
         .manage(ActiveSerialConnection {
             inner: Arc::new(async_runtime::Mutex::new(None)),
@@ -62,7 +61,8 @@ fn main() {
             disconnect_from_serial_port,
             send_text,
             update_device_config,
-            update_device_user
+            update_device_user,
+            send_waypoint,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -239,6 +239,42 @@ async fn update_device_user(
     let device = device_guard.as_mut().ok_or("Device not connected")?;
 
     device.update_device_user(connection, user)?;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn send_waypoint(
+    waypoint: protobufs::Waypoint,
+    channel: u32,
+    app_handle: tauri::AppHandle,
+    mesh_device: tauri::State<'_, ActiveMeshDevice>,
+    serial_connection: tauri::State<'_, ActiveSerialConnection>,
+) -> Result<(), CommandError> {
+    let mut serial_guard = serial_connection.inner.lock().await;
+    let mut device_guard = mesh_device.inner.lock().await;
+
+    let connection = serial_guard
+        .as_mut()
+        .ok_or("Connection not initialized")
+        .map_err(|e| e.to_string())?;
+
+    let device = device_guard
+        .as_mut()
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device
+        .send_waypoint(
+            connection,
+            waypoint,
+            mesh::serial_connection::PacketDestination::BROADCAST,
+            true,
+            channel,
+        )
+        .map_err(|e| e.to_string())?;
+
+    dispatch_updated_device(app_handle, device.clone()).map_err(|e| e.to_string())?;
 
     Ok(())
 }
