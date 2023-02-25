@@ -40,7 +40,7 @@ const Settings = () => {
 
   // MAC, Hardware, and Licensing. Even though they are not displayed when null, the check prevents an error on assignment
   const mac = activeNode
-    ? convertMacAddr(activeNode.data.user!.macaddr)
+    ? convertMacAddr(activeNode.data.user?.macaddr ?? [])
     : "No device selected";
   const hwModel = activeNode?.data.user?.hwModel ?? "No device selected";
   const isLicensed = activeNode?.data.user?.isLicensed ?? "No device selected";
@@ -66,7 +66,7 @@ const Settings = () => {
   // Render the popup.
   return (
     // Create darker screen
-    <div className="drop-shadow font-sans h-screen w-screen bg-black/50 z-50 pl-[15%] pt-[3%]">
+    <div className="drop-shadow font-sans h-screen w-screen bg-black/50 pl-[15%] pt-[3%]">
       {/* Creates light box */}
       <div className="Light-box  rounded-lg w-9/12 h-5/6 bg-gray-100 text-4xl">
         {/* Set up header, close button*/}

@@ -1,10 +1,11 @@
 use app::protobufs;
 use prost::Message;
-use std::error::Error;
+use tauri::api::notification::Notification;
 
 use super::{
-    helpers::get_current_time_u32, MeshChannel, MeshDevice, PositionPacket, TelemetryPacket,
-    TextPacket, UserPacket, WaypointPacket,
+    helpers::{get_channel_name, get_current_time_u32, get_node_user_name},
+    MeshChannel, MeshDevice, PositionPacket, TelemetryPacket, TextPacket, UserPacket,
+    WaypointPacket,
 };
 
 use crate::constructors::mock::mocks;
@@ -13,7 +14,8 @@ impl MeshDevice {
     pub fn handle_packet_from_radio(
         &mut self,
         variant: app::protobufs::from_radio::PayloadVariant,
-    ) -> Result<bool, Box<dyn Error>> {
+        app_handle: Option<tauri::AppHandle>,
+    ) -> Result<bool, String> {
         let mut device_updated = false;
 
         match variant {
@@ -47,7 +49,7 @@ impl MeshDevice {
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::Packet(p) => {
-                device_updated = self.handle_mesh_packet(p)?;
+                device_updated = self.handle_mesh_packet(p, app_handle)?;
             }
             protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
                 // println!("Queue status data: {:#?}", q);
@@ -66,7 +68,8 @@ impl MeshDevice {
     pub fn handle_mesh_packet(
         &mut self,
         packet: protobufs::MeshPacket,
-    ) -> Result<bool, Box<dyn Error>> {
+        app_handle: Option<tauri::AppHandle>,
+    ) -> Result<bool, String> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
         let mut device_updated = false;
 
@@ -86,15 +89,16 @@ impl MeshDevice {
                 }
                 protobufs::PortNum::NodeinfoApp => {
                     let data = protobufs::User::decode(data.payload.as_slice())
-                        .expect("Error decoding NodeInfo MeshPacket");
+                        .map_err(|e| e.to_string())?;
+
                     self.add_user(UserPacket { packet, data });
                     device_updated = true;
                 }
                 protobufs::PortNum::PositionApp => {
-                    let data = protobufs::Position::decode(data.payload.as_slice())?;
+                    let data = protobufs::Position::decode(data.payload.as_slice())
+                        .map_err(|e| e.to_string())?;
+
                     self.add_position(PositionPacket { packet, data });
-                    //TODO: edge map generation from position packets should be temporary
-                    self.edges = mocks::mock_edge_map_from_loc_info(self.nodes.clone(), None);
                     device_updated = true;
                 }
                 protobufs::PortNum::PrivateApp => {
@@ -122,23 +126,66 @@ impl MeshDevice {
                     println!("Store forward packets not yet supported in Rust");
                 }
                 protobufs::PortNum::TelemetryApp => {
-                    let data = protobufs::Telemetry::decode(data.payload.as_slice())?;
+                    let data = protobufs::Telemetry::decode(data.payload.as_slice())
+                        .map_err(|e| e.to_string())?;
+
                     self.set_device_metrics(TelemetryPacket { packet, data });
                     device_updated = true;
                 }
                 protobufs::PortNum::TextMessageApp => {
-                    let data = String::from_utf8(data.payload)?;
-                    self.add_message(TextPacket { packet, data });
+                    let data = String::from_utf8(data.payload).map_err(|e| e.to_string())?;
+                    self.add_text_message(TextPacket {
+                        packet: packet.clone(),
+                        data: data.clone(),
+                    });
                     device_updated = true;
+
+                    if let Some(handle) = app_handle {
+                        let from_user_name = get_node_user_name(self, &packet.from)
+                            .unwrap_or(packet.from.to_string());
+
+                        let channel_name = get_channel_name(self, &packet.channel)
+                            .unwrap_or("Unknown channel".into());
+
+                        Notification::new(handle.config().tauri.bundle.identifier.clone())
+                            .title(format!("{} in {}", from_user_name, channel_name))
+                            .body(data)
+                            .notify(&handle)
+                            .map_err(|e| e.to_string())?;
+                    }
                 }
                 protobufs::PortNum::TextMessageCompressedApp => {
                     eprintln!("Compressed text data not yet supported in Rust");
                 }
                 protobufs::PortNum::WaypointApp => {
-                    let data = protobufs::Waypoint::decode(data.payload.as_slice())?;
+                    let data = protobufs::Waypoint::decode(data.payload.as_slice())
+                        .map_err(|e| e.to_string())?;
+
                     self.add_waypoint(data.clone());
-                    self.add_waypoint_message(WaypointPacket { packet, data });
+                    self.add_waypoint_message(WaypointPacket {
+                        packet: packet.clone(),
+                        data: data.clone(),
+                    });
                     device_updated = true;
+
+                    if let Some(handle) = app_handle {
+                        let from_user_name = get_node_user_name(self, &packet.from)
+                            .unwrap_or(packet.from.to_string());
+
+                        let channel_name = get_channel_name(self, &packet.channel)
+                            .unwrap_or("Unknown channel".into());
+
+                        Notification::new(handle.config().tauri.bundle.identifier.clone())
+                            .title(format!("{} in {}", from_user_name, channel_name))
+                            .body(format!(
+                                "Sent waypoint \"{}\" at {}, {}",
+                                data.name,
+                                data.latitude_i as f32 / 1e7,
+                                data.longitude_i as f32 / 1e7
+                            ))
+                            .notify(&handle)
+                            .map_err(|e| e.to_string())?;
+                    }
                 }
                 protobufs::PortNum::ZpsApp => {
                     println!("ZPS app not yet supported in Rust");

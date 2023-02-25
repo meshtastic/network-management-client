@@ -4,7 +4,6 @@ use super::helpers::{generate_rand_id, get_current_time_u32};
 use super::MeshDevice;
 use app::protobufs;
 use prost::Message;
-use std::error::Error;
 
 impl MeshDevice {
     pub fn send_text(
@@ -14,7 +13,7 @@ impl MeshDevice {
         destination: PacketDestination,
         want_ack: bool,
         channel: u32,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), String> {
         let byte_data = text.clone().into_bytes();
 
         self.send_packet(
@@ -33,11 +32,37 @@ impl MeshDevice {
         Ok(())
     }
 
+    pub fn send_waypoint(
+        &mut self,
+        connection: &mut SerialConnection,
+        waypoint: protobufs::Waypoint,
+        destination: PacketDestination,
+        want_ack: bool,
+        channel: u32,
+    ) -> Result<(), String> {
+        let byte_data = waypoint.encode_to_vec();
+
+        self.send_packet(
+            connection,
+            byte_data,
+            protobufs::PortNum::WaypointApp,
+            destination,
+            channel,
+            want_ack,
+            false,
+            true,
+            None,
+            None,
+        )?;
+
+        Ok(())
+    }
+
     pub fn update_device_config(
         &mut self,
         connection: &mut SerialConnection,
         config: protobufs::Config,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), String> {
         let config_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetConfig(config)),
         };
@@ -64,7 +89,7 @@ impl MeshDevice {
         &mut self,
         connection: &mut SerialConnection,
         user: protobufs::User,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), String> {
         let user_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetOwner(user)),
         };
@@ -99,7 +124,7 @@ impl MeshDevice {
         echo_response: bool,
         reply_id: Option<u32>,
         emoji: Option<u32>,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), String> {
         // let own_node_id: u32 = self.my_node_info.as_ref().unwrap().my_node_num;
         let own_node_id: u32 = self.my_node_info.my_node_num;
 
@@ -137,7 +162,7 @@ impl MeshDevice {
 
         if echo_response {
             packet.rx_time = get_current_time_u32();
-            self.handle_mesh_packet(packet.clone())?;
+            self.handle_mesh_packet(packet.clone(), None)?;
         }
 
         let to_radio = protobufs::ToRadio {
@@ -145,7 +170,10 @@ impl MeshDevice {
         };
 
         let mut packet_buf: Vec<u8> = vec![];
-        to_radio.encode::<Vec<u8>>(&mut packet_buf)?;
+        to_radio
+            .encode::<Vec<u8>>(&mut packet_buf)
+            .map_err(|e| e.to_string())?;
+
         connection.send_raw(packet_buf)?;
 
         Ok(())

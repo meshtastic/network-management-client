@@ -1,0 +1,11 @@
+.sidebar-opacity-transition {
+  transition: opacity 300ms ease-in-out;
+}
+
+.sidebar-width-transition {
+  transition: width 300ms ease-in-out;
+}
+
+.sidebar-background-color-transition {
+  transition: background-color 180ms ease-in-out;
+}

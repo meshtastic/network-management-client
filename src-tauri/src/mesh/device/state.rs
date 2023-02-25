@@ -134,7 +134,7 @@ impl MeshDevice {
                 .config
                 .index
                 .try_into()
-                .expect("channel id out of u32 range"),
+                .expect("Channel id out of u32 range"),
             channel,
         );
     }
@@ -233,7 +233,7 @@ impl MeshDevice {
         }
     }
 
-    pub fn add_message(&mut self, message: TextPacket) {
+    pub fn add_text_message(&mut self, message: TextPacket) {
         let channel = self.channels.get_mut(&message.packet.channel);
 
         if let Some(ch) = channel {

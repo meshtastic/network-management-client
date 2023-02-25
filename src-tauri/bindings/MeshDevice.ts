@@ -7,4 +7,4 @@ import type { MeshNode } from "./MeshNode";
 import type { MyNodeInfo } from "./protobufs/MyNodeInfo";
 import type { Waypoint } from "./protobufs/Waypoint";
 
-export interface MeshDevice { id: number, ready: boolean, status: MeshDeviceStatus, channels: Record<number, MeshChannel>, config: LocalConfig, hardwareInfo: MyNodeInfo, nodes: Record<number, MeshNode>, regionUnset: boolean, deviceMetrics: DeviceMetrics, waypoints: Record<number, Waypoint>, }
+export interface MeshDevice { id: number, ready: boolean, status: MeshDeviceStatus, channels: Record<number, MeshChannel>, config: LocalConfig, myNodeInfo: MyNodeInfo, nodes: Record<number, MeshNode>, regionUnset: boolean, deviceMetrics: DeviceMetrics, waypoints: Record<number, Waypoint>, }

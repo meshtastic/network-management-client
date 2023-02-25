@@ -24,6 +24,9 @@
           " http://127.0.0.1:5000/*"
         ]
       },
+      "notification": {
+        "all": true
+      },
       "shell": {
         "all": false,
         "execute": false,

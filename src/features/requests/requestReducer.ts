@@ -29,7 +29,7 @@ export const requestSlice = createSlice({
       state,
       action: PayloadAction<{ name: string; message: string }>
     ) => {
-      state.status[action.payload.message] = {
+      state.status[action.payload.name] = {
         status: "FAILED",
         message: action.payload.message,
       };

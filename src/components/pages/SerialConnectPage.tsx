@@ -13,7 +13,10 @@ import {
 } from "@features/device/deviceActions";
 import { selectAvailablePorts } from "@features/device/deviceSelectors";
 import { selectRequestStateByName } from "@features/requests/requestSelectors";
-import type { IRequestState } from "@features/requests/requestReducer";
+import {
+  IRequestState,
+  requestSliceActions,
+} from "@features/requests/requestReducer";
 
 import "@components/SplashScreen/SplashScreen.css";
 
@@ -21,7 +24,7 @@ export interface IOnboardPageProps {
   unmountSelf: () => void;
 }
 
-const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
+const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const [selectedPortName, setSelectedPortName] = useState("");
@@ -33,6 +36,15 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   const requestPorts = () => {
     dispatch(requestAvailablePorts());
+  };
+
+  const refreshPorts = () => {
+    dispatch(
+      requestSliceActions.clearRequestState({
+        name: requestConnectToDevice.type,
+      })
+    );
+    requestPorts();
   };
 
   const handlePortSelected = (portName: string) => {
@@ -135,7 +147,7 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
         <button
           type="button"
           className="flex flex-row justify-center align-middle gap-4 mt-5"
-          onClick={() => requestPorts()}
+          onClick={() => refreshPorts()}
         >
           <ArrowPathIcon className="text-gray-400 w-6 h-6 hover:cursor-pointer" />
           <p className="my-auto text-gray-500">Refresh ports</p>
@@ -171,4 +183,4 @@ const OnboardPage = ({ unmountSelf }: IOnboardPageProps) => {
     </div>
   );
 };
-export default OnboardPage;
+export default SerialConnectPage;
