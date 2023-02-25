@@ -121,6 +121,12 @@ impl MeshDevice {
                             timestamp: get_current_time_u32(),
                         });
                     }
+                    protobufs::telemetry::Variant::AirQualityMetrics(air_quality_metrics) => {
+                        println!(
+                            "Received air quality metrics, not handling: {:?}",
+                            air_quality_metrics
+                        );
+                    }
                 }
             }
         }
