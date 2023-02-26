@@ -31,8 +31,8 @@ const ManageNodePage = () => {
         id: "Battery",
         accessorFn: (n) =>
           n.deviceMetrics?.batteryLevel && n.deviceMetrics.batteryLevel
-            ? `${n.deviceMetrics.voltage}V (${
-                n.deviceMetrics.batteryLevel * 100
+            ? `${n.deviceMetrics.voltage.toPrecision(4)}V (${
+                n.deviceMetrics.batteryLevel
               }%)`
             : "No battery info",
       },
