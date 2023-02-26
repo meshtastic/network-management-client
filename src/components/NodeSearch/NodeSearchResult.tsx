@@ -63,7 +63,7 @@ const NodeSearchResult = ({
       <_NodeSearchResultIcon nodeState={nodeState} />
 
       <div className={`flex-grow ${colorClasses.text}`}>
-        <p className="text-lg font-semibold">
+        <p className="text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
           {node.data.user?.longName ?? node.data.num}
           <span className="text-sm font-normal pl-2">
             {lastPacketTime ? (
