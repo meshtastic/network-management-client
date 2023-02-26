@@ -1,42 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
+import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import type { NodeInfo } from "@bindings/protobufs/NodeInfo";
 import TableLayout from "@components/Table/TableLayout";
-
-const defaultNodes: NodeInfo[] = [
-  {
-    deviceMetrics: null,
-    lastHeard: 0,
-    num: 0,
-    position: null,
-    snr: 0,
-    user: null,
-  },
-  {
-    deviceMetrics: {
-      airUtilTx: 0.2,
-      batteryLevel: 0.9,
-      channelUtilization: 0.3,
-      voltage: 4.1,
-    },
-    lastHeard: 1677373048,
-    num: 1,
-    position: null,
-    snr: 0,
-    user: {
-      hwModel: 0,
-      id: "!fes8sfs3",
-      isLicensed: false,
-      shortName: "Test",
-      longName: "Test User",
-      macaddr: [0x1a, 0x2b, 0x3c, 0xd4, 0xe5, 0xf6],
-    },
-  },
-];
+import { selectAllNodes } from "@features/device/deviceSelectors";
 
 const ManageNodePage = () => {
-  const [data, setData] = useState(() => [...defaultNodes]);
+  const nodes = useSelector(selectAllNodes()).map((n) => n.data);
   const columns = useMemo<ColumnDef<NodeInfo, unknown>[]>(
     () => [
       { header: "ID", accessorKey: "num" },
@@ -66,12 +37,12 @@ const ManageNodePage = () => {
             : "No battery info",
       },
     ],
-    [data]
+    [nodes]
   );
 
   return (
     <TableLayout
-      data={data}
+      data={nodes}
       columns={columns}
       title="Manage Nodes"
       backtrace={["Nodes"]}
