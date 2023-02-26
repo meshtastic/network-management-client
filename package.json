@@ -13,13 +13,14 @@
     "ui:test": "jest --passWithNoTests",
     "rust:dev": "tauri dev",
     "rust:build": "tauri build --",
-    "rust:test": "cd ./src-tauri; rm -rf ./bindings && cargo test"
+    "rust:test": "cd src-tauri; cargo test"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
     "@material-tailwind/react": "^1.2.4",
     "@radix-ui/react-dialog": "^1.0.2",
     "@reduxjs/toolkit": "^1.8.6",
+    "@tanstack/react-table": "8.7.9",
     "@tauri-apps/api": "^1.1.0",
     "heroicons": "^2.0.13",
     "mapbox-gl": "^2.12.1",
@@ -30,9 +31,11 @@
     "react-map-gl": "^7.0.19",
     "react-redux": "^8.0.4",
     "react-router-dom": "^6.6.1",
+    "react-table": "^7.8.0",
     "react-tsparticles": "^2.7.1",
     "redux-logger": "^3.0.6",
     "redux-saga": "^1.2.1",
+    "timeago-react": "^3.0.5",
     "tsparticles": "^2.7.1",
     "tsparticles-engine": "^2.7.1"
   },
@@ -44,6 +47,7 @@
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
     "@types/react-redux": "^7.1.24",
+    "@types/react-table": "^7.7.14",
     "@types/redux-logger": "^3.0.9",
     "@types/w3c-web-serial": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^5.40.1",

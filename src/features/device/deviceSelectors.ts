@@ -1,9 +1,9 @@
 import type { RootState } from "@app/store";
-import type { ChannelMessageWithAck } from "@bindings/ChannelMessageWithAck";
 import type { MeshDevice } from "@bindings/MeshDevice";
 import type { MeshNode } from "@bindings/MeshNode";
 import type { User } from "@bindings/protobufs/User";
 import type { MeshChannel } from "@bindings/MeshChannel";
+import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 export const selectAvailablePorts =
   () =>
@@ -74,3 +74,8 @@ export const selectDeviceChannels =
   () =>
   (state: RootState): MeshChannel[] =>
     Object.values(selectDevice()(state)?.channels ?? []);
+
+export const selectAllWaypoints =
+  () =>
+  (state: RootState): Waypoint[] =>
+    Object.values(state.devices.device?.waypoints ?? {});

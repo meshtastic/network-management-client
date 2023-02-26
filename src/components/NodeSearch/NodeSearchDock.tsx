@@ -1,11 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 import type { MeshNode } from "@bindings/MeshNode";
 import type { MeshDevice } from "@bindings/MeshDevice";
 
-import { MapIconButton } from "@components/Map/MapIconButton";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
@@ -59,40 +57,34 @@ const _NodeSearchDock = ({
   return <></>;
 };
 
+const filterNodes =
+  (query: string) =>
+  (node: MeshNode): boolean => {
+    // Show all nodes on empty query
+    if (!query) {
+      return true;
+    }
+
+    const lowercaseQuery = query.toLocaleLowerCase();
+
+    if (String(node.data.num).includes(lowercaseQuery)) return true;
+
+    if (node.data.user?.shortName.toLocaleLowerCase().includes(lowercaseQuery))
+      return true;
+
+    if (node.data.user?.longName.toLocaleLowerCase().includes(lowercaseQuery))
+      return true;
+
+    return false;
+  };
+
 const NodeSearchDock = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const device = useSelector(selectDevice());
   const activeNodeId = useSelector(selectActiveNodeId());
 
-  const [filteredNodes, setFilteredNodes] = useState<MeshNode[]>(nodes);
   const [query, setQuery] = useState("");
-
-  const filterNodes = useCallback(() => {
-    // Show all nodes on empty query
-    if (!query) {
-      setFilteredNodes(nodes);
-      return;
-    }
-
-    const filteredNodes = nodes.filter((node) => {
-      const lowercaseQuery = query.toLocaleLowerCase();
-
-      if (String(node.data.num).includes(lowercaseQuery)) return true;
-
-      if (
-        node.data.user?.shortName.toLocaleLowerCase().includes(lowercaseQuery)
-      )
-        return true;
-
-      if (node.data.user?.longName.toLocaleLowerCase().includes(lowercaseQuery))
-        return true;
-
-      return false;
-    });
-
-    setFilteredNodes(filteredNodes);
-  }, [query, nodes, setFilteredNodes]);
 
   const handleNodeSelect = (nodeId: number) => {
     dispatch(
@@ -100,25 +92,18 @@ const NodeSearchDock = () => {
     );
   };
 
-  useEffect(() => {
-    filterNodes();
-  }, [filterNodes, nodes]);
-
   return (
     <div className="absolute left-9 top-9 w-96 flex flex-col p-4 gap-4">
       <div className="flex flex-row gap-4">
         <NodeSearchInput
           query={query}
           setQuery={setQuery}
-          placeholder="Search for nodes"
+          placeholder="Filter nodes"
         />
-        <MapIconButton className="p-3" type="submit" onClick={filterNodes}>
-          <MagnifyingGlassIcon className="w-6 h-6 text-gray-500" />
-        </MapIconButton>
       </div>
 
       <_NodeSearchDock
-        filteredNodes={filteredNodes}
+        filteredNodes={nodes.filter(filterNodes(query))}
         device={device}
         activeNodeId={activeNodeId}
         query={query}
