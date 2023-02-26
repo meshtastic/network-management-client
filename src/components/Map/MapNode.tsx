@@ -1,13 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import { Marker, MapboxEvent } from "react-map-gl";
+import TimeAgo from "timeago-react";
 
 import type { MeshNode } from "@bindings/MeshNode";
 import MapNodeIcon from "@components/Map/MapNodeIcon";
+
+import { useComponentReload } from "@utils/hooks";
 import {
-  getTimeSinceLastHeard,
+  getMinsSinceLastHeard,
   getNodeState,
   getHeadingFromNodeState,
   getColorClassFromNodeState,
+  getLastHeardTime,
 } from "@utils/nodeUtils";
 
 export interface IMapNodeProps {
@@ -25,9 +29,10 @@ const MapNode = ({
   isBase = false,
   isActive = false,
 }: IMapNodeProps) => {
-  const [timeSinceLastMessage, setTimeSinceLastMessage] = useState(0);
+  useComponentReload(1000);
 
-  const nodeState = getNodeState(timeSinceLastMessage, isActive);
+  const lastPacketTime = getLastHeardTime(node);
+  const nodeState = getNodeState(getMinsSinceLastHeard(node), isActive);
   const headingPrefix = getHeadingFromNodeState(nodeState, isBase);
 
   const colorClasses = getColorClassFromNodeState(nodeState);
@@ -37,16 +42,6 @@ const MapNode = ({
     e.originalEvent.preventDefault();
     onClick(node.data.num);
   };
-
-  const reloadTimeSinceLastMessage = useCallback(() => {
-    setTimeSinceLastMessage(getTimeSinceLastHeard(node));
-  }, [setTimeSinceLastMessage, node]);
-
-  useEffect(() => {
-    const intervalId = setInterval(reloadTimeSinceLastMessage, 1000);
-    return () => clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Marker
@@ -70,7 +65,7 @@ const MapNode = ({
           {(nodeState === "warning" || nodeState === "error") && (
             <span className={`font-normal ${colorClasses.text}`}>
               {" "}
-              ({timeSinceLastMessage} min)
+              <TimeAgo datetime={lastPacketTime} locale="en-us" live />
             </span>
           )}
         </div>

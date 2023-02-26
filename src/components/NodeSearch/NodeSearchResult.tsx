@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
+import TimeAgo from "timeago-react";
 import {
   ShieldExclamationIcon,
   SignalIcon,
@@ -7,10 +8,12 @@ import {
 } from "@heroicons/react/24/outline";
 
 import type { MeshNode } from "@bindings/MeshNode";
+import { useComponentReload } from "@utils/hooks";
 import {
   getColorClassFromNodeState,
+  getLastHeardTime,
   getNodeState,
-  getTimeSinceLastHeard,
+  getMinsSinceLastHeard,
   NodeState,
 } from "@utils/nodeUtils";
 
@@ -49,20 +52,11 @@ const NodeSearchResult = ({
   isActive,
   selectNode,
 }: INodeSearchResultProps) => {
-  const [timeSinceLastMessage, setTimeSinceLastMessage] = useState(0);
+  useComponentReload(1000);
 
-  const nodeState = getNodeState(timeSinceLastMessage, isActive);
+  const lastPacketTime = getLastHeardTime(node);
+  const nodeState = getNodeState(getMinsSinceLastHeard(node), isActive);
   const colorClasses = getColorClassFromNodeState(nodeState);
-
-  const reloadTimeSinceLastMessage = useCallback(() => {
-    setTimeSinceLastMessage(getTimeSinceLastHeard(node));
-  }, [setTimeSinceLastMessage, node]);
-
-  useEffect(() => {
-    const intervalId = setInterval(reloadTimeSinceLastMessage, 1000);
-    return () => clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="flex flex-row gap-4">
@@ -72,7 +66,7 @@ const NodeSearchResult = ({
         <p className="text-lg font-semibold">
           {node.data.user?.longName ?? node.data.num}
           <span className="text-sm font-normal pl-2">
-            {timeSinceLastMessage} min
+            <TimeAgo datetime={lastPacketTime} locale="en-us" live />
           </span>
         </p>
         <p className="text-sm font-light">

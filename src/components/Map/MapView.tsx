@@ -30,6 +30,10 @@ export const MapView = () => {
   const mapState = useSelector(selectMapState());
 
   const updateActiveNode = (nodeId: number | null) => {
+    if (nodeId === activeNodeId) {
+      return dispatch(deviceSliceActions.setActiveNode(null));
+    }
+
     dispatch(deviceSliceActions.setActiveNode(nodeId));
   };
 

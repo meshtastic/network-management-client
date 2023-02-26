@@ -1,25 +1,26 @@
 import type { MeshNode } from "@bindings/MeshNode";
 
-// TODO these will need to be configurable
 export const NODE_WARNING_THRESHOLD = 15;
 export const NODE_ERROR_THRESHOLD = 30;
 
 export type NodeState = "nominal" | "selected" | "warning" | "error";
 
-export const getTimeSinceLastHeard = (node: MeshNode): number => {
-  const lastMetricTime = Math.max(
-    node.deviceMetrics.at(-1)?.timestamp ?? 0,
-    node.environmentMetrics.at(-1)?.timestamp ?? 0
+export const getLastHeardTime = (node: MeshNode): number => {
+  return Math.max(
+    (node.deviceMetrics.at(-1)?.timestamp ?? 0) * 1000, // s to ms
+    (node.environmentMetrics.at(-1)?.timestamp ?? 0) * 1000,
+    node.data.lastHeard * 1000
   );
+};
 
-  if (!node.data.lastHeard || lastMetricTime === 0) return 0; // 0 means not set
+export const getMinsSinceLastHeard = (node: MeshNode): number => {
+  const lastHeard = getLastHeardTime(node);
+  if (!lastHeard) return 0; // 0 means not set
 
-  // TODO lastHeard should be the source of truth in firmware
-  const lastHeard = Math.max(node.data.lastHeard, lastMetricTime); // sec
-  const now = Date.now() / 1000; // sec
-  const timeSinceLastMessage = Math.abs(now - lastHeard) / 60; // s to min
+  const now = Date.now(); // ms
+  const timeSinceLastMessage = Math.abs(now - lastHeard) / 1000 / 60; // ms to min
 
-  return Math.floor(timeSinceLastMessage);
+  return timeSinceLastMessage;
 };
 
 export const getNodeState = (
