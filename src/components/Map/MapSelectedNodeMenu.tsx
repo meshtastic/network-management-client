@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import TimeAgo from "timeago-react";
 import {
   XMarkIcon,
   DocumentDuplicateIcon,
@@ -10,16 +11,18 @@ import {
 
 import { selectActiveNode } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { getTimeSinceLastHeard } from "@utils/nodeUtils";
 import { writeValueToClipboard } from "@utils/clipboard";
+import { useComponentReload } from "@utils/hooks";
+import { getLastHeardTime } from "@utils/nodes";
 
 const MapSelectedNodeMenu = () => {
   const dispatch = useDispatch();
   const activeNode = useSelector(selectActiveNode());
-  const [timeSinceLastMessage, setTimeSinceLastMessage] = useState(0);
+  useComponentReload(1000);
+
+  const lastPacketTime = activeNode ? getLastHeardTime(activeNode) : 0;
 
   const deviceName = activeNode?.data.user?.longName ?? "N/A";
-  const deviceLastHeard = timeSinceLastMessage;
   const deviceLtCoord = (activeNode?.data.position?.latitudeI ?? 0) / 1e7;
   const deviceLgCoord = (activeNode?.data.position?.longitudeI ?? 0) / 1e7;
   const devicePercentCharge = activeNode?.data.deviceMetrics?.batteryLevel ?? 0;
@@ -31,17 +34,6 @@ const MapSelectedNodeMenu = () => {
   const clearActiveNode = () => {
     dispatch(deviceSliceActions.setActiveNode(null));
   };
-
-  const reloadTimeSinceLastMessage = useCallback(() => {
-    if (!activeNode) return;
-    setTimeSinceLastMessage(getTimeSinceLastHeard(activeNode));
-  }, [setTimeSinceLastMessage, activeNode]);
-
-  useEffect(() => {
-    const intervalId = setInterval(reloadTimeSinceLastMessage, 1000);
-    return () => clearInterval(intervalId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (!activeNode) return <></>;
 
@@ -58,7 +50,12 @@ const MapSelectedNodeMenu = () => {
 
       <p className="text-gray-500 text-sm leading-5 font-normal pt-1">
         {" "}
-        Last heard from {deviceLastHeard} min ago{" "}
+        Last heard from{" "}
+        {lastPacketTime ? (
+          <TimeAgo datetime={lastPacketTime} locale="en_us" />
+        ) : (
+          "UNK"
+        )}
       </p>
 
       <h4 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">

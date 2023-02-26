@@ -6,7 +6,7 @@ import SelectedNodeIcon from "@app/assets/map-nodes/Size=Large, State=Selected, 
 import WarningNodeIcon from "@app/assets/map-nodes/Size=Medium, State=Warning, IsBase=False.svg";
 import ErrorNodeIcon from "@app/assets/map-nodes/Size=Medium, State=Error, IsBase=False.svg";
 
-import type { NodeState } from "@utils/nodeUtils";
+import type { NodeState } from "@utils/nodes";
 
 export interface IMapNodeIconProps {
   size: "sm" | "med" | "lg";
