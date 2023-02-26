@@ -9,6 +9,8 @@ import FallbackPage from "@components/pages/FallbackPage";
 import SerialConnectPage from "@components/pages/SerialConnectPage";
 import MessagingPage from "@components/pages/MessagingPage";
 import Settings from "@components/Settings/Settings";
+import ManageWaypointPage from "@components/pages/ManageWaypointPage";
+import ManageNodePage from "@components/pages/ManageNodePage";
 import RadioConfigPage from "@components/pages/config/RadioConfigPage";
 import PluginConfigPage from "@components/pages/config/PluginConfigPage";
 import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
@@ -47,7 +49,13 @@ const App = () => {
         <Route path="/" element={<AppWrapper />}>
           <Route index element={<HomePage />} />
           <Route path={AppRoutes.MESSAGING} element={<MessagingPage />} />
-          <Route path={AppRoutes.APPLICATION_SETTINGS} element={<Settings />} />
+
+          <Route
+            path={AppRoutes.MANAGE_WAYPOINTS}
+            element={<ManageWaypointPage />}
+          />
+          <Route path={AppRoutes.MANAGE_NODES} element={<ManageNodePage />} />
+
           <Route
             path={AppRoutes.CONFIGURE_RADIO}
             element={<RadioConfigPage />}
@@ -60,6 +68,8 @@ const App = () => {
             path={AppRoutes.CONFIGURE_CHANNELS}
             element={<ChannelConfigPage />}
           />
+
+          <Route path={AppRoutes.APPLICATION_SETTINGS} element={<Settings />} />
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>
