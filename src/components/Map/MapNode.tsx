@@ -65,7 +65,11 @@ const MapNode = ({
           {(nodeState === "warning" || nodeState === "error") && (
             <span className={`font-normal ${colorClasses.text}`}>
               {" "}
-              <TimeAgo datetime={lastPacketTime} locale="en-us" live />
+              {lastPacketTime ? (
+                <TimeAgo datetime={lastPacketTime} locale="en-us" live />
+              ) : (
+                "UNK"
+              )}
             </span>
           )}
         </div>

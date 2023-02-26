@@ -66,7 +66,11 @@ const NodeSearchResult = ({
         <p className="text-lg font-semibold">
           {node.data.user?.longName ?? node.data.num}
           <span className="text-sm font-normal pl-2">
-            <TimeAgo datetime={lastPacketTime} locale="en-us" live />
+            {lastPacketTime ? (
+              <TimeAgo datetime={lastPacketTime} locale="en-us" live />
+            ) : (
+              "UNK"
+            )}
           </span>
         </p>
         <p className="text-sm font-light">

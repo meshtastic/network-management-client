@@ -5,12 +5,15 @@ export const NODE_ERROR_THRESHOLD = 30;
 
 export type NodeState = "nominal" | "selected" | "warning" | "error";
 
-export const getLastHeardTime = (node: MeshNode): number => {
-  return Math.max(
+export const getLastHeardTime = (node: MeshNode): number | null => {
+  const lastHeard = Math.max(
     (node.deviceMetrics.at(-1)?.timestamp ?? 0) * 1000, // s to ms
     (node.environmentMetrics.at(-1)?.timestamp ?? 0) * 1000,
     node.data.lastHeard * 1000
   );
+
+  if (!lastHeard) return null;
+  return lastHeard;
 };
 
 export const getMinsSinceLastHeard = (node: MeshNode): number => {
