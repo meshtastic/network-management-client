@@ -15,7 +15,7 @@ import {
   getNodeState,
   getMinsSinceLastHeard,
   NodeState,
-} from "@utils/nodeUtils";
+} from "@utils/nodes";
 
 export interface INodeSearchResultProps {
   node: MeshNode;

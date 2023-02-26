@@ -12,7 +12,7 @@ import {
   getHeadingFromNodeState,
   getColorClassFromNodeState,
   getLastHeardTime,
-} from "@utils/nodeUtils";
+} from "@utils/nodes";
 
 export interface IMapNodeProps {
   node: MeshNode;

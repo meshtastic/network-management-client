@@ -13,7 +13,7 @@ import { selectActiveNode } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { writeValueToClipboard } from "@utils/clipboard";
 import { useComponentReload } from "@utils/hooks";
-import { getLastHeardTime } from "@utils/nodeUtils";
+import { getLastHeardTime } from "@utils/nodes";
 
 const MapSelectedNodeMenu = () => {
   const dispatch = useDispatch();
