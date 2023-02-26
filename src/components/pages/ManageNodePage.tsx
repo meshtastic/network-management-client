@@ -1,152 +1,81 @@
-import { useState } from "react";
-import React from "react";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import NavigationBacktrace from "@components/NavigationBacktrace";
+import React, { useMemo, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
 
-type Node = {
-  nodeName: string;
-  id: string;
-  role: "primary" | "secondary" | "disabled";
-  encryption: string;
-  psk: string;
-  uplink: "enabled" | "disabled";
-  downlink: "enabled" | "disabled";
-  messageCount: number;
-};
+import type { NodeInfo } from "@bindings/protobufs/NodeInfo";
+import TableLayout from "@components/Table/TableLayout";
 
-const defaultNodes: Node[] = [
+const defaultNodes: NodeInfo[] = [
   {
-    nodeName: "Example Node",
-    id: "ABC123",
-    role: "primary",
-    encryption: "enabled",
-    psk: "secret",
-    uplink: "enabled",
-    downlink: "disabled",
-    messageCount: 13,
+    deviceMetrics: null,
+    lastHeard: 0,
+    num: 0,
+    position: null,
+    snr: 0,
+    user: null,
   },
   {
-    nodeName: "Example Node #2",
-    id: "DEF345",
-    role: "secondary",
-    encryption: "enabled",
-    psk: "secret",
-    uplink: "disabled",
-    downlink: "enabled",
-    messageCount: 127,
+    deviceMetrics: {
+      airUtilTx: 0.2,
+      batteryLevel: 0.9,
+      channelUtilization: 0.3,
+      voltage: 4.1,
+    },
+    lastHeard: 1677373048,
+    num: 1,
+    position: null,
+    snr: 0,
+    user: {
+      hwModel: 0,
+      id: "!fes8sfs3",
+      isLicensed: false,
+      shortName: "Test",
+      longName: "Test User",
+      macaddr: [0x1a, 0x2b, 0x3c, 0xd4, 0xe5, 0xf6],
+    },
   },
-];
-
-const columnHelper = createColumnHelper<Node>();
-const columns = [
-  columnHelper.accessor("nodeName", {
-    header: "Name",
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("id", {
-    header: "ID",
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("role", {
-    header: "Role",
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("encryption", {
-    header: "Encryption",
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("psk", {
-    header: "PSK",
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("uplink", {
-    header: "Uplink",
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("downlink", {
-    header: "Downlink",
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("messageCount", {
-    header: "Message Count",
-    footer: (info) => info.column.id,
-  }),
 ];
 
 const ManageNodePage = () => {
   const [data, setData] = useState(() => [...defaultNodes]);
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  const columns = useMemo<ColumnDef<NodeInfo, unknown>[]>(
+    () => [
+      { header: "ID", accessorKey: "num" },
+      {
+        id: "User Name",
+        accessorFn: (n) => n.user?.shortName ?? "No user info",
+      },
+      {
+        id: "Last Heard",
+        accessorFn: (n) => (!n.lastHeard ? n.lastHeard : "No data"),
+      },
+      {
+        id: "Latitude",
+        accessorFn: (n) => n.position?.latitudeI ?? "No GPS lock",
+      },
+      {
+        id: "Longitude",
+        accessorFn: (n) => n.position?.longitudeI ?? "No GPS lock",
+      },
+      {
+        id: "Battery",
+        accessorFn: (n) =>
+          n.deviceMetrics?.batteryLevel && n.deviceMetrics.batteryLevel
+            ? `${n.deviceMetrics.voltage}V (${
+                n.deviceMetrics.batteryLevel * 100
+              }%)`
+            : "No battery info",
+      },
+    ],
+    [data]
+  );
 
   return (
-    <div className="flex flex-col w-full h-screen">
-      {/* part 1: traceback */}
-      <div className="flex justify-center align-middle px-9 h-20 border-b border-gray-100">
-        <NavigationBacktrace className="my-auto mr-auto" levels={["Nodes"]} />
-      </div>
-      {/* part 2: title */}
-      <div className="px-9 py-6">
-        <div className="flex flex-row justify-between">
-          <h1 className="text-4xl leading-10 font-semibold text-gray-700">
-            Manage Nodes
-          </h1>
-          <input
-            placeholder="Search nodes..."
-            className="border-2 border-gray-200 text-gray-400 rounded-lg pl-2"
-          ></input>
-        </div>
-      </div>
-      {/* part 3: table */}
-      <div>
-        <table className="mt-5 ml-7">
-          {/* Header element */}
-          <thead className="text-gray-600 text-xs leading-4 font-semibold">
-            {table.getHeaderGroups().map((headerGroup) => (
-              // Row to contain header data
-              <tr
-                key={headerGroup.id}
-                className="border-b-2 border-gray-200 border-solid"
-              >
-                {headerGroup.headers.map((header) => (
-                  // Mapping each header into the row
-                  <th key={header.id} className="text-left pl-5 pb-5">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="p-5 text-gray-500 text-sm leading-5 font-normal border-b"
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <TableLayout
+      data={data}
+      columns={columns}
+      title="Manage Nodes"
+      backtrace={["Nodes"]}
+    />
   );
 };
 
