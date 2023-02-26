@@ -24,7 +24,7 @@ const TableLayout = <T,>({
         <NavigationBacktrace className="my-auto mr-auto" levels={backtrace} />
       </div>
 
-      <div className="mx-9 my-6">
+      <div className="px-9 py-6 overflow-x-hidden overflow-y-auto">
         <TableBody title={title} data={data} columns={columns} />
       </div>
     </div>
