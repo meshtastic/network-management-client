@@ -1,15 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { ViewState } from "react-map-gl";
 
 export interface IMapState {
-  latitude: number;
-  longitude: number;
-  zoom: number;
+  viewState: Partial<ViewState>;
+  edgesFeatureCollection: GeoJSON.FeatureCollection | null;
 }
 
 export const initialMapState: IMapState = {
-  latitude: 0.0,
-  longitude: 0.0,
-  zoom: 0.0,
+  viewState: {
+    latitude: 0.0,
+    longitude: 0.0,
+    zoom: 0.0,
+  },
+  edgesFeatureCollection: null,
 };
 
 export const mapSlice = createSlice({
@@ -20,11 +23,17 @@ export const mapSlice = createSlice({
       state,
       action: PayloadAction<{ latitude: number; longitude: number }>
     ) => {
-      state.latitude = action.payload.latitude;
-      state.longitude = action.payload.longitude;
+      state.viewState.latitude = action.payload.latitude;
+      state.viewState.longitude = action.payload.longitude;
     },
     setZoom: (state, action: PayloadAction<number>) => {
-      state.zoom = action.payload;
+      state.viewState.zoom = action.payload;
+    },
+    setEdgesFeatureCollection: (
+      state,
+      action: PayloadAction<GeoJSON.FeatureCollection | null>
+    ) => {
+      state.edgesFeatureCollection = action.payload;
     },
   },
 });
