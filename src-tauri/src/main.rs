@@ -63,6 +63,7 @@ fn main() {
             update_device_config,
             update_device_user,
             send_waypoint,
+            get_node_edges
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -277,4 +278,25 @@ async fn send_waypoint(
     dispatch_updated_device(app_handle, device.clone()).map_err(|e| e.to_string())?;
 
     Ok(())
+}
+
+#[tauri::command]
+async fn get_node_edges() -> Result<geojson::FeatureCollection, String> {
+    let demo_line = geojson::Feature {
+        id: Some(geojson::feature::Id::String("demo_line".into())),
+        properties: None,
+        geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
+            vec![-122.41510269913951, 37.77909036739809],
+            vec![39.5423, -77.0564],
+        ]))),
+        ..Default::default()
+    };
+
+    let edges = geojson::FeatureCollection {
+        bbox: None,
+        foreign_members: None,
+        features: vec![demo_line],
+    };
+
+    Ok(edges)
 }
