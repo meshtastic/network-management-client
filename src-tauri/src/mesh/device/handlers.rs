@@ -5,7 +5,7 @@ use tauri::api::notification::Notification;
 use super::{
     helpers::{get_channel_name, get_current_time_u32, get_node_user_name},
     MeshChannel, MeshDevice, PositionPacket, TelemetryPacket, TextPacket, UserPacket,
-    WaypointPacket,
+    WaypointPacket, NeighborInfoPacket
 };
 
 impl MeshDevice {
@@ -194,7 +194,11 @@ impl MeshDevice {
                         let data = protobufs::NeighborInfo::decode(data.payload.as_slice())
                             .map_err(|e| e.to_string())?;
 
-                        println!("Neighbor info received: {:?}", data);
+                        self.add_neighborinfo(NeighborInfoPacket {
+                                packet: packet.clone(),
+                                data: data.clone(),
+                        });
+                        device_updated = true;
                     }
                     protobufs::PortNum::TracerouteApp => {
                         println!("Traceroute app not yet supported in Rust");
