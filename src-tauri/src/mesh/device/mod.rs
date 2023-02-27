@@ -80,6 +80,12 @@ pub struct PositionPacket {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct NeighborInfoPacket {
+    pub packet: protobufs::MeshPacket,
+    pub data: protobufs::NeighborInfo,
+}
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TextPacket {
     pub packet: protobufs::MeshPacket,
     pub data: String,
@@ -120,6 +126,7 @@ pub struct MeshDevice {
     pub region_unset: bool,                     // flag for whether device has an unset LoRa region
     pub device_metrics: protobufs::DeviceMetrics, // information about functioning of device (e.g. battery level)
     pub waypoints: HashMap<u32, protobufs::Waypoint>, // updatable GPS positions managed by this device
+    pub neighbors: HashMap<u32, protobufs::NeighborInfo>, //updated packets from each node containing their neighbors
 }
 
 impl MeshDevice {

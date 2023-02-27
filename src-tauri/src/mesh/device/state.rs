@@ -4,7 +4,7 @@ use super::helpers::get_current_time_u32;
 use super::{
     ChannelMessagePayload, ChannelMessageWithAck, MeshChannel, MeshDevice, MeshDeviceStatus,
     MeshNode, MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, PositionPacket, TelemetryPacket,
-    TextPacket, UserPacket, WaypointPacket,
+    TextPacket, UserPacket, WaypointPacket, NeighborInfoPacket
 };
 
 impl MeshDevice {
@@ -121,6 +121,12 @@ impl MeshDevice {
                             timestamp: get_current_time_u32(),
                         });
                     }
+                    protobufs::telemetry::Variant::AirQualityMetrics(air_quality_metrics) => {
+                        println!(
+                            "Received air quality metrics, not handling: {:?}",
+                            air_quality_metrics
+                        );
+                    }
                 }
             }
         }
@@ -231,6 +237,26 @@ impl MeshDevice {
                 },
             );
         }
+    }
+
+    pub fn add_neighborinfo(&mut self, neighborinfo: NeighborInfoPacket) {
+        let existing_node = self.neighbors.get_mut(&neighborinfo.packet.from);
+
+        if existing_node.is_some() {
+            println!(
+                "Updating neighborinfo of existing node {:?}: {:?}",
+                neighborinfo.packet.from, neighborinfo.data
+            );
+        } else {
+            println!(
+                "Adding neighborinfo to new node {:?}: {:?}",
+                neighborinfo.packet.from, neighborinfo.data
+            );
+        }
+        self.neighbors.insert(
+            neighborinfo.packet.from,
+            neighborinfo.data,
+        );
     }
 
     pub fn add_text_message(&mut self, message: TextPacket) {

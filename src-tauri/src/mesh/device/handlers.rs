@@ -4,11 +4,9 @@ use tauri::api::notification::Notification;
 
 use super::{
     helpers::{get_channel_name, get_current_time_u32, get_node_user_name},
-    MeshChannel, MeshDevice, PositionPacket, TelemetryPacket, TextPacket, UserPacket,
-    WaypointPacket,
+    MeshChannel, MeshDevice, NeighborInfoPacket, PositionPacket, TelemetryPacket, TextPacket,
+    UserPacket, WaypointPacket,
 };
-
-use crate::constructors::mock::mocks;
 
 impl MeshDevice {
     pub fn handle_packet_from_radio(
@@ -190,8 +188,24 @@ impl MeshDevice {
                 protobufs::PortNum::ZpsApp => {
                     println!("ZPS app not yet supported in Rust");
                 }
-                _ => {
+                protobufs::PortNum::NeighborinfoApp => {
+                    let data = protobufs::NeighborInfo::decode(data.payload.as_slice())
+                        .map_err(|e| e.to_string())?;
+
+                    self.add_neighborinfo(NeighborInfoPacket {
+                        packet: packet.clone(),
+                        data: data.clone(),
+                    });
+                    device_updated = true;
+                }
+                protobufs::PortNum::TracerouteApp => {
+                    println!("Traceroute app not yet supported in Rust");
+                }
+                protobufs::PortNum::UnknownApp => {
                     println!("Unknown packet received");
+                }
+                protobufs::PortNum::Max => {
+                    eprintln!("This is not a real PortNum, why did this happen");
                 }
             },
             protobufs::mesh_packet::PayloadVariant::Encrypted(e) => {
