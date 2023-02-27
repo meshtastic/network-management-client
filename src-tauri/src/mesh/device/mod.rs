@@ -1,4 +1,4 @@
-use app::protobufs::{self, Neighbor};
+use app::protobufs;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
