@@ -2,6 +2,7 @@ use app::protobufs;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use crate::graph::graph_ds::Graph;
 use self::helpers::generate_rand_id;
 
 pub mod connection;
@@ -134,6 +135,22 @@ impl MeshDevice {
             config_id: generate_rand_id(),
             ready: false,
             region_unset: true,
+            ..Default::default()
+        }
+    }
+}
+
+/*
+ * Just as the MeshDevice struct contains all the information about a device (in raw packet form)
+ * the MeshGraph struct contains the network info in raw graph form. This is synchronized with
+ * the MeshDevice struct via a mutex, and is used to generate the graph visualization/algorithm
+ * results (see analytics).
+ */
+pub Graph MeshGraph;
+
+impl MeshGraph {
+    pub fn new() -> Self {
+        Self {
             ..Default::default()
         }
     }

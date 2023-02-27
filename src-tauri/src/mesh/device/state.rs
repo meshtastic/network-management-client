@@ -4,7 +4,7 @@ use super::helpers::get_current_time_u32;
 use super::{
     ChannelMessagePayload, ChannelMessageWithAck, MeshChannel, MeshDevice, MeshDeviceStatus,
     MeshNode, MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, PositionPacket, TelemetryPacket,
-    TextPacket, UserPacket, WaypointPacket, NeighborInfoPacket
+    TextPacket, UserPacket, WaypointPacket, NeighborInfoPacket, MeshGraph
 };
 
 impl MeshDevice {
@@ -314,5 +314,23 @@ impl MeshDevice {
                 m.ack = true;
             }
         }
+    }
+}
+
+impl MeshGraph {
+    pub fn update_graph(mesh_device: tauri::State<'_, ActiveMeshDevice>) {
+
+        // obtain mutex for MeshDevice struct (or neighbors)
+        let mut device_guard = mesh_device.inner.lock().await;
+
+        let device = device_guard.as_mut().ok_or("Device not connected")?;
+
+        // create graph w meshdevice.neighbors
+        // TODO
+        //self.construct_graph()?;
+
+        Ok(())
+        // mutex is released automatically
+
     }
 }
