@@ -13,28 +13,31 @@ pub fn init_edge_map(neighbors: HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32
         let node_1 = neighbor_packet.node_id;
         for neighbor in &neighbor_packet.neighbors {
             let node_2 = neighbor.node_id;
-            let opposite_edge = neighbors.get(&node_2).unwrap();
-            let mut found: bool = false;
-            for opposite_neighbor in &opposite_edge.neighbors {
-                if opposite_neighbor.node_id == node_1 {
-                    found = true;
-                    if neighbor.rx_time > opposite_neighbor.rx_time {
-                        snr_hashmap.insert(
-                            as_key(node_1, node_2),
-                            (neighbor.snr as f64, neighbor.rx_time as u64),
-                        );
-                    }
+            snr_hashmap.insert(
+                as_key(node_1, node_2),
+                (neighbor.snr as f64, neighbor.rx_time as u64),
+            );
+            let opposite_neighbor = get_corresponding_neighbor(node_2, node_1, &neighbors);
+            if opposite_neighbor.is_some() {
+                let opposite_neighbor = opposite_neighbor.unwrap();
+                if neighbor.rx_time > opposite_neighbor.rx_time {
+                    snr_hashmap.insert(
+                        as_key(node_1, node_2),
+                        (neighbor.snr as f64, neighbor.rx_time as u64),
+                    );
+                } else {
+                    snr_hashmap.insert(
+                        as_key(node_1, node_2),
+                        (opposite_neighbor.snr as f64, opposite_neighbor.rx_time as u64),
+                    );
                 }
-            }
-            if !found {
-                if opposite_edge.tx_time > neighbor_packet.tx_time {
-                    snr_hashmap.remove(&as_key(node_1, node_2));
-                }
+            } else {
+                println!("Opposite neighbor not found for node {} and neighbor {}", node_1, node_2);
             }
         }
     }
     snr_hashmap
-
+}
     // for node_packet in packets {
     //     let node_id = node_packet.id;
     //     for neighbor_packet in node_packet.neighbors {
@@ -59,6 +62,19 @@ pub fn init_edge_map(neighbors: HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32
     //         }
     //     }
     // }
+
+pub fn get_corresponding_neighbor(
+    node_id: u32,
+    neighbor_id: u32,
+    neighbors: &HashMap<u32, NeighborInfo>,
+) -> Option<Neighbor> {
+    let node = neighbors.get(&node_id).unwrap();
+    for neighbor in &node.neighbors {
+        if neighbor.node_id == neighbor_id {
+            return Some(neighbor.clone());
+        }
+    }
+    None
 }
 
 // helper function to prevent (A, B) (B, A) duplicates in the hashmap
@@ -129,7 +145,7 @@ mod tests {
         println!("neighborinfo_hashmap: {:?}", neighborinfo_hashmap);
         let snr_hashmap = init_edge_map(neighborinfo_hashmap);
         println!("snr_hashmap: {:?}", snr_hashmap);
-        // assert_eq!(snr_hashmap.len(), 6);
+        assert_eq!(snr_hashmap.len(), 6);
     }
 
     #[test]
