@@ -26,17 +26,11 @@ pub fn init_edge_map(neighbors: HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32
             match opposite_neighbor {
                 // If the opposite neighbor is found on a recent packet, we take the most recent SNR
                 Some(opposite_neighbor) => {
-                    if neighbor.rx_time > opposite_neighbor.rx_time {
-                        snr_hashmap.insert(
-                            as_key(node_1, node_2),
-                            (neighbor.snr as f64, neighbor.rx_time as u64),
-                        );
-                    } else {
-                        snr_hashmap.insert(
-                            as_key(node_1, node_2),
-                            (opposite_neighbor.snr as f64, opposite_neighbor.rx_time as u64),
-                        );
-                    }
+                    let most_recent_data = if neighbor.rx_time > opposite_neighbor.rx_time {neighbor} else {&opposite_neighbor};
+                    snr_hashmap.insert(
+                        as_key(node_1, node_2),
+                        (most_recent_data.snr as f64, most_recent_data.rx_time as u64),
+                    );
                 }
                 _ => {
                     // If the opposite neighbor is not found on a recent packet, we check if our packet is most recent
