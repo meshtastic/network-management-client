@@ -147,6 +147,8 @@ impl MeshDevice {
  * results (see analytics).
  */
 
+
+#[derive(Clone)]
 pub struct MeshGraph {
     pub graph: Graph,
 }
@@ -155,14 +157,6 @@ impl MeshGraph {
     pub fn new() -> Self {
         Self {
             graph: Graph::new(),
-        }
-    }
-}
-
-impl Clone for MeshGraph {
-    fn clone(&self) -> Self {
-        Self {
-            graph: self.graph.clone(),
         }
     }
 }

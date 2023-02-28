@@ -29,6 +29,16 @@ impl std::fmt::Debug for Graph {
     }
 }
 
+impl Clone for Graph {
+    fn clone(&self) -> Self {
+        Graph {
+            g: self.g.clone(),
+            node_idx_map: self.node_idx_map.clone(),
+            edge_idx_map: self.edge_idx_map.clone(),
+        }
+    }
+}
+
 impl Graph {
     /// Creates a new graph and returns it.
     pub fn new() -> Graph {
