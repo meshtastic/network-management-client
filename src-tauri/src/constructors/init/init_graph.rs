@@ -25,9 +25,9 @@ pub fn init_graph(
         let node_idx = graph.get_node_idx(node_id.to_string());
         let neighbor_idx = graph.get_node_idx(neighbor_id.to_string());
         let snr = neighbor_pair.1 .0;
-        let node_loc = loc_hashmap.get(&node_id).unwrap();
-        let neighbor_loc = loc_hashmap.get(&neighbor_id).unwrap();
-        let distance = get_distance(node_loc.clone(), neighbor_loc.clone());
+        let node_loc = loc_hashmap.get(&node_id);
+        let neighbor_loc = loc_hashmap.get(&neighbor_id);
+        let distance = get_distance(node_loc, neighbor_loc);
         edge_left_endpoints.push(node_idx);
         edge_right_endpoints.push(neighbor_idx);
         edge_distances.push(distance);
@@ -50,7 +50,7 @@ pub fn init_graph(
 pub fn add_node_to_graph_if_not_exists(graph: &mut Graph, node_id: u32) {
     let name: String = node_id.to_string();
     if !graph.contains_node(name.clone()) {
-        graph.add_node(name.clone());
+        graph.add_node(name);
     }
 }
 

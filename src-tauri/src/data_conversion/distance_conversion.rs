@@ -11,25 +11,28 @@ use crate::mesh::device::MeshNode;
 * Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
 * Altitude: in meters above sea level, no conversion needed
 */
-pub fn get_distance(node_1: MeshNode, node_2: MeshNode) -> f64 {
-    let default = 0;
-    let node_1_data = node_1.data;
-    let node_2_data = node_2.data;
-    let has_node_1_pos = node_1_data.position;
-    let has_node_2_pos = node_2_data.position;
-    if has_node_1_pos.is_none() || has_node_2_pos.is_none() {
-        return default as f64;
+pub fn get_distance(node_1: Option<&MeshNode>, node_2: Option<&MeshNode>) -> f64 {
+    let default_distance = 0.0;
+    match(node_1, node_2) {
+        (Some(node_1), Some(node_2)) => {
+            let node_1_pos = &node_1.data.position;
+            let node_2_pos = &node_2.data.position;
+            match (node_1_pos, node_2_pos) {
+                (Some(node_1_pos), Some(node_2_pos)) => {
+                    total_distance(
+                        node_1_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
+                        node_1_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,
+                        node_1_pos.altitude as f64 * ALT_CONVERSION_FACTOR,
+                        node_2_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
+                        node_2_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,
+                        node_2_pos.altitude as f64 * ALT_CONVERSION_FACTOR,
+                    )
+                }
+                _ => default_distance,
+            }
+        }
+        _ => default_distance,
     }
-    let node_1_pos = has_node_1_pos.unwrap();
-    let node_2_pos = has_node_2_pos.unwrap();
-    total_distance(
-        node_1_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
-        node_1_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,
-        node_1_pos.altitude as f64 * ALT_CONVERSION_FACTOR,
-        node_2_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
-        node_2_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,
-        node_2_pos.altitude as f64 * ALT_CONVERSION_FACTOR,
-    )
 }
 
 /// Returns total distance between 2 nodes using euclidean of haversine and altitude difference.
