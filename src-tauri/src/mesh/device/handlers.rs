@@ -198,9 +198,8 @@ impl MeshDevice {
                         packet: packet.clone(),
                         data: data.clone(),
                     });
-                    if meshgraph.is_some() {
-                        let mut graph = meshgraph.unwrap();
-                        graph.update_graph(self.clone());
+                    if let Some(mut meshgraph) = meshgraph {
+                        meshgraph.regenerate_graph_from_device_info(self.clone());
                     }
                     device_updated = true;
                 }

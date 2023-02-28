@@ -321,7 +321,7 @@ impl MeshDevice {
 }
 
 impl MeshGraph {
-    pub fn update_graph(&mut self, device: MeshDevice) {
+    pub fn regenerate_graph_from_device_info(&mut self, device: MeshDevice) {
         let edge_hashmap = init_edge_map(device.neighbors);
         self.graph = init_graph(edge_hashmap, device.nodes);
         println!("Graph: {:?}", self.graph);
