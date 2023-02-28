@@ -9,7 +9,6 @@ use mesh::serial_connection::{MeshConnection, SerialConnection};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tauri::{async_runtime, Manager};
-use tracing_subscriber;
 
 struct ActiveSerialConnection {
     inner: Arc<async_runtime::Mutex<Option<mesh::serial_connection::SerialConnection>>>,
@@ -120,53 +119,48 @@ async fn connect_to_serial_port(
     }
 
     tauri::async_runtime::spawn(async move {
-        loop {
-            if let Ok(message) = decoded_listener.recv().await {
-                let variant = match message.payload_variant {
-                    Some(v) => v,
-                    None => continue,
-                };
+        while let Ok(message) = decoded_listener.recv().await {
+            let variant = match message.payload_variant {
+                Some(v) => v,
+                None => continue,
+            };
 
-                let mut device_guard = mesh_device_arc.lock().await;
-                let mut graph_guard = mesh_graph_arc.lock().await;
+            let mut device_guard = mesh_device_arc.lock().await;
+            let mut graph_guard = mesh_graph_arc.lock().await;
 
-                let device = match device_guard.as_mut().ok_or("Device not initialized") {
+            let device = match device_guard.as_mut().ok_or("Device not initialized") {
+                Ok(d) => d,
+                Err(e) => {
+                    eprintln!("{:?}", e);
+                    continue;
+                }
+            };
+
+            let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
+                Ok(g) => g,
+                Err(e) => {
+                    eprintln!("{:?}", e);
+                    continue;
+                }
+            };
+
+            let device_updated =
+                match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
                     Ok(d) => d,
                     Err(e) => {
-                        eprintln!("{:?}", e);
+                        eprintln!("Error transmitting packet: {}", e);
                         continue;
                     }
                 };
 
-                let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
-                    Ok(g) => g,
+            if device_updated {
+                match dispatch_updated_device(handle.clone(), device.clone()) {
+                    Ok(_) => (),
                     Err(e) => {
-                        eprintln!("{:?}", e);
+                        eprintln!("Error emitting event to client: {:?}", e.to_string());
                         continue;
                     }
                 };
-
-                let device_updated =
-                    match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
-                        Ok(d) => d,
-                        Err(e) => {
-                            eprintln!("Error transmitting packet: {}", e.to_string());
-                            continue;
-                        }
-                    };
-
-                if device_updated {
-                    match dispatch_updated_device(handle.clone(), device.clone()) {
-                        Ok(_) => (),
-                        Err(e) => {
-                            eprintln!("Error emitting event to client: {:?}", e.to_string());
-                            continue;
-                        }
-                    };
-                }
-            } else {
-                // Kill thread on channel disconnect
-                break;
             }
         }
     });
@@ -291,15 +285,13 @@ async fn send_waypoint(
         .ok_or("Device not connected")
         .map_err(|e| e.to_string())?;
 
-    device
-        .send_waypoint(
-            connection,
-            waypoint,
-            mesh::serial_connection::PacketDestination::BROADCAST,
-            true,
-            channel,
-        )
-        .map_err(|e| e.to_string())?;
+    device.send_waypoint(
+        connection,
+        waypoint,
+        mesh::serial_connection::PacketDestination::BROADCAST,
+        true,
+        channel,
+    )?;
 
     dispatch_updated_device(app_handle, device.clone()).map_err(|e| e.to_string())?;
 
@@ -307,21 +299,42 @@ async fn send_waypoint(
 }
 
 #[tauri::command]
-async fn get_node_edges() -> Result<geojson::FeatureCollection, String> {
-    let demo_line = geojson::Feature {
-        id: Some(geojson::feature::Id::String("demo_line".into())),
-        properties: None,
-        geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
-            vec![-122.41510269913951, 37.77909036739809],
-            vec![39.5423, -77.0564],
-        ]))),
-        ..Default::default()
-    };
+async fn get_node_edges(
+    mesh_graph: tauri::State<'_, ActiveMeshGraph>,
+) -> Result<geojson::FeatureCollection, String> {
+    let mut guard = mesh_graph.inner.lock().await;
+    let graph = guard
+        .as_mut()
+        .ok_or("Graph not initialized")
+        .map_err(|e| e.to_string())?;
+
+    let edge_features: Vec<geojson::Feature> = graph
+        .graph
+        .get_edges()
+        .iter()
+        .map(|e| {
+            let u = graph.graph.get_node(e.u);
+            let v = graph.graph.get_node(e.v);
+
+            geojson::Feature {
+                id: Some(geojson::feature::Id::String(format!(
+                    "{}-{}",
+                    u.name, v.name
+                ))),
+                properties: None,
+                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
+                    vec![u.latitude, u.longitude],
+                    vec![v.latitude, v.longitude],
+                ]))),
+                ..Default::default()
+            }
+        })
+        .collect();
 
     let edges = geojson::FeatureCollection {
         bbox: None,
         foreign_members: None,
-        features: vec![demo_line],
+        features: edge_features,
     };
 
     Ok(edges)
