@@ -202,7 +202,7 @@ impl MeshDevice {
                         });
                         if meshgraph.is_some() {
                             let mut graph = meshgraph.unwrap();
-                            graph.update_graph(self);
+                            graph.update_graph(self.clone());
                         }
                         device_updated = true;
                     }

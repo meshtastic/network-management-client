@@ -7,7 +7,7 @@ use super::{
     TextPacket, UserPacket, WaypointPacket, NeighborInfoPacket, MeshGraph
 };
 
-use crate::constructors::init::init_node_map::init_node_map;
+use crate::constructors::init::init_edge_map::init_edge_map;
 use crate::constructors::init::init_graph::init_graph;
 
 impl MeshDevice {
@@ -321,9 +321,8 @@ impl MeshDevice {
 }
 
 impl MeshGraph {
-    pub fn update_graph(&mut self, device: &mut MeshDevice) {
-        // let edge_hashmap = init_edge_map(device.neighbors);
-        // let node_hashmap = init_node_map(device.nodes);
-        // self.graph = init_graph(edge_hashmap, node_hashmap);
+    pub fn update_graph(&mut self, device: MeshDevice) {
+        let edge_hashmap = init_edge_map(device.neighbors);
+        self.graph = init_graph(edge_hashmap, device.nodes);
     }
 }
