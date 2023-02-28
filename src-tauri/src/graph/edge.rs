@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Edge {
     pub u: petgraph::graph::NodeIndex,
     pub v: petgraph::graph::NodeIndex,
