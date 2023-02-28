@@ -69,15 +69,19 @@ pub fn check_other_node_agrees(
     neighbors: &HashMap<u32, NeighborInfo>,
 ) -> Option<Neighbor> {
     let opt_node = neighbors.get(&node_id);
-    if opt_node.is_some() {
-        let node = opt_node.unwrap();
-        for neighbor in &node.neighbors {
-            if neighbor.node_id == neighbor_id {
-                return Some(neighbor.clone());
+    match opt_node {
+        Some(node) => {
+            for neighbor in &node.neighbors {
+                if neighbor.node_id == neighbor_id {
+                    return Some(neighbor.clone());
+                }
             }
+            None
+        }
+        _ => {
+            None
         }
     }
-    None
 }
 
 // helper function to prevent (A, B) (B, A) duplicates in the hashmap
