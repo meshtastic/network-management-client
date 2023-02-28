@@ -13,7 +13,7 @@ impl MeshDevice {
         &mut self,
         variant: app::protobufs::from_radio::PayloadVariant,
         app_handle: Option<tauri::AppHandle>,
-        meshgraph: Option<MeshGraph>,
+        meshgraph: Option<&mut MeshGraph>,
     ) -> Result<bool, String> {
         let mut device_updated = false;
 
@@ -68,7 +68,7 @@ impl MeshDevice {
         &mut self,
         packet: protobufs::MeshPacket,
         app_handle: Option<tauri::AppHandle>,
-        meshgraph: Option<MeshGraph>,
+        meshgraph: Option<&mut MeshGraph>,
     ) -> Result<bool, String> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
         let mut device_updated = false;
@@ -198,8 +198,8 @@ impl MeshDevice {
                         packet: packet.clone(),
                         data: data.clone(),
                     });
-                    if let Some(mut meshgraph) = meshgraph {
-                        meshgraph.regenerate_graph_from_device_info(self.clone());
+                    if let Some(meshgraph) = meshgraph {
+                        meshgraph.regenerate_graph_from_device_info(self);
                     }
                     device_updated = true;
                 }

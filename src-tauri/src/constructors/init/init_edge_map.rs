@@ -12,9 +12,9 @@ use std::collections::HashMap;
 *
 * This is an O(n^2) algorithm, but our graph is small. Should be reworked at some point.
  */
-pub fn init_edge_map(neighbors: HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32), (f64, u64)> {
+pub fn init_edge_map(neighbors: &HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32), (f64, u64)> {
     let mut snr_hashmap = HashMap::<(u32, u32), (f64, u64)>::new();
-    for (_, neighbor_packet) in &neighbors {
+    for neighbor_packet in neighbors.values() {
         let node_1 = neighbor_packet.node_id;
         for neighbor in &neighbor_packet.neighbors {
             let node_2 = neighbor.node_id;
@@ -150,7 +150,7 @@ mod tests {
             neighborinfo_hashmap.insert(neighborinfo.node_id, neighborinfo);
         }
         println!("neighborinfo_hashmap: {:?}", neighborinfo_hashmap);
-        let snr_hashmap = init_edge_map(neighborinfo_hashmap);
+        let snr_hashmap = init_edge_map(&neighborinfo_hashmap);
         println!("snr_hashmap: {:?}", snr_hashmap);
         assert_eq!(snr_hashmap.len(), 6);
     }
@@ -182,7 +182,7 @@ mod tests {
         for neighborinfo in neighborinfo_vec {
             neighborinfo_hashmap.insert(neighborinfo.node_id, neighborinfo);
         }
-        let snr_hashmap = init_edge_map(neighborinfo_hashmap);
+        let snr_hashmap = init_edge_map(&neighborinfo_hashmap);
         println!("snr_hashmap: {:?}", snr_hashmap);
         assert_eq!(snr_hashmap.len(), 1);
         assert_eq!(snr_hashmap.get(&as_key(1, 2)).unwrap().0, 2.0);
@@ -243,7 +243,7 @@ mod tests {
             neighborinfo_hashmap.insert(neighborinfo.node_id, neighborinfo);
         }
         println!("neighborinfo_hashmap: {:?}", neighborinfo_hashmap);
-        let snr_hashmap = init_edge_map(neighborinfo_hashmap);
+        let snr_hashmap = init_edge_map(&neighborinfo_hashmap);
         println!("snr_hashmap: {:?}", snr_hashmap);
         assert_eq!(snr_hashmap.len(), 5);
     }

@@ -8,8 +8,8 @@ use std::collections::HashMap;
 // Create a graph from a hashmap of edge info and a hashmap of node location info
 // Hashmaps will be stored in our `MeshDevice` struct
 pub fn init_graph(
-    mut snr_hashmap: HashMap<(u32, u32), (f64, u64)>,
-    mut loc_hashmap: HashMap<u32, MeshNode>,
+    snr_hashmap: &HashMap<(u32, u32), (f64, u64)>,
+    loc_hashmap: &HashMap<u32, MeshNode>,
 ) -> Graph {
     let mut graph = Graph::new();
     let mut edge_left_endpoints = Vec::<NodeIndex>::new();
@@ -173,7 +173,7 @@ mod tests {
         snr_hashmap.insert((2, 3), (0.9, 0));
         snr_hashmap.insert((2, 4), (0.9, 0));
         snr_hashmap.insert((3, 4), (0.9, 0));
-        let graph = init_graph(snr_hashmap, loc_hashmap);
+        let graph = init_graph(&snr_hashmap, &loc_hashmap);
         // Check that the graph has the correct number of nodes
         assert_eq!(graph.get_order(), 4);
         // Check that the graph has the correct number of edges
@@ -287,7 +287,7 @@ mod tests {
         loc_hashmap.insert(1, meshnode_1);
         loc_hashmap.insert(2, meshnode_2);
         snr_hashmap.insert((1, 2), (0.1, 100));
-        let mut graph = init_graph(snr_hashmap, loc_hashmap);
+        let mut graph = init_graph(&snr_hashmap, &loc_hashmap);
         // Check that the graph has the correct number of edges
         assert_eq!(graph.get_size(), 1);
         // Check the edge weights to check that they are both the weight of the 1-2 edge, which has neighbor 2's SNR

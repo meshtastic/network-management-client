@@ -146,7 +146,7 @@ async fn connect_to_serial_port(
                 };
 
                 let device_updated =
-                    match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph.clone())) {
+                    match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
                         Ok(d) => d,
                         Err(e) => {
                             eprintln!("Error transmitting packet: {}", e.to_string());
