@@ -19,6 +19,10 @@ struct ActiveMeshDevice {
     inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
 }
 
+struct ActiveMeshGraph {
+    inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize, thiserror::Error)]
 #[serde(rename_all = "camelCase")]
 struct CommandError {
@@ -55,6 +59,11 @@ fn main() {
                 mesh::device::MeshDevice::new(),
             ))),
         })
+        .manage(ActiveMeshGraph {
+            inner: Arc::new(async_runtime::Mutex::new(Some(
+                mesh::device::MeshGraph::new(),
+            ))),
+        })
         .invoke_handler(tauri::generate_handler![
             get_all_serial_ports,
             connect_to_serial_port,
@@ -80,10 +89,11 @@ async fn connect_to_serial_port(
     app_handle: tauri::AppHandle,
     mesh_device: tauri::State<'_, ActiveMeshDevice>,
     serial_connection: tauri::State<'_, ActiveSerialConnection>,
+    mesh_graph: tauri::State<'_, ActiveMeshGraph>,
 ) -> Result<(), CommandError> {
     let mut connection = SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
-    let graph = mesh::device::MeshGraph::new();
+    let new_graph = mesh::device::MeshGraph::new();
 
     connection.connect(app_handle.clone(), port_name, 115_200)?;
     connection.configure(new_device.config_id)?;
@@ -96,6 +106,12 @@ async fn connect_to_serial_port(
 
     let handle = app_handle.app_handle().clone();
     let mesh_device_arc = mesh_device.inner.clone();
+    let mesh_graph_arc = mesh_graph.inner.clone();
+
+    {
+        let mut new_graph_guard = mesh_graph_arc.lock().await;
+        *new_graph_guard = Some(new_graph);
+    }
 
     {
         let mut new_device_guard = mesh_device_arc.lock().await;
@@ -111,9 +127,18 @@ async fn connect_to_serial_port(
                 };
 
                 let mut device_guard = mesh_device_arc.lock().await;
+                let mut graph_guard = mesh_graph_arc.lock().await;
 
                 let device = match device_guard.as_mut().ok_or("Device not initialized") {
                     Ok(d) => d,
+                    Err(e) => {
+                        eprintln!("{:?}", e);
+                        continue;
+                    }
+                };
+
+                let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
+                    Ok(g) => g,
                     Err(e) => {
                         eprintln!("{:?}", e);
                         continue;

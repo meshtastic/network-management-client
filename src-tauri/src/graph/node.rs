@@ -1,4 +1,5 @@
-#[derive(Debug)]
+use serde::{Deserialize, Serialize};
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Node {
     pub name: String,
     pub optimal_weighted_degree: f64,

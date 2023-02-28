@@ -8,7 +8,9 @@ use nalgebra::DMatrix;
 use petgraph::prelude::*;
 use petgraph::stable_graph::StableUnGraph;
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct Graph {
     pub g: StableGraph<Node, Edge, Undirected>,
     pub node_idx_map: HashMap<String, petgraph::graph::NodeIndex>,
