@@ -7,6 +7,9 @@ use super::{
     TextPacket, UserPacket, WaypointPacket, NeighborInfoPacket, MeshGraph
 };
 
+use crate::constructors::init::init_node_map::init_node_map;
+use crate::constructors::init::init_graph::init_graph;
+
 impl MeshDevice {
     pub fn set_ready(&mut self, ready: bool) {
         println!("Set ready: {:?}", ready);
@@ -318,19 +321,9 @@ impl MeshDevice {
 }
 
 impl MeshGraph {
-    pub fn update_graph(mesh_device: tauri::State<'_, ActiveMeshDevice>) {
-
-        // obtain mutex for MeshDevice struct (or neighbors)
-        let mut device_guard = mesh_device.inner.lock().await;
-
-        let device = device_guard.as_mut().ok_or("Device not connected")?;
-
-        // create graph w meshdevice.neighbors
-        // TODO
-        //self.construct_graph()?;
-
-        Ok(())
-        // mutex is released automatically
-
+    pub fn update_graph(&mut self, device: &mut MeshDevice) {
+        // let edge_hashmap = init_edge_map(device.neighbors);
+        // let node_hashmap = init_node_map(device.nodes);
+        // self.graph = init_graph(edge_hashmap, node_hashmap);
     }
 }

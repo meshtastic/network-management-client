@@ -143,15 +143,26 @@ impl MeshDevice {
 /*
  * Just as the MeshDevice struct contains all the information about a device (in raw packet form)
  * the MeshGraph struct contains the network info in raw graph form. This is synchronized with
- * the MeshDevice struct via a mutex, and is used to generate the graph visualization/algorithm
+ * the MeshDevice struct, and is used to generate the graph visualization/algorithm
  * results (see analytics).
  */
-pub Graph MeshGraph;
+
+pub struct MeshGraph {
+    pub graph: Graph,
+}
 
 impl MeshGraph {
     pub fn new() -> Self {
         Self {
-            ..Default::default()
+            graph: Graph::new(),
+        }
+    }
+}
+
+impl Clone for MeshGraph {
+    fn clone(&self) -> Self {
+        Self {
+            graph: self.graph.clone(),
         }
     }
 }

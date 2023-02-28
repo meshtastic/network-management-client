@@ -5,7 +5,7 @@ use tauri::api::notification::Notification;
 use super::{
     helpers::{get_channel_name, get_current_time_u32, get_node_user_name},
     MeshChannel, MeshDevice, PositionPacket, TelemetryPacket, TextPacket, UserPacket,
-    WaypointPacket, NeighborInfoPacket
+    WaypointPacket, NeighborInfoPacket, MeshGraph
 };
 
 impl MeshDevice {
@@ -13,6 +13,7 @@ impl MeshDevice {
         &mut self,
         variant: app::protobufs::from_radio::PayloadVariant,
         app_handle: Option<tauri::AppHandle>,
+        meshgraph: Option<MeshGraph>,
     ) -> Result<bool, String> {
         let mut device_updated = false;
 
@@ -47,7 +48,7 @@ impl MeshDevice {
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::Packet(p) => {
-                device_updated = self.handle_mesh_packet(p, app_handle)?;
+                device_updated = self.handle_mesh_packet(p, app_handle, meshgraph)?;
             }
             protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
                 // println!("Queue status data: {:#?}", q);
@@ -67,6 +68,7 @@ impl MeshDevice {
         &mut self,
         packet: protobufs::MeshPacket,
         app_handle: Option<tauri::AppHandle>,
+        meshgraph: Option<MeshGraph>,
     ) -> Result<bool, String> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
         let mut device_updated = false;
@@ -198,6 +200,10 @@ impl MeshDevice {
                                 packet: packet.clone(),
                                 data: data.clone(),
                         });
+                        if meshgraph.is_some() {
+                            let mut graph = meshgraph.unwrap();
+                            graph.update_graph(self);
+                        }
                         device_updated = true;
                     }
                     protobufs::PortNum::TracerouteApp => {
