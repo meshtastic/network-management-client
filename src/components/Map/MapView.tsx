@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
 import {
+  Layer,
   Map,
   NavigationControl,
   ScaleControl,
+  Source,
   ViewStateChangeEvent,
 } from "react-map-gl";
+import { invoke } from "@tauri-apps/api/tauri";
 
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
@@ -27,7 +30,7 @@ export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
-  const mapState = useSelector(selectMapState());
+  const { edgesFeatureCollection, viewState } = useSelector(selectMapState());
 
   const updateActiveNode = (nodeId: number | null) => {
     if (nodeId === activeNodeId) {
@@ -50,10 +53,22 @@ export const MapView = () => {
     dispatch(mapSliceActions.setZoom(e.viewState.zoom));
   };
 
+  useEffect(() => {
+    invoke("get_node_edges")
+      .then((c) =>
+        dispatch(
+          mapSliceActions.setEdgesFeatureCollection(
+            c as GeoJSON.FeatureCollection
+          )
+        )
+      )
+      .catch(() => dispatch(mapSliceActions.setEdgesFeatureCollection(null)));
+  }, []);
+
   return (
     <div className="relative w-full h-full z-0">
       <Map
-        initialViewState={mapState}
+        initialViewState={viewState}
         mapStyle="https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
         mapLib={maplibregl}
         attributionControl={false}
@@ -62,6 +77,21 @@ export const MapView = () => {
       >
         <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
         <NavigationControl position="bottom-right" showCompass={false} />
+
+        {edgesFeatureCollection && (
+          <Source type="geojson" data={edgesFeatureCollection}>
+            <Layer
+              id="lineLayer"
+              type="line"
+              source="line-data"
+              paint={{
+                "line-color": "#6F7986",
+                "line-dasharray": [2, 1],
+                "line-width": 4,
+              }}
+            />
+          </Source>
+        )}
 
         {nodes
           .filter(
