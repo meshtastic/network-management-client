@@ -148,7 +148,7 @@ impl MeshDevice {
  */
 
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct MeshGraph {
     pub graph: Graph,
 }
