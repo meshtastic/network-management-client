@@ -6,7 +6,6 @@ import type { NodeInfo } from "@bindings/protobufs/NodeInfo";
 import TableLayout from "@components/Table/TableLayout";
 import { selectAllNodes } from "@features/device/deviceSelectors";
 
-
 const ManageNodePage = () => {
   const nodes = useSelector(selectAllNodes()).map((n) => n.data);
   const columns = useMemo<ColumnDef<NodeInfo, unknown>[]>(
@@ -22,11 +21,13 @@ const ManageNodePage = () => {
       },
       {
         id: "Latitude",
-        accessorFn: (n) => n.position?.latitudeI ? n.position?.latitudeI/1e7 : "No GPS lock",
+        accessorFn: (n) =>
+          n.position?.latitudeI ? n.position?.latitudeI / 1e7 : "No GPS lock",
       },
       {
         id: "Longitude",
-        accessorFn: (n) => n.position?.longitudeI ? n.position?.longitudeI/1e7 : "No GPS lock",
+        accessorFn: (n) =>
+          n.position?.longitudeI ? n.position?.longitudeI / 1e7 : "No GPS lock",
       },
       {
         id: "Battery",
