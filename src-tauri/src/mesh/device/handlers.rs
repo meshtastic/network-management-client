@@ -195,8 +195,8 @@ impl MeshDevice {
                         .map_err(|e| e.to_string())?;
 
                     self.add_neighborinfo(NeighborInfoPacket {
-                            packet: packet.clone(),
-                            data: data.clone(),
+                        packet: packet.clone(),
+                        data: data.clone(),
                     });
                     if meshgraph.is_some() {
                         let mut graph = meshgraph.unwrap();
