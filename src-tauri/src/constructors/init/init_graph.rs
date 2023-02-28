@@ -68,8 +68,19 @@ pub fn add_node_and_location_to_graph(
             }
         }
         return graph.add_node_from_struct(node);
+    } else {
+        let node_idx = graph.get_node_idx(name.clone());
+        let node = graph.get_node_mut(node_idx);
+        if let Some(node_loc) = node_loc {
+            let node_pos = &node_loc.data.position;
+            if let Some(node_pos) = node_pos {
+                let latitude = node_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR;
+                let longitude = node_pos.longitude_i as f64 * LON_CONVERSION_FACTOR;
+                let altitude = node_pos.altitude as f64 * ALT_CONVERSION_FACTOR;
+                node.set_gps(longitude, latitude, altitude);
+            }
+        }
     }
-    // TODO: this doesn't actually update nodes
     graph.get_node_idx(name)
 }
 
