@@ -12,10 +12,16 @@ use crate::mesh::device::MeshNode;
 * Altitude: in meters above sea level, no conversion needed
 */
 pub fn get_distance(node_1: MeshNode, node_2: MeshNode) -> f64 {
+    let default = 0;
     let node_1_data = node_1.data;
     let node_2_data = node_2.data;
-    let node_1_pos = node_1_data.position.unwrap();
-    let node_2_pos = node_2_data.position.unwrap();
+    let has_node_1_pos = node_1_data.position;
+    let has_node_2_pos = node_2_data.position;
+    if has_node_1_pos.is_none() || has_node_2_pos.is_none() {
+        return default as f64;
+    }
+    let node_1_pos = has_node_1_pos.unwrap();
+    let node_2_pos = has_node_2_pos.unwrap();
     total_distance(
         node_1_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
         node_1_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,

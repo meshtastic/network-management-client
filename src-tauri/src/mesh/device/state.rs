@@ -4,8 +4,11 @@ use super::helpers::get_current_time_u32;
 use super::{
     ChannelMessagePayload, ChannelMessageWithAck, MeshChannel, MeshDevice, MeshDeviceStatus,
     MeshNode, MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, PositionPacket, TelemetryPacket,
-    TextPacket, UserPacket, WaypointPacket, NeighborInfoPacket
+    TextPacket, UserPacket, WaypointPacket, NeighborInfoPacket, MeshGraph
 };
+
+use crate::constructors::init::init_edge_map::init_edge_map;
+use crate::constructors::init::init_graph::init_graph;
 
 impl MeshDevice {
     pub fn set_ready(&mut self, ready: bool) {
@@ -314,5 +317,13 @@ impl MeshDevice {
                 m.ack = true;
             }
         }
+    }
+}
+
+impl MeshGraph {
+    pub fn update_graph(&mut self, device: MeshDevice) {
+        let edge_hashmap = init_edge_map(device.neighbors);
+        self.graph = init_graph(edge_hashmap, device.nodes);
+        println!("Graph: {:?}", self.graph);
     }
 }

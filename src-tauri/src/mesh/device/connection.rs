@@ -163,7 +163,7 @@ impl MeshDevice {
 
         if echo_response {
             packet.rx_time = get_current_time_u32();
-            self.handle_mesh_packet(packet.clone(), None)?;
+            self.handle_mesh_packet(packet.clone(), None, None)?;
         }
 
         let to_radio = protobufs::ToRadio {

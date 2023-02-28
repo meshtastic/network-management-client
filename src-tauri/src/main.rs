@@ -83,6 +83,7 @@ async fn connect_to_serial_port(
 ) -> Result<(), CommandError> {
     let mut connection = SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
+    let graph = mesh::device::MeshGraph::new();
 
     connection.connect(app_handle.clone(), port_name, 115_200)?;
     connection.configure(new_device.config_id)?;
@@ -120,7 +121,7 @@ async fn connect_to_serial_port(
                 };
 
                 let device_updated =
-                    match device.handle_packet_from_radio(variant, Some(handle.clone())) {
+                    match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph.clone())) {
                         Ok(d) => d,
                         Err(e) => {
                             eprintln!("Error transmitting packet: {}", e.to_string());
