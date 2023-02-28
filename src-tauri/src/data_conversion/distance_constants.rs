@@ -8,3 +8,5 @@ pub const LON_CONVERSION_FACTOR: f64 = 1e-7;
 pub const ALT_CONVERSION_FACTOR: f64 = 1.0;
 // radius of the earth in km
 pub const RADIUS_EARTH_KM: f64 = 6371.0;
+// speed in m/s
+pub const SPEED_CONVERSION_FACTOR: f64 = 1.0;
