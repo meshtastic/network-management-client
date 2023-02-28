@@ -1,11 +1,16 @@
 use app::protobufs::{Neighbor, NeighborInfo};
 use std::collections::HashMap;
 
+
 /*
-* Create a hashmap of edges and their SNR values from a vector of NeighborInfo packets.
-* When we have a conflict between two nodes reporting the same edge, we take the most recent
-* timestamp as fact (if the most recently updated node does not report the edge, we remove it).
-* @returns a hashmap is of form (node_id_1, node_id_2) -> (SNR, timestamp).
+* We're given a HashMap of NeighborInfo packets, each of which is considered to be the most up-to-date
+* edge info we have for a node. When we create edges, we want to keep this idea of freshness in mind. If
+* a node reports an edge, but a more recent packet from the other node does not report the edge, we want to
+* report the edge as dropped and not add it to our list.
+*
+* returns a hashmap is of form (node_id_1, node_id_2) -> (SNR, timestamp).
+*
+* This is an O(n^2) algorithm, but our graph is small. Should be reworked at some point.
  */
 pub fn init_edge_map(neighbors: HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32), (f64, u64)> {
     let mut snr_hashmap = HashMap::<(u32, u32), (f64, u64)>::new();
@@ -17,29 +22,38 @@ pub fn init_edge_map(neighbors: HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32
                 as_key(node_1, node_2),
                 (neighbor.snr as f64, neighbor.rx_time as u64),
             );
-            // If the opposite neighbor is found on a recent packet, we take the most recent timestamp as fact.
-            let opposite_neighbor = get_other_edge_side_packet(node_2, node_1, &neighbors);
-            if opposite_neighbor.is_some() {
-                let opposite_neighbor = opposite_neighbor.unwrap();
-                if neighbor.rx_time > opposite_neighbor.rx_time {
-                    snr_hashmap.insert(
-                        as_key(node_1, node_2),
-                        (neighbor.snr as f64, neighbor.rx_time as u64),
-                    );
-                } else {
-                    snr_hashmap.insert(
-                        as_key(node_1, node_2),
-                        (opposite_neighbor.snr as f64, opposite_neighbor.rx_time as u64),
-                    );
+            let opposite_neighbor = check_other_node_agrees(node_2, node_1, &neighbors);
+            match opposite_neighbor {
+                // If the opposite neighbor is found on a recent packet, we take the most recent SNR
+                Some(opposite_neighbor) => {
+                    if neighbor.rx_time > opposite_neighbor.rx_time {
+                        snr_hashmap.insert(
+                            as_key(node_1, node_2),
+                            (neighbor.snr as f64, neighbor.rx_time as u64),
+                        );
+                    } else {
+                        snr_hashmap.insert(
+                            as_key(node_1, node_2),
+                            (opposite_neighbor.snr as f64, opposite_neighbor.rx_time as u64),
+                        );
+                    }
                 }
-            } else {
-                // If the opposite neighbor is not found on a recent packet, we remove the edge from the hashmap.
-                let opt_opposite_node = neighbors.get(&node_2);
-                if opt_opposite_node.is_some() {
-                    let opposite_node = opt_opposite_node.unwrap();
-                    if opposite_node.tx_time > neighbor_packet.tx_time {
-                        if snr_hashmap.contains_key(&as_key(node_1, node_2)) {
-                            snr_hashmap.remove(&as_key(node_1, node_2));
+                _ => {
+                    // If the opposite neighbor is not found on a recent packet, we check if our packet is most recent
+                    let opt_opposite_node = neighbors.get(&node_2);
+                    match opt_opposite_node {
+                        Some(opposite_node) => {
+                            // If the other is more recent, we drop the edge
+                            if opposite_node.tx_time > neighbor_packet.tx_time {
+                                println!("{} -> {} is a dropped edge", node_1, node_2);
+                                if snr_hashmap.contains_key(&as_key(node_1, node_2)) {
+                                    snr_hashmap.remove(&as_key(node_1, node_2));
+                                }
+                            }
+                        }
+                        _ => {
+                            // If the other node is not found in the neighbors hashmap, we don't add the edge (drop it)
+                            println!("{} not found in neighbors", node_2);
                         }
                     }
                 }
@@ -49,8 +63,13 @@ pub fn init_edge_map(neighbors: HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32
     snr_hashmap
 }
 
-// pulls corresponding neighbor from a hashmap of NeighborInfo packets
-pub fn get_other_edge_side_packet(
+/*
+* When we have one side of an edge, we need to check the other side to make sure
+* that the edge is still valid. If the other side of the edge is not found on a more
+* recent packet, we'll assume that the edge has dropped.
+* To do that, this function finds the corresponding Neighbor packet for the other node
+ */
+pub fn check_other_node_agrees(
     node_id: u32,
     neighbor_id: u32,
     neighbors: &HashMap<u32, NeighborInfo>,
