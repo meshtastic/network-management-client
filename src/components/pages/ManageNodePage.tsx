@@ -10,9 +10,9 @@ const ManageNodePage = () => {
   const nodes = useSelector(selectAllNodes()).map((n) => n.data);
   const columns = useMemo<ColumnDef<NodeInfo, unknown>[]>(
     () => [
-      { header: "ID", accessorKey: "num" },
+      { id: "ID", accessorFn: (n) => n.num?.toString(16) ?? "No user info" },
       {
-        id: "User Name",
+        id: "Short Name",
         accessorFn: (n) => n.user?.shortName ?? "No user info",
       },
       {
@@ -21,11 +21,13 @@ const ManageNodePage = () => {
       },
       {
         id: "Latitude",
-        accessorFn: (n) => n.position?.latitudeI ?? "No GPS lock",
+        accessorFn: (n) =>
+          n.position?.latitudeI ? n.position?.latitudeI / 1e7 : "No GPS lock",
       },
       {
         id: "Longitude",
-        accessorFn: (n) => n.position?.longitudeI ?? "No GPS lock",
+        accessorFn: (n) =>
+          n.position?.longitudeI ? n.position?.longitudeI / 1e7 : "No GPS lock",
       },
       {
         id: "Battery",

@@ -8,7 +8,9 @@ use nalgebra::DMatrix;
 use petgraph::prelude::*;
 use petgraph::stable_graph::StableUnGraph;
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 pub struct Graph {
     pub g: StableGraph<Node, Edge, Undirected>,
     pub node_idx_map: HashMap<String, petgraph::graph::NodeIndex>,
@@ -26,6 +28,16 @@ impl std::fmt::Debug for Graph {
             .field("node_idx_map", &self.node_idx_map)
             .field("edge_idx_map", &self.edge_idx_map)
             .finish()
+    }
+}
+
+impl Clone for Graph {
+    fn clone(&self) -> Self {
+        Graph {
+            g: self.g.clone(),
+            node_idx_map: self.node_idx_map.clone(),
+            edge_idx_map: self.edge_idx_map.clone(),
+        }
     }
 }
 
