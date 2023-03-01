@@ -64,7 +64,7 @@ pub fn add_node_and_location_to_graph(
                 node.longitude = node_pos.longitude_i as f64 * LON_CONVERSION_FACTOR;
                 node.altitude = node_pos.altitude as f64 * ALT_CONVERSION_FACTOR;
                 node.speed = node_pos.ground_speed as f64 * SPEED_CONVERSION_FACTOR;
-                node.direction = 0.0;
+                node.direction = node_pos.ground_speed as f64;
             } else {
                 println!("We do not have position info for node {}", name);
             }
