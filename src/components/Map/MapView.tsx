@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector  } from "react-redux";
 import maplibregl from "maplibre-gl";
 import {
   Layer,
@@ -8,6 +8,7 @@ import {
   ScaleControl,
   Source,
   ViewStateChangeEvent,
+
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
 
@@ -19,18 +20,29 @@ import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 import {
   selectActiveNodeId,
   selectAllNodes,
+
+  selectAllWaypoints,
+  selectIsWaypointEdit,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectMapState } from "@features/map/mapSelectors";
-import { mapSliceActions } from "@features/map/mapSlice";
+import { selectMapState   } from "@features/map/mapSelectors";
+import { mapSliceActions  } from "@features/map/mapSlice";
 
 import "@components/Map/MapView.css";
+
+import Waypoints from "@components/Waypoints/Waypoints";
+import WaypointMenu from "@components/Waypoints/WaypointMenu";
+import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
+
 
 export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
   const { edgesFeatureCollection, viewState } = useSelector(selectMapState());
+ 
+  const waypoints = useSelector(selectAllWaypoints());
+  const isWaypointEdit = useSelector(selectIsWaypointEdit());
 
   const updateActiveNode = (nodeId: number | null) => {
     if (nodeId === activeNodeId) {
@@ -106,6 +118,18 @@ export const MapView = () => {
               isActive={activeNodeId === node.data.num}
             />
           ))}
+
+{waypoints
+          .filter(
+            (n) =>
+              (!!n.latitudeI && !!n.longitudeI) ||
+              (n.latitudeI == 0 && n.latitudeI == 0)
+          )
+          .map((eachWaypoint) => (
+            <Waypoints key={eachWaypoint.id} currWaypoint={eachWaypoint} />
+          ))}
+
+        {isWaypointEdit ? <WaypointMenuEdit /> : <WaypointMenu />}
 
         <MapSelectedNodeMenu />
         <NodeSearchDock />

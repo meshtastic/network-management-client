@@ -1,12 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { MeshDevice } from "@bindings/MeshDevice";
 import type { MeshNode } from "@bindings/MeshNode";
+import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 export interface IDeviceState {
   device: MeshDevice | null;
   activeNode: MeshNode["data"]["num"] | null;
   availableSerialPorts: string[] | null;
   activeSerialPort: string | null;
+  activeWaypoint: Waypoint["id"] | null;
+  waypointEdit: true | false;
 }
 
 export const initialDeviceState: IDeviceState = {
@@ -14,6 +17,8 @@ export const initialDeviceState: IDeviceState = {
   activeNode: null,
   availableSerialPorts: null,
   activeSerialPort: null,
+  activeWaypoint: null,
+  waypointEdit: false,
 };
 
 export const deviceSlice = createSlice({
@@ -37,9 +42,25 @@ export const deviceSlice = createSlice({
       action: PayloadAction<MeshNode["data"]["num"] | null>
     ) => {
       state.activeNode = action.payload;
+      if (action.payload) {
+        // If whatever is passed in when this is called is not null
+        state.activeWaypoint = null;
+      }
     },
-  },
-});
+    setActiveWaypoint: (
+      state,
+      action: PayloadAction<Waypoint["id"] | null>
+    ) => {
+      state.activeWaypoint = action.payload;
+      if (action.payload) {
+        // If whatever is passed in when this is called is not null; want only one active node or waypoint
+        state.activeNode = null;
+        state.waypointEdit = false;
+      }
+    },
+    setWaypointEdit: (state, action: PayloadAction<boolean>) => {
+      state.waypointEdit = action.payload;
+    },},});
 
 export const { actions: deviceSliceActions, reducer: deviceReducer } =
   deviceSlice;

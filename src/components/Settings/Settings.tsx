@@ -9,6 +9,10 @@ import { selectActiveNode } from "@features/device/deviceSelectors";
 import type { User } from "@bindings/protobufs/User";
 import { requestUpdateUser } from "@features/device/deviceActions";
 
+
+// TODO: When moving this to configure nodes, instead of active node, use 'node connected' or 'connected node' or whatever it's called in deviceSelectors
+
+
 // Function to convert decimal MAC address to hex
 function convertMacAddr(macAddr: number[]) {
   let result = macAddr[0].toString(16);
