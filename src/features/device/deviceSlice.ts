@@ -60,7 +60,9 @@ export const deviceSlice = createSlice({
     },
     setWaypointEdit: (state, action: PayloadAction<boolean>) => {
       state.waypointEdit = action.payload;
-    },},});
+    },
+  },
+});
 
 export const { actions: deviceSliceActions, reducer: deviceReducer } =
   deviceSlice;

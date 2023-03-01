@@ -20,12 +20,11 @@ import Waypoints from "@components/Waypoints/Waypoints";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
 
-
 import {
   selectActiveNodeId,
   selectAllNodes,
   selectAllWaypoints,
-  selectIsWaypointEdit
+  selectIsWaypointEdit,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -41,7 +40,6 @@ export const MapView = () => {
 
   const waypoints = useSelector(selectAllWaypoints());
   const isWaypointEdit = useSelector(selectIsWaypointEdit());
-
 
   const updateActiveNode = (nodeId: number | null) => {
     if (nodeId === activeNodeId) {
@@ -118,7 +116,7 @@ export const MapView = () => {
             />
           ))}
 
-          {waypoints
+        {waypoints
           .filter(
             (n) =>
               (!!n.latitudeI && !!n.longitudeI) ||
