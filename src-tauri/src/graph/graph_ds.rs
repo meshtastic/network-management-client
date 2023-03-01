@@ -7,8 +7,8 @@ use crate::graph::node::Node;
 use nalgebra::DMatrix;
 use petgraph::prelude::*;
 use petgraph::stable_graph::StableUnGraph;
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize)]
 pub struct Graph {

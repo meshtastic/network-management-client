@@ -1,6 +1,10 @@
 use crate::analytics::aux_functions::edge_factory::edge_factory;
+use crate::data_conversion::distance_constants::{
+    ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR, SPEED_CONVERSION_FACTOR,
+};
 use crate::data_conversion::distance_conversion::get_distance;
 use crate::graph::graph_ds::Graph;
+use crate::graph::node::Node;
 use crate::mesh::device::MeshNode;
 use petgraph::graph::NodeIndex;
 use std::collections::HashMap;
@@ -20,13 +24,11 @@ pub fn init_graph(
     for neighbor_pair in snr_hashmap {
         let node_id = neighbor_pair.0 .0;
         let neighbor_id = neighbor_pair.0 .1;
-        add_node_to_graph_if_not_exists(&mut graph, node_id);
-        add_node_to_graph_if_not_exists(&mut graph, neighbor_id);
-        let node_idx = graph.get_node_idx(node_id.to_string());
-        let neighbor_idx = graph.get_node_idx(neighbor_id.to_string());
         let snr = neighbor_pair.1 .0;
         let node_loc = loc_hashmap.get(&node_id);
         let neighbor_loc = loc_hashmap.get(&neighbor_id);
+        let node_idx = add_node_and_location_to_graph(node_id, &mut graph, node_loc);
+        let neighbor_idx = add_node_and_location_to_graph(neighbor_id, &mut graph, neighbor_loc);
         let distance = get_distance(node_loc, neighbor_loc);
         edge_left_endpoints.push(node_idx);
         edge_right_endpoints.push(neighbor_idx);
@@ -47,11 +49,41 @@ pub fn init_graph(
     graph
 }
 
-pub fn add_node_to_graph_if_not_exists(graph: &mut Graph, node_id: u32) {
+pub fn add_node_and_location_to_graph(
+    node_id: u32,
+    graph: &mut Graph,
+    node_loc: Option<&MeshNode>,
+) -> NodeIndex {
     let name: String = node_id.to_string();
     if !graph.contains_node(name.clone()) {
-        graph.add_node(name);
+        let mut node = Node::new(name.clone());
+        if let Some(node_loc) = node_loc {
+            let node_pos = &node_loc.data.position;
+            if let Some(node_pos) = node_pos {
+                node.latitude = node_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR;
+                node.longitude = node_pos.longitude_i as f64 * LON_CONVERSION_FACTOR;
+                node.altitude = node_pos.altitude as f64 * ALT_CONVERSION_FACTOR;
+                node.speed = node_pos.ground_speed as f64 * SPEED_CONVERSION_FACTOR;
+                node.direction = node_pos.ground_track as f64;
+            } else {
+                println!("We do not have position info for node {}", name);
+            }
+        }
+        return graph.add_node_from_struct(node);
+    } else {
+        let node_idx = graph.get_node_idx(name.clone());
+        let node = graph.get_node_mut(node_idx);
+        if let Some(node_loc) = node_loc {
+            let node_pos = &node_loc.data.position;
+            if let Some(node_pos) = node_pos {
+                let latitude = node_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR;
+                let longitude = node_pos.longitude_i as f64 * LON_CONVERSION_FACTOR;
+                let altitude = node_pos.altitude as f64 * ALT_CONVERSION_FACTOR;
+                node.set_gps(longitude, latitude, altitude);
+            }
+        }
     }
+    graph.get_node_idx(name)
 }
 
 #[cfg(test)]
