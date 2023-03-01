@@ -56,7 +56,7 @@ pub fn add_node_and_location_to_graph(
 ) -> NodeIndex {
     let name: String = node_id.to_string();
     if !graph.contains_node(name.clone()) {
-        let mut node = Node::new(name);
+        let mut node = Node::new(name.clone());
         if let Some(node_loc) = node_loc {
             let node_pos = &node_loc.data.position;
             if let Some(node_pos) = node_pos {
@@ -65,6 +65,8 @@ pub fn add_node_and_location_to_graph(
                 node.altitude = node_pos.altitude as f64 * ALT_CONVERSION_FACTOR;
                 node.speed = node_pos.ground_speed as f64 * SPEED_CONVERSION_FACTOR;
                 node.direction = 0.0;
+            } else {
+                println!("We do not have position info for node {}", name);
             }
         }
         return graph.add_node_from_struct(node);

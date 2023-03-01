@@ -1,7 +1,6 @@
 use app::protobufs::{Neighbor, NeighborInfo};
 use std::collections::HashMap;
 
-
 /*
 * We're given a HashMap of NeighborInfo packets, each of which is considered to be the most up-to-date
 * edge info we have for a node. When we create edges, we want to keep this idea of freshness in mind. If
@@ -26,7 +25,11 @@ pub fn init_edge_map(neighbors: &HashMap<u32, NeighborInfo>) -> HashMap<(u32, u3
             match opposite_neighbor {
                 // If the opposite neighbor is found on a recent packet, we take the most recent SNR
                 Some(opposite_neighbor) => {
-                    let most_recent_data = if neighbor.rx_time > opposite_neighbor.rx_time {neighbor} else {&opposite_neighbor};
+                    let most_recent_data = if neighbor.rx_time > opposite_neighbor.rx_time {
+                        neighbor
+                    } else {
+                        &opposite_neighbor
+                    };
                     snr_hashmap.insert(
                         as_key(node_1, node_2),
                         (most_recent_data.snr as f64, most_recent_data.rx_time as u64),
@@ -78,9 +81,7 @@ pub fn check_other_node_agrees(
             }
             None
         }
-        _ => {
-            None
-        }
+        _ => None,
     }
 }
 
