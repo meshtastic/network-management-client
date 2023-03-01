@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector  } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
 import {
   Layer,
@@ -8,7 +8,6 @@ import {
   ScaleControl,
   Source,
   ViewStateChangeEvent,
-
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
 
@@ -17,32 +16,32 @@ import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
-import {
-  selectActiveNodeId,
-  selectAllNodes,
-
-  selectAllWaypoints,
-  selectIsWaypointEdit,
-} from "@features/device/deviceSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectMapState   } from "@features/map/mapSelectors";
-import { mapSliceActions  } from "@features/map/mapSlice";
-
-import "@components/Map/MapView.css";
-
 import Waypoints from "@components/Waypoints/Waypoints";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
 
+
+import {
+  selectActiveNodeId,
+  selectAllNodes,
+  selectAllWaypoints,
+  selectIsWaypointEdit
+} from "@features/device/deviceSelectors";
+import { deviceSliceActions } from "@features/device/deviceSlice";
+import { selectMapState } from "@features/map/mapSelectors";
+import { mapSliceActions } from "@features/map/mapSlice";
+
+import "@components/Map/MapView.css";
 
 export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
   const { edgesFeatureCollection, viewState } = useSelector(selectMapState());
- 
+
   const waypoints = useSelector(selectAllWaypoints());
   const isWaypointEdit = useSelector(selectIsWaypointEdit());
+
 
   const updateActiveNode = (nodeId: number | null) => {
     if (nodeId === activeNodeId) {
@@ -119,7 +118,7 @@ export const MapView = () => {
             />
           ))}
 
-{waypoints
+          {waypoints
           .filter(
             (n) =>
               (!!n.latitudeI && !!n.longitudeI) ||
