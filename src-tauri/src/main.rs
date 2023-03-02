@@ -4,6 +4,7 @@ mod data_conversion;
 mod graph;
 mod mesh;
 
+use analytics::algo_store::AlgoStore;
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use serde::{Deserialize, Serialize};
@@ -20,6 +21,10 @@ struct ActiveMeshDevice {
 
 struct ActiveMeshGraph {
     inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
+}
+
+struct ActiveMeshState {
+    inner: Arc<async_runtime::Mutex<Option<analytics::state::State>>>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, thiserror::Error)]
@@ -63,6 +68,11 @@ fn main() {
                 mesh::device::MeshGraph::new(),
             ))),
         })
+        .manage(ActiveMeshState {
+            inner: Arc::new(async_runtime::Mutex::new(Some(
+                analytics::state::State::new(),
+            ))),
+        })
         .invoke_handler(tauri::generate_handler![
             get_all_serial_ports,
             connect_to_serial_port,
@@ -90,10 +100,12 @@ async fn connect_to_serial_port(
     mesh_device: tauri::State<'_, ActiveMeshDevice>,
     serial_connection: tauri::State<'_, ActiveSerialConnection>,
     mesh_graph: tauri::State<'_, ActiveMeshGraph>,
+    algo_state: tauri::State<'_, ActiveMeshState>,
 ) -> Result<(), CommandError> {
     let mut connection = SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
     let new_graph = mesh::device::MeshGraph::new();
+    let state = analytics::state::State::new();
 
     connection.connect(app_handle.clone(), port_name, 115_200)?;
     connection.configure(new_device.config_id)?;
@@ -107,6 +119,7 @@ async fn connect_to_serial_port(
     let handle = app_handle.app_handle().clone();
     let mesh_device_arc = mesh_device.inner.clone();
     let mesh_graph_arc = mesh_graph.inner.clone();
+    let algo_state_arc = algo_state.inner.clone();
 
     {
         let mut new_graph_guard = mesh_graph_arc.lock().await;
@@ -118,6 +131,11 @@ async fn connect_to_serial_port(
         *new_device_guard = Some(new_device);
     }
 
+    {
+        let mut new_state_guard = algo_state_arc.lock().await;
+        *new_state_guard = Some(state);
+    }
+
     tauri::async_runtime::spawn(async move {
         while let Ok(message) = decoded_listener.recv().await {
             let variant = match message.payload_variant {
@@ -127,6 +145,7 @@ async fn connect_to_serial_port(
 
             let mut device_guard = mesh_device_arc.lock().await;
             let mut graph_guard = mesh_graph_arc.lock().await;
+            let mut state_guard = algo_state_arc.lock().await;
 
             let device = match device_guard.as_mut().ok_or("Device not initialized") {
                 Ok(d) => d,
@@ -138,6 +157,14 @@ async fn connect_to_serial_port(
 
             let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
                 Ok(g) => g,
+                Err(e) => {
+                    eprintln!("{:?}", e);
+                    continue;
+                }
+            };
+
+            let state = match state_guard.as_mut().ok_or("State not initialized") {
+                Ok(s) => s,
                 Err(e) => {
                     eprintln!("{:?}", e);
                     continue;
@@ -338,4 +365,27 @@ async fn get_node_edges(
     };
 
     Ok(edges)
+}
+
+#[tauri::command]
+async fn run_algorithms(
+    bitfield: u8,
+    mesh_graph: tauri::State<'_, ActiveMeshGraph>,
+    algo_state: tauri::State<'_, ActiveMeshState>,
+) -> Result<AlgoStore, String> {
+    let mut guard = mesh_graph.inner.lock().await;
+    let mut state_guard = algo_state.inner.lock().await;
+    let graph = guard
+        .as_mut()
+        .ok_or("Graph not initialized")
+        .map_err(|e| e.to_string())?;
+    let state = state_guard
+        .as_mut()
+        .ok_or("State not initialized")
+        .map_err(|e| e.to_string())?;
+
+    state.set_graph(&graph);
+    state.set_bitfield(&bitfield);
+    state.run_algos();
+    state.get_algo_results()
 }
