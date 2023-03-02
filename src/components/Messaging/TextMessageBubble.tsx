@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import type { ChannelMessageWithAck } from "@bindings/ChannelMessageWithAck";
+import type { ChannelMessageWithState } from "@bindings/ChannelMessageWithState";
 import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
@@ -9,30 +9,46 @@ import {
 import { formatMessageTime, formatMessageUsername } from "@utils/messaging";
 
 export interface ITextMessageBubbleProps {
-  message: ChannelMessageWithAck;
+  message: ChannelMessageWithState;
   className?: string;
 }
+
+const getAcknowledgementText = (
+  message: ChannelMessageWithState
+): { text: string; isError: boolean } => {
+  if (message.state === "acknowledged") {
+    return { text: "Acknowledged", isError: false };
+  }
+
+  if (message.state === "pending") {
+    return { text: "Transmitting...", isError: false };
+  }
+
+  return { text: message.state.error, isError: true };
+};
 
 const TextMessageBubble = ({
   message,
   className = "",
 }: ITextMessageBubbleProps) => {
-  const messagePacket = message.payload.text.packet;
-  const user = useSelector(selectUserByNodeId(messagePacket.from));
+  const { packet } = message.payload.text;
+  const user = useSelector(selectUserByNodeId(packet.from));
   const ownNodeId = useSelector(selectConnectedDeviceNodeId());
 
   const { displayText, isSelf } = formatMessageUsername(
     user?.longName,
     ownNodeId ?? 0,
-    messagePacket.from
+    packet.from
   );
 
-  if (isSelf)
+  if (isSelf) {
+    const { text, isError } = getAcknowledgementText(message);
+
     return (
       <div className={`${className}`}>
         <p className="flex flex-row justify-end mb-1 gap-2 items-baseline">
           <span className="text-xs font-semibold text-gray-400">
-            {formatMessageTime(messagePacket.rxTime)}
+            {formatMessageTime(packet.rxTime)}
           </span>
           <span className="text-sm font-semibold text-gray-700">
             {displayText}
@@ -42,8 +58,17 @@ const TextMessageBubble = ({
         <p className="ml-auto px-3 py-2 w-fit max-w-[40%] rounded-l-lg rounded-br-lg bg-gray-700 text-sm font-medium text-gray-100 border border-gray-400 break-words">
           {message.payload.text.data}
         </p>
+
+        <p
+          className={`ml-auto mt-1 text-xs text-right ${
+            isError ? "font-semibold text-red-500" : "font-normal text-gray-500"
+          }`}
+        >
+          {text}
+        </p>
       </div>
     );
+  }
 
   return (
     <div className={`${className}`}>
@@ -52,7 +77,7 @@ const TextMessageBubble = ({
           {displayText}
         </span>
         <span className="text-xs font-semibold text-gray-400">
-          {formatMessageTime(messagePacket.rxTime)}
+          {formatMessageTime(packet.rxTime)}
         </span>
       </p>
 

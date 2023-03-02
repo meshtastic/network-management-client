@@ -111,12 +111,13 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
           <h1 className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
             Connect a supported Meshtastic radio to your computer via USB
             Serial. For more detailed instructions,{" "}
-            <a
-              href="https://meshtastic.org/docs/introduction"
+            <button
+            type="button"
+              onClick={() => void open("https://meshtastic.org/docs/introduction")}
               className="hover:cursor-pointer hover:text-gray-600 underline"
             >
               click here
-            </a>
+            </button>
             .
           </h1>
         </div>

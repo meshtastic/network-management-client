@@ -2,13 +2,14 @@ use app::protobufs;
 
 use super::helpers::get_current_time_u32;
 use super::{
-    ChannelMessagePayload, ChannelMessageWithAck, MeshChannel, MeshDevice, MeshDeviceStatus,
-    MeshNode, MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, PositionPacket, TelemetryPacket,
-    TextPacket, UserPacket, WaypointPacket, NeighborInfoPacket, MeshGraph
+    ChannelMessagePayload, ChannelMessageWithState, MeshChannel, MeshDevice, MeshDeviceStatus,
+    MeshGraph, MeshNode, MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, NeighborInfoPacket,
+    PositionPacket, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 
 use crate::constructors::init::init_edge_map::init_edge_map;
 use crate::constructors::init::init_graph::init_graph;
+use crate::mesh::device::ChannelMessageState;
 
 impl MeshDevice {
     pub fn set_ready(&mut self, ready: bool) {
@@ -256,10 +257,8 @@ impl MeshDevice {
                 neighborinfo.packet.from, neighborinfo.data
             );
         }
-        self.neighbors.insert(
-            neighborinfo.packet.from,
-            neighborinfo.data,
-        );
+        self.neighbors
+            .insert(neighborinfo.packet.from, neighborinfo.data);
     }
 
     pub fn add_text_message(&mut self, message: TextPacket) {
@@ -273,9 +272,9 @@ impl MeshDevice {
 
             ch.last_interaction = get_current_time_u32();
 
-            ch.messages.push(ChannelMessageWithAck {
+            ch.messages.push(ChannelMessageWithState {
                 payload: ChannelMessagePayload::Text(message),
-                ack: false,
+                state: ChannelMessageState::Pending,
             });
         }
     }
@@ -291,16 +290,21 @@ impl MeshDevice {
 
             ch.last_interaction = get_current_time_u32();
 
-            ch.messages.push(ChannelMessageWithAck {
+            ch.messages.push(ChannelMessageWithState {
                 payload: ChannelMessagePayload::Waypoint(message),
-                ack: false,
+                state: ChannelMessageState::Pending,
             });
         }
     }
 
     // TODO add device metadata
 
-    pub fn ack_message(&mut self, channel_id: u32, message_id: u32) {
+    pub fn set_message_state(
+        &mut self,
+        channel_id: u32,
+        message_id: u32,
+        state: ChannelMessageState,
+    ) {
         let channel = self.channels.get_mut(&channel_id);
 
         if let Some(ch) = channel {
@@ -313,8 +317,7 @@ impl MeshDevice {
                 });
 
             if let Some(m) = message {
-                println!("Acking message id {:?}: {:?}", message_id, m);
-                m.ack = true;
+                m.state = state;
             }
         }
     }

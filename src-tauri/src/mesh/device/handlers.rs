@@ -4,8 +4,8 @@ use tauri::api::notification::Notification;
 
 use super::{
     helpers::{get_channel_name, get_current_time_u32, get_node_user_name},
-    MeshChannel, MeshDevice, PositionPacket, TelemetryPacket, TextPacket, UserPacket,
-    WaypointPacket, NeighborInfoPacket, MeshGraph
+    ChannelMessageState, MeshChannel, MeshDevice, MeshGraph, NeighborInfoPacket, PositionPacket,
+    TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 
 impl MeshDevice {
@@ -27,7 +27,7 @@ impl MeshDevice {
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::Config(c) => {
-                self.set_config(c.clone());
+                self.set_config(c);
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::ConfigCompleteId(_c) => {
@@ -40,11 +40,11 @@ impl MeshDevice {
                 // println!("Module config data: {:#?}", m);
             }
             protobufs::from_radio::PayloadVariant::MyInfo(m) => {
-                self.set_hardware_info(m.clone());
+                self.set_hardware_info(m);
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
-                self.add_node_info(n.clone());
+                self.add_node_info(n);
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::Packet(p) => {
@@ -114,7 +114,76 @@ impl MeshDevice {
                     println!("Reply app not yet supported in Rust");
                 }
                 protobufs::PortNum::RoutingApp => {
-                    println!("Routing app not yet supported in Rust");
+                    let routing_data = protobufs::Routing::decode(data.payload.as_slice())
+                        .map_err(|e| e.to_string())?;
+
+                    if let Some(variant) = routing_data.variant {
+                        match variant {
+                            protobufs::routing::Variant::ErrorReason(e) => {
+                                if let Some(r) = protobufs::routing::Error::from_i32(e) {
+                                    match r {
+                                        protobufs::routing::Error::None => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Acknowledged,
+                                            );
+                                        }
+                                        protobufs::routing::Error::Timeout => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error(
+                                                    "Message timed out".into(),
+                                                ),
+                                            );
+                                        }
+                                        protobufs::routing::Error::MaxRetransmit => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error(
+                                                    "Reached retransmit limit".into(),
+                                                ),
+                                            );
+                                        }
+                                        protobufs::routing::Error::GotNak => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error("Received NAK".into()),
+                                            );
+                                        }
+                                        protobufs::routing::Error::TooLarge => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error(
+                                                    "Message too large".into(),
+                                                ),
+                                            );
+                                        }
+                                        _ => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error(
+                                                    "Message failed to send".into(),
+                                                ),
+                                            );
+                                        }
+                                    }
+                                    device_updated = true;
+                                }
+                            }
+                            protobufs::routing::Variant::RouteReply(r) => {
+                                println!("Route reply: {:?}", r);
+                            }
+                            protobufs::routing::Variant::RouteRequest(r) => {
+                                println!("Route request: {:?}", r);
+                            }
+                        }
+                    }
                 }
                 protobufs::PortNum::SerialApp => {
                     println!("Serial app not yet supported in Rust");
@@ -142,10 +211,10 @@ impl MeshDevice {
 
                     if let Some(handle) = app_handle {
                         let from_user_name = get_node_user_name(self, &packet.from)
-                            .unwrap_or(packet.from.to_string());
+                            .unwrap_or_else(|| packet.from.to_string());
 
                         let channel_name = get_channel_name(self, &packet.channel)
-                            .unwrap_or("Unknown channel".into());
+                            .unwrap_or_else(|| "Unknown channel".into());
 
                         Notification::new(handle.config().tauri.bundle.identifier.clone())
                             .title(format!("{} in {}", from_user_name, channel_name))
@@ -170,10 +239,10 @@ impl MeshDevice {
 
                     if let Some(handle) = app_handle {
                         let from_user_name = get_node_user_name(self, &packet.from)
-                            .unwrap_or(packet.from.to_string());
+                            .unwrap_or_else(|| packet.from.to_string());
 
                         let channel_name = get_channel_name(self, &packet.channel)
-                            .unwrap_or("Unknown channel".into());
+                            .unwrap_or_else(|| "Unknown channel".into());
 
                         Notification::new(handle.config().tauri.bundle.identifier.clone())
                             .title(format!("{} in {}", from_user_name, channel_name))
@@ -196,7 +265,7 @@ impl MeshDevice {
 
                     self.add_neighborinfo(NeighborInfoPacket {
                         packet: packet.clone(),
-                        data: data.clone(),
+                        data,
                     });
                     if let Some(meshgraph) = meshgraph {
                         meshgraph.regenerate_graph_from_device_info(self);
