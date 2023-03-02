@@ -8,7 +8,7 @@ use analytics::algo_store::AlgoStore;
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+use std::{sync::Arc, collections::HashMap};
 use tauri::{async_runtime, Manager};
 
 struct ActiveSerialConnection {
@@ -70,7 +70,7 @@ fn main() {
         })
         .manage(ActiveMeshState {
             inner: Arc::new(async_runtime::Mutex::new(Some(
-                analytics::state::State::new(),
+                analytics::state::State::new(HashMap::new(), false),
             ))),
         })
         .invoke_handler(tauri::generate_handler![
@@ -105,7 +105,7 @@ async fn connect_to_serial_port(
     let mut connection = SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
     let new_graph = mesh::device::MeshGraph::new();
-    let state = analytics::state::State::new();
+    let state = analytics::state::State::new(HashMap::new(), false);
 
     connection.connect(app_handle.clone(), port_name, 115_200)?;
     connection.configure(new_device.config_id)?;
