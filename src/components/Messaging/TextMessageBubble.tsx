@@ -13,18 +13,23 @@ export interface ITextMessageBubbleProps {
   className?: string;
 }
 
+const getAcknowledgementText = (message: ChannelMessageWithAck): string => {
+  if (message.ack) return "Acknowledged";
+  return "Waiting for acknowledgement";
+};
+
 const TextMessageBubble = ({
   message,
   className = "",
 }: ITextMessageBubbleProps) => {
-  const messagePacket = message.payload.text.packet;
-  const user = useSelector(selectUserByNodeId(messagePacket.from));
+  const { packet } = message.payload.text;
+  const user = useSelector(selectUserByNodeId(packet.from));
   const ownNodeId = useSelector(selectConnectedDeviceNodeId());
 
   const { displayText, isSelf } = formatMessageUsername(
     user?.longName,
     ownNodeId ?? 0,
-    messagePacket.from
+    packet.from
   );
 
   if (isSelf)
@@ -32,7 +37,7 @@ const TextMessageBubble = ({
       <div className={`${className}`}>
         <p className="flex flex-row justify-end mb-1 gap-2 items-baseline">
           <span className="text-xs font-semibold text-gray-400">
-            {formatMessageTime(messagePacket.rxTime)}
+            {formatMessageTime(packet.rxTime)}
           </span>
           <span className="text-sm font-semibold text-gray-700">
             {displayText}
@@ -41,6 +46,10 @@ const TextMessageBubble = ({
 
         <p className="ml-auto px-3 py-2 w-fit max-w-[40%] rounded-l-lg rounded-br-lg bg-gray-700 text-sm font-medium text-gray-100 border border-gray-400 break-words">
           {message.payload.text.data}
+        </p>
+
+        <p className="ml-auto mt-1 text-xs text-right font-normal text-gray-500">
+          {getAcknowledgementText(message)}
         </p>
       </div>
     );
@@ -52,7 +61,7 @@ const TextMessageBubble = ({
           {displayText}
         </span>
         <span className="text-xs font-semibold text-gray-400">
-          {formatMessageTime(messagePacket.rxTime)}
+          {formatMessageTime(packet.rxTime)}
         </span>
       </p>
 
