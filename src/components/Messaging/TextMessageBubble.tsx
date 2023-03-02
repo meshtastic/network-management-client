@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import type { ChannelMessageWithState } from "@bindings/ChannelMessageWithAck";
+import type { ChannelMessageWithState } from "@bindings/ChannelMessageWithState";
 import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
@@ -16,14 +16,15 @@ export interface ITextMessageBubbleProps {
 const getAcknowledgementText = (
   message: ChannelMessageWithState
 ): { text: string; isError: boolean } => {
-  switch (message.state) {
-    case "acknowledged":
-      return { text: "Acknowledged", isError: false };
-    case "pending":
-      return { text: "Waiting for acknowledgement", isError: false };
-    default:
-      return { text: "Not acknowledged", isError: true };
+  if (message.state === "acknowledged") {
+    return { text: "Acknowledged", isError: false };
   }
+
+  if (message.state === "pending") {
+    return { text: "Waiting for acknowledgement", isError: false };
+  }
+
+  return { text: message.state.error, isError: true };
 };
 
 const TextMessageBubble = ({

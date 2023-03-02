@@ -111,7 +111,7 @@ pub enum ChannelMessagePayload {
 pub enum ChannelMessageState {
     Pending,
     Acknowledged,
-    Error,
+    Error(String),
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

@@ -129,11 +129,47 @@ impl MeshDevice {
                                                 ChannelMessageState::Acknowledged,
                                             );
                                         }
+                                        protobufs::routing::Error::Timeout => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error(
+                                                    "Message timed out".into(),
+                                                ),
+                                            );
+                                        }
+                                        protobufs::routing::Error::MaxRetransmit => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error(
+                                                    "Reached retransmit limit".into(),
+                                                ),
+                                            );
+                                        }
+                                        protobufs::routing::Error::GotNak => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error("Received NAK".into()),
+                                            );
+                                        }
+                                        protobufs::routing::Error::TooLarge => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error(
+                                                    "Message too large".into(),
+                                                ),
+                                            );
+                                        }
                                         _ => {
                                             self.set_message_state(
                                                 packet.channel,
                                                 data.request_id,
-                                                ChannelMessageState::Error,
+                                                ChannelMessageState::Error(
+                                                    "Message failed to send".into(),
+                                                ),
                                             );
                                         }
                                     }
