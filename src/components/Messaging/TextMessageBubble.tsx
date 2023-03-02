@@ -21,7 +21,7 @@ const getAcknowledgementText = (
   }
 
   if (message.state === "pending") {
-    return { text: "Waiting for acknowledgement", isError: false };
+    return { text: "Transmitting...", isError: false };
   }
 
   return { text: message.state.error, isError: true };
