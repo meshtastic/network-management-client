@@ -4,8 +4,8 @@ use tauri::api::notification::Notification;
 
 use super::{
     helpers::{get_channel_name, get_current_time_u32, get_node_user_name},
-    MeshChannel, MeshDevice, MeshGraph, NeighborInfoPacket, PositionPacket, TelemetryPacket,
-    TextPacket, UserPacket, WaypointPacket,
+    ChannelMessageState, MeshChannel, MeshDevice, MeshGraph, NeighborInfoPacket, PositionPacket,
+    TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 
 impl MeshDevice {
@@ -123,14 +123,21 @@ impl MeshDevice {
                                 if let Some(r) = protobufs::routing::Error::from_i32(e) {
                                     match r {
                                         protobufs::routing::Error::None => {
-                                            self.ack_message(packet.channel, data.request_id);
-                                            device_updated = true;
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Acknowledged,
+                                            );
                                         }
-                                        protobufs::routing::Error::BadRequest => {
-                                            eprintln!("Bad request");
+                                        _ => {
+                                            self.set_message_state(
+                                                packet.channel,
+                                                data.request_id,
+                                                ChannelMessageState::Error,
+                                            );
                                         }
-                                        _ => {}
                                     }
+                                    device_updated = true;
                                 }
                             }
                             protobufs::routing::Variant::RouteReply(r) => {

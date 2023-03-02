@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import type { ChannelMessageWithAck } from "@bindings/ChannelMessageWithAck";
+import type { ChannelMessageWithState } from "@bindings/ChannelMessageWithAck";
 import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
@@ -9,13 +9,21 @@ import {
 import { formatMessageTime, formatMessageUsername } from "@utils/messaging";
 
 export interface ITextMessageBubbleProps {
-  message: ChannelMessageWithAck;
+  message: ChannelMessageWithState;
   className?: string;
 }
 
-const getAcknowledgementText = (message: ChannelMessageWithAck): string => {
-  if (message.ack) return "Acknowledged";
-  return "Waiting for acknowledgement";
+const getAcknowledgementText = (
+  message: ChannelMessageWithState
+): { text: string; isError: boolean } => {
+  switch (message.state) {
+    case "acknowledged":
+      return { text: "Acknowledged", isError: false };
+    case "pending":
+      return { text: "Waiting for acknowledgement", isError: false };
+    default:
+      return { text: "Not acknowledged", isError: true };
+  }
 };
 
 const TextMessageBubble = ({
@@ -32,7 +40,9 @@ const TextMessageBubble = ({
     packet.from
   );
 
-  if (isSelf)
+  if (isSelf) {
+    const { text, isError } = getAcknowledgementText(message);
+
     return (
       <div className={`${className}`}>
         <p className="flex flex-row justify-end mb-1 gap-2 items-baseline">
@@ -48,11 +58,16 @@ const TextMessageBubble = ({
           {message.payload.text.data}
         </p>
 
-        <p className="ml-auto mt-1 text-xs text-right font-normal text-gray-500">
-          {getAcknowledgementText(message)}
+        <p
+          className={`ml-auto mt-1 text-xs text-right ${
+            isError ? "font-semibold text-red-500" : "font-normal text-gray-500"
+          }`}
+        >
+          {text}
         </p>
       </div>
     );
+  }
 
   return (
     <div className={`${className}`}>
