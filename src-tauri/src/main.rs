@@ -384,8 +384,8 @@ async fn run_algorithms(
         .ok_or("State not initialized")
         .map_err(|e| e.to_string())?;
 
-    state.set_graph(&graph);
-    state.set_bitfield(&bitfield);
+    state.add_graph(&graph);
+    state.set_algos(&bitfield);
     state.run_algos();
     state.get_algo_results()
 }
