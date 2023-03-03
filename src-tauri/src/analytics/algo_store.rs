@@ -6,6 +6,7 @@ use super::algo_result_enums::mincut::MinCutResult;
 use super::algo_result_enums::most_sim_timeline::MostSimTResult;
 use super::algo_result_enums::pred_state::PredStateResult;
 use crate::graph::graph_ds::Graph;
+use serde::{Deserialize, Serialize};
 
 /// Stores the results of the algorithms.
 ///
@@ -17,7 +18,7 @@ use crate::graph::graph_ds::Graph;
 /// * `most_sim_t` - [`crate::state_err_enums::most_sim_timeline::MostSimTResult`] that stores Success/Error/Empty of most similar timeline algorithm.
 /// * `pred_state` - [`crate::state_err_enums::pred_state::PredStateResult`] that stores Success/Error/Empty of state prediction algorithm.
 
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct AlgoStore {
     pub aps: APResult,
     pub mincut: MinCutResult,

@@ -81,7 +81,8 @@ fn main() {
             update_device_config,
             update_device_user,
             send_waypoint,
-            get_node_edges
+            get_node_edges,
+            run_algorithms
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
