@@ -48,7 +48,7 @@ const ChannelDetailView = ({
             <TextMessageBubble
               className="pr-6"
               message={m}
-              key={m.payload.text.packet.id}
+              key={m.payload.packet.id}
             />
           ))}
         </div>
