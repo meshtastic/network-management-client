@@ -101,6 +101,7 @@ pub struct WaypointPacket {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum ChannelMessagePayload {
     Text(TextPacket),
     Waypoint(WaypointPacket),

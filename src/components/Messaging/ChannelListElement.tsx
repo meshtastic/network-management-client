@@ -1,6 +1,9 @@
 import React from "react";
 import type { MeshChannel } from "@bindings/MeshChannel";
-import { getChannelName } from "@utils/messaging";
+import {
+  getChannelName,
+  getLastChannelMessageDisplayText,
+} from "@utils/messaging";
 
 export interface IChannelListElementProps {
   channel: MeshChannel;
@@ -47,8 +50,7 @@ const ChannelListElement = ({
           </p>
         </div>
         <p className="min-w-full text-left whitespace-nowrap overflow-hidden overflow-ellipsis text-base font-normal text-gray-400">
-          {lastMessage?.payload.text.data ??
-            "No messages received on this channel."}
+          {getLastChannelMessageDisplayText(lastMessage)}
         </p>
       </button>
     );
@@ -74,8 +76,7 @@ const ChannelListElement = ({
         </p>
       </div>
       <p className="min-w-full text-left whitespace-nowrap overflow-hidden overflow-ellipsis text-base font-normal text-gray-500">
-        {lastMessage?.payload.text.data ??
-          "No messages received on this channel."}
+        {getLastChannelMessageDisplayText(lastMessage)}
       </p>
     </button>
   );
