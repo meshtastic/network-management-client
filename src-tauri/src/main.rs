@@ -59,19 +59,13 @@ fn main() {
             inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .manage(ActiveMeshDevice {
-            inner: Arc::new(async_runtime::Mutex::new(Some(
-                mesh::device::MeshDevice::new(),
-            ))),
+            inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .manage(ActiveMeshGraph {
-            inner: Arc::new(async_runtime::Mutex::new(Some(
-                mesh::device::MeshGraph::new(),
-            ))),
+            inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .manage(ActiveMeshState {
-            inner: Arc::new(async_runtime::Mutex::new(Some(
-                analytics::state::State::new(HashMap::new(), false),
-            ))),
+            inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
             get_all_serial_ports,
