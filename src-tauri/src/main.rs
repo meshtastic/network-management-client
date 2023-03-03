@@ -378,12 +378,10 @@ async fn run_algorithms(
     let mut state_guard = algo_state.inner.lock().await;
     let graph_struct = guard
         .as_mut()
-        .ok_or("Graph not initialized")
-        .map_err(|e| e.to_string())?;
+        .ok_or("Graph not initialized")?;
     let state = state_guard
         .as_mut()
-        .ok_or("State not initialized")
-        .map_err(|e| e.to_string())?;
+        .ok_or("State not initialized")?;
 
     state.add_graph(&graph_struct.graph);
     state.set_algos(bitfield);
