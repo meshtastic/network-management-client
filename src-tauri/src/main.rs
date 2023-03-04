@@ -103,12 +103,6 @@ async fn initialize_graph_state(
         *new_state_guard = Some(state);
     }
 
-    // let mut graph_guard = mesh_graph_arc.lock().await;
-    // let mut state_guard = algo_state_arc.lock().await;
-
-    // let graph = graph_guard.as_mut().ok_or("Graph not initialized")?;
-    // let state = state_guard.as_mut().ok_or("State not initialized")?;
-
     Ok(())
 }
 
