@@ -111,6 +111,7 @@ function convertToDataFormat() {
   };
 }
 
+// Credit: https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
