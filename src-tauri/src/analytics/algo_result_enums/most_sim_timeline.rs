@@ -1,6 +1,7 @@
+use serde::{Deserialize, Serialize};
 use crate::graph::graph_ds::Graph;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum MostSimTResult {
     Success(Graph),
     Error(String),

@@ -1,6 +1,7 @@
+use serde::{Deserialize, Serialize};
 use petgraph::graph::NodeIndex;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum APResult {
     Success(Vec<NodeIndex>),
     Error(String),
