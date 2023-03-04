@@ -68,6 +68,7 @@ function* connectToDeviceWorker(
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     yield call(disconnectFromDeviceWorker);
+    yield call(invoke, "initialize_graph_state", { portName: action.payload });
     yield call(invoke, "connect_to_serial_port", { portName: action.payload });
     yield put(deviceSliceActions.setActiveSerialPort(action.payload));
 

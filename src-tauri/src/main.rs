@@ -76,10 +76,40 @@ fn main() {
             update_device_user,
             send_waypoint,
             get_node_edges,
-            run_algorithms
+            run_algorithms,
+            initialize_graph_state,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[tauri::command]
+async fn initialize_graph_state(
+    mesh_graph: tauri::State<'_, ActiveMeshGraph>,
+    algo_state: tauri::State<'_, ActiveMeshState>,
+) -> Result<(), CommandError> {
+    let new_graph = mesh::device::MeshGraph::new();
+    let state = analytics::state::State::new(HashMap::new(), false);
+    let mesh_graph_arc = mesh_graph.inner.clone();
+    let algo_state_arc = algo_state.inner.clone();
+
+    {
+        let mut new_graph_guard = mesh_graph_arc.lock().await;
+        *new_graph_guard = Some(new_graph);
+    }
+
+    {
+        let mut new_state_guard = algo_state_arc.lock().await;
+        *new_state_guard = Some(state);
+    }
+
+    // let mut graph_guard = mesh_graph_arc.lock().await;
+    // let mut state_guard = algo_state_arc.lock().await;
+
+    // let graph = graph_guard.as_mut().ok_or("Graph not initialized")?;
+    // let state = state_guard.as_mut().ok_or("State not initialized")?;
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -95,12 +125,9 @@ async fn connect_to_serial_port(
     mesh_device: tauri::State<'_, ActiveMeshDevice>,
     serial_connection: tauri::State<'_, ActiveSerialConnection>,
     mesh_graph: tauri::State<'_, ActiveMeshGraph>,
-    algo_state: tauri::State<'_, ActiveMeshState>,
 ) -> Result<(), CommandError> {
     let mut connection = SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
-    let new_graph = mesh::device::MeshGraph::new();
-    let state = analytics::state::State::new(HashMap::new(), false);
 
     connection.connect(app_handle.clone(), port_name, 115_200)?;
     connection.configure(new_device.config_id)?;
@@ -113,23 +140,13 @@ async fn connect_to_serial_port(
 
     let handle = app_handle.app_handle().clone();
     let mesh_device_arc = mesh_device.inner.clone();
-    let mesh_graph_arc = mesh_graph.inner.clone();
-    let algo_state_arc = algo_state.inner.clone();
-
-    {
-        let mut new_graph_guard = mesh_graph_arc.lock().await;
-        *new_graph_guard = Some(new_graph);
-    }
 
     {
         let mut new_device_guard = mesh_device_arc.lock().await;
         *new_device_guard = Some(new_device);
     }
 
-    {
-        let mut new_state_guard = algo_state_arc.lock().await;
-        *new_state_guard = Some(state);
-    }
+    let graph_arc = mesh_graph.inner.clone();
 
     tauri::async_runtime::spawn(async move {
         while let Ok(message) = decoded_listener.recv().await {
@@ -139,9 +156,6 @@ async fn connect_to_serial_port(
             };
 
             let mut device_guard = mesh_device_arc.lock().await;
-            let mut graph_guard = mesh_graph_arc.lock().await;
-            let mut state_guard = algo_state_arc.lock().await;
-
             let device = match device_guard.as_mut().ok_or("Device not initialized") {
                 Ok(d) => d,
                 Err(e) => {
@@ -149,25 +163,17 @@ async fn connect_to_serial_port(
                     continue;
                 }
             };
-
+            let mut graph_guard = graph_arc.lock().await;
             let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
-                Ok(g) => g,
+                Ok(g) => Some(g),
                 Err(e) => {
                     eprintln!("{:?}", e);
-                    continue;
-                }
-            };
-
-            let state = match state_guard.as_mut().ok_or("State not initialized") {
-                Ok(s) => s,
-                Err(e) => {
-                    eprintln!("{:?}", e);
-                    continue;
+                    None
                 }
             };
 
             let device_updated =
-                match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
+                match device.handle_packet_from_radio(variant, Some(handle.clone()), graph) {
                     Ok(d) => d,
                     Err(e) => {
                         eprintln!("Error transmitting packet: {}", e);
