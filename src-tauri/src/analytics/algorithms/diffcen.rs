@@ -20,7 +20,7 @@ pub fn diffusion_centrality(
     params: &Params,
     eigenvals: Vec<f64>,
     n: usize,
-) -> HashMap<String, HashMap<String, f64>> {
+) -> HashMap<String, HashMap<String, HashMap<String, f64>>> {
     let T = params.get("T").unwrap_or(&(5 as u32));
 
     let mut node_to_diffcen = HashMap::new();
@@ -38,27 +38,30 @@ pub fn diffusion_centrality(
 
     for t in 1..T + 1 {
         H += (q * adj_matrix).pow(t) * &identity_matrix;
-    }
 
-    for (i, row) in H.row_iter().enumerate() {
-        let row_sum = row.sum();
+        let mut node_to_diffcen_at_t = HashMap::new();
 
-        // divide the row by the sum of the row
-        let row_normalized = row.map(|x| x / row_sum);
+        for (i, row) in H.row_iter().enumerate() {
+            let row_sum = row.sum();
 
-        let mut node_to_diffcen_inner = HashMap::new();
-        for (j, col) in row_normalized.iter().enumerate() {
-            if i == j {
-                let sum = row.sum();
-                node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), sum);
-                continue;
+            // divide the row by the sum of the row
+            let row_normalized = row.map(|x| x / row_sum);
+
+            let mut node_to_diffcen_inner = HashMap::new();
+            for (j, col) in row_normalized.iter().enumerate() {
+                if i == j {
+                    let sum = row.sum();
+                    node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), sum);
+                    continue;
+                }
+                node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), *col as f64);
             }
-            node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), *col as f64);
+            node_to_diffcen_at_t.insert(
+                int_to_node_id.get(&i).unwrap().clone(),
+                node_to_diffcen_inner,
+            );
         }
-        node_to_diffcen.insert(
-            int_to_node_id.get(&i).unwrap().clone(),
-            node_to_diffcen_inner,
-        );
+        node_to_diffcen.insert(t.to_string(), node_to_diffcen_at_t);
     }
 
     node_to_diffcen

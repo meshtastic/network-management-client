@@ -11,6 +11,7 @@ import {
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
 
+import AccordionDemo from "./AnalyticsPane";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
@@ -107,6 +108,7 @@ export const MapView = () => {
             />
           ))}
 
+        <AccordionDemo />
         <MapSelectedNodeMenu />
         <NodeSearchDock />
         <MapInteractionPane />
