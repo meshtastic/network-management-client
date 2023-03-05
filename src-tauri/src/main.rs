@@ -8,7 +8,7 @@ use analytics::algo_store::AlgoStore;
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use serde::{Deserialize, Serialize};
-use std::{sync::Arc, collections::HashMap};
+use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
 
 struct ActiveSerialConnection {
@@ -345,8 +345,8 @@ async fn get_node_edges(
                 ))),
                 properties: None,
                 geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
-                    vec![u.latitude, u.longitude],
-                    vec![v.latitude, v.longitude],
+                    vec![u.longitude, u.latitude, u.altitude],
+                    vec![v.longitude, v.latitude, v.altitude],
                 ]))),
                 ..Default::default()
             }
@@ -370,12 +370,8 @@ async fn run_algorithms(
 ) -> Result<AlgoStore, String> {
     let mut guard = mesh_graph.inner.lock().await;
     let mut state_guard = algo_state.inner.lock().await;
-    let graph_struct = guard
-        .as_mut()
-        .ok_or("Graph not initialized")?;
-    let state = state_guard
-        .as_mut()
-        .ok_or("State not initialized")?;
+    let graph_struct = guard.as_mut().ok_or("Graph not initialized")?;
+    let state = state_guard.as_mut().ok_or("State not initialized")?;
 
     state.add_graph(&graph_struct.graph);
     state.set_algos(bitfield);
