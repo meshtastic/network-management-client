@@ -1,6 +1,7 @@
+use serde::{Deserialize, Serialize};
 use crate::graph::edge::Edge;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum MinCutResult {
     Success(Vec<Edge>),
     Error(String),

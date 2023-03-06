@@ -4,10 +4,11 @@ mod data_conversion;
 mod graph;
 mod mesh;
 
+use analytics::algo_store::AlgoStore;
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
 
 struct ActiveSerialConnection {
@@ -20,6 +21,10 @@ struct ActiveMeshDevice {
 
 struct ActiveMeshGraph {
     inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
+}
+
+struct ActiveMeshState {
+    inner: Arc<async_runtime::Mutex<Option<analytics::state::State>>>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, thiserror::Error)]
@@ -54,14 +59,13 @@ fn main() {
             inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .manage(ActiveMeshDevice {
-            inner: Arc::new(async_runtime::Mutex::new(Some(
-                mesh::device::MeshDevice::new(),
-            ))),
+            inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .manage(ActiveMeshGraph {
-            inner: Arc::new(async_runtime::Mutex::new(Some(
-                mesh::device::MeshGraph::new(),
-            ))),
+            inner: Arc::new(async_runtime::Mutex::new(None)),
+        })
+        .manage(ActiveMeshState {
+            inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
             get_all_serial_ports,
@@ -71,10 +75,35 @@ fn main() {
             update_device_config,
             update_device_user,
             send_waypoint,
-            get_node_edges
+            get_node_edges,
+            run_algorithms,
+            initialize_graph_state,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[tauri::command]
+async fn initialize_graph_state(
+    mesh_graph: tauri::State<'_, ActiveMeshGraph>,
+    algo_state: tauri::State<'_, ActiveMeshState>,
+) -> Result<(), CommandError> {
+    let new_graph = mesh::device::MeshGraph::new();
+    let state = analytics::state::State::new(HashMap::new(), false);
+    let mesh_graph_arc = mesh_graph.inner.clone();
+    let algo_state_arc = algo_state.inner.clone();
+
+    {
+        let mut new_graph_guard = mesh_graph_arc.lock().await;
+        *new_graph_guard = Some(new_graph);
+    }
+
+    {
+        let mut new_state_guard = algo_state_arc.lock().await;
+        *new_state_guard = Some(state);
+    }
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -93,7 +122,6 @@ async fn connect_to_serial_port(
 ) -> Result<(), CommandError> {
     let mut connection = SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
-    let new_graph = mesh::device::MeshGraph::new();
 
     connection.connect(app_handle.clone(), port_name, 115_200)?;
     connection.configure(new_device.config_id)?;
@@ -106,17 +134,13 @@ async fn connect_to_serial_port(
 
     let handle = app_handle.app_handle().clone();
     let mesh_device_arc = mesh_device.inner.clone();
-    let mesh_graph_arc = mesh_graph.inner.clone();
-
-    {
-        let mut new_graph_guard = mesh_graph_arc.lock().await;
-        *new_graph_guard = Some(new_graph);
-    }
 
     {
         let mut new_device_guard = mesh_device_arc.lock().await;
         *new_device_guard = Some(new_device);
     }
+
+    let graph_arc = mesh_graph.inner.clone();
 
     tauri::async_runtime::spawn(async move {
         while let Ok(message) = decoded_listener.recv().await {
@@ -126,8 +150,6 @@ async fn connect_to_serial_port(
             };
 
             let mut device_guard = mesh_device_arc.lock().await;
-            let mut graph_guard = mesh_graph_arc.lock().await;
-
             let device = match device_guard.as_mut().ok_or("Device not initialized") {
                 Ok(d) => d,
                 Err(e) => {
@@ -135,17 +157,17 @@ async fn connect_to_serial_port(
                     continue;
                 }
             };
-
+            let mut graph_guard = graph_arc.lock().await;
             let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
-                Ok(g) => g,
+                Ok(g) => Some(g),
                 Err(e) => {
                     eprintln!("{:?}", e);
-                    continue;
+                    None
                 }
             };
 
             let device_updated =
-                match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
+                match device.handle_packet_from_radio(variant, Some(handle.clone()), graph) {
                     Ok(d) => d,
                     Err(e) => {
                         eprintln!("Error transmitting packet: {}", e);
@@ -324,8 +346,8 @@ async fn get_node_edges(
                 ))),
                 properties: None,
                 geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
-                    vec![u.latitude, u.longitude],
-                    vec![v.latitude, v.longitude],
+                    vec![u.longitude, u.latitude, u.altitude],
+                    vec![v.longitude, v.latitude, v.altitude],
                 ]))),
                 ..Default::default()
             }
@@ -339,4 +361,21 @@ async fn get_node_edges(
     };
 
     Ok(edges)
+}
+
+#[tauri::command]
+async fn run_algorithms(
+    bitfield: u8,
+    mesh_graph: tauri::State<'_, ActiveMeshGraph>,
+    algo_state: tauri::State<'_, ActiveMeshState>,
+) -> Result<AlgoStore, String> {
+    let mut guard = mesh_graph.inner.lock().await;
+    let mut state_guard = algo_state.inner.lock().await;
+    let graph_struct = guard.as_mut().ok_or("Graph not initialized")?;
+    let state = state_guard.as_mut().ok_or("State not initialized")?;
+
+    state.add_graph(&graph_struct.graph);
+    state.set_algos(bitfield);
+    state.run_algos();
+    Ok(state.get_algo_results().clone())
 }

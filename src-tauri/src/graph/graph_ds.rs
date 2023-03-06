@@ -737,53 +737,53 @@ mod tests {
     #[test]
     fn initialize_graph() {
         // Create a graph
-        let mut G = Graph::new();
+        let mut g = super::Graph::new();
 
         // Create a few nodes and edges and add to graph
         let u: String = "u".to_string();
         let v: String = "v".to_string();
         let w: String = "w".to_string();
 
-        let _u_idx = G.add_node(u.clone());
-        let _v_idx = G.add_node(v.clone());
-        let _w_idx = G.add_node(w.clone());
+        let _u_idx = g.add_node(u.clone());
+        let _v_idx = g.add_node(v.clone());
+        let _w_idx = g.add_node(w.clone());
 
-        assert_eq!(G.get_order(), 3);
+        assert_eq!(g.get_order(), 3);
 
-        G.add_edge(u.clone(), v.clone(), 1 as f64);
-        G.add_edge(u.clone(), w.clone(), 1 as f64);
-        G.add_edge(v.clone(), w.clone(), 35 as f64);
+        g.add_edge(u.clone(), v.clone(), 1 as f64);
+        g.add_edge(u.clone(), w.clone(), 1 as f64);
+        g.add_edge(v.clone(), w.clone(), 35 as f64);
 
-        assert_eq!(G.get_size(), 3);
+        assert_eq!(g.get_size(), 3);
 
-        G.update_edge(u.clone(), v.clone(), 11 as f64, None, Some(false));
-        G.remove_edge(u.clone(), w.clone(), None, Some(true));
+        g.update_edge(u.clone(), v.clone(), 11 as f64, None, Some(false));
+        g.remove_edge(u.clone(), w.clone(), None, Some(true));
 
-        assert_eq!(G.get_size(), 2);
+        assert_eq!(g.get_size(), 2);
     }
 
     #[test]
     fn test_parallel_edges() {
-        let mut G = Graph::new();
+        let mut g = super::Graph::new();
 
         let u: String = "u".to_string();
         let v: String = "v".to_string();
 
-        let _u_idx = G.add_node(u.clone());
-        let _v_idx = G.add_node(v.clone());
+        let _u_idx = g.add_node(u.clone());
+        let _v_idx = g.add_node(v.clone());
 
-        G.add_edge(u.clone(), v.clone(), 1 as f64);
-        G.add_edge(u.clone(), v.clone(), 2 as f64);
+        g.add_edge(u.clone(), v.clone(), 1 as f64);
+        g.add_edge(u.clone(), v.clone(), 2 as f64);
 
-        assert_eq!(G.get_size(), 2);
+        assert_eq!(g.get_size(), 2);
 
         // update edge
-        G.update_edge(u.clone(), v.clone(), 11 as f64, Some(0), None);
+        g.update_edge(u.clone(), v.clone(), 11 as f64, Some(0), None);
     }
 
     #[test]
     fn test_adj_matrix() {
-        let mut G1 = Graph::new();
+        let mut g1 = super::Graph::new();
 
         // Create a few nodes and edges and add to graph
         let a = "a".to_string();
@@ -793,33 +793,33 @@ mod tests {
 
         let mut a_node = Node::new(a.clone());
         a_node.set_gps(-72.28486, 43.71489, 1.0);
-        let a_idx = G1.add_node_from_struct(a_node);
+        let a_idx = g1.add_node_from_struct(a_node);
 
         let mut b_node = Node::new(b.clone());
         b_node.set_gps(-72.28239, 43.71584, 1.0);
-        let b_idx = G1.add_node_from_struct(b_node);
+        let b_idx = g1.add_node_from_struct(b_node);
 
         let mut c_node = Node::new(c.clone());
         c_node.set_gps(-72.28332, 43.7114, 1.0);
-        let c_idx = G1.add_node_from_struct(c_node);
+        let c_idx = g1.add_node_from_struct(c_node);
 
         let mut d_node = Node::new(d.clone());
         d_node.set_gps(-72.28085, 43.71235, 1.0);
-        let d_idx = G1.add_node_from_struct(d_node);
+        let d_idx = g1.add_node_from_struct(d_node);
 
         let a_b = Edge::new(a_idx, b_idx, 0.51);
-        G1.add_edge_from_struct(a_b);
+        g1.add_edge_from_struct(a_b);
 
         let a_c = Edge::new(a_idx, c_idx, 0.39);
-        G1.add_edge_from_struct(a_c);
+        g1.add_edge_from_struct(a_c);
 
         let b_c = Edge::new(b_idx, c_idx, 0.4);
-        G1.add_edge_from_struct(b_c);
+        g1.add_edge_from_struct(b_c);
 
         let b_d = Edge::new(b_idx, d_idx, 0.6);
-        G1.add_edge_from_struct(b_d);
+        g1.add_edge_from_struct(b_d);
 
-        let (adj_matrix, int_to_node_id, d_adj) = G1.convert_to_adj_matrix();
+        let (adj_matrix, int_to_node_id, d_adj) = g1.convert_to_adj_matrix();
 
         // assert that the adjacency matrix is correct
         assert_eq!(

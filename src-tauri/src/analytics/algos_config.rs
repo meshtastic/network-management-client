@@ -13,7 +13,7 @@ struct Activation {
 }
 
 pub struct Params {
-    pub params: HashMap<String, Box<dyn Any>>,
+    pub params: HashMap<String, Box<dyn Any + Sync + Send>>,
 }
 
 impl Params {
@@ -23,7 +23,7 @@ impl Params {
         }
     }
 
-    pub fn add_param(&mut self, key: String, value: Box<dyn Any>) {
+    pub fn add_param(&mut self, key: String, value: Box<dyn Any + Sync + Send>) {
         self.params.insert(key, value);
     }
 
