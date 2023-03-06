@@ -1,10 +1,13 @@
 import React from "react"; //,  useState, useEffect, useCallback
-import moment from "moment";
 
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
 import { useSelector, useDispatch } from "react-redux";
 import type { Waypoint } from "@bindings/protobufs/Waypoint";
+import {
+  useDeleteWaypoint,
+  useToggleEditWaypoint,
+} from "@components/Waypoints/WaypointUtils";
 
 import {
   XMarkIcon,
@@ -31,24 +34,8 @@ const WaypointMenu = () => {
   const waypointTitle = activeWaypoint?.name;
   const waypointDescription = activeWaypoint?.description;
 
-  const handleClickDelete = () => {
-    console.log("Clicked delete");
-    if (activeWaypoint) {
-      const updatedWaypoint: Waypoint = {
-        ...activeWaypoint,
-        expire: Math.round(moment().valueOf() / 1000) - 1, // Set expiry time to time when deleted
-      };
-      dispatch(requestNewWaypoint({ waypoint: updatedWaypoint, channel: 0 }));
-    } else {
-      console.log("Error: No active waypoint");
-    }
-    dispatch(deviceSliceActions.setActiveWaypoint(null));
-  };
-
-  const handleClickEdit = () => {
-    console.log("Clicked edit");
-    dispatch(deviceSliceActions.setWaypointEdit(true));
-  };
+  const deleteWaypoint = useDeleteWaypoint();
+  const toggleEditWaypoint = useToggleEditWaypoint();
 
   if (!activeWaypoint) {
     return <></>;
@@ -88,7 +75,7 @@ const WaypointMenu = () => {
             <div className="flex justify-start">
               <ClockIcon className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
               <h3 className="text-gray-500 text-base leading-6 font-normal pl-2 mr-2">
-                Pin last edited {`{do we have this}`} ago
+                Pin last edited {`some time`} ago
               </h3>
             </div>
             <button
@@ -112,7 +99,13 @@ const WaypointMenu = () => {
             </div>
             <button
               type="button"
-              onClick={() => void writeValueToClipboard("clacky clacky")}
+              onClick={() =>
+                void writeValueToClipboard(
+                  waypointLat == null || waypointLong == null
+                    ? "No location data"
+                    : "(" + waypointLat + ", " + waypointLong + ")"
+                )
+              }
             >
               <DocumentDuplicateIcon className="w-5 h-5 text-gray-500" />
             </button>
@@ -123,7 +116,7 @@ const WaypointMenu = () => {
         <div className="flex flex-row justify-evenly space-x-8 mt-3 mb-2 ">
           <button
             className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
-            onClick={() => handleClickDelete()}
+            onClick={deleteWaypoint}
           >
             <div className="self-center pr-2 text-gray-500 text-base font-semibold">
               Trash
@@ -133,7 +126,7 @@ const WaypointMenu = () => {
 
           <button
             className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
-            onClick={() => handleClickEdit()}
+            onClick={toggleEditWaypoint}
           >
             <div className="self-center pr-2 text-gray-500 text-base font-semibold">
               Edit

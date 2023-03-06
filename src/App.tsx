@@ -16,7 +16,6 @@ import PluginConfigPage from "@components/pages/config/PluginConfigPage";
 import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
 
 import { AppRoutes } from "@utils/routing";
-import WaypointForm from "@components/Waypoints/WaypointForm"; ///////////////////// get rid of this before commit. for testing
 
 const AppWrapper = () => (
   <>
@@ -72,8 +71,7 @@ const App = () => {
 
           <Route path={AppRoutes.APPLICATION_SETTINGS} element={<Settings />} />
           <Route path="*" element={<FallbackPage />} />
-          <Route path={AppRoutes.EXPORT_APP_DATA} element={<WaypointForm />} />
-          {/* Just for testing, temporary */}
+
         </Route>
       </Routes>
     </div>

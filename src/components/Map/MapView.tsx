@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
+import moment from "moment";
+
 import {
   Layer,
   Map,
@@ -50,18 +52,12 @@ export const MapView = () => {
   const newWaypoint = useSelector(selectIsNewWaypoint());
 
   const handleClick = (e: MapLayerMouseEvent) => {
-    // dispatch(deviceSliceActions.setActiveWaypoint(currWaypoint.id));
-    //
     if (newWaypoint) {
-      const min = 100000;
-      const max = 999999;
-      const rand = min + Math.random() * (max - min);
-
       const createdWaypoint: Waypoint = {
         id: 0,
         latitudeI: Math.round(e.lngLat.lat * 1e7),
         longitudeI: Math.round(e.lngLat.lng * 1e7),
-        expire: 1708116114, // 2024 2/16
+        expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
         lockedTo: 0, // Protobuf need updating
         name: "New Waypoint",
         description: "",

@@ -1,13 +1,14 @@
 import React from "react";
 
+import { useSelector, useDispatch } from "react-redux";
+import { deviceSliceActions } from "@features/device/deviceSlice";
+import { selectIsNewWaypoint } from "@features/device/deviceSelectors";
+
 import {
   MapIconButton,
   MapIconUnimplemented,
 } from "@components/Map/MapIconButton";
 import { MapPinIcon, Square3Stack3DIcon } from "@heroicons/react/24/outline";
-import { useSelector, useDispatch } from "react-redux";
-import { selectIsNewWaypoint } from "@features/device/deviceSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
 
 const MapInteractionPane = () => {
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ const MapInteractionPane = () => {
         <MapPinIcon className="w-6 h-6" />
       </MapIconButton>
 
-      {/* Currently implemented using MapIconUnimplemented, which allows for a popup. */}
+      {/* Currently implemented using MapIconUnimplemented, which allows for an error popup. */}
       {/* When functionality is implemented, change component to MapIconButton. */}
       <MapIconUnimplemented
         className="p-2 text-gray-500 bg-white"

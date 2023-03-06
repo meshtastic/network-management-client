@@ -4,6 +4,9 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 
 import { useSelector, useDispatch } from "react-redux";
 import type { Waypoint } from "@bindings/protobufs/Waypoint";
+import {
+  useToggleEditWaypoint,
+} from "@components/Waypoints/WaypointUtils";
 
 import { requestNewWaypoint } from "@features/device/deviceActions";
 import { Input } from "@material-tailwind/react";
@@ -12,7 +15,7 @@ import { XMarkIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 
 import { selectActiveWaypoint } from "@app/features/device/deviceSelectors";
 
-const WaypointMenu = () => {
+const WaypointMenuEdit = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
   const waypointLat = activeWaypoint?.latitudeI
@@ -26,18 +29,12 @@ const WaypointMenu = () => {
   const [waypointDescription, setWaypointDescription] = useState(
     activeWaypoint?.description
   );
-
-  const handleClick: FormEventHandler = (e) => {
-    console.log("Canceled Edit Waypoint");
-    dispatch(deviceSliceActions.setWaypointEdit(false));
-  };
+  const toggleEditWaypoint = useToggleEditWaypoint();
 
   const handleSubmit: FormEventHandler = (e) => {
-    console.log(
-      (document.getElementById("channel") as HTMLInputElement).value ?? 0
-    );
-
     e.preventDefault();
+    const channelNum = Number((document.getElementById("channel") as HTMLInputElement).value) ?? 0
+
     console.log("Clicked send");
 
     if (activeWaypoint) {
@@ -46,11 +43,13 @@ const WaypointMenu = () => {
         name: waypointTitle ? waypointTitle : "",
         description: waypointDescription ? waypointDescription : "",
       };
-      dispatch(requestNewWaypoint({ waypoint: updatedWaypoint, channel: 0 }));
+      dispatch(requestNewWaypoint({ waypoint: updatedWaypoint, channel: channelNum }));
       dispatch(deviceSliceActions.setWaypointEdit(false));
     } else {
       console.log("Error: No active waypoint");
     }
+    // dispatch(deviceSliceActions.setActiveWaypoint());
+    // if waypoint not already active, make it active
   };
 
   if (!activeWaypoint) {
@@ -142,7 +141,7 @@ const WaypointMenu = () => {
             <button
               className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
               type="button"
-              onClick={handleClick}
+              onClick={toggleEditWaypoint}
             >
               <div className="self-center pr-2 text-gray-500 text-base font-semibold">
                 Cancel
@@ -168,4 +167,4 @@ const WaypointMenu = () => {
   }
 };
 
-export default WaypointMenu;
+export default WaypointMenuEdit;
