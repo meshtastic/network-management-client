@@ -35,7 +35,6 @@ const WaypointMenuEdit = () => {
   const toggleEditWaypoint = useToggleEditWaypoint();
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    console.log("Clicked send");
 
     const channelNum =
       Number((document.getElementById("channel") as HTMLInputElement).value) ??
@@ -52,14 +51,14 @@ const WaypointMenuEdit = () => {
       );
       dispatch(deviceSliceActions.setWaypointEdit(false));
     } else {
-      console.log("Error: No active waypoint");
+      console.warn("Error: No active waypoint");
     }
   };
 
   // Only display if there is a selected waypoint
   if (!activeWaypoint) {
     return <></>;
-  } else {
+  } 
     return (
       <div className="absolute top-24 right-9 bg-white py-3 pr-5 pl-4 rounded-lg drop-shadow-lg w-80">
         <form onSubmit={handleSubmit}>
@@ -168,7 +167,7 @@ const WaypointMenuEdit = () => {
         </form>
       </div>
     );
-  }
+  
 };
 
 export default WaypointMenuEdit;

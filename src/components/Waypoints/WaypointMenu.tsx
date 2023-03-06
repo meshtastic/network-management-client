@@ -38,7 +38,7 @@ const WaypointMenu = () => {
   // Only show if there is an active waypoint
   if (!activeWaypoint) {
     return <></>;
-  } else {
+  } 
     return (
       <div className="absolute top-24 right-9 bg-white pt-5 pr-5 pb-3 pl-4 rounded-lg drop-shadow-lg w-80">
         <div className="flex justify-between">
@@ -79,19 +79,14 @@ const WaypointMenu = () => {
             <div className="flex justify-start">
               <MapPinIcon className="w-5 h-5  mt-0.5" />
               <h3 className="text-base leading-6 font-normal pl-2">
-                {waypointLat == null || waypointLong == null
-                  ? "No location data"
-                  : "(" + waypointLat + ", " + waypointLong + ")"}
+                {waypointLat && waypointLong ? "(" + waypointLat + ", " + waypointLong + ")" : "No location data"}
               </h3>
             </div>
             <button
               type="button"
               onClick={() =>
                 void writeValueToClipboard(
-                  waypointLat == null || waypointLong == null
-                    ? "No location data"
-                    : "(" + waypointLat + ", " + waypointLong + ")"
-                )
+                  waypointLat && waypointLong ? "(" + waypointLat + ", " + waypointLong + ")" : "No location data")
               }
             >
               <DocumentDuplicateIcon className="w-5 h-5" />
@@ -120,7 +115,7 @@ const WaypointMenu = () => {
         </div>
       </div>
     );
-  }
+
 };
 
 export default WaypointMenu;

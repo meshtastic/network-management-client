@@ -2,7 +2,7 @@ use super::super::serial_connection::{MeshConnection, PacketDestination, SerialC
 
 use super::helpers::{generate_rand_id, get_current_time_u32};
 use super::MeshDevice;
-use app::protobufs::{self, Waypoint};
+use app::protobufs;
 use prost::Message;
 
 

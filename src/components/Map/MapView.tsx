@@ -57,10 +57,10 @@ export const MapView = () => {
         latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
         longitudeI: Math.round(e.lngLat.lng * 1e7),
         expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
-        lockedTo: 0, // Locked to me
+        lockedTo: 0, // Public
         name: "New Waypoint",
         description: "",
-        icon: 128529, // (-_-) emoji; placeholder
+        icon: 128205, // Round pushpin emoji
       };
 
       // Request a new waypoint and disallow newWaypoint
@@ -152,8 +152,7 @@ export const MapView = () => {
         {waypoints
           .filter(
             (n) =>
-              (!!n.latitudeI && !!n.longitudeI) || // Shows pins with valid latitudes
-              (n.latitudeI == 0 && n.latitudeI == 0) // Allows for pins at (0, 0)
+              (!!n.latitudeI && !!n.longitudeI) // Shows pins with valid latitudes
           )
           .map((eachWaypoint) => (
             <Waypoints key={eachWaypoint.id} currWaypoint={eachWaypoint} />

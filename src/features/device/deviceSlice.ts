@@ -9,8 +9,8 @@ export interface IDeviceState {
   availableSerialPorts: string[] | null;
   activeSerialPort: string | null;
   activeWaypoint: Waypoint["id"] | null;
-  waypointEdit: true | false; // Controls if the waypoint edit menu, or the normal menu shows up on map
-  newWaypoint: true | false; // If true, we can create new waypoints from the map
+  waypointEdit: boolean; // Controls if the waypoint edit menu, or the normal menu shows up on map
+  newWaypoint: boolean; // If true, we can create new waypoints from the map
 }
 
 export const initialDeviceState: IDeviceState = {

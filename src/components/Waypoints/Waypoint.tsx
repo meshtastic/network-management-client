@@ -23,7 +23,6 @@ const Waypoints = ({ currWaypoint }: IWaypoints) => {
   const expired = currWaypoint.expire < moment().valueOf() / 1000; // Boolean
 
   const handleClick = () => {
-    console.log();
     if (!isSelected) {
       dispatch(deviceSliceActions.setActiveWaypoint(currWaypoint.id));
     } else {
