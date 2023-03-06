@@ -10,7 +10,7 @@ export interface IDeviceState {
   activeSerialPort: string | null;
   activeWaypoint: Waypoint["id"] | null;
   waypointEdit: boolean; // Controls if the waypoint edit menu, or the normal menu shows up on map
-  newWaypoint: boolean; // If true, we can create new waypoints from the map
+  allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
 }
 
 export const initialDeviceState: IDeviceState = {
@@ -20,7 +20,7 @@ export const initialDeviceState: IDeviceState = {
   activeSerialPort: null,
   activeWaypoint: null,
   waypointEdit: false,
-  newWaypoint: false,
+  allowOnMapWaypointCreation: false,
 };
 
 export const deviceSlice = createSlice({
@@ -70,8 +70,8 @@ export const deviceSlice = createSlice({
       state.waypointEdit = action.payload;
     },
 
-    setNewWaypoint: (state, action: PayloadAction<boolean>) => {
-      state.newWaypoint = action.payload;
+    setAllowOnMapWaypointCreation: (state, action: PayloadAction<boolean>) => {
+      state.allowOnMapWaypointCreation = action.payload;
     },
   },
 });

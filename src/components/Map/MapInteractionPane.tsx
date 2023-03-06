@@ -2,7 +2,7 @@ import React from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectIsNewWaypoint } from "@features/device/deviceSelectors";
+import { selectAllowOnMapWaypointCreation } from "@features/device/deviceSelectors";
 
 import {
   MapIconButton,
@@ -13,11 +13,11 @@ import { MapPinIcon, Square3Stack3DIcon } from "@heroicons/react/24/outline";
 const MapInteractionPane = () => {
   const dispatch = useDispatch();
 
-  const newWaypoint = useSelector(selectIsNewWaypoint());
+  const newWaypoint = useSelector(selectAllowOnMapWaypointCreation());
 
   // Toggles newWaypoint state, which allows for creation of new waypoints on map
   const handleClickMapPin = () => {
-    dispatch(deviceSliceActions.setNewWaypoint(!newWaypoint));
+    dispatch(deviceSliceActions.setAllowOnMapWaypointCreation(!newWaypoint));
   };
 
   return (

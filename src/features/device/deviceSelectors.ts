@@ -112,5 +112,5 @@ export const selectIsWaypointEdit = () => (state: RootState) =>
   state.devices.waypointEdit;
 
 // Returns boolean for newWaypoint(boolean)
-export const selectIsNewWaypoint = () => (state: RootState) =>
-  state.devices.newWaypoint;
+export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
+  state.devices.allowOnMapWaypointCreation;

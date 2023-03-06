@@ -1,7 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Marker } from "react-map-gl";
-import moment from "moment";
 
 import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
@@ -20,14 +19,14 @@ const Waypoints = ({ currWaypoint }: IWaypoints) => {
   const activeWaypointID = useSelector(selectActiveWaypointID());
   const isSelected = currWaypoint.id === activeWaypointID;
 
-  const expired = currWaypoint.expire < moment().valueOf() / 1000; // Boolean
+  const expired = currWaypoint.expire < Date.now() / 1000; // Boolean
 
+  // Set current waypoint ID as active if it's not already;
+  // Otherwise turn off active if it is already active.
   const handleClick = () => {
-    if (!isSelected) {
-      dispatch(deviceSliceActions.setActiveWaypoint(currWaypoint.id));
-    } else {
-      dispatch(deviceSliceActions.setActiveWaypoint(null));
-    }
+    dispatch(
+      deviceSliceActions.setActiveWaypoint(!isSelected ? currWaypoint.id : null)
+    );
   };
 
   return (

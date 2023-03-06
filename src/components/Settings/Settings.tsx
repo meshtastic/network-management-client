@@ -127,8 +127,8 @@ const Settings = () => {
                 className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
                 type="text"
                 size="lg"
-                label="3 character nickname for small screens."
-                maxLength={3}
+                label="4 character nickname for small screens."
+                maxLength={4}
                 minLength={1}
                 value={deviceNickname}
                 onChange={(e) => setDeviceNickname(e.target.value)}

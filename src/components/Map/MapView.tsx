@@ -31,7 +31,7 @@ import {
   selectAllNodes,
   selectAllWaypoints,
   selectIsWaypointEdit,
-  selectIsNewWaypoint,
+  selectAllowOnMapWaypointCreation,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -47,7 +47,7 @@ export const MapView = () => {
 
   const waypoints = useSelector(selectAllWaypoints());
   const isWaypointEdit = useSelector(selectIsWaypointEdit());
-  const newWaypoint = useSelector(selectIsNewWaypoint());
+  const newWaypoint = useSelector(selectAllowOnMapWaypointCreation());
 
   const handleClick = (e: MapLayerMouseEvent) => {
     // Can only create new waypoint if the state is toggled
@@ -60,12 +60,12 @@ export const MapView = () => {
         lockedTo: 0, // Public
         name: "New Waypoint",
         description: "",
-        icon: 128205, // Round pushpin emoji
+        icon: 0, // Default
       };
 
       // Request a new waypoint and disallow newWaypoint
       dispatch(requestNewWaypoint({ waypoint: createdWaypoint, channel: 0 }));
-      dispatch(deviceSliceActions.setNewWaypoint(false));
+      dispatch(deviceSliceActions.setAllowOnMapWaypointCreation(false));
     }
   };
 
@@ -151,8 +151,7 @@ export const MapView = () => {
         {/* Visualize all waypoints */}
         {waypoints
           .filter(
-            (n) =>
-              (!!n.latitudeI && !!n.longitudeI) // Shows pins with valid latitudes
+            (n) => !!n.latitudeI && !!n.longitudeI // Shows pins with valid latitudes
           )
           .map((eachWaypoint) => (
             <Waypoints key={eachWaypoint.id} currWaypoint={eachWaypoint} />
