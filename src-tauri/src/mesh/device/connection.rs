@@ -158,7 +158,6 @@ impl MeshDevice {
             id: generate_rand_id(),
             want_ack,
             channel,
-            last_sent_by_id: own_node_id,
         };
 
         if echo_response {
