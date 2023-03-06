@@ -16,8 +16,8 @@ export interface IWaypointProps {
 const WaypointIcon = ({ isSelected, expired }: IWaypointProps) => {
   return (
     <img
-      className={""}
-      src={expired ? "" : isSelected ? BaseIcon : ErrorNodeIcon}
+      className={"drop-shadow-lg"}
+      src={expired ? "" : isSelected ? SelectedWaypoint : DefaultWaypoint}
     />
   );
 };

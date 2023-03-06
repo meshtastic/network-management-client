@@ -18,12 +18,17 @@ interface IWaypoints {
 const Waypoints = ({ currWaypoint }: IWaypoints) => {
   const dispatch = useDispatch();
   const activeWaypointID = useSelector(selectActiveWaypointID());
+  const isSelected = currWaypoint.id === activeWaypointID;
 
   const expired = currWaypoint.expire < moment().valueOf() / 1000; // Boolean
 
   const handleClick = () => {
     console.log();
-    dispatch(deviceSliceActions.setActiveWaypoint(currWaypoint.id));
+    if (!isSelected) {
+      dispatch(deviceSliceActions.setActiveWaypoint(currWaypoint.id));
+    } else {
+      dispatch(deviceSliceActions.setActiveWaypoint(null));
+    }
   };
 
   return (
@@ -34,10 +39,7 @@ const Waypoints = ({ currWaypoint }: IWaypoints) => {
         anchor="center"
         onClick={handleClick}
       >
-        <WaypointIcon
-          isSelected={currWaypoint.id === activeWaypointID}
-          expired={expired}
-        ></WaypointIcon>
+        <WaypointIcon isSelected={isSelected} expired={expired}></WaypointIcon>
       </Marker>
     </div>
   );

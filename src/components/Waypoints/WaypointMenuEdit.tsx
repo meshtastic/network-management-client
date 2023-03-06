@@ -63,9 +63,8 @@ const WaypointMenuEdit = () => {
     return (
       <div className="absolute top-24 right-9 bg-white py-3 pr-5 pl-4 rounded-lg drop-shadow-lg w-80">
         <form onSubmit={handleSubmit}>
-
           {/* Title, X-button */}
-          <div className="flex justify-between">            
+          <div className="flex justify-between">
             <h4 className="text-gray-500 text-base leading-6 font-semibold pt-2 ">
               Title
             </h4>
@@ -108,7 +107,6 @@ const WaypointMenuEdit = () => {
             />
           </h3>
 
-          
           <h4 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
             Location
           </h4>
@@ -125,7 +123,6 @@ const WaypointMenuEdit = () => {
 
             <hr className="my-2" />
           </div>
-
 
           <h4 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
             Channel
@@ -146,7 +143,6 @@ const WaypointMenuEdit = () => {
             Confirm
           </h4>
           <div className="flex flex-row justify-evenly space-x-8 mt-1 mb-2 ">
-
             <button
               className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
               type="button"
@@ -168,7 +164,6 @@ const WaypointMenuEdit = () => {
               </div>
               <PaperAirplaneIcon className="self-center text-gray-500 w-10 my-2 p-1" />
             </button>
-            
           </div>
         </form>
       </div>
