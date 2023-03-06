@@ -75,14 +75,13 @@ export const selectDeviceChannels =
   (state: RootState): MeshChannel[] =>
     Object.values(selectDevice()(state)?.channels ?? []);
 
-///////////////////////////////////////////
 // Returns list of all waypoints on connected node
 export const selectAllWaypoints =
   () =>
   (state: RootState): Waypoint[] =>
     Object.values(state.devices.device?.waypoints ?? []);
 
-// Returns single waypoint object after being given ID
+// Returns single waypoint object given ID
 export const selectWaypointByID =
   (id: number) =>
   (state: RootState): Waypoint | null => {
@@ -112,6 +111,6 @@ export const selectActiveWaypoint =
 export const selectIsWaypointEdit = () => (state: RootState) =>
   state.devices.waypointEdit;
 
-// Returns boolean for newWaypoint, i.e. boolean controlling whether clicking will make a new waypoint
+// Returns boolean for newWaypoint(boolean)
 export const selectIsNewWaypoint = () => (state: RootState) =>
   state.devices.newWaypoint;

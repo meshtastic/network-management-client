@@ -1,13 +1,5 @@
 import React from "react"; //,  useState, useEffect, useCallback
-
-import { deviceSliceActions } from "@features/device/deviceSlice";
-
 import { useSelector, useDispatch } from "react-redux";
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
-import {
-  useDeleteWaypoint,
-  useToggleEditWaypoint,
-} from "@components/Waypoints/WaypointUtils";
 
 import {
   XMarkIcon,
@@ -17,38 +9,54 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import { requestNewWaypoint } from "@features/device/deviceActions";
 
-import { selectActiveWaypoint } from "@app/features/device/deviceSelectors";
+import {
+  useDeleteWaypoint,
+  useToggleEditWaypoint,
+} from "@components/Waypoints/WaypointUtils";
 import { writeValueToClipboard } from "@utils/clipboard";
+import { selectActiveWaypoint } from "@app/features/device/deviceSelectors";
+import { deviceSliceActions } from "@features/device/deviceSlice";
+
+// This file contains the WaypointMenu component when it is not being edited
+// It is called in MapView.tsx
 
 const WaypointMenu = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
-  const waypointLat = activeWaypoint?.latitudeI
-    ? (activeWaypoint.latitudeI / 1e7).toString()
-    : null;
+
+  // Waypoint information
+  const waypointTitle = activeWaypoint?.name;
+  const waypointDescription = activeWaypoint?.description;
   const waypointLong = activeWaypoint?.longitudeI
     ? (activeWaypoint.longitudeI / 1e7).toString()
     : null;
-  const waypointTitle = activeWaypoint?.name;
-  const waypointDescription = activeWaypoint?.description;
+  const waypointLat = activeWaypoint?.latitudeI
+    ? (activeWaypoint.latitudeI / 1e7).toString()
+    : null;
 
+  const waypointTime = "some time";
+
+  // Waypoint Utils, used when the buttons at bottom are clicked
   const deleteWaypoint = useDeleteWaypoint();
   const toggleEditWaypoint = useToggleEditWaypoint();
 
+  // Only show if there is an active waypoint
   if (!activeWaypoint) {
     return <></>;
   } else {
     return (
       <div className="absolute top-24 right-9 bg-white pt-5 pr-5 pb-3 pl-4 rounded-lg drop-shadow-lg w-80">
         <div className="flex justify-between">
+          {/* Title */}
           <h1 className="text-gray-600 text-2xl leading-5 font-semibold ">
             {/* If waypoint has no title / empty string for a title*/}
             {!waypointTitle || waypointTitle?.length == 0
               ? "No Title"
               : waypointTitle}
           </h1>
+
+          {/* X-button */}
           <button
             type="button"
             onClick={() => dispatch(deviceSliceActions.setActiveWaypoint(null))}
@@ -57,41 +65,42 @@ const WaypointMenu = () => {
           </button>
         </div>
 
-        <h4 className="text-gray-500 text-base leading-6 font-semibold pt-2">
-          Description
-        </h4>
-        <h3 className="text-gray-500 text-base leading-5 font-normal py-1">
-          {!waypointDescription || waypointDescription?.length == 0
-            ? "No Description"
-            : waypointDescription}
-        </h3>
+        {/* Description */}
+        <div className="text-gray-500 text-base">
+          <h4 className="leading-6 font-semibold pt-2">Description</h4>
+          <h3 className="leading-5 font-normal py-1">
+            {!waypointDescription || waypointDescription?.length == 0
+              ? "No Description"
+              : waypointDescription}
+          </h3>
+        </div>
 
+        {/* Details */}
         <h4 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
           Details
         </h4>
-
         <div className="flex flex-col">
-          <div className="flex justify-between pb-1">
+          {/* Edited timestamp */}
+          <div className="flex justify-between pb-1 text-gray-500">
             <div className="flex justify-start">
-              <ClockIcon className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
-              <h3 className="text-gray-500 text-base leading-6 font-normal pl-2 mr-2">
-                Pin last edited {`some time`} ago
+              <ClockIcon className="w-5 h-5  mt-0.5 shrink-0" />
+              <h3 className="text-base leading-6 font-normal pl-2 mr-2">
+                Pin last edited {waypointTime} ago
               </h3>
             </div>
             <button
               type="button"
-              onClick={() =>
-                void writeValueToClipboard("Time clipboard :) clicky clicky")
-              }
+              onClick={() => void writeValueToClipboard(waypointTime)}
             >
-              <DocumentDuplicateIcon className="w-5 h-5 float-right text-gray-500" />
+              <DocumentDuplicateIcon className="w-5 h-5 float-right" />
             </button>
           </div>
 
-          <div className="flex justify-between pb-1">
+          {/* Location data */}
+          <div className="flex justify-between pb-1 text-gray-500">
             <div className="flex justify-start">
-              <MapPinIcon className="w-5 h-5 text-gray-500 mt-0.5" />
-              <h3 className="text-gray-500 text-base leading-6 font-normal pl-2">
+              <MapPinIcon className="w-5 h-5  mt-0.5" />
+              <h3 className="text-base leading-6 font-normal pl-2">
                 {waypointLat == null || waypointLong == null
                   ? "No location data"
                   : "(" + waypointLat + ", " + waypointLong + ")"}
@@ -107,31 +116,28 @@ const WaypointMenu = () => {
                 )
               }
             >
-              <DocumentDuplicateIcon className="w-5 h-5 text-gray-500" />
+              <DocumentDuplicateIcon className="w-5 h-5" />
             </button>
           </div>
           <hr className="my-2" />
         </div>
 
-        <div className="flex flex-row justify-evenly space-x-8 mt-3 mb-2 ">
+        {/* Delete / Edit */}
+        <div className="flex flex-row justify-evenly space-x-8 mt-3 mb-2 text-gray-500 text-base font-semibold">
           <button
             className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
             onClick={deleteWaypoint}
           >
-            <div className="self-center pr-2 text-gray-500 text-base font-semibold">
-              Trash
-            </div>
-            <TrashIcon className="self-center text-gray-500 w-10 my-2 p-1" />
+            <div className="self-center pr-2">Trash</div>
+            <TrashIcon className="self-center w-10 my-2 p-1" />
           </button>
 
           <button
             className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
             onClick={toggleEditWaypoint}
           >
-            <div className="self-center pr-2 text-gray-500 text-base font-semibold">
-              Edit
-            </div>
-            <PencilSquareIcon className="self-center text-gray-500 w-10 my-2 p-1" />
+            <div className="self-center pr-2">Edit</div>
+            <PencilSquareIcon className="self-center w-10 my-2 p-1" />
           </button>
         </div>
       </div>

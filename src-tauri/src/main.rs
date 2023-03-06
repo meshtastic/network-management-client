@@ -297,7 +297,6 @@ async fn send_waypoint(
     let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
 
-
     let connection = serial_guard
         .as_mut()
         .ok_or("Connection not initialized")

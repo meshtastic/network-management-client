@@ -43,6 +43,7 @@ impl MeshDevice {
     ) -> Result<(), String> {
         let mut new_waypoint = waypoint;
 
+        // Waypoint with ID of zero denotes a new waypoint; check whether to generate its ID on backend.
         if new_waypoint.id == 0 {
             new_waypoint.id = generate_rand_id();
         } 

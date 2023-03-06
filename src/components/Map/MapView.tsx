@@ -31,7 +31,6 @@ import {
   selectAllNodes,
   selectAllWaypoints,
   selectIsWaypointEdit,
-  selectActiveWaypoint,
   selectIsNewWaypoint,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
@@ -48,25 +47,24 @@ export const MapView = () => {
 
   const waypoints = useSelector(selectAllWaypoints());
   const isWaypointEdit = useSelector(selectIsWaypointEdit());
-  const activeWaypoint = useSelector(selectActiveWaypoint());
   const newWaypoint = useSelector(selectIsNewWaypoint());
 
   const handleClick = (e: MapLayerMouseEvent) => {
+    // Can only create new waypoint if the state is toggled
     if (newWaypoint) {
       const createdWaypoint: Waypoint = {
         id: 0,
-        latitudeI: Math.round(e.lngLat.lat * 1e7),
+        latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
         longitudeI: Math.round(e.lngLat.lng * 1e7),
         expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
-        lockedTo: 0, // Protobuf need updating
+        lockedTo: 0, // Locked to me
         name: "New Waypoint",
         description: "",
-        icon: 128529, // -_- emoji
+        icon: 128529, // (-_-) emoji; placeholder
       };
 
+      // Request a new waypoint and disallow newWaypoint
       dispatch(requestNewWaypoint({ waypoint: createdWaypoint, channel: 0 }));
-      dispatch(deviceSliceActions.setActiveWaypoint(createdWaypoint.id));
-      dispatch(deviceSliceActions.setWaypointEdit(true));
       dispatch(deviceSliceActions.setNewWaypoint(false));
     }
   };

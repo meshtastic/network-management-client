@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
-import WaypointIcon from "@app/components/Waypoints/WaypointIcon";
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
-
 import { Marker } from "react-map-gl";
+import moment from "moment";
+
+import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectActiveWaypointID } from "@features/device/deviceSelectors";
-import moment from "moment";
 
+import WaypointIcon from "@app/components/Waypoints/WaypointIcon";
+
+// This component returns a marker for each individual waypoint. It is called from MapView.tsx
 interface IWaypoints {
   currWaypoint: Waypoint;
 }
@@ -17,7 +18,8 @@ interface IWaypoints {
 const Waypoints = ({ currWaypoint }: IWaypoints) => {
   const dispatch = useDispatch();
   const activeWaypointID = useSelector(selectActiveWaypointID());
-  const expired = currWaypoint.expire < moment().valueOf() / 1000;
+
+  const expired = currWaypoint.expire < moment().valueOf() / 1000; // Boolean
 
   const handleClick = () => {
     console.log();

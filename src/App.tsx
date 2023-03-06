@@ -71,7 +71,6 @@ const App = () => {
 
           <Route path={AppRoutes.APPLICATION_SETTINGS} element={<Settings />} />
           <Route path="*" element={<FallbackPage />} />
-
         </Route>
       </Routes>
     </div>

@@ -1,37 +1,19 @@
 import React from "react"; // { useState , FormEventHandler },
-
-import { deviceSliceActions } from "@features/device/deviceSlice";
-
 import { useSelector, useDispatch } from "react-redux";
+import moment from "moment";
+
 import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 import { requestNewWaypoint } from "@features/device/deviceActions";
-import { Input } from "@material-tailwind/react";
-
-import {
-  XMarkIcon,
-  PaperAirplaneIcon,
-  DocumentDuplicateIcon,
-  MapPinIcon,
-  ClockIcon,
-  PencilSquareIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
-
+import { deviceSliceActions } from "@features/device/deviceSlice";
 import {
   selectActiveWaypoint,
   selectIsWaypointEdit,
 } from "@app/features/device/deviceSelectors";
-import moment from "moment";
 
-import { writeValueToClipboard } from "@utils/clipboard";
+// This file contains utils for: Delete waypoint and Toggle editWaypoint
 
-// const [waypointTitle, setWaypointTitle] = useState(activeWaypoint?.name);
-// const [waypointDescription, setWaypointDescription] = useState(
-//   activeWaypoint?.description
-// );
-
-// Done
+// Delete waypoint
 const useDeleteWaypoint = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
@@ -57,7 +39,7 @@ const useDeleteWaypoint = () => {
   };
 };
 
-// Done
+// Toggles state of editWaypoint
 const useToggleEditWaypoint = () => {
   const dispatch = useDispatch();
   const isWaypointEdit = useSelector(selectIsWaypointEdit());
@@ -66,8 +48,6 @@ const useToggleEditWaypoint = () => {
   };
 };
 
-
-// Todo
-// const useSendWaypoint = (waypoint: Waypoint) => {}
+// TODO: const useSendWaypoint = (waypoint: Waypoint) => {}
 
 export { useDeleteWaypoint, useToggleEditWaypoint };
