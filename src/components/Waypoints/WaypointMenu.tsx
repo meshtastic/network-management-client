@@ -34,7 +34,7 @@ const WaypointMenu = () => {
     if (activeWaypoint) {
       const updatedWaypoint: Waypoint = {
         ...activeWaypoint,
-        expire:0 // Set expiry time to 1970
+        expire: 1, // Set expiry time to 1970
       };
       dispatch(requestNewWaypoint({ waypoint: updatedWaypoint, channel: 0 }));
     } else {
@@ -44,7 +44,7 @@ const WaypointMenu = () => {
   };
 
   const handleClickEdit = () => {
-    console.log("Clicked eedit");
+    console.log("Clicked edit");
     dispatch(deviceSliceActions.setWaypointEdit(true));
   };
 

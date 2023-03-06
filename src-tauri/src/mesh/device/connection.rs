@@ -2,8 +2,9 @@ use super::super::serial_connection::{MeshConnection, PacketDestination, SerialC
 
 use super::helpers::{generate_rand_id, get_current_time_u32};
 use super::MeshDevice;
-use app::protobufs;
+use app::protobufs::{self, Waypoint};
 use prost::Message;
+
 
 impl MeshDevice {
     pub fn send_text(
@@ -40,7 +41,12 @@ impl MeshDevice {
         want_ack: bool,
         channel: u32,
     ) -> Result<(), String> {
-        let byte_data = waypoint.encode_to_vec();
+        let mut new_waypoint = waypoint;
+
+        if new_waypoint.id == 0 {
+            new_waypoint.id = generate_rand_id();
+        } 
+        let byte_data = new_waypoint.encode_to_vec();
 
         self.send_packet(
             connection,

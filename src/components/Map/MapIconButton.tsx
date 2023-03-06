@@ -57,7 +57,7 @@ const MapIconButton = ({
     <button
       type={type}
       onClick={onClick}
-      className={`${className} default-overlay`}
+      className={`${className} rounded-lg border border-gray-200 shadow-lg bg-white`} 
     >
       {children}
     </button>

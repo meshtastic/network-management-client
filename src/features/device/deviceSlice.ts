@@ -10,6 +10,7 @@ export interface IDeviceState {
   activeSerialPort: string | null;
   activeWaypoint: Waypoint["id"] | null;
   waypointEdit: true | false;
+  newWaypoint: true | false;
 }
 
 export const initialDeviceState: IDeviceState = {
@@ -19,6 +20,7 @@ export const initialDeviceState: IDeviceState = {
   activeSerialPort: null,
   activeWaypoint: null,
   waypointEdit: false,
+  newWaypoint: false,
 };
 
 export const deviceSlice = createSlice({
@@ -60,6 +62,10 @@ export const deviceSlice = createSlice({
     },
     setWaypointEdit: (state, action: PayloadAction<boolean>) => {
       state.waypointEdit = action.payload;
+    },
+    
+    setNewWaypoint: (state, action: PayloadAction<boolean>) => {
+      state.newWaypoint = action.payload;
     },
   },
 });
