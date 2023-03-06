@@ -19,7 +19,7 @@ import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
-import Waypoints from "@components/Waypoints/Waypoints";
+import Waypoints from "@app/components/Waypoints/Waypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
 

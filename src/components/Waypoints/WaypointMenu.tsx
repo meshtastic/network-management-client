@@ -5,15 +5,11 @@ import {
   XMarkIcon,
   DocumentDuplicateIcon,
   MapPinIcon,
-  ClockIcon,
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
-import {
-  useDeleteWaypoint,
-  useToggleEditWaypoint,
-} from "@components/Waypoints/WaypointUtils";
+import { useDeleteWaypoint, useToggleEditWaypoint } from "@app/utils/waypoint";
 import { writeValueToClipboard } from "@utils/clipboard";
 import { selectActiveWaypoint } from "@app/features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
@@ -34,8 +30,6 @@ const WaypointMenu = () => {
   const waypointLat = activeWaypoint?.latitudeI
     ? (activeWaypoint.latitudeI / 1e7).toString()
     : null;
-
-  const waypointTime = "some time";
 
   // Waypoint Utils, used when the buttons at bottom are clicked
   const deleteWaypoint = useDeleteWaypoint();
@@ -80,22 +74,6 @@ const WaypointMenu = () => {
           Details
         </h4>
         <div className="flex flex-col">
-          {/* Edited timestamp */}
-          <div className="flex justify-between pb-1 text-gray-500">
-            <div className="flex justify-start">
-              <ClockIcon className="w-5 h-5  mt-0.5 shrink-0" />
-              <h3 className="text-base leading-6 font-normal pl-2 mr-2">
-                Pin last edited {waypointTime} ago
-              </h3>
-            </div>
-            <button
-              type="button"
-              onClick={() => void writeValueToClipboard(waypointTime)}
-            >
-              <DocumentDuplicateIcon className="w-5 h-5 float-right" />
-            </button>
-          </div>
-
           {/* Location data */}
           <div className="flex justify-between pb-1 text-gray-500">
             <div className="flex justify-start">

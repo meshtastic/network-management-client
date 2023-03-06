@@ -10,7 +10,7 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestNewWaypoint } from "@features/device/deviceActions";
 import { selectActiveWaypoint } from "@app/features/device/deviceSelectors";
 
-import { useToggleEditWaypoint } from "@components/Waypoints/WaypointUtils";
+import { useToggleEditWaypoint } from "@app/utils/waypoint";
 
 // This component contains the Waypoint Menu when it is not being edited
 // It is called in MapView.tsx

@@ -4,12 +4,12 @@ import moment from "moment";
 
 import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
-import { requestNewWaypoint } from "@features/device/deviceActions";
-import { deviceSliceActions } from "@features/device/deviceSlice";
 import {
   selectActiveWaypoint,
   selectIsWaypointEdit,
-} from "@app/features/device/deviceSelectors";
+} from "@features/device/deviceSelectors";
+import { requestNewWaypoint } from "@features/device/deviceActions";
+import { deviceSliceActions } from "@features/device/deviceSlice";
 
 // This file contains utils for: Delete waypoint and Toggle editWaypoint
 
