@@ -7,15 +7,15 @@ import DefaultWaypoint from "@app/assets/waypoints/waypoint_default.svg";
 
 export interface IWaypointProps {
   isSelected: boolean;
-  expired: boolean
+  expired: boolean;
 }
 
-
-const WaypointIcon = ({
-  isSelected,
-  expired,
-}: IWaypointProps) => {
-  return <img className={""} src={expired ? "" : isSelected ? BaseIcon : ErrorNodeIcon} />;
+const WaypointIcon = ({ isSelected, expired }: IWaypointProps) => {
+  return (
+    <img
+      className={""}
+      src={expired ? "" : isSelected ? BaseIcon : ErrorNodeIcon}
+    />
+  );
 };
 export default WaypointIcon;
-

@@ -6,7 +6,6 @@ import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 import { Marker } from "react-map-gl";
 
-
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectActiveWaypointID } from "@features/device/deviceSelectors";
 import moment from "moment";
@@ -18,11 +17,10 @@ interface IWaypoints {
 const Waypoints = ({ currWaypoint }: IWaypoints) => {
   const dispatch = useDispatch();
   const activeWaypointID = useSelector(selectActiveWaypointID());
-  const expired = (currWaypoint.expire < moment().valueOf()/1000);
-
+  const expired = currWaypoint.expire < moment().valueOf() / 1000;
 
   const handleClick = () => {
-    console.log()
+    console.log();
     dispatch(deviceSliceActions.setActiveWaypoint(currWaypoint.id));
   };
 

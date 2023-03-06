@@ -1,4 +1,6 @@
 import React from "react"; //,  useState, useEffect, useCallback
+import moment from "moment";
+
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -34,7 +36,7 @@ const WaypointMenu = () => {
     if (activeWaypoint) {
       const updatedWaypoint: Waypoint = {
         ...activeWaypoint,
-        expire: 1, // Set expiry time to 1970
+        expire: Math.round(moment().valueOf() / 1000) - 1, // Set expiry time to time when deleted
       };
       dispatch(requestNewWaypoint({ waypoint: updatedWaypoint, channel: 0 }));
     } else {

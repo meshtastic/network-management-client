@@ -80,7 +80,7 @@ export const selectDeviceChannels =
 export const selectAllWaypoints =
   () =>
   (state: RootState): Waypoint[] =>
-    Object.values(state.devices.device?.waypoints ?? []); 
+    Object.values(state.devices.device?.waypoints ?? []);
 
 // Returns single waypoint object after being given ID
 export const selectWaypointByID =
@@ -94,7 +94,7 @@ export const selectWaypointByID =
 
 // Get ID of the active waypoint
 export const selectActiveWaypointID = () => (state: RootState) =>
-  state.devices.activeWaypoint; 
+  state.devices.activeWaypoint;
 
 // Get actual Waypoint object that's active
 export const selectActiveWaypoint =
@@ -111,7 +111,7 @@ export const selectActiveWaypoint =
 // Are we currently in the waypoint edit state
 export const selectIsWaypointEdit = () => (state: RootState) =>
   state.devices.waypointEdit;
-  
+
 // Returns boolean for newWaypoint, i.e. boolean controlling whether clicking will make a new waypoint
 export const selectIsNewWaypoint = () => (state: RootState) =>
   state.devices.newWaypoint;

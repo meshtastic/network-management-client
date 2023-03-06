@@ -63,7 +63,7 @@ export const deviceSlice = createSlice({
     setWaypointEdit: (state, action: PayloadAction<boolean>) => {
       state.waypointEdit = action.payload;
     },
-    
+
     setNewWaypoint: (state, action: PayloadAction<boolean>) => {
       state.newWaypoint = action.payload;
     },
