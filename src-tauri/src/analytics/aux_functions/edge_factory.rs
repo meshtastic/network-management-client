@@ -75,7 +75,7 @@ pub fn edge_factory(
 }
 
 pub fn scale_distance(distance: f64) -> f64 {
-    return 1.0 / (1.0 + distance).ln();
+    return 1.0 / (1.0 + distance + 2.0).ln();
 }
 
 pub fn normalize_weight(
