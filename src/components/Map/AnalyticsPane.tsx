@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -8,30 +8,36 @@ import MincutEdges from "@components/Map/algorithms/MinCutEdges";
 import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation";
 
 import { requestRunAllAlgorithms } from "@features/algorithms/algorithmsActions";
+import { selectAlgorithmsResults } from "@features/algorithms/algorithmsSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
 const AnalyticsPane = () => {
   const dispatch = useDispatch();
+  const { apResult, mincutResult } = useSelector(selectAlgorithmsResults());
 
   const handleClosePane = () => {
     dispatch(deviceSliceActions.setShowAlgosAccordion(false));
   };
 
-  // create a list of nodes that are articulation points
-  const articulationPoints = ["f578", "f572", "f574"];
-  const mincutEdges = [
-    ["f578", "f572"],
-    ["f572", "f574"],
-    ["f574", "f578"],
-  ];
   const diffcen = new Map();
 
-  const [isAPSet, setAP] = useState(false);
-  const [isMCESet, setMCE] = useState(false);
-  const [isDiffusionSet, setDiffusion] = useState(false);
+  const [isAPActive, setAPActive] = useState(false);
+  const [isMCEActive, setMCEActive] = useState(false);
+  const [isDiffusionActive, setDiffusionActive] = useState(false);
 
   const requestRunAlgorithms = () => {
-    dispatch(requestRunAllAlgorithms({ bitfield: 0b000011 }));
+    let bitfield = 0b0;
+
+    if (isAPActive) bitfield |= 0b1;
+    if (isMCEActive) bitfield |= 0b10;
+    if (isDiffusionActive) bitfield |= 0b100;
+
+    if (!bitfield) {
+      console.warn("No algorithms selected, not running...");
+      return;
+    }
+
+    dispatch(requestRunAllAlgorithms({ bitfield }));
   };
 
   return (
@@ -84,11 +90,15 @@ const AnalyticsPane = () => {
           }
         >
           <div className="py-[15px] px-5">
-            <ArticulationPoints
-              articulationPoints={articulationPoints}
-              isAPSet={isAPSet}
-              setAP={setAP}
-            />
+            {apResult ? (
+              <ArticulationPoints
+                articulationPoints={apResult}
+                isAPSet={isAPActive}
+                setAP={setAPActive}
+              />
+            ) : (
+              "No results"
+            )}
           </div>
         </Accordion.Content>
       </Accordion.Item>
@@ -120,11 +130,15 @@ const AnalyticsPane = () => {
           }
         >
           <div className="py-[15px] px-5">
-            <MincutEdges
-              edges={mincutEdges}
-              isMincutSet={isMCESet}
-              setMinCut={setMCE}
-            />
+            {mincutResult ? (
+              <MincutEdges
+                edges={mincutResult}
+                isMincutSet={isMCEActive}
+                setMinCut={setMCEActive}
+              />
+            ) : (
+              "No results"
+            )}
           </div>
         </Accordion.Content>
       </Accordion.Item>
@@ -158,8 +172,8 @@ const AnalyticsPane = () => {
           <div className="py-[15px] px-5">
             <DiffusionSimulation
               diffusionCentrality={diffcen}
-              isDiffusionSet={isDiffusionSet}
-              setDiffusion={setDiffusion}
+              isDiffusionSet={isDiffusionActive}
+              setDiffusion={setDiffusionActive}
             />
           </div>
         </Accordion.Content>
