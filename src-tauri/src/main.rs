@@ -18,7 +18,7 @@ use tauri::{async_runtime, Manager};
 struct APMincutStringResults {
     ap_result: Vec<u32>,
     mincut_result: Vec<(u32, u32)>,
-    diffcen_result: HashMap<u32, HashMap<u32, f64>>,
+    diffcen_result: HashMap<u32, HashMap<u32, HashMap<u32, f64>>>,
 }
 
 struct ActiveSerialConnection {
@@ -415,13 +415,17 @@ async fn run_algorithms(
         MinCutResult::Error(err) => return Err(err.to_owned().into()),
         MinCutResult::Empty(_) => vec![],
     };
-    let diffcen_maps: HashMap<u32, HashMap<u32, f64>> = match &algo_result.diff_cent {
+    let diffcen_maps: HashMap<u32, HashMap<u32, HashMap<u32, f64>>> = match &algo_result.diff_cent {
         DiffCenResult::Success(diff_cen_res) => {
             diff_cen_res.iter().map(|(key, val)| {
                 let key = key.parse::<u32>().unwrap();
                 let val = val.iter().map(|(k, v)| {
                     let k = k.parse::<u32>().unwrap();
-                    (k, *v)
+                    let v: HashMap<u32, f64> = v.iter().map(|(k1, v1)| {
+                        let k1 = k1.parse::<u32>().unwrap();
+                        (k1, *v1)
+                    }).collect();
+                    (k, v)
                 }).collect();
                 (key, val)
             }).collect()
