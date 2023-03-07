@@ -57,7 +57,7 @@ pub fn edge_factory(
         let radio_s_quality = radio_s_quality[i];
 
         // normalize the values
-        let weight = normalize_weight(
+        let mut weight = normalize_weight(
             distance,
             (distance_min, distance_max),
             distance_weight,
@@ -65,6 +65,10 @@ pub fn edge_factory(
             (radio_s_quality_min, radio_s_quality_max),
             radio_s_quality_weight,
         );
+
+        if (weight.is_nan()) {
+            weight = 0.0;
+        }
 
         let edge = Edge::new(a, b, weight);
 
