@@ -5,7 +5,7 @@ import {
 } from "@components/Map/algorithms/CommonComps";
 
 export interface MincutEdgesInterface {
-  edges: string[][];
+  edges: string[][] | null;
   isMincutSet: boolean;
   setMinCut: (checked: boolean) => void;
 }
@@ -28,19 +28,27 @@ const MincutEdges = ({
         inform them of the situation.
       </p>
       <ul className="flex-col py-4">
-        {edges.map((edge, index) => (
-          // edge is a tuple of two strings. We want to display the two strings with an arrow icon in between
-          <li
-            className={`flex rounded-md justify-between items-center px-5 py-2 ${
-              index % 2 === 0 ? "bg-slate-50" : "bg-white"
-            }`}
-            key={edge[0] + edge[1]}
-          >
-            <span className="text-gray-700 text-sm font-medium">{edge[0]}</span>
-            <span className="text-gray-700 text-sm font-medium">{"->"}</span>
-            <span className="text-gray-700 text-sm font-medium">{edge[1]}</span>
-          </li>
-        ))}
+        {edges
+          ? edges.map((edge, index) => (
+              // edge is a tuple of two strings. We want to display the two strings with an arrow icon in between
+              <li
+                className={`flex rounded-md justify-between items-center px-5 py-2 ${
+                  index % 2 === 0 ? "bg-slate-50" : "bg-white"
+                }`}
+                key={edge[0] + edge[1]}
+              >
+                <span className="text-gray-700 text-sm font-medium">
+                  {edge[0]}
+                </span>
+                <span className="text-gray-700 text-sm font-medium">
+                  {"->"}
+                </span>
+                <span className="text-gray-700 text-sm font-medium">
+                  {edge[1]}
+                </span>
+              </li>
+            ))
+          : "No results"}
       </ul>
       <LastRan lastRanMinutes={5} />
     </div>

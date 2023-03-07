@@ -90,15 +90,11 @@ const AnalyticsPane = () => {
           }
         >
           <div className="py-[15px] px-5">
-            {apResult ? (
-              <ArticulationPoints
-                articulationPoints={apResult}
-                isAPSet={isAPActive}
-                setAP={setAPActive}
-              />
-            ) : (
-              "No results"
-            )}
+            <ArticulationPoints
+              articulationPoints={apResult}
+              isAPSet={isAPActive}
+              setAP={setAPActive}
+            />
           </div>
         </Accordion.Content>
       </Accordion.Item>
@@ -130,15 +126,11 @@ const AnalyticsPane = () => {
           }
         >
           <div className="py-[15px] px-5">
-            {mincutResult ? (
-              <MincutEdges
-                edges={mincutResult}
-                isMincutSet={isMCEActive}
-                setMinCut={setMCEActive}
-              />
-            ) : (
-              "No results"
-            )}
+            <MincutEdges
+              edges={mincutResult}
+              isMincutSet={isMCEActive}
+              setMinCut={setMCEActive}
+            />
           </div>
         </Accordion.Content>
       </Accordion.Item>

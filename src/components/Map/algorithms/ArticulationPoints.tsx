@@ -5,7 +5,7 @@ import {
 } from "@components/Map/algorithms/CommonComps";
 
 export interface ArticulationPointsProps {
-  articulationPoints: string[];
+  articulationPoints: string[] | null;
   isAPSet: boolean;
   setAP: (checked: boolean) => void;
 }
@@ -29,17 +29,21 @@ const ArticulationPoints = ({
         graph. Consider messaging these nodes to inform them of the situation.
       </p>
       <ul className="flex-col py-4">
-        {articulationPoints.map((node, index) => (
-          // alternating background colors for each node based on index's parity
-          <li
-            className={`flex rounded-md justify-between items-center px-5 py-2 ${
-              index % 2 === 0 ? "bg-slate-50" : "bg-white"
-            }`}
-            key={node}
-          >
-            <span className="text-gray-700 text-sm font-medium">{node}</span>
-          </li>
-        ))}
+        {articulationPoints
+          ? articulationPoints.map((node, index) => (
+              // alternating background colors for each node based on index's parity
+              <li
+                className={`flex rounded-md justify-between items-center px-5 py-2 ${
+                  index % 2 === 0 ? "bg-slate-50" : "bg-white"
+                }`}
+                key={node}
+              >
+                <span className="text-gray-700 text-sm font-medium">
+                  {node}
+                </span>
+              </li>
+            ))
+          : "No results"}
       </ul>
       <LastRan lastRanMinutes={5} />
     </div>
