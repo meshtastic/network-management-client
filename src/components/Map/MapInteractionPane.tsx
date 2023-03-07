@@ -40,8 +40,6 @@ const MapInteractionPane = () => {
         <MapPinIcon className="w-6 h-6" />
       </MapIconButton>
 
-      {/* Currently implemented using MapIconUnimplemented, which allows for an error popup. */}
-      {/* When functionality is implemented, change component to MapIconButton. */}
       <MapIconButton
         className={`p-2 text-gray-500 ${
           accordionShown ? "bg-gray-200" : "bg-white"

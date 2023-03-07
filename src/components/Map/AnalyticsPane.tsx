@@ -26,6 +26,8 @@ const AccordionDemo = () => {
   const [isMCESet, setMCE] = useState(false);
   const [isDiffusionSet, setDiffusion] = useState(false);
 
+
+
   return (
     <Accordion.Root
       className="border-slate-300 border-065 rounded-lg drop-shadow-lg bg-white absolute top-24 right-9 w-96"
@@ -77,12 +79,22 @@ const AccordionDemo = () => {
   );
 };
 
+const handleClick = () => {
+  console.log("Clicky clicky")
+}
+
 const Header = () => (
-  <div className="flex items-center justify-between px-5 py-4">
-    <div className="flex items-left space-x-4">
-      <ShareIcon className="w-6 h-6 text-gray-700" />
-      <h2 className="text-gray-700 text-lg font-semibold">Network</h2>
+  <div className="flex px-5 py-3 justify-between items-center text-gray-700 font-semibold">
+    <div className="flex flex-row space-x-4 ">
+      <ShareIcon className="w-6 h-6" />
+      <h2 className="text-lg">Network</h2>
     </div>
+    <button
+      className="border-2 rounded-md px-4 py-1 text-md justify-self-end hover:bg-gray-200 border-gray-300"
+      onClick={handleClick}
+    >
+      Run All
+    </button>
   </div>
 );
 
