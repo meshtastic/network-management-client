@@ -1,12 +1,14 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import ArticulationPoints from "@components/Map/algorithms/ArticulationPoints";
 import MincutEdges from "@components/Map/algorithms/MinCutEdges";
 import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation";
-import { useDispatch } from "react-redux";
-import { deviceSliceActions } from "@app/features/device/deviceSlice";
+
+import { requestRunAllAlgorithms } from "@features/algorithms/algorithmsActions";
+import { deviceSliceActions } from "@features/device/deviceSlice";
 
 const AnalyticsPane = () => {
   const dispatch = useDispatch();
@@ -28,8 +30,8 @@ const AnalyticsPane = () => {
   const [isMCESet, setMCE] = useState(false);
   const [isDiffusionSet, setDiffusion] = useState(false);
 
-  const handleClick = () => {
-    console.log("Clicky clicky");
+  const requestRunAlgorithms = () => {
+    dispatch(requestRunAllAlgorithms({ bitfield: 0b000011 }));
   };
 
   return (
@@ -45,7 +47,7 @@ const AnalyticsPane = () => {
         <div className="flex flex-row justify-between space-x-6">
           <button
             className=" border-2 rounded-md px-4 py-1 text-md hover:bg-gray-200 border-gray-300 self-end text-gray-700 font-semibold text-md"
-            onClick={handleClick}
+            onClick={requestRunAlgorithms}
           >
             Run All
           </button>
