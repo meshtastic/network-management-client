@@ -426,7 +426,7 @@ pub fn node_index_to_key(
 ) -> Option<u32> {
     graph.node_idx_map.iter().find_map(|(key, &val)| {
         if val == *nodeindex {
-            key.parse::<u32>().ok()
+            return key.parse::<u32>().ok();
         }
         None
     })
