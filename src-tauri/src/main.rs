@@ -7,7 +7,10 @@ mod mesh;
 use analytics::algo_result_enums::ap::APResult;
 use analytics::algo_result_enums::mincut::MinCutResult;
 use app::protobufs;
-use mesh::serial_connection::{MeshConnection, SerialConnection};
+use mesh::{
+    device::MeshGraph,
+    serial_connection::{MeshConnection, SerialConnection},
+};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
@@ -167,15 +170,15 @@ async fn connect_to_serial_port(
             };
             let mut graph_guard = graph_arc.lock().await;
             let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
-                Ok(g) => Some(g),
+                Ok(g) => g,
                 Err(e) => {
                     eprintln!("{:?}", e);
-                    None
+                    continue;
                 }
             };
 
-            let device_updated =
-                match device.handle_packet_from_radio(variant, Some(handle.clone()), graph) {
+            let (device_updated, graph_updated) =
+                match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
                     Ok(d) => d,
                     Err(e) => {
                         eprintln!("Error transmitting packet: {}", e);
@@ -183,8 +186,20 @@ async fn connect_to_serial_port(
                     }
                 };
 
+            println!("Updates: {:?}, {:?}", device_updated, graph_updated);
+
             if device_updated {
                 match dispatch_updated_device(handle.clone(), device.clone()) {
+                    Ok(_) => (),
+                    Err(e) => {
+                        eprintln!("Error emitting event to client: {:?}", e.to_string());
+                        continue;
+                    }
+                };
+            }
+
+            if graph_updated {
+                match dispatch_updated_edges(handle.clone(), graph) {
                     Ok(_) => (),
                     Err(e) => {
                         eprintln!("Error emitting event to client: {:?}", e.to_string());
@@ -231,6 +246,11 @@ fn dispatch_updated_device(
     device: mesh::device::MeshDevice,
 ) -> tauri::Result<()> {
     handle.emit_all("device_update", device)
+}
+
+fn dispatch_updated_edges(handle: tauri::AppHandle, graph: &mut MeshGraph) -> tauri::Result<()> {
+    let edges = generate_graph_edges_geojson(graph);
+    handle.emit_all("edges_update", edges)
 }
 
 #[tauri::command]
@@ -328,16 +348,7 @@ async fn send_waypoint(
     Ok(())
 }
 
-#[tauri::command]
-async fn get_node_edges(
-    mesh_graph: tauri::State<'_, ActiveMeshGraph>,
-) -> Result<geojson::FeatureCollection, CommandError> {
-    let mut guard = mesh_graph.inner.lock().await;
-    let graph = guard
-        .as_mut()
-        .ok_or("Graph not initialized")
-        .map_err(|e| e.to_string())?;
-
+fn generate_graph_edges_geojson(graph: &mut MeshGraph) -> geojson::FeatureCollection {
     let edge_features: Vec<geojson::Feature> = graph
         .graph
         .get_edges()
@@ -366,11 +377,24 @@ async fn get_node_edges(
         })
         .collect();
 
-    let edges = geojson::FeatureCollection {
+    geojson::FeatureCollection {
         bbox: None,
         foreign_members: None,
         features: edge_features,
-    };
+    }
+}
+
+#[tauri::command]
+async fn get_node_edges(
+    mesh_graph: tauri::State<'_, ActiveMeshGraph>,
+) -> Result<geojson::FeatureCollection, CommandError> {
+    let mut guard = mesh_graph.inner.lock().await;
+    let graph = guard
+        .as_mut()
+        .ok_or("Graph not initialized")
+        .map_err(|e| e.to_string())?;
+
+    let edges = generate_graph_edges_geojson(graph);
 
     Ok(edges)
 }

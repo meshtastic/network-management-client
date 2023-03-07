@@ -4,10 +4,13 @@ import { all, call, put, takeEvery } from "redux-saga/effects";
 import {
   createDeviceDisconnectChannel,
   createDeviceUpdateChannel,
+  createGraphUpdateChannel,
   DeviceDisconnectChannel,
   DeviceUpdateChannel,
+  GraphUpdateChannel,
   handleDeviceDisconnectChannel,
   handleDeviceUpdateChannel,
+  handleGraphUpdateChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import {
   requestAvailablePorts,
@@ -24,29 +27,35 @@ import type { CommandError } from "@utils/errors";
 function* subscribeAll() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const deviceUpdateChannel: DeviceUpdateChannel = yield call(
-    createDeviceUpdateChannel
+    createDeviceUpdateChannel,
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const deviceDisconnectChannel: DeviceDisconnectChannel = yield call(
-    createDeviceDisconnectChannel
+    createDeviceDisconnectChannel,
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const graphUpdateChannel: GraphUpdateChannel = yield call(
+    createGraphUpdateChannel,
   );
 
   yield all([
     call(handleDeviceUpdateChannel, deviceUpdateChannel),
     call(handleDeviceDisconnectChannel, deviceDisconnectChannel),
+    call(handleGraphUpdateChannel, graphUpdateChannel),
   ]);
 }
 
 function* getAvailableSerialPortsWorker(
-  action: ReturnType<typeof requestAvailablePorts>
+  action: ReturnType<typeof requestAvailablePorts>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     const serialPorts = (yield call(
       invoke,
-      "get_all_serial_ports"
+      "get_all_serial_ports",
     )) as string[];
 
     yield put(deviceSliceActions.setAvailableSerialPorts(serialPorts));
@@ -56,13 +65,13 @@ function* getAvailableSerialPortsWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
 
 function* connectToDeviceWorker(
-  action: ReturnType<typeof requestConnectToDevice>
+  action: ReturnType<typeof requestConnectToDevice>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -80,7 +89,7 @@ function* connectToDeviceWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
@@ -111,7 +120,7 @@ function* sendTextWorker(action: ReturnType<typeof requestSendMessage>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
@@ -130,7 +139,7 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
@@ -149,7 +158,7 @@ function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }

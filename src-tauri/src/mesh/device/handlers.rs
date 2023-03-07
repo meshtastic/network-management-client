@@ -14,8 +14,9 @@ impl MeshDevice {
         variant: app::protobufs::from_radio::PayloadVariant,
         app_handle: Option<tauri::AppHandle>,
         meshgraph: Option<&mut MeshGraph>,
-    ) -> Result<bool, String> {
+    ) -> Result<(bool, bool), String> {
         let mut device_updated = false;
+        let mut graph_updated = false;
 
         match variant {
             protobufs::from_radio::PayloadVariant::Channel(c) => {
@@ -48,7 +49,10 @@ impl MeshDevice {
                 device_updated = true;
             }
             protobufs::from_radio::PayloadVariant::Packet(p) => {
-                device_updated = self.handle_mesh_packet(p, app_handle, meshgraph)?;
+                let result = self.handle_mesh_packet(p, app_handle, meshgraph)?;
+
+                device_updated = result.0;
+                graph_updated = result.1;
             }
             protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
                 // println!("Queue status data: {:#?}", q);
@@ -61,7 +65,7 @@ impl MeshDevice {
             }
         };
 
-        Ok(device_updated)
+        Ok((device_updated, graph_updated))
     }
 
     pub fn handle_mesh_packet(
@@ -69,9 +73,10 @@ impl MeshDevice {
         packet: protobufs::MeshPacket,
         app_handle: Option<tauri::AppHandle>,
         meshgraph: Option<&mut MeshGraph>,
-    ) -> Result<bool, String> {
+    ) -> Result<(bool, bool), String> {
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
         let mut device_updated = false;
+        let mut graph_updated = false;
 
         match variant {
             protobufs::mesh_packet::PayloadVariant::Decoded(data) => match data.portnum() {
@@ -99,7 +104,13 @@ impl MeshDevice {
                         .map_err(|e| e.to_string())?;
 
                     self.add_position(PositionPacket { packet, data });
+
+                    if let Some(meshgraph) = meshgraph {
+                        meshgraph.regenerate_graph_from_device_info(self);
+                    }
+
                     device_updated = true;
+                    graph_updated = true;
                 }
                 protobufs::PortNum::PrivateApp => {
                     println!("Private app not yet supported in Rust");
@@ -267,9 +278,12 @@ impl MeshDevice {
                         packet: packet.clone(),
                         data,
                     });
+
                     if let Some(meshgraph) = meshgraph {
                         meshgraph.regenerate_graph_from_device_info(self);
                     }
+
+                    graph_updated = true;
                     device_updated = true;
                 }
                 protobufs::PortNum::TracerouteApp => {
@@ -287,6 +301,6 @@ impl MeshDevice {
             }
         }
 
-        Ok(device_updated)
+        Ok((device_updated, graph_updated))
     }
 }
