@@ -4,12 +4,20 @@ mod data_conversion;
 mod graph;
 mod mesh;
 
-use analytics::algo_store::AlgoStore;
+use analytics::algo_result_enums::ap::APResult;
+use analytics::algo_result_enums::mincut::MinCutResult;
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct APMincutStringResults {
+    ap_result: Vec<String>,
+    mincut_result: Vec<(String, String)>,
+}
 
 struct ActiveSerialConnection {
     inner: Arc<async_runtime::Mutex<Option<mesh::serial_connection::SerialConnection>>>,
@@ -323,7 +331,7 @@ async fn send_waypoint(
 #[tauri::command]
 async fn get_node_edges(
     mesh_graph: tauri::State<'_, ActiveMeshGraph>,
-) -> Result<geojson::FeatureCollection, String> {
+) -> Result<geojson::FeatureCollection, CommandError> {
     let mut guard = mesh_graph.inner.lock().await;
     let graph = guard
         .as_mut()
@@ -367,14 +375,55 @@ async fn run_algorithms(
     bitfield: u8,
     mesh_graph: tauri::State<'_, ActiveMeshGraph>,
     algo_state: tauri::State<'_, ActiveMeshState>,
-) -> Result<AlgoStore, String> {
+) -> Result<APMincutStringResults, CommandError> {
     let mut guard = mesh_graph.inner.lock().await;
     let mut state_guard = algo_state.inner.lock().await;
+
     let graph_struct = guard.as_mut().ok_or("Graph not initialized")?;
     let state = state_guard.as_mut().ok_or("State not initialized")?;
 
     state.add_graph(&graph_struct.graph);
     state.set_algos(bitfield);
     state.run_algos();
-    Ok(state.get_algo_results().clone())
+    let algo_result = state.get_algo_results();
+    // convert AP from a vector of NodeIndexes to a vector of IDs (strings)
+    let ap_string_vec: Vec<String> = match &algo_result.aps {
+        APResult::Success(aps) => aps
+            .iter()
+            .filter_map(|nodeindex| node_index_to_key(nodeindex, &graph_struct.graph))
+            .collect(),
+        APResult::Error(err) => return Err(err.to_owned().into()),
+        APResult::Empty(_) => vec![],
+    };
+    // convert mincut from a vector of Edges to a vector of string pairs
+    let mincut_string_vec: Vec<(String, String)> = match &algo_result.mincut {
+        MinCutResult::Success(aps) => aps
+            .iter()
+            .filter_map(|edge| {
+                let u_res = node_index_to_key(&edge.get_u(), &graph_struct.graph)?;
+                let v_res = node_index_to_key(&edge.get_v(), &graph_struct.graph)?;
+                Some((u_res, v_res))
+            })
+            .collect(),
+        MinCutResult::Error(err) => return Err(err.to_owned().into()),
+        MinCutResult::Empty(_) => vec![],
+    };
+
+    Ok(APMincutStringResults {
+        ap_result: ap_string_vec,
+        mincut_result: mincut_string_vec,
+    })
+}
+
+pub fn node_index_to_key(
+    nodeindex: &petgraph::graph::NodeIndex,
+    graph: &graph::graph_ds::Graph,
+) -> Option<String> {
+    graph.node_idx_map.iter().find_map(|(key, &val)| {
+        if val == *nodeindex {
+            Some(key.clone())
+        } else {
+            None
+        }
+    })
 }
