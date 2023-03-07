@@ -111,10 +111,8 @@ export const selectActiveWaypoint =
 export const selectIsWaypointEdit = () => (state: RootState) =>
   state.devices.waypointEdit;
 
-// Returns boolean for newWaypoint(boolean)
 export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
   state.devices.allowOnMapWaypointCreation;
 
-// Returns boolean for newWaypoint(boolean)
 export const selectShowAlgosAccordion = () => (state: RootState) =>
   state.devices.showAlgosAccordion;
