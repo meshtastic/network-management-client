@@ -6,6 +6,7 @@ mod mesh;
 
 use analytics::algo_result_enums::ap::APResult;
 use analytics::algo_result_enums::mincut::MinCutResult;
+use analytics::algo_result_enums::diff_cen::DiffCenResult;
 use app::protobufs;
 use mesh::serial_connection::{MeshConnection, SerialConnection};
 use serde::{Deserialize, Serialize};
@@ -17,6 +18,7 @@ use tauri::{async_runtime, Manager};
 struct APMincutStringResults {
     ap_result: Vec<u32>,
     mincut_result: Vec<(u32, u32)>,
+    diffcen_result: HashMap<u32, HashMap<u32, f64>>,
 }
 
 struct ActiveSerialConnection {
@@ -395,7 +397,7 @@ async fn run_algorithms(
     let ap_vec: Vec<u32> = match &algo_result.aps {
         APResult::Success(aps) => aps
             .iter()
-            .filter_map(|nodeindex| node_index_to_key(nodeindex, &graph_struct.graph))
+            .filter_map(|nodeindex| node_index_to_node_id(nodeindex, &graph_struct.graph))
             .collect(),
         APResult::Error(err) => return Err(err.to_owned().into()),
         APResult::Empty(_) => vec![],
@@ -405,22 +407,37 @@ async fn run_algorithms(
         MinCutResult::Success(aps) => aps
             .iter()
             .filter_map(|edge| {
-                let u_res = node_index_to_key(&edge.get_u(), &graph_struct.graph)?;
-                let v_res = node_index_to_key(&edge.get_v(), &graph_struct.graph)?;
+                let u_res = node_index_to_node_id(&edge.get_u(), &graph_struct.graph)?;
+                let v_res = node_index_to_node_id(&edge.get_v(), &graph_struct.graph)?;
                 Some((u_res, v_res))
             })
             .collect(),
         MinCutResult::Error(err) => return Err(err.to_owned().into()),
         MinCutResult::Empty(_) => vec![],
     };
+    let diffcen_maps: HashMap<u32, HashMap<u32, f64>> = match &algo_result.diff_cent {
+        DiffCenResult::Success(diff_cen_res) => {
+            diff_cen_res.iter().map(|(key, val)| {
+                let key = key.parse::<u32>().unwrap();
+                let val = val.iter().map(|(k, v)| {
+                    let k = k.parse::<u32>().unwrap();
+                    (k, *v)
+                }).collect();
+                (key, val)
+            }).collect()
+        },
+        DiffCenResult::Error(err) => return Err(err.to_owned().into()),
+        DiffCenResult::Empty(_) => HashMap::new(),
+    };
 
     Ok(APMincutStringResults {
         ap_result: ap_vec,
         mincut_result: mincut_vec,
+        diffcen_result: diffcen_maps,
     })
 }
 
-pub fn node_index_to_key(
+pub fn node_index_to_node_id(
     nodeindex: &petgraph::graph::NodeIndex,
     graph: &graph::graph_ds::Graph,
 ) -> Option<u32> {

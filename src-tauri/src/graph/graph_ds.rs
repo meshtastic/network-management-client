@@ -566,7 +566,7 @@ impl Graph {
         let n = self.get_order();
         let schur = adj_matrix.clone().schur();
         let eigenvalues_option = schur.eigenvalues();
-
+        
         match eigenvalues_option {
             // If eigenvalues are real, then we can unwrap them
             Some(eigenvalues) => {
