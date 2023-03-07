@@ -15,8 +15,8 @@ use tauri::{async_runtime, Manager};
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct APMincutStringResults {
-    ap_result: Vec<String>,
-    mincut_result: Vec<(String, String)>,
+    ap_result: Vec<u32>,
+    mincut_result: Vec<(u32, u32)>,
 }
 
 struct ActiveSerialConnection {
@@ -392,7 +392,7 @@ async fn run_algorithms(
     state.run_algos();
     let algo_result = state.get_algo_results();
     // convert AP from a vector of NodeIndexes to a vector of IDs (strings)
-    let ap_string_vec: Vec<String> = match &algo_result.aps {
+    let ap_vec: Vec<u32> = match &algo_result.aps {
         APResult::Success(aps) => aps
             .iter()
             .filter_map(|nodeindex| node_index_to_key(nodeindex, &graph_struct.graph))
@@ -401,7 +401,7 @@ async fn run_algorithms(
         APResult::Empty(_) => vec![],
     };
     // convert mincut from a vector of Edges to a vector of string pairs
-    let mincut_string_vec: Vec<(String, String)> = match &algo_result.mincut {
+    let mincut_vec: Vec<(u32, u32)> = match &algo_result.mincut {
         MinCutResult::Success(aps) => aps
             .iter()
             .filter_map(|edge| {
@@ -415,20 +415,19 @@ async fn run_algorithms(
     };
 
     Ok(APMincutStringResults {
-        ap_result: ap_string_vec,
-        mincut_result: mincut_string_vec,
+        ap_result: ap_vec,
+        mincut_result: mincut_vec,
     })
 }
 
 pub fn node_index_to_key(
     nodeindex: &petgraph::graph::NodeIndex,
     graph: &graph::graph_ds::Graph,
-) -> Option<String> {
+) -> Option<u32> {
     graph.node_idx_map.iter().find_map(|(key, &val)| {
         if val == *nodeindex {
-            Some(key.clone())
-        } else {
-            None
+            return key.parse::<u32>().ok();
         }
+        None
     })
 }
