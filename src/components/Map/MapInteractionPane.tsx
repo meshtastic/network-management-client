@@ -7,10 +7,7 @@ import {
   selectShowAlgosAccordion,
 } from "@features/device/deviceSelectors";
 
-import {
-  MapIconButton,
-  MapIconUnimplemented,
-} from "@components/Map/MapIconButton";
+import { MapIconButton } from "@components/Map/MapIconButton";
 import { MapPinIcon, Square3Stack3DIcon } from "@heroicons/react/24/outline";
 
 const MapInteractionPane = () => {
@@ -31,22 +28,20 @@ const MapInteractionPane = () => {
   return (
     <div className="absolute top-9 right-9 flex gap-4">
       {/* Toggles newWaypoint state */}
-      <MapIconButton
-        className={`p-2 text-gray-500 ${
-          newWaypoint ? "bg-gray-200" : "bg-white"
-        } `}
-        onClick={handleClickMapPin}
-      >
-        <MapPinIcon className="w-6 h-6" />
+      <MapIconButton selected={newWaypoint} onClick={handleClickMapPin}>
+        <MapPinIcon
+          className={`w-6 h-6 text-gray-400 ${
+            newWaypoint ? "text-gray-200" : "text-gray-500"
+          }`}
+        />
       </MapIconButton>
 
-      <MapIconButton
-        className={`p-2 text-gray-500 ${
-          accordionShown ? "bg-gray-200" : "bg-white"
-        } `}
-        onClick={handleClickStacks}
-      >
-        <Square3Stack3DIcon className="w-6 h-6" />
+      <MapIconButton selected={accordionShown} onClick={handleClickStacks}>
+        <Square3Stack3DIcon
+          className={`w-6 h-6 ${
+            accordionShown ? "text-gray-200" : "text-gray-500"
+          }`}
+        />
       </MapIconButton>
     </div>
   );

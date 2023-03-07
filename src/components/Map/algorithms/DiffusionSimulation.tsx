@@ -1,5 +1,4 @@
 import React from "react";
-import classNames from "classnames";
 import { LastRan, AlgorithmSelector } from "./CommonComps";
 import { DiffSimTotalChartTimeline } from "./Chart";
 

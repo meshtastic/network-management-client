@@ -1,13 +1,20 @@
-import React from "react";
-import classNames from "classnames";
+import React, { useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
-import { ShareIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
-import ArticulationPoints from "./algorithms/ArticulationPoints";
-import MincutEdges from "./algorithms/MinCutEdges";
-import DiffusionSimulation from "./algorithms/DiffusionSimulation";
-const { useEffect, useState } = React;
+import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-const AccordionDemo = () => {
+import ArticulationPoints from "@components/Map/algorithms/ArticulationPoints";
+import MincutEdges from "@components/Map/algorithms/MinCutEdges";
+import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation";
+import { useDispatch } from "react-redux";
+import { deviceSliceActions } from "@app/features/device/deviceSlice";
+
+const AnalyticsPane = () => {
+  const dispatch = useDispatch();
+
+  const handleClosePane = () => {
+    dispatch(deviceSliceActions.setShowAlgosAccordion(false));
+  };
+
   // create a list of nodes that are articulation points
   const articulationPoints = ["f578", "f572", "f574"];
   const mincutEdges = [
@@ -16,11 +23,6 @@ const AccordionDemo = () => {
     ["f574", "f578"],
   ];
   const diffcen = new Map();
-
-  // create dummy setAlgorithm function that takes in a boolean
-  const setAlgorithmB = (checked: boolean) => {
-    console.log(checked);
-  };
 
   const [isAPSet, setAP] = useState(false);
   const [isMCESet, setMCE] = useState(false);
@@ -34,119 +36,157 @@ const AccordionDemo = () => {
       type="single"
       collapsible
     >
-      <Header>Accordion</Header>
-      <AccordionItem value="item-1">
-        <AccordionTrigger>Articulation Points</AccordionTrigger>
-        <AccordionContent>
-          <ArticulationPoints
-            articulationPoints={articulationPoints}
-            isAPSet={isAPSet}
-            setAP={setAP}
-          />
-        </AccordionContent>
-      </AccordionItem>
+      <div className="flex flex-row justify-between align-middle px-5 py-4">
+        <h2 className="text-gray-700 text-lg font-semibold">
+          Network Analytics
+        </h2>
+        <button type="button" onClick={handleClosePane}>
+          <XMarkIcon className="w-6 h-6 text-gray-500" />
+        </button>
+      </div>
 
-      <AccordionItem value="item-2">
-        <AccordionTrigger>Mincut Edges</AccordionTrigger>
-        <AccordionContent>
-          <MincutEdges
-            edges={mincutEdges}
-            isMincutSet={isMCESet}
-            setMinCut={setMCE}
-          />
-        </AccordionContent>
-      </AccordionItem>
+      {/* Articulation points tab */}
+      <Accordion.Item
+        className={
+          "border-t border-gray-300 focus-within:shadow-mauve12 overflow-hidden first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-[0_0_0_2px]"
+        }
+        value="item-1"
+      >
+        <Accordion.Header className="flex data-[state=open]:border-b border-gray-300">
+          <Accordion.Trigger
+            className={
+              "bg-slate-50 text-gray-700 hover:bg-gray=300 group flex h-[45px] flex-1 cursor-default items-center justify-between  px-5 text-[15px] leading-none outline-none"
+            }
+          >
+            Articulation Points
+            <ChevronDownIcon
+              className="text-gray-700 w-4 h-4 ease-[cubic-bezier(0.87,_0,_0.13,_1)] transition-transform duration-300 group-data-[state=open]:rotate-180"
+              aria-hidden
+            />
+          </Accordion.Trigger>
+        </Accordion.Header>
 
-      <AccordionItem value="item-3">
-        <AccordionTrigger>Diffusion Simulation</AccordionTrigger>
-        <AccordionContent>
-          <DiffusionSimulation
-            diffusionCentrality={diffcen}
-            isDiffusionSet={isDiffusionSet}
-            setDiffusion={setDiffusion}
-          />
-        </AccordionContent>
-      </AccordionItem>
+        <Accordion.Content
+          className={
+            "text-gray-500 text-sm bg-mauve2 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden text-[15px]"
+          }
+        >
+          <div className="py-[15px] px-5">
+            <ArticulationPoints
+              articulationPoints={articulationPoints}
+              isAPSet={isAPSet}
+              setAP={setAP}
+            />
+          </div>
+        </Accordion.Content>
+      </Accordion.Item>
 
-      <AccordionItem value="item-4">
-        <AccordionTrigger>Predicted Network State</AccordionTrigger>
-        <AccordionContent>
-          When we have enough training data, we can use AI predict the network
-          state!
-        </AccordionContent>
-      </AccordionItem>
+      {/* Mincut edges tab */}
+      <Accordion.Item
+        className={
+          "border-t border-gray-300 focus-within:shadow-mauve12 overflow-hidden first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-[0_0_0_2px]"
+        }
+        value="item-2"
+      >
+        <Accordion.Header className="flex data-[state=open]:border-b border-gray-300">
+          <Accordion.Trigger
+            className={
+              "bg-slate-50 text-gray-700 hover:bg-gray=300 group flex h-[45px] flex-1 cursor-default items-center justify-between  px-5 text-[15px] leading-none outline-none"
+            }
+          >
+            Mincut Edges
+            <ChevronDownIcon
+              className="text-gray-700 w-4 h-4 ease-[cubic-bezier(0.87,_0,_0.13,_1)] transition-transform duration-300 group-data-[state=open]:rotate-180"
+              aria-hidden
+            />
+          </Accordion.Trigger>
+        </Accordion.Header>
+
+        <Accordion.Content
+          className={
+            "text-gray-500 text-sm bg-mauve2 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden text-[15px]"
+          }
+        >
+          <div className="py-[15px] px-5">
+            <MincutEdges
+              edges={mincutEdges}
+              isMincutSet={isMCESet}
+              setMinCut={setMCE}
+            />
+          </div>
+        </Accordion.Content>
+      </Accordion.Item>
+
+      {/* Diffusion simulation tab */}
+      <Accordion.Item
+        className={
+          "border-t border-gray-300 focus-within:shadow-mauve12 overflow-hidden first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-[0_0_0_2px]"
+        }
+        value="item-3"
+      >
+        <Accordion.Header className="flex data-[state=open]:border-b border-gray-300">
+          <Accordion.Trigger
+            className={
+              "bg-slate-50 text-gray-700 hover:bg-gray=300 group flex h-[45px] flex-1 cursor-default items-center justify-between  px-5 text-[15px] leading-none outline-none"
+            }
+          >
+            Diffusion Simulation
+            <ChevronDownIcon
+              className="text-gray-700 w-4 h-4 ease-[cubic-bezier(0.87,_0,_0.13,_1)] transition-transform duration-300 group-data-[state=open]:rotate-180"
+              aria-hidden
+            />
+          </Accordion.Trigger>
+        </Accordion.Header>
+
+        <Accordion.Content
+          className={
+            "text-gray-500 text-sm bg-mauve2 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden text-[15px]"
+          }
+        >
+          <div className="py-[15px] px-5">
+            <DiffusionSimulation
+              diffusionCentrality={diffcen}
+              isDiffusionSet={isDiffusionSet}
+              setDiffusion={setDiffusion}
+            />
+          </div>
+        </Accordion.Content>
+      </Accordion.Item>
+
+      {/* Predicted network state tab */}
+      <Accordion.Item
+        className={
+          "border-t border-gray-300 focus-within:shadow-mauve12 overflow-hidden first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-[0_0_0_2px]"
+        }
+        value="item-4"
+      >
+        <Accordion.Header className="flex data-[state=open]:border-b border-gray-300">
+          <Accordion.Trigger
+            className={
+              "bg-slate-50 text-gray-700 hover:bg-gray=300 group flex h-[45px] flex-1 cursor-default items-center justify-between  px-5 text-[15px] leading-none outline-none"
+            }
+          >
+            Predicted Network State
+            <ChevronDownIcon
+              className="text-gray-700 w-4 h-4 ease-[cubic-bezier(0.87,_0,_0.13,_1)] transition-transform duration-300 group-data-[state=open]:rotate-180"
+              aria-hidden
+            />
+          </Accordion.Trigger>
+        </Accordion.Header>
+
+        <Accordion.Content
+          className={
+            "text-gray-500 text-sm bg-mauve2 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden text-[15px]"
+          }
+        >
+          <div className="py-[15px] px-5">
+            When we have enough training data, we can use AI predict the network
+            state!
+          </div>
+        </Accordion.Content>
+      </Accordion.Item>
     </Accordion.Root>
   );
 };
 
-const handleClick = () => {
-  console.log("Clicky clicky")
-}
-
-const Header = () => (
-  <div className="flex px-5 py-3 justify-between items-center text-gray-700 font-semibold">
-    <div className="flex flex-row space-x-4 ">
-      <ShareIcon className="w-6 h-6" />
-      <h2 className="text-lg">Network</h2>
-    </div>
-    <button
-      className="border-2 rounded-md px-4 py-1 text-md justify-self-end hover:bg-gray-200 border-gray-300"
-      onClick={handleClick}
-    >
-      Run All
-    </button>
-  </div>
-);
-
-const AccordionItem = React.forwardRef(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Item
-      className={classNames(
-        "focus-within:shadow-mauve12 mt-px overflow-hidden first:mt-0 first:rounded-t last:rounded-b focus-within:relative focus-within:z-10 focus-within:shadow-[0_0_0_2px]",
-        className
-      )}
-      {...props}
-      ref={forwardedRef}
-    >
-      {children}
-    </Accordion.Item>
-  )
-);
-
-const AccordionTrigger = React.forwardRef(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Header className="flex">
-      <Accordion.Trigger
-        className={classNames(
-          "border-065 border-gray-300 bg-slate-50 text-gray-700 hover:bg-gray=300 group flex h-[45px] flex-1 cursor-default items-center justify-between bg-white px-5 text-[15px] leading-none outline-none",
-          className
-        )}
-        {...props}
-        ref={forwardedRef}
-      >
-        {children}
-        <ChevronDownIcon
-          className="text-gray-700 w-4 h-4 ease-[cubic-bezier(0.87,_0,_0.13,_1)] transition-transform duration-300 group-data-[state=open]:rotate-180"
-          aria-hidden
-        />
-      </Accordion.Trigger>
-    </Accordion.Header>
-  )
-);
-
-const AccordionContent = React.forwardRef(
-  ({ children, className, ...props }, forwardedRef) => (
-    <Accordion.Content
-      className={classNames(
-        "text-gray-500 text-sm bg-mauve2 data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp overflow-hidden text-[15px]",
-        className
-      )}
-      {...props}
-      ref={forwardedRef}
-    >
-      <div className="py-[15px] px-5">{children}</div>
-    </Accordion.Content>
-  )
-);
-
-export default AccordionDemo;
+export default AnalyticsPane;
