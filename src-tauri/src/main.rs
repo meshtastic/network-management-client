@@ -418,11 +418,11 @@ async fn run_algorithms(
     let diffcen_maps: HashMap<u32, HashMap<u32, HashMap<u32, f64>>> = match &algo_result.diff_cent {
         DiffCenResult::Success(diff_cen_res) => {
             diff_cen_res.iter().map(|(key, val)| {
-                let key = key.parse::<u32>().unwrap();
+                let key = key.parse::<u32>().unwrap_or(0);
                 let val = val.iter().map(|(k, v)| {
-                    let k = k.parse::<u32>().unwrap();
+                    let k = k.parse::<u32>().unwrap_or(0);
                     let v: HashMap<u32, f64> = v.iter().map(|(k1, v1)| {
-                        let k1 = k1.parse::<u32>().unwrap();
+                        let k1 = k1.parse::<u32>().unwrap_or(0);
                         (k1, *v1)
                     }).collect();
                     (k, v)
