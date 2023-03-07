@@ -392,7 +392,7 @@ async fn run_algorithms(
     state.run_algos();
     let algo_result = state.get_algo_results();
     // convert AP from a vector of NodeIndexes to a vector of IDs (strings)
-    let ap_string_vec: Vec<String> = match &algo_result.aps {
+    let ap_vec: Vec<u32> = match &algo_result.aps {
         APResult::Success(aps) => aps
             .iter()
             .filter_map(|nodeindex| node_index_to_key(nodeindex, &graph_struct.graph))
@@ -401,7 +401,7 @@ async fn run_algorithms(
         APResult::Empty(_) => vec![],
     };
     // convert mincut from a vector of Edges to a vector of string pairs
-    let mincut_string_vec: Vec<(String, String)> = match &algo_result.mincut {
+    let mincut_vec: Vec<(u32, u32)> = match &algo_result.mincut {
         MinCutResult::Success(aps) => aps
             .iter()
             .filter_map(|edge| {
@@ -415,8 +415,8 @@ async fn run_algorithms(
     };
 
     Ok(APMincutStringResults {
-        ap_result: ap_string_vec,
-        mincut_result: mincut_string_vec,
+        ap_result: ap_vec,
+        mincut_result: mincut_vec,
     })
 }
 
@@ -426,9 +426,13 @@ pub fn node_index_to_key(
 ) -> Option<u32> {
     graph.node_idx_map.iter().find_map(|(key, &val)| {
         if val == *nodeindex {
-            key.parse::<u32>().unwrap_or(0);
+            let num = key.parse::<u32>();
+            match num {
+                Ok(n) => Some(n),
+                Err(_) => None,
+            }
         } else {
-            0
+            None
         }
     })
 }
