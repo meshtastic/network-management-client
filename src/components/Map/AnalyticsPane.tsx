@@ -28,7 +28,9 @@ const AnalyticsPane = () => {
   const [isMCESet, setMCE] = useState(false);
   const [isDiffusionSet, setDiffusion] = useState(false);
 
-
+  const handleClick = () => {
+    console.log("Clicky clicky");
+  };
 
   return (
     <Accordion.Root
@@ -40,9 +42,17 @@ const AnalyticsPane = () => {
         <h2 className="text-gray-700 text-lg font-semibold">
           Network Analytics
         </h2>
-        <button type="button" onClick={handleClosePane}>
-          <XMarkIcon className="w-6 h-6 text-gray-500" />
-        </button>
+        <div className="flex flex-row justify-between space-x-6">
+          <button
+            className=" border-2 rounded-md px-4 py-1 text-md hover:bg-gray-200 border-gray-300 self-end text-gray-700 font-semibold text-md"
+            onClick={handleClick}
+          >
+            Run All
+          </button>
+          <button type="button" onClick={handleClosePane}>
+            <XMarkIcon className="w-6 h-6 text-gray-500" />
+          </button>
+        </div>
       </div>
 
       {/* Articulation points tab */}
