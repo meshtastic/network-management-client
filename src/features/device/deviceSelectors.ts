@@ -75,7 +75,42 @@ export const selectDeviceChannels =
   (state: RootState): MeshChannel[] =>
     Object.values(selectDevice()(state)?.channels ?? []);
 
+// Returns list of all waypoints on connected node
 export const selectAllWaypoints =
   () =>
   (state: RootState): Waypoint[] =>
-    Object.values(state.devices.device?.waypoints ?? {});
+    Object.values(state.devices.device?.waypoints ?? []);
+
+// Returns single waypoint object given ID
+export const selectWaypointByID =
+  (id: number) =>
+  (state: RootState): Waypoint | null => {
+    for (const waypoint of selectAllWaypoints()(state)) {
+      if (waypoint.id === id) return waypoint;
+    }
+    return null;
+  };
+
+// Get ID of the active waypoint
+export const selectActiveWaypointID = () => (state: RootState) =>
+  state.devices.activeWaypoint;
+
+// Get actual Waypoint object that's active
+export const selectActiveWaypoint =
+  () =>
+  (state: RootState): Waypoint | null => {
+    const activeID = selectActiveWaypointID()(state);
+    if (activeID) {
+      return selectWaypointByID(activeID)(state);
+    } else {
+      return null;
+    }
+  };
+
+// Are we currently in the waypoint edit state
+export const selectIsWaypointEdit = () => (state: RootState) =>
+  state.devices.waypointEdit;
+
+// Returns boolean for newWaypoint(boolean)
+export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
+  state.devices.allowOnMapWaypointCreation;

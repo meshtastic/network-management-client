@@ -5,6 +5,7 @@ use super::MeshDevice;
 use app::protobufs;
 use prost::Message;
 
+
 impl MeshDevice {
     pub fn send_text(
         &mut self,
@@ -40,7 +41,13 @@ impl MeshDevice {
         want_ack: bool,
         channel: u32,
     ) -> Result<(), String> {
-        let byte_data = waypoint.encode_to_vec();
+        let mut new_waypoint = waypoint;
+
+        // Waypoint with ID of zero denotes a new waypoint; check whether to generate its ID on backend.
+        if new_waypoint.id == 0 {
+            new_waypoint.id = generate_rand_id();
+        } 
+        let byte_data = new_waypoint.encode_to_vec();
 
         self.send_packet(
             connection,
