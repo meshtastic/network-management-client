@@ -250,7 +250,7 @@ fn dispatch_updated_device(
 
 fn dispatch_updated_edges(handle: tauri::AppHandle, graph: &mut MeshGraph) -> tauri::Result<()> {
     let edges = generate_graph_edges_geojson(graph);
-    handle.emit_all("edges_update", edges)
+    handle.emit_all("graph_update", edges)
 }
 
 #[tauri::command]
