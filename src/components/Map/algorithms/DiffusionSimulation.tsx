@@ -21,9 +21,7 @@ const DiffusionSimulation = ({
         setAlgorithm={setDiffusion}
       />
       <p>
-        In a model of information diffusion, diffusion centrality is the number
-        of times that a node is reached by information that is spread from a
-        source node. The higher the value, the easier it is to message a node.
+      This score between source node a and destination node b is the expected number of times a will be able to communicate with b in selected T periods.
       </p>
       <DiffSimTotalChartTimeline />
       <LastRan lastRanMinutes={5} />
