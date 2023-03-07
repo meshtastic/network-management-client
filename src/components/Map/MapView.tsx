@@ -14,6 +14,7 @@ import {
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
 
+import AnalyticsPane from "./AnalyticsPane";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
@@ -32,6 +33,7 @@ import {
   selectAllWaypoints,
   selectIsWaypointEdit,
   selectAllowOnMapWaypointCreation,
+  selectShowAlgosAccordion,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -44,14 +46,15 @@ export const MapView = () => {
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
   const { edgesFeatureCollection, viewState } = useSelector(selectMapState());
+  const showAnalyticsPane = useSelector(selectShowAlgosAccordion());
 
   const waypoints = useSelector(selectAllWaypoints());
   const isWaypointEdit = useSelector(selectIsWaypointEdit());
-  const newWaypoint = useSelector(selectAllowOnMapWaypointCreation());
+  const showNewWaypointView = useSelector(selectAllowOnMapWaypointCreation());
 
   const handleClick = (e: MapLayerMouseEvent) => {
     // Can only create new waypoint if the state is toggled
-    if (newWaypoint) {
+    if (showNewWaypointView) {
       const createdWaypoint: Waypoint = {
         id: 0,
         latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
@@ -132,6 +135,8 @@ export const MapView = () => {
             />
           </Source>
         )}
+
+        {showAnalyticsPane ? <AnalyticsPane /> : null}
 
         {/* Visualize all nodes */}
         {nodes

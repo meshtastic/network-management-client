@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum DiffCenResult {
-    Success(HashMap<String, HashMap<String, f64>>),
+    Success(HashMap<String, HashMap<String, HashMap<String, f64>>>),
     Error(String),
     Empty(bool),
 }
