@@ -426,13 +426,8 @@ pub fn node_index_to_key(
 ) -> Option<u32> {
     graph.node_idx_map.iter().find_map(|(key, &val)| {
         if val == *nodeindex {
-            let num = key.parse::<u32>();
-            match num {
-                Ok(n) => Some(n),
-                Err(_) => None,
-            }
-        } else {
-            None
+            key.parse::<u32>().ok()
         }
+        None
     })
 }
