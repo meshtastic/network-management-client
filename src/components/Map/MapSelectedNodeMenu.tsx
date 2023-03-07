@@ -49,8 +49,7 @@ const MapSelectedNodeMenu = () => {
       </div>
 
       <p className="text-gray-500 text-sm leading-5 font-normal pt-1">
-        {" "}
-        Last heard from{" "}
+        Last heard from
         {lastPacketTime ? (
           <TimeAgo datetime={lastPacketTime} locale="en_us" />
         ) : (
@@ -58,14 +57,14 @@ const MapSelectedNodeMenu = () => {
         )}
       </p>
 
-      <h4 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
+      <h2 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
         General Information
-      </h4>
+      </h2>
       <div className="flex flex-col">
         <div className="flex justify-between pb-1">
           <div className="flex justify-start">
             <MapPinIcon className="w-5 h-5 text-gray-500 mt-0.5" />
-            <h3 className="text-gray-500 text-base leading-6 font-normal pl-2">
+            <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
               {!deviceLtCoord || !deviceLgCoord ? (
                 <span>UNK</span>
               ) : (
@@ -73,7 +72,7 @@ const MapSelectedNodeMenu = () => {
                   {deviceLtCoord}&#176;, {deviceLgCoord}&#176;
                 </span>
               )}
-            </h3>
+            </h2>
           </div>
           <button
             type="button"
@@ -90,10 +89,10 @@ const MapSelectedNodeMenu = () => {
         <div className="flex justify-between pb-1">
           <div className="flex justify-start">
             <Battery50Icon className="w-5 h-5 text-gray-500 mt-0.5" />
-            <h3 className="text-gray-500 text-base leading-6 font-normal pl-2">
+            <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
               {devicePercentCharge}%,{" "}
               {deviceIsCharging === true ? "charging" : "discharging"}
-            </h3>
+            </h2>
           </div>
           <button
             type="button"
@@ -112,7 +111,7 @@ const MapSelectedNodeMenu = () => {
         <div className="flex justify-between pb-1">
           <div className="flex justify-start">
             <ArrowRightCircleIcon className="w-5 h-5 outline-gray-400 mt-0.5 text-gray-500" />
-            <h3 className="text-gray-500 text-base leading-6 font-normal pl-2">
+            <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
               {!deviceSpeed || !deviceDirection ? (
                 <span>UNK</span>
               ) : (
@@ -120,7 +119,7 @@ const MapSelectedNodeMenu = () => {
                   {deviceSpeed} mph, {deviceDirection % 360}&#176;
                 </span>
               )}
-            </h3>
+            </h2>
           </div>
           <button
             type="button"
