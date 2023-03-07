@@ -1,6 +1,8 @@
-import { LastRan, AlgorithmSelector } from "./CommonComps";
 import React from "react";
-import classNames from "classnames";
+import {
+  LastRan,
+  AlgorithmSelector,
+} from "@components/Map/algorithms/CommonComps";
 
 export interface ArticulationPointsProps {
   articulationPoints: string[];
@@ -30,10 +32,9 @@ const ArticulationPoints = ({
         {articulationPoints.map((node, index) => (
           // alternating background colors for each node based on index's parity
           <li
-            className={classNames(
-              "flex rounded-md justify-between items-center px-5 py-2",
+            className={`flex rounded-md justify-between items-center px-5 py-2 ${
               index % 2 === 0 ? "bg-slate-50" : "bg-white"
-            )}
+            }`}
             key={node}
           >
             <span className="text-gray-700 text-sm font-medium">{node}</span>
