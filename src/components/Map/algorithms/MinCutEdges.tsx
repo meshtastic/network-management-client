@@ -14,9 +14,10 @@ const MincutEdges = ({ edges, isMincutSet, setMinCut }: MincutEdgesInterface) =>
     <div>
       <AlgorithmSelector algorithm="Min Cut Edges" isSet={isMincutSet} setAlgorithm={setMinCut} />
       <p>
-        Explain what min cut edges are. Maybe propose
-        suggested actions to take (message these nodes)
-        with standard messages.
+        Min cut edges are the smallest set of edges
+        that, when removed, will disconnect the graph.
+        Consider messaging the nodes on these edges to
+        inform them of the situation.
       </p>
       <ul className="flex-col py-4">
         {edges.map((edge, index) => (
