@@ -33,7 +33,7 @@ import {
   selectAllWaypoints,
   selectIsWaypointEdit,
   selectAllowOnMapWaypointCreation,
-  selectShowAlgosAccordion
+  selectShowAlgosAccordion,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -48,12 +48,9 @@ export const MapView = () => {
   const { edgesFeatureCollection, viewState } = useSelector(selectMapState());
   const accordionShown = useSelector(selectShowAlgosAccordion());
 
-
   const waypoints = useSelector(selectAllWaypoints());
   const isWaypointEdit = useSelector(selectIsWaypointEdit());
   const newWaypoint = useSelector(selectAllowOnMapWaypointCreation());
-
-
 
   const handleClick = (e: MapLayerMouseEvent) => {
     // Can only create new waypoint if the state is toggled
@@ -140,7 +137,6 @@ export const MapView = () => {
         )}
 
         {accordionShown ? <AccordionDemo /> : <></>}
-
 
         {/* Visualize all nodes */}
         {nodes

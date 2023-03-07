@@ -2,7 +2,10 @@ import React from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectAllowOnMapWaypointCreation, selectShowAlgosAccordion } from "@features/device/deviceSelectors";
+import {
+  selectAllowOnMapWaypointCreation,
+  selectShowAlgosAccordion,
+} from "@features/device/deviceSelectors";
 
 import {
   MapIconButton,
@@ -16,15 +19,13 @@ const MapInteractionPane = () => {
   const newWaypoint = useSelector(selectAllowOnMapWaypointCreation());
   const accordionShown = useSelector(selectShowAlgosAccordion());
 
-
   // Toggles newWaypoint state, which allows for creation of new waypoints on map
   const handleClickMapPin = () => {
     dispatch(deviceSliceActions.setAllowOnMapWaypointCreation(!newWaypoint));
   };
 
   const handleClickStacks = () => {
-    dispatch(deviceSliceActions.setShowAlgosAccordion(!accordionShown
-      ));
+    dispatch(deviceSliceActions.setShowAlgosAccordion(!accordionShown));
   };
 
   return (

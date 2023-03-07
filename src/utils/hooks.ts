@@ -17,7 +17,7 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
  * @param interval How often the component should reload (ms)
  * @returns The last time this hook forced a component reload
  */
- const useComponentReload = (interval: number) => {
+const useComponentReload = (interval: number) => {
   const [time, setTime] = useState(Date.now());
 
   useEffect(() => {
@@ -27,7 +27,6 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 
   return time;
 };
-
 
 // Waypoint Hook
 const useDeleteWaypoint = () => {
