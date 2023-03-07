@@ -15,8 +15,8 @@ use tauri::{async_runtime, Manager};
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct APMincutStringResults {
-    ap_result: Vec<String>,
-    mincut_result: Vec<(String, String)>,
+    ap_result: Vec<u32>,
+    mincut_result: Vec<(u32, u32)>,
 }
 
 struct ActiveSerialConnection {
@@ -423,12 +423,12 @@ async fn run_algorithms(
 pub fn node_index_to_key(
     nodeindex: &petgraph::graph::NodeIndex,
     graph: &graph::graph_ds::Graph,
-) -> Option<String> {
+) -> Option<u32> {
     graph.node_idx_map.iter().find_map(|(key, &val)| {
         if val == *nodeindex {
-            Some(key.clone())
+            key.parse::<u32>().unwrap_or(0);
         } else {
-            None
+            0
         }
     })
 }
