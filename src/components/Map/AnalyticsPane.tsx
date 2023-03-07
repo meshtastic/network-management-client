@@ -61,7 +61,7 @@ const AccordionDemo = () => {
           Predicted Network State
         </AccordionTrigger>
         <AccordionContent>
-          Yes! You can animate the Accordion with CSS or JavaScript.
+          When we have enough training data, we can use AI predict the network state!
         </AccordionContent>
       </AccordionItem>
     </Accordion.Root>

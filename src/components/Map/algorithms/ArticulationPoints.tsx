@@ -15,9 +15,9 @@ const ArticulationPoints = ({ articulationPoints, isAPSet, setAP }: Articulation
     <div className='flex-col'>
       <AlgorithmSelector algorithm="Articulation Points" isSet={isAPSet} setAlgorithm={setAP} />
       <p>
-      Explain what articulation points are. Maybe propose
-      suggested actions to take (message these nodes)
-      with standard messages.
+      Articulation points are nodes that, when removed,
+      will disconnect the graph. Consider messaging these
+      nodes to inform them of the situation.
       </p>      
       <ul className='flex-col py-4'>
         {articulationPoints.map((node, index) => (
