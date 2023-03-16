@@ -5,7 +5,6 @@ use super::MeshDevice;
 use app::protobufs;
 use prost::Message;
 
-
 impl MeshDevice {
     pub fn send_text(
         &mut self,
@@ -15,7 +14,7 @@ impl MeshDevice {
         want_ack: bool,
         channel: u32,
     ) -> Result<(), String> {
-        let byte_data = text.clone().into_bytes();
+        let byte_data = text.into_bytes();
 
         self.send_packet(
             connection,
@@ -46,7 +45,7 @@ impl MeshDevice {
         // Waypoint with ID of zero denotes a new waypoint; check whether to generate its ID on backend.
         if new_waypoint.id == 0 {
             new_waypoint.id = generate_rand_id();
-        } 
+        }
         let byte_data = new_waypoint.encode_to_vec();
 
         self.send_packet(
@@ -80,7 +79,7 @@ impl MeshDevice {
             connection,
             byte_data,
             protobufs::PortNum::AdminApp,
-            PacketDestination::SELF,
+            PacketDestination::Local,
             0,
             true,
             true,
@@ -107,7 +106,7 @@ impl MeshDevice {
             connection,
             byte_data,
             protobufs::PortNum::AdminApp,
-            PacketDestination::SELF,
+            PacketDestination::Local,
             0,
             true,
             true,
@@ -136,8 +135,8 @@ impl MeshDevice {
         let own_node_id: u32 = self.my_node_info.my_node_num;
 
         let packet_destination: u32 = match destination {
-            PacketDestination::SELF => own_node_id,
-            PacketDestination::BROADCAST => 0xffffffff,
+            PacketDestination::Local => own_node_id,
+            PacketDestination::Broadcast => 0xffffffff,
             PacketDestination::Node(id) => id,
         };
 

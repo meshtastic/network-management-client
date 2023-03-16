@@ -13,9 +13,9 @@ use tokio::sync::broadcast;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub enum PacketDestination {
-    SELF,
+    Local,
     #[default]
-    BROADCAST,
+    Broadcast,
     Node(u32),
 }
 
@@ -115,9 +115,8 @@ impl SerialConnection {
                 format!(
                     "Could not open serial port \"{}\": {}",
                     port_name.clone(),
-                    e.to_string()
+                    e
                 )
-                .to_owned()
             })?;
 
         // Enable serial connection flag
@@ -143,9 +142,8 @@ impl SerialConnection {
             format!(
                 "Could not clone serial port \"{}\": {}",
                 port_name.clone(),
-                e.to_string()
+                e
             )
-            .to_owned()
         })?;
 
         let is_connection_active = self.is_connection_active.clone();
@@ -242,7 +240,7 @@ impl SerialConnection {
 
                     // While there are still bytes in the buffer and processing isn't completed,
                     // continue processing the buffer
-                    while transform_serial_buf.len() != 0 && !processing_exhausted {
+                    while !transform_serial_buf.is_empty() && !processing_exhausted {
                         // All valid packets start with the sequence [0x94 0xc3 size_msb size_lsb], where
                         // size_msb and size_lsb collectively give the size of the incoming packet
                         // Note that the maximum packet size currently stands at 240 bytes, meaning an MSB is not needed

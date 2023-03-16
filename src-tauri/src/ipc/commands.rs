@@ -178,7 +178,7 @@ pub async fn send_text(
     device.send_text(
         connection,
         text.clone(),
-        mesh::serial_connection::PacketDestination::BROADCAST,
+        mesh::serial_connection::PacketDestination::Broadcast,
         true,
         channel,
     )?;
@@ -246,7 +246,7 @@ pub async fn send_waypoint(
     device.send_waypoint(
         connection,
         waypoint,
-        mesh::serial_connection::PacketDestination::BROADCAST,
+        mesh::serial_connection::PacketDestination::Broadcast,
         true,
         channel,
     )?;
