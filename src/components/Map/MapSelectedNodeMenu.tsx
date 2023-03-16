@@ -49,7 +49,7 @@ const MapSelectedNodeMenu = () => {
       </div>
 
       <p className="text-gray-500 text-sm leading-5 font-normal pt-1">
-        Last heard from
+        Last heard from{" "}
         {lastPacketTime ? (
           <TimeAgo datetime={lastPacketTime} locale="en_us" />
         ) : (

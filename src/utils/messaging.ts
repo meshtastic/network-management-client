@@ -10,7 +10,7 @@ export const getChannelName = (channel: MeshChannel): string => {
 export const formatMessageUsername = (
   longName: string | undefined,
   ownNodeId: number,
-  from: number
+  from: number,
 ): { displayText: string; isSelf: boolean } => {
   if (from === 0 || from == ownNodeId) {
     return { displayText: "You", isSelf: true };
@@ -36,11 +36,13 @@ export const getPacketDisplayText = ({ data, type }: ChannelMessagePayload) => {
   if (type === "text") return data;
 
   const { name, latitudeI, longitudeI } = data;
-  return `Waypoint "${name}" at ${latitudeI}, ${longitudeI}`;
+  return `Received waypoint "${name}" at ${latitudeI / 1e7}, ${
+    longitudeI / 1e7
+  }`;
 };
 
 export const getLastChannelMessageDisplayText = (
-  lastMessage: ChannelMessageWithState | null
+  lastMessage: ChannelMessageWithState | null,
 ) => {
   if (lastMessage?.payload.type) {
     return getPacketDisplayText(lastMessage.payload);
