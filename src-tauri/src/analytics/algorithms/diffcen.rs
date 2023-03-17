@@ -21,7 +21,7 @@ pub fn diffusion_centrality(
     eigenvals: Vec<f64>,
     n: usize,
 ) -> HashMap<String, HashMap<String, HashMap<String, f64>>> {
-    let T = params.get("T").unwrap_or(&(5 as u32));
+    let t_param = params.get("T").unwrap_or(&(5_u32));
 
     let mut node_to_diffcen = HashMap::new();
 
@@ -34,14 +34,14 @@ pub fn diffusion_centrality(
 
     let identity_matrix = DMatrix::<f64>::identity(n, n);
 
-    let mut H = DMatrix::zeros(n, n);
+    let mut h_matrix = DMatrix::zeros(n, n);
 
-    for t in 1..T + 1 {
-        H += (q * adj_matrix).pow(t) * &identity_matrix;
+    for t in 1..t_param + 1 {
+        h_matrix += (q * adj_matrix).pow(t) * &identity_matrix;
 
         let mut node_to_diffcen_at_t = HashMap::new();
 
-        for (i, row) in H.row_iter().enumerate() {
+        for (i, row) in h_matrix.row_iter().enumerate() {
             let row_sum = row.sum();
 
             // divide the row by the sum of the row
@@ -54,7 +54,7 @@ pub fn diffusion_centrality(
                     node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), sum);
                     continue;
                 }
-                node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), *col as f64);
+                node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), *col);
             }
             node_to_diffcen_at_t.insert(
                 int_to_node_id.get(&i).unwrap().clone(),

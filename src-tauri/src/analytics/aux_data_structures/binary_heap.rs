@@ -41,7 +41,7 @@ impl BinaryHeap {
 
         for node_id in G.uncontracted.clone() {
             let node_idx = G.graph.get_node_idx(node_id.clone());
-            let node = G.graph.get_node(node_idx.clone());
+            let node = G.graph.get_node(node_idx);
             let vertex = Vertex {
                 node: node.clone(),
                 weight: 0.0,
@@ -52,36 +52,39 @@ impl BinaryHeap {
             bheap.size += 1;
         }
 
-        return bheap;
+        bheap
     }
 
     pub fn extract_max(&mut self) -> Option<Vertex> {
         if self.size == 0 {
             return None;
-        } else {
-            let root = self.heap[0].clone();
-            let leaf = self.heap[self.size as usize - 1].clone();
-            self.node_to_idx.insert(root.node.name.clone(), -1);
-            self.node_to_idx.insert(leaf.node.name.clone(), 0);
-            self.heap[0] = self.heap[self.size as usize - 1].clone();
-            self.size -= 1;
-            self.heapify(None);
-            return Some(root);
         }
+
+        let root = self.heap[0].clone();
+        let leaf = self.heap[self.size as usize - 1].clone();
+        self.node_to_idx.insert(root.node.name.clone(), -1);
+        self.node_to_idx.insert(leaf.node.name, 0);
+        self.heap[0] = self.heap[self.size as usize - 1].clone();
+        self.size -= 1;
+        self.heapify(None);
+
+        Some(root)
     }
 
     pub fn left(&self, index: i32) -> Option<f64> {
-        if index * 2 < self.size {
-            return Some(self.heap[index as usize * 2].weight);
+        if index * 2 >= self.size {
+            return None;
         }
-        return None;
+
+        Some(self.heap[index as usize * 2].weight)
     }
 
     pub fn right(&self, index: i32) -> Option<f64> {
-        if index * 2 + 1 < self.size {
-            return Some(self.heap[index as usize * 2 + 1].weight);
+        if index * 2 + 1 >= self.size {
+            return None;
         }
-        return None;
+
+        Some(self.heap[index as usize * 2 + 1].weight)
     }
 
     pub fn swap(&mut self, ind1: i32, ind2: i32) {
@@ -92,8 +95,8 @@ impl BinaryHeap {
         self.heap[ind1 as usize] = self.heap[ind2 as usize].clone();
         self.heap[ind2 as usize] = tmp;
 
-        self.node_to_idx.insert(v1.node.name.clone(), ind2);
-        self.node_to_idx.insert(v2.node.name.clone(), ind1);
+        self.node_to_idx.insert(v1.node.name, ind2);
+        self.node_to_idx.insert(v2.node.name, ind1);
     }
 
     pub fn heapify(&mut self, root: Option<i32>) {
@@ -111,13 +114,13 @@ impl BinaryHeap {
             children.push(None);
         }
 
-        if children[0] == None {
+        if children[0].is_none() {
             return;
         }
 
         let mut max = 2 * root.unwrap_or(0);
 
-        if children[1] != None && children[1].unwrap() >= children[0].unwrap() {
+        if children[1].is_some() && children[1].unwrap() >= children[0].unwrap() {
             max = 2 * root.unwrap_or(0) + 1;
         }
 
@@ -125,7 +128,6 @@ impl BinaryHeap {
             self.swap(max, root.unwrap_or(0));
             self.heapify(Some(max));
         }
-        return;
     }
 
     pub fn update(&mut self, node: String, weight: f64) {

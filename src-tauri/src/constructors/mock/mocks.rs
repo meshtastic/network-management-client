@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::analytics::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
 use crate::constructors::init::init_edge_map::as_key;
 use crate::data_conversion::distance_conversion::{get_distance, gps_degrees_to_protobuf_field};
@@ -17,7 +19,7 @@ pub fn mock_neighborinfo_packets(
     let percent_connected = opt_percent_connected.unwrap_or(1.0);
     let mut neighborinfo_vec = Vec::new();
     for node_id in 0..num_nodes {
-        let mut new_neighbor = NeighborInfo {
+        let new_neighbor = NeighborInfo {
             // Assign sequential ids
             id: node_id as u32,
             // Assign zero time for now
@@ -136,14 +138,12 @@ pub fn mock_edge_map_from_loc_info(
     let mut edge_map = HashMap::new();
     for (node_id, node) in nodes.iter() {
         for (neighbor_id, neighbor) in nodes.iter() {
-            if node_id != neighbor_id {
-                if !edge_map.contains_key(&as_key(*neighbor_id, *node_id)) {
-                    let distance = get_distance(Some(&node), Some(&neighbor));
-                    if distance < r {
-                        let snr = nodes.get(neighbor_id).unwrap().data.snr;
-                        let time = get_current_time_u32();
-                        edge_map.insert(as_key(*node_id, *neighbor_id), (snr as f64, time as u64));
-                    }
+            if node_id != neighbor_id && !edge_map.contains_key(&as_key(*neighbor_id, *node_id)) {
+                let distance = get_distance(Some(node), Some(neighbor));
+                if distance < r {
+                    let snr = nodes.get(neighbor_id).unwrap().data.snr;
+                    let time = get_current_time_u32();
+                    edge_map.insert(as_key(*node_id, *neighbor_id), (snr as f64, time as u64));
                 }
             }
         }

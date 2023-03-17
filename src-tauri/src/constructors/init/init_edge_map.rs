@@ -21,7 +21,7 @@ pub fn init_edge_map(neighbors: &HashMap<u32, NeighborInfo>) -> HashMap<(u32, u3
                 as_key(node_1, node_2),
                 (neighbor.snr as f64, neighbor.rx_time as u64),
             );
-            let opposite_neighbor = check_other_node_agrees(node_2, node_1, &neighbors);
+            let opposite_neighbor = check_other_node_agrees(node_2, node_1, neighbors);
             match opposite_neighbor {
                 // If the opposite neighbor is found on a recent packet, we take the most recent SNR
                 Some(opposite_neighbor) => {
@@ -124,27 +124,31 @@ mod tests {
             node_id: 1,
             tx_time: 0,
             neighbors: vec![neighbor_2.clone(), neighbor_3.clone(), neighbor_4.clone()],
+            ..Default::default()
         };
         let neighbor_info_2: NeighborInfo = NeighborInfo {
             node_id: 2,
             tx_time: 0,
             neighbors: vec![neighbor_1.clone(), neighbor_3.clone(), neighbor_4.clone()],
+            ..Default::default()
         };
         let neighbor_info_3: NeighborInfo = NeighborInfo {
             node_id: 3,
             tx_time: 0,
-            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_4.clone()],
+            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_4],
+            ..Default::default()
         };
         let neighbor_info_4: NeighborInfo = NeighborInfo {
             node_id: 4,
             tx_time: 0,
-            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_3.clone()],
+            neighbors: vec![neighbor_1, neighbor_2, neighbor_3],
+            ..Default::default()
         };
         let neighborinfo_vec = vec![
-            neighbor_info_1.clone(),
-            neighbor_info_2.clone(),
-            neighbor_info_3.clone(),
-            neighbor_info_4.clone(),
+            neighbor_info_1,
+            neighbor_info_2,
+            neighbor_info_3,
+            neighbor_info_4,
         ];
         let mut neighborinfo_hashmap = HashMap::new();
         for neighborinfo in neighborinfo_vec {
@@ -171,12 +175,14 @@ mod tests {
         let neighbor_info_1 = NeighborInfo {
             node_id: 1,
             tx_time: 0,
-            neighbors: vec![neighbor_2.clone()],
+            neighbors: vec![neighbor_2],
+            ..Default::default()
         };
         let neighbor_info_2: NeighborInfo = NeighborInfo {
             node_id: 2,
             tx_time: 0,
-            neighbors: vec![neighbor_1.clone()],
+            neighbors: vec![neighbor_1],
+            ..Default::default()
         };
         let mut neighborinfo_hashmap = HashMap::new();
         let neighborinfo_vec = vec![neighbor_info_1, neighbor_info_2];
@@ -216,28 +222,32 @@ mod tests {
             node_id: 1,
             tx_time: 0,
             neighbors: vec![neighbor_2.clone(), neighbor_3.clone(), neighbor_4.clone()],
+            ..Default::default()
         };
         let neighbor_info_2: NeighborInfo = NeighborInfo {
             node_id: 2,
             tx_time: 0,
             neighbors: vec![neighbor_1.clone(), neighbor_3.clone(), neighbor_4.clone()],
+            ..Default::default()
         };
         let neighbor_info_3: NeighborInfo = NeighborInfo {
             node_id: 3,
             tx_time: 0,
-            neighbors: vec![neighbor_1.clone(), neighbor_2.clone(), neighbor_4.clone()],
+            neighbors: vec![neighbor_1, neighbor_2.clone(), neighbor_4],
+            ..Default::default()
         };
         // Drop a neighbor
         let neighbor_info_4: NeighborInfo = NeighborInfo {
             node_id: 4,
             tx_time: 100,
-            neighbors: vec![neighbor_2.clone(), neighbor_3.clone()],
+            neighbors: vec![neighbor_2, neighbor_3],
+            ..Default::default()
         };
         let neighborinfo_vec = vec![
-            neighbor_info_1.clone(),
-            neighbor_info_2.clone(),
-            neighbor_info_3.clone(),
-            neighbor_info_4.clone(),
+            neighbor_info_1,
+            neighbor_info_2,
+            neighbor_info_3,
+            neighbor_info_4,
         ];
         let mut neighborinfo_hashmap = HashMap::new();
         for neighborinfo in neighborinfo_vec {

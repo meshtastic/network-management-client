@@ -68,7 +68,7 @@ impl AlgoController {
     /// # Returns
     ///
     /// APResult - The result of the algorithm. Can be an error too.
-    pub fn run_ap(&mut self, graph: &Graph, params: &Params) -> APResult {
+    pub fn run_ap(&mut self, graph: &Graph, _params: &Params) -> APResult {
         articulation_point(graph)
     }
 
@@ -82,7 +82,7 @@ impl AlgoController {
     /// # Returns
     ///
     /// MinCutResult - The result of the algorithm. Can be an error too.
-    pub fn run_mincut(&mut self, g: &Graph, params: &Params) -> MinCutResult {
+    pub fn run_mincut(&mut self, g: &Graph, _params: &Params) -> MinCutResult {
         let sw_graph = &mut StoerWagnerGraph::new(g.clone());
         let _mincut_res = stoer_wagner(sw_graph);
         match _mincut_res {
@@ -93,8 +93,8 @@ impl AlgoController {
                 }
                 recover_mincut(sw_graph, nodes_string)
             }
-            SWCutResult::Error(er_str) => return MinCutResult::Error(er_str),
-            SWCutResult::Empty(b) => return MinCutResult::Empty(b),
+            SWCutResult::Error(er_str) => MinCutResult::Error(er_str),
+            SWCutResult::Empty(b) => MinCutResult::Empty(b),
         }
     }
 
@@ -124,13 +124,13 @@ impl AlgoController {
         }
     }
 
-    pub fn run_most_sim_t(&mut self, g: &Graph, params: &Params) {
-        // TODO
-    }
+    // pub fn run_most_sim_t(&mut self, g: &Graph, params: &Params) {
+    //     // TODO
+    // }
 
-    pub fn run_pred_state(&mut self, g: &Graph, params: &Params) {
-        // TODO
-    }
+    // pub fn run_pred_state(&mut self, g: &Graph, params: &Params) {
+    //     // TODO
+    // }
 }
 
 #[cfg(test)]
@@ -141,27 +141,27 @@ mod tests {
     #[test]
     fn test_run_controller() {
         let mut algo_controller = AlgoController::new();
-        let mut G1 = Graph::new();
+        let mut graph1 = Graph::new();
 
         // Create a few nodes and edges and add to graph
         let u: String = "u".to_string();
         let v: String = "v".to_string();
         let w: String = "w".to_string();
 
-        let _u_idx = G1.add_node(u.clone());
-        let _v_idx = G1.add_node(v.clone());
-        let _w_idx = G1.add_node(w.clone());
+        let _u_idx = graph1.add_node(u.clone());
+        let _v_idx = graph1.add_node(v.clone());
+        let _w_idx = graph1.add_node(w.clone());
 
-        G1.add_edge(u.clone(), v.clone(), 1 as f64);
-        G1.add_edge(u.clone(), w.clone(), 7 as f64);
-        G1.add_edge(v.clone(), w.clone(), 35 as f64);
+        graph1.add_edge(u.clone(), v.clone(), 1_f64);
+        graph1.add_edge(u, w.clone(), 7_f64);
+        graph1.add_edge(v, w, 35_f64);
 
         let mut algo_config = AlgoConfig::new();
         let history = &mut History::new();
         let store = &mut AlgoStore::new();
         algo_config.set_algos(0b00100);
 
-        algo_controller.run_algos(&G1, &algo_config, history, store);
+        algo_controller.run_algos(&graph1, &algo_config, history, store);
 
         let diff_cent_option = store.get_diff_cent();
 
@@ -172,7 +172,7 @@ mod tests {
             DiffCenResult::Error(er_str) => {
                 panic!("Error in diffusion centrality: {}", er_str);
             }
-            DiffCenResult::Empty(b) => {
+            DiffCenResult::Empty(_b) => {
                 panic!("Empty graph");
             }
         }

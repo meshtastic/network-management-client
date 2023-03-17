@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::graph::{edge::Edge, graph_ds::Graph, node::Node};
 
 pub fn convert_to_graph(graph_string: Vec<&str>) -> Graph {
@@ -8,10 +10,10 @@ pub fn convert_to_graph(graph_string: Vec<&str>) -> Graph {
 
     for line in graph_string {
         if line.starts_with("O:") {
-            let node = line.split(" ").collect::<Vec<&str>>()[1];
+            let node = line.split(' ').collect::<Vec<&str>>()[1];
             nodes.push(node.to_string());
         } else if line.starts_with("E:") {
-            let edge = line.split(" ").collect::<Vec<&str>>()[1..].join(" ");
+            let edge = line.split(' ').collect::<Vec<&str>>()[1..].join(" ");
             edges.push(edge);
         }
     }
@@ -24,7 +26,7 @@ pub fn convert_to_graph(graph_string: Vec<&str>) -> Graph {
 
     // add edges
     for edge in edges {
-        let edge_split = edge.split(" ").collect::<Vec<&str>>();
+        let edge_split = edge.split(' ').collect::<Vec<&str>>();
         let node1 = edge_split[0];
         let node2 = edge_split[1];
         let weight = edge_split[2].parse::<f64>().unwrap();
@@ -36,6 +38,5 @@ pub fn convert_to_graph(graph_string: Vec<&str>) -> Graph {
         graph.add_edge_from_struct(edge_struct);
     }
 
-    // return graph;
-    return graph;
+    graph
 }

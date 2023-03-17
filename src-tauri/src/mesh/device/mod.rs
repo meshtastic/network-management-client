@@ -13,18 +13,18 @@ pub mod state;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum MeshDeviceStatus {
-    DeviceRestarting,
-    DeviceDisconnected,
-    DeviceConnecting,
-    DeviceReconnecting,
-    DeviceConnected,
-    DeviceConfiguring,
-    DeviceConfigured,
+    Restarting,
+    Disconnected,
+    Connecting,
+    Reconnecting,
+    Connected,
+    Configuring,
+    Configured,
 }
 
 impl Default for MeshDeviceStatus {
     fn default() -> Self {
-        MeshDeviceStatus::DeviceDisconnected
+        MeshDeviceStatus::Disconnected
     }
 }
 

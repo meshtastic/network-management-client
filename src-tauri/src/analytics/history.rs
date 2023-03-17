@@ -40,7 +40,7 @@ impl History {
     /// * `SystemTime` - The time of the last articulation point calculation.
     pub fn log_ap(&mut self) -> SystemTime {
         self.ap_history.push(SystemTime::now());
-        self.ap_history.last().unwrap().clone()
+        *self.ap_history.last().unwrap()
     }
 
     /// Logs the time of the last mincut calculation.
@@ -54,7 +54,7 @@ impl History {
     /// * `SystemTime` - The time of the last mincut calculation.
     pub fn log_mincut(&mut self) -> SystemTime {
         self.mincut_history.push(SystemTime::now());
-        self.mincut_history.last().unwrap().clone()
+        *self.mincut_history.last().unwrap()
     }
 
     /// Logs the time of the last diffusion centrality calculation.
@@ -68,7 +68,7 @@ impl History {
     /// * `SystemTime` - The time of the last diffusion centrality calculation.
     pub fn log_diff_cent(&mut self) -> SystemTime {
         self.diff_cent_history.push(SystemTime::now());
-        self.diff_cent_history.last().unwrap().clone()
+        *self.diff_cent_history.last().unwrap()
     }
 
     /// Logs the time of the last most similar timeline calculation.
@@ -82,7 +82,7 @@ impl History {
     /// * `SystemTime` - The time of the last most similar timeline calculation.
     pub fn log_most_sim_t(&mut self) -> SystemTime {
         self.most_sim_t_history.push(SystemTime::now());
-        self.most_sim_t_history.last().unwrap().clone()
+        *self.most_sim_t_history.last().unwrap()
     }
 
     /// Logs the time of the last predicted state calculation.
@@ -96,7 +96,7 @@ impl History {
     /// * `SystemTime` - The time of the last predicted state calculation.
     pub fn log_pred_stt(&mut self) -> SystemTime {
         self.pred_stt_history.push(SystemTime::now());
-        self.pred_stt_history.last().unwrap().clone()
+        *self.pred_stt_history.last().unwrap()
     }
 
     /// Returns the history of the articulation point calculation.

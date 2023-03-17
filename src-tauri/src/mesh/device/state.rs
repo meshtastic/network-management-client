@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use app::protobufs;
 
 use super::helpers::get_current_time_u32;

@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use super::convert_to_graph_from_string::convert_to_graph;
 use super::take_snapshot::take_snapshot_of_graph;
 use crate::graph::graph_ds::Graph;
@@ -19,7 +21,7 @@ pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<Graph, String> {
     let snapshots_str: &str = &snapshots[..];
 
     let graph_json = json!({
-      "snapshots": snapshots_str.clone(),
+      "snapshots": snapshots_str,
     });
 
     let res = client
@@ -32,9 +34,9 @@ pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<Graph, String> {
         let graph_json = res_json.json::<serde_json::Value>().await;
 
         if let Ok(g_json) = graph_json {
-            let next_statesnapshot = g_json["snapshot"].to_string().to_owned();
+            let next_statesnapshot = g_json["snapshot"].to_string();
 
-            let mut next_state_lines: Vec<&str> = next_statesnapshot.split("-").collect();
+            let mut next_state_lines: Vec<&str> = next_statesnapshot.split('-').collect();
 
             let size = next_state_lines.len();
             next_state_lines[0] = &next_state_lines[0][1..]; // remove the first character

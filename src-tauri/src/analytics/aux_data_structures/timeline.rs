@@ -1,12 +1,12 @@
+#![allow(dead_code)]
+
 use std::collections::HashMap;
 use std::fs;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 
 // A data structure to represent the timeline of graph snapshots.
-use crate::analytics::aux_functions::take_snapshot::{
-    take_snapshot_of_graph, take_snapshot_of_node_fts,
-};
+use crate::analytics::aux_functions::take_snapshot::take_snapshot_of_graph;
 use crate::graph::graph_ds::Graph;
 
 // Created at the beginning of each rescue attempt.
@@ -69,7 +69,7 @@ impl Timeline {
                 self.curr_snapshot = Some(snapshot.clone());
             }
             Some(_curr_snapshot) => {
-                let is_connected = self.check_connection(&snapshot);
+                let is_connected = self.check_connection(snapshot);
                 if self.save {
                     self.write_snapshot();
                 }
@@ -102,17 +102,14 @@ impl Timeline {
     }
 
     pub fn get_curr_snapshot(&self) -> Option<&Graph> {
-        match self.curr_snapshot {
-            None => None,
-            Some(ref curr_snapshot) => Some(curr_snapshot),
-        }
+        self.curr_snapshot.as_ref()
     }
 
     /// Writes the current snapshot to a txt file.
     pub fn write_snapshot(&mut self) {
         let curr_snapshot = self.curr_snapshot.as_ref().expect("msg");
-        let mut snapshot_string = take_snapshot_of_graph(curr_snapshot).clone();
-        snapshot_string.push_str("\n");
+        let mut snapshot_string = take_snapshot_of_graph(curr_snapshot);
+        snapshot_string.push('\n');
 
         let timeline_id = self.curr_timeline_id;
 
@@ -124,11 +121,7 @@ impl Timeline {
             .unwrap();
 
         if let Err(e) = writeln!(file, "{}", snapshot_string) {
-            eprintln!(
-                "Couldn't write snapshot to file {}: {}",
-                filename.clone(),
-                e
-            );
+            eprintln!("Couldn't write snapshot to file {}: {}", filename, e);
         }
     }
 
@@ -144,7 +137,7 @@ impl Timeline {
             .unwrap();
 
         if let Err(e) = writeln!(labels_file, "{}", label_text) {
-            eprintln!("Couldn't write label to file {}: {}", filename.clone(), e);
+            eprintln!("Couldn't write label to file {}: {}", filename, e);
         }
     }
 
@@ -176,7 +169,7 @@ mod tests {
 
         let mut timeline = Timeline::new(config_fields, false);
 
-        let mut G1 = Graph::new();
+        let mut graph1 = Graph::new();
 
         // Create a few nodes and edges and add to graph
         let a: String = "a".to_string();
@@ -184,36 +177,36 @@ mod tests {
         let c: String = "c".to_string();
         let d: String = "d".to_string();
 
-        let mut a_node = Node::new(a.clone());
+        let mut a_node = Node::new(a);
         a_node.set_gps(-72.28486, 43.71489, 1.0);
-        let a_idx = G1.add_node_from_struct(a_node);
+        let a_idx = graph1.add_node_from_struct(a_node);
 
-        let mut b_node = Node::new(b.clone());
+        let mut b_node = Node::new(b);
         b_node.set_gps(-72.28239, 43.71584, 1.0);
-        let b_idx = G1.add_node_from_struct(b_node);
+        let b_idx = graph1.add_node_from_struct(b_node);
 
-        let mut c_node = Node::new(c.clone());
+        let mut c_node = Node::new(c);
         c_node.set_gps(-72.28332, 43.7114, 1.0);
-        let c_idx = G1.add_node_from_struct(c_node);
+        let c_idx = graph1.add_node_from_struct(c_node);
 
-        let mut d_node = Node::new(d.clone());
+        let mut d_node = Node::new(d);
         d_node.set_gps(-72.28085, 43.71235, 1.0);
-        let d_idx = G1.add_node_from_struct(d_node);
+        let d_idx = graph1.add_node_from_struct(d_node);
 
         // 0: a, 1: b, 2: c, 3: d
         let a_b = Edge::new(a_idx, b_idx, 0.51);
-        G1.add_edge_from_struct(a_b);
+        graph1.add_edge_from_struct(a_b);
 
         let a_c = Edge::new(a_idx, c_idx, 0.39);
-        G1.add_edge_from_struct(a_c);
+        graph1.add_edge_from_struct(a_c);
 
         let b_c = Edge::new(b_idx, c_idx, 0.4);
-        G1.add_edge_from_struct(b_c);
+        graph1.add_edge_from_struct(b_c);
 
         let b_d = Edge::new(b_idx, d_idx, 0.6);
-        G1.add_edge_from_struct(b_d);
+        graph1.add_edge_from_struct(b_d);
 
-        let mut G2 = Graph::new();
+        let mut graph2 = Graph::new();
 
         // Create a few nodes and edges and add to graph
         let a: String = "a".to_string();
@@ -221,36 +214,36 @@ mod tests {
         let c: String = "c".to_string();
         let d: String = "d".to_string();
 
-        let mut a_node = Node::new(a.clone());
+        let mut a_node = Node::new(a);
         a_node.set_gps(-72.28239, 43.71489, 1.0);
-        let a_idx = G2.add_node_from_struct(a_node);
+        let a_idx = graph2.add_node_from_struct(a_node);
 
-        let mut b_node = Node::new(b.clone());
+        let mut b_node = Node::new(b);
         b_node.set_gps(-72.28486, 43.71584, 1.0);
-        let b_idx = G2.add_node_from_struct(b_node);
+        let b_idx = graph2.add_node_from_struct(b_node);
 
-        let mut c_node = Node::new(c.clone());
+        let mut c_node = Node::new(c);
         c_node.set_gps(-72.28332, 43.7114, 1.0);
-        let c_idx = G2.add_node_from_struct(c_node);
+        let c_idx = graph2.add_node_from_struct(c_node);
 
-        let mut d_node = Node::new(d.clone());
+        let mut d_node = Node::new(d);
         d_node.set_gps(-72.28085, 43.71235, 1.0);
-        let d_idx = G2.add_node_from_struct(d_node);
+        let d_idx = graph2.add_node_from_struct(d_node);
 
         // 0: a, 1: b, 2: c, 3: d
         let a_b = Edge::new(a_idx, b_idx, 0.6);
-        G2.add_edge_from_struct(a_b);
+        graph2.add_edge_from_struct(a_b);
 
         let a_c = Edge::new(a_idx, c_idx, 0.33);
-        G2.add_edge_from_struct(a_c);
+        graph2.add_edge_from_struct(a_c);
 
         let b_d = Edge::new(b_idx, d_idx, 0.65);
-        G2.add_edge_from_struct(b_d);
+        graph2.add_edge_from_struct(b_d);
 
         let b_c = Edge::new(b_idx, c_idx, 0.11);
-        G2.add_edge_from_struct(b_c);
+        graph2.add_edge_from_struct(b_c);
 
-        let graphs = vec![G1, G2];
+        let graphs = vec![graph1, graph2];
 
         for graph in graphs {
             timeline.add_snapshot(&graph);

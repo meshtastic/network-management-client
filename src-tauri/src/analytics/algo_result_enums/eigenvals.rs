@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 #[derive(Debug)]
 pub enum EigenvalsResult {
     Success(Vec<f64>),

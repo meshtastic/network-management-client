@@ -42,21 +42,20 @@ impl StoerWagnerGraph {
         let t = sets[1];
 
         let t_idx = self.graph.get_node_idx(t.to_string());
-        let t_node = self.graph.get_node(t_idx.clone());
+        let t_node = self.graph.get_node(t_idx);
         let weight = t_node.optimal_weighted_degree;
 
-        let cut = Cut::new(weight, s.to_string(), t.to_string());
-        cut
+        Cut::new(weight, s.to_string(), t.to_string())
     }
 
     pub fn contract_edge(&mut self, v1: String, v2: String) {
         let start_idx = self.graph.get_node_idx(v1.clone());
         let finish_idx = self.graph.get_node_idx(v2.clone());
 
-        let mut start = self.graph.get_node(start_idx.clone());
-        let finish = self.graph.get_node(finish_idx.clone());
+        let mut start = self.graph.get_node(start_idx);
+        let finish = self.graph.get_node(finish_idx);
 
-        self.uf.union(v1.clone(), v2.clone());
+        self.uf.union(v1, v2.clone());
 
         for mut node in self.graph.get_neighbors(finish.name.clone()) {
             if !node.name.eq(&start.name) {
@@ -83,7 +82,7 @@ impl StoerWagnerGraph {
         }
 
         self.uncontracted.remove(&v2);
-        self.graph.remove_node(finish_idx.clone());
+        self.graph.remove_node(finish_idx);
     }
 
     pub fn clone(&self) -> StoerWagnerGraph {

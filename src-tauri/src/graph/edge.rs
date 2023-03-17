@@ -37,8 +37,8 @@ impl Edge {
 impl Clone for Edge {
     fn clone(&self) -> Self {
         Edge {
-            u: self.u.clone(),
-            v: self.v.clone(),
+            u: self.u,
+            v: self.v,
             weight: self.weight,
         }
     }

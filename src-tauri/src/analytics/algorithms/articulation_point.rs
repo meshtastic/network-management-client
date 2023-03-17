@@ -1,5 +1,6 @@
 #![allow(dead_code)]
-#![allow(non_snake_case)]
+#![allow(clippy::too_many_arguments)]
+
 use super::super::algo_result_enums::ap::APResult;
 use crate::graph::graph_ds::Graph;
 use core::cmp::min;
@@ -27,7 +28,7 @@ pub fn articulation_point_helper(
         if !visited.get(&neighbor.name) {
             children += 1;
             articulation_point_helper(
-                &graph,
+                graph,
                 neighbor.name.clone(),
                 visited,
                 disc,
@@ -53,7 +54,7 @@ pub fn articulation_point_helper(
     }
 
     if parent.eq("-1") && children > 1 {
-        ap.insert(node_idx.clone(), true);
+        ap.insert(node_idx, true);
     }
 }
 
@@ -68,7 +69,7 @@ pub fn articulation_point(graph: &Graph) -> APResult {
     for node in graph.get_nodes() {
         if !visited.get(&node.name) {
             articulation_point_helper(
-                &graph,
+                graph,
                 node.name,
                 &mut visited,
                 &mut disc,
@@ -86,7 +87,8 @@ pub fn articulation_point(graph: &Graph) -> APResult {
             articulation_points.push(graph.get_node_idx(key.to_string()));
         }
     }
-    return APResult::Success(articulation_points);
+
+    APResult::Success(articulation_points)
 }
 
 // Create a unit test for the Graph struct
@@ -123,11 +125,11 @@ mod tests {
         g.add_edge(u.clone(), w.clone(), 1.0);
         g.add_edge(u.clone(), x.clone(), 1.0);
         g.add_edge(w.clone(), x.clone(), 1.0);
-        g.add_edge(v.clone(), y.clone(), 1.0);
+        g.add_edge(v, y.clone(), 1.0);
         g.add_edge(x.clone(), y.clone(), 1.0);
-        g.add_edge(w.clone(), z.clone(), 1.0);
-        g.add_edge(x.clone(), a.clone(), 1.0);
-        g.add_edge(y.clone(), b.clone(), 1.0);
+        g.add_edge(w, z, 1.0);
+        g.add_edge(x.clone(), a, 1.0);
+        g.add_edge(y, b, 1.0);
 
         println!("\n");
 
@@ -138,8 +140,8 @@ mod tests {
                 let len_articulation_points = aps.len();
                 assert_eq!(len_articulation_points, 3);
                 // Check if node u is an articulation point
-                assert_eq!(aps.contains(&g.get_node_idx(u.clone())), false);
-                assert_eq!(aps.contains(&g.get_node_idx(x.clone())), true);
+                assert!(!aps.contains(&g.get_node_idx(u)));
+                assert!(aps.contains(&g.get_node_idx(x)));
                 println!("Articulation Points: {:?}", aps);
             }
             APResult::Error(aps) => {

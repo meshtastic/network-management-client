@@ -43,9 +43,11 @@ pub fn init_graph(
         None,
         None,
     );
+
     for edge in edges {
         graph.add_edge_from_struct(edge);
     }
+
     graph
 }
 
@@ -66,35 +68,37 @@ pub fn add_node_and_location_to_graph(
                 node.speed = node_pos.ground_speed as f64 * SPEED_CONVERSION_FACTOR;
                 node.direction = node_pos.ground_track as f64;
             } else {
-                println!("We do not have position info for node {}", name);
+                eprintln!("We do not have position info for node {}", name);
             }
         }
+
         return graph.add_node_from_struct(node);
-    } else {
-        let node_idx = graph.get_node_idx(name.clone());
-        let node = graph.get_node_mut(node_idx);
-        if let Some(node_loc) = node_loc {
-            let node_pos = &node_loc.data.position;
-            if let Some(node_pos) = node_pos {
-                let latitude = node_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR;
-                let longitude = node_pos.longitude_i as f64 * LON_CONVERSION_FACTOR;
-                let altitude = node_pos.altitude as f64 * ALT_CONVERSION_FACTOR;
-                node.set_gps(longitude, latitude, altitude);
-            }
+    }
+
+    let node_idx = graph.get_node_idx(name.clone());
+    let node = graph.get_node_mut(node_idx);
+    if let Some(node_loc) = node_loc {
+        let node_pos = &node_loc.data.position;
+        if let Some(node_pos) = node_pos {
+            let latitude = node_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR;
+            let longitude = node_pos.longitude_i as f64 * LON_CONVERSION_FACTOR;
+            let altitude = node_pos.altitude as f64 * ALT_CONVERSION_FACTOR;
+            node.set_gps(longitude, latitude, altitude);
         }
     }
+
     graph.get_node_idx(name)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::analytics::aux_data_structures::neighbor_info::{Neighbor, NeighborInfo};
+    use crate::analytics::aux_data_structures::neighbor_info::Neighbor;
     use crate::data_conversion::distance_conversion::gps_degrees_to_protobuf_field;
     use app::protobufs;
 
     fn generate_zeroed_position() -> protobufs::Position {
-        let position = protobufs::Position {
+        protobufs::Position {
             latitude_i: 0,
             longitude_i: 0,
             altitude: 0,
@@ -117,30 +121,27 @@ mod tests {
             sensor_id: 0,
             next_update: 0,
             seq_number: 0,
-        };
-        position
+        }
     }
 
     fn generate_test_user() -> protobufs::User {
-        let user = protobufs::User {
+        protobufs::User {
             id: "test".to_string(),
             long_name: "test".to_string(),
             short_name: "test".to_string(),
             macaddr: Vec::new(),
             hw_model: 0,
             is_licensed: false,
-        };
-        user
+        }
     }
 
     fn generate_zeroed_device_metrics() -> protobufs::DeviceMetrics {
-        let devicemetrics = protobufs::DeviceMetrics {
+        protobufs::DeviceMetrics {
             battery_level: 0,
             voltage: 0.0,
             channel_utilization: 0.0,
             air_util_tx: 0.0,
-        };
-        devicemetrics
+        }
     }
 
     #[test]
@@ -223,16 +224,6 @@ mod tests {
             id: 2,
             timestamp: 100,
             snr: 0.1,
-        };
-        let neighbor_info_1 = NeighborInfo {
-            id: 1,
-            timestamp: 0,
-            neighbors: vec![neighbor_2.clone()],
-        };
-        let neighbor_info_2: NeighborInfo = NeighborInfo {
-            id: 2,
-            timestamp: 0,
-            neighbors: vec![neighbor_1.clone()],
         };
         let lat_1 = 43.7022;
         let lng_1 = 72.2882;
@@ -320,8 +311,10 @@ mod tests {
         loc_hashmap.insert(2, meshnode_2);
         snr_hashmap.insert((1, 2), (0.1, 100));
         let mut graph = init_graph(&snr_hashmap, &loc_hashmap);
+
         // Check that the graph has the correct number of edges
         assert_eq!(graph.get_size(), 1);
+
         // Check the edge weights to check that they are both the weight of the 1-2 edge, which has neighbor 2's SNR
         // Assert that the 1-2 edge is the correct (smaller) SNR
         let first_edge_weight = graph.get_edge_weight(

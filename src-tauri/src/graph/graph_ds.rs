@@ -8,7 +8,7 @@ use nalgebra::DMatrix;
 use petgraph::prelude::*;
 use petgraph::stable_graph::StableUnGraph;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display};
 
 #[derive(Serialize, Deserialize)]
 pub struct Graph {
@@ -57,9 +57,9 @@ impl Graph {
     ///
     /// * `name` - String identifier of the node.
     pub fn add_node(&mut self, name: String) -> petgraph::graph::NodeIndex {
-        let node = Node::new(name.clone());
+        let node = Node::new(name);
         let node_idx = self.g.add_node(node.clone());
-        self.node_idx_map.insert(node.name.clone(), node_idx);
+        self.node_idx_map.insert(node.name, node_idx);
         node_idx
     }
 
@@ -70,7 +70,7 @@ impl Graph {
     /// * `node` - Node struct.
     pub fn add_node_from_struct(&mut self, node: Node) -> petgraph::graph::NodeIndex {
         let node_idx = self.g.add_node(node.clone());
-        self.node_idx_map.insert(node.name.clone(), node_idx);
+        self.node_idx_map.insert(node.name, node_idx);
         node_idx
     }
 
@@ -83,11 +83,11 @@ impl Graph {
         let node_u = self.g.node_weight(node).unwrap().clone();
 
         for neighbor_node in self.get_neighbors_idx(node_u.name.clone()) {
-            let node_v = self.g.node_weight(neighbor_node.clone()).unwrap();
+            let node_v = self.g.node_weight(neighbor_node).unwrap();
             self.remove_edge(node_u.name.clone(), node_v.name.clone(), None, Some(false));
         }
 
-        self.g.remove_node(node.clone());
+        self.g.remove_node(node);
     }
 
     /// Updates the weight of the node. Does not return anything.
@@ -107,7 +107,7 @@ impl Graph {
     ///
     /// * `name` - Name of the node
     pub fn contains_node(&mut self, name: String) -> bool {
-        return self.node_idx_map.contains_key(&(name.clone() as String));
+        self.node_idx_map.contains_key(&name)
     }
 
     /// Returns whether the graph contains an edge
@@ -120,13 +120,14 @@ impl Graph {
         let node1_idx = self.get_node_idx(node1);
         let node2_idx = self.get_node_idx(node2);
 
-        return self.edge_idx_map.contains_key(&(node1_idx, node2_idx))
-            && self
-                .edge_idx_map
-                .get(&(node1_idx, node2_idx))
-                .unwrap()
-                .len()
-                > 0;
+        let contains_key = self.edge_idx_map.contains_key(&(node1_idx, node2_idx));
+        let is_empty = self
+            .edge_idx_map
+            .get(&(node1_idx, node2_idx))
+            .unwrap_or(&vec![])
+            .is_empty();
+
+        contains_key && !is_empty
     }
 
     /// Returns the edge between two nodes
@@ -170,37 +171,33 @@ impl Graph {
             return print_error_and_return(&error_message);
         }
 
-        let u_idx = self.node_idx_map.get(&u).unwrap().clone();
-        let v_idx = self.node_idx_map.get(&v).unwrap().clone();
+        let u_idx = *self.node_idx_map.get(&u).unwrap();
+        let v_idx = *self.node_idx_map.get(&v).unwrap();
 
         let node_u = self.g.node_weight(u_idx).unwrap().clone();
         let node_v = self.g.node_weight(v_idx).unwrap().clone();
 
-        let edge = Edge::new(u_idx.clone(), v_idx.clone(), weight);
+        let edge = Edge::new(u_idx, v_idx, weight);
 
-        let edge_idx = self.g.add_edge(u_idx.clone(), v_idx.clone(), edge);
+        let edge_idx = self.g.add_edge(u_idx, v_idx, edge);
 
         // Insert new edge into edge_idx_map which maps (u, v) to a list of edge indices
-        let edge_idx_list = self
-            .edge_idx_map
-            .entry((u_idx.clone(), v_idx.clone()))
-            .or_insert(Vec::new());
+        let edge_idx_list: &mut Vec<EdgeIndex> =
+            self.edge_idx_map.entry((u_idx, v_idx)).or_default();
 
         edge_idx_list.push(edge_idx);
 
         // Insert new edge into edge_idx_map which maps (v, u) to a list of edge indices
-        let edge_idx_list = self
-            .edge_idx_map
-            .entry((v_idx.clone(), u_idx.clone()))
-            .or_insert(Vec::new());
+        let edge_idx_list: &mut Vec<EdgeIndex> =
+            self.edge_idx_map.entry((v_idx, u_idx)).or_default();
 
         edge_idx_list.push(edge_idx);
 
         let updated_weight_u = node_u.optimal_weighted_degree + weight;
         let updated_weight_v = node_v.optimal_weighted_degree + weight;
 
-        self.change_node_opt_weight(u_idx.clone(), updated_weight_u);
-        self.change_node_opt_weight(v_idx.clone(), updated_weight_v);
+        self.change_node_opt_weight(u_idx, updated_weight_u);
+        self.change_node_opt_weight(v_idx, updated_weight_v);
     }
 
     /// Does the same thing as add_edge but accepts edge struct as input.
@@ -209,39 +206,33 @@ impl Graph {
     ///
     /// * `edge` - Edge struct
     pub fn add_edge_from_struct(&mut self, edge: Edge) {
-        let u_idx = edge.get_u().clone();
-        let v_idx = edge.get_v().clone();
+        let u_idx = edge.get_u();
+        let v_idx = edge.get_v();
 
         let node_u = self.g.node_weight(u_idx).unwrap().clone();
         let node_v = self.g.node_weight(v_idx).unwrap().clone();
 
         let weight = edge.get_weight();
 
-        let edge_idx = self
-            .g
-            .add_edge(edge.get_u().clone(), edge.get_v().clone(), edge);
+        let edge_idx = self.g.add_edge(edge.get_u(), edge.get_v(), edge);
 
         // Insert new edge into edge_idx_map which maps (u, v) to a list of edge indices
-        let edge_idx_list = self
-            .edge_idx_map
-            .entry((u_idx.clone(), v_idx.clone()))
-            .or_insert(Vec::new());
+        let edge_idx_list: &mut Vec<EdgeIndex> =
+            self.edge_idx_map.entry((u_idx, v_idx)).or_default();
 
         edge_idx_list.push(edge_idx);
 
         // Insert new edge into edge_idx_map which maps (v, u) to a list of edge indices
-        let edge_idx_list = self
-            .edge_idx_map
-            .entry((v_idx.clone(), u_idx.clone()))
-            .or_insert(Vec::new());
+        let edge_idx_list: &mut Vec<EdgeIndex> =
+            self.edge_idx_map.entry((v_idx, u_idx)).or_default();
 
         edge_idx_list.push(edge_idx);
 
         let updated_weight_u = node_u.optimal_weighted_degree + weight;
         let updated_weight_v = node_v.optimal_weighted_degree + weight;
 
-        self.change_node_opt_weight(u_idx.clone(), updated_weight_u);
-        self.change_node_opt_weight(v_idx.clone(), updated_weight_v);
+        self.change_node_opt_weight(u_idx, updated_weight_u);
+        self.change_node_opt_weight(v_idx, updated_weight_v);
     }
 
     /// Updates the weight of the edge. Does not return anything.
@@ -269,85 +260,62 @@ impl Graph {
             return print_error_and_return(&error_message);
         }
 
-        let u_idx = self.node_idx_map.get(&u).unwrap().clone();
-        let v_idx = self.node_idx_map.get(&v).unwrap().clone();
+        let u_idx = *self.node_idx_map.get(&u).unwrap();
+        let v_idx = *self.node_idx_map.get(&v).unwrap();
 
         // Check if edge does not exist
-        if !self.g.contains_edge(u_idx.clone(), v_idx.clone()) {
-            self.add_edge(u.clone(), v.clone(), weight);
+        if !self.g.contains_edge(u_idx, v_idx) {
+            self.add_edge(u, v, weight);
             return;
         }
 
-        let edge_idx_list = self
-            .edge_idx_map
-            .get(&(u_idx.clone(), v_idx.clone()))
-            .unwrap()
-            .clone();
+        let edge_idx_list = self.edge_idx_map.get(&(u_idx, v_idx)).unwrap().clone();
 
         let old_weight = self
             .g
-            .edge_weight(edge_idx_list.clone()[parallel_edge_idx.unwrap_or(0)])
+            .edge_weight(edge_idx_list[parallel_edge_idx.unwrap_or(0)])
             .unwrap()
             .weight;
 
-        let updated_weight_u = self
-            .g
-            .node_weight(u_idx.clone())
-            .unwrap()
-            .optimal_weighted_degree
-            + weight
-            - old_weight;
+        let updated_weight_u =
+            self.g.node_weight(u_idx).unwrap().optimal_weighted_degree + weight - old_weight;
 
-        let updated_weight_v = self
-            .g
-            .node_weight(v_idx.clone())
-            .unwrap()
-            .optimal_weighted_degree
-            + weight
-            - old_weight;
+        let updated_weight_v =
+            self.g.node_weight(v_idx).unwrap().optimal_weighted_degree + weight - old_weight;
 
-        self.change_node_opt_weight(u_idx.clone(), updated_weight_u);
-        self.change_node_opt_weight(v_idx.clone(), updated_weight_v);
+        self.change_node_opt_weight(u_idx, updated_weight_u);
+        self.change_node_opt_weight(v_idx, updated_weight_v);
 
         if !update_all_parallel.unwrap_or(false) {
-            let edge = Edge::new(u_idx.clone(), v_idx.clone(), weight);
+            let edge = Edge::new(u_idx, v_idx, weight);
 
-            let edge_idx = self.g.update_edge(u_idx.clone(), v_idx.clone(), edge);
+            let edge_idx = self.g.update_edge(u_idx, v_idx, edge);
 
             // Update edge_idx_map to reflect the new edge index
-            let edge_idx_list = self
-                .edge_idx_map
-                .entry((u_idx.clone(), v_idx.clone()))
-                .or_insert(Vec::new());
+            let edge_idx_list: &mut Vec<EdgeIndex> =
+                self.edge_idx_map.entry((u_idx, v_idx)).or_default();
 
             edge_idx_list[parallel_edge_idx.unwrap_or(0)] = edge_idx;
 
             // Update edge_idx_map to reflect the new edge index
-            let edge_idx_list = self
-                .edge_idx_map
-                .entry((v_idx.clone(), u_idx.clone()))
-                .or_insert(Vec::new());
+            let edge_idx_list = self.edge_idx_map.entry((v_idx, u_idx)).or_default();
 
             edge_idx_list[parallel_edge_idx.unwrap_or(0)] = edge_idx;
         } else {
-            for parallel_edge_idx_iterator in 0..edge_idx_list.clone().len() {
-                let edge = Edge::new(u_idx.clone(), v_idx.clone(), weight);
+            for parallel_edge_idx_iterator in 0..edge_idx_list.len() {
+                let edge = Edge::new(u_idx, v_idx, weight);
 
-                let edge_idx = self.g.update_edge(u_idx.clone(), v_idx.clone(), edge);
+                let edge_idx = self.g.update_edge(u_idx, v_idx, edge);
 
                 // Update edge_idx_map to reflect the new edge index
-                let edge_idx_list = self
-                    .edge_idx_map
-                    .entry((u_idx.clone(), v_idx.clone()))
-                    .or_insert(Vec::new());
+                let edge_idx_list: &mut Vec<EdgeIndex> =
+                    self.edge_idx_map.entry((u_idx, v_idx)).or_default();
 
                 edge_idx_list[parallel_edge_idx_iterator] = edge_idx;
 
                 // Update edge_idx_map to reflect the new edge index
-                let edge_idx_list = self
-                    .edge_idx_map
-                    .entry((v_idx.clone(), u_idx.clone()))
-                    .or_insert(Vec::new());
+                let edge_idx_list: &mut Vec<EdgeIndex> =
+                    self.edge_idx_map.entry((v_idx, u_idx)).or_default();
 
                 edge_idx_list[parallel_edge_idx_iterator] = edge_idx;
             }
@@ -371,26 +339,24 @@ impl Graph {
     ) -> f64 {
         if !self.node_idx_map.contains_key(&u) {
             let error_message = format!("Node {} does not exist", u);
-            println!("{}", error_message);
+            eprintln!("{}", error_message);
             return 0.0;
         }
         if !self.node_idx_map.contains_key(&v) {
             let error_message = format!("Node {} does not exist", v);
-            println!("{}", error_message);
+            eprintln!("{}", error_message);
             return 0.0;
         }
 
         if !self.contains_edge(u.clone(), v.clone()) {
+            eprintln!("Graph doesn't contain edge: ({}, {})", u, v);
             return 0.0;
         }
 
         let u_idx = self.node_idx_map.get(&u).unwrap();
         let v_idx = self.node_idx_map.get(&v).unwrap();
 
-        let edge_idx_list = self
-            .edge_idx_map
-            .get(&(u_idx.clone(), v_idx.clone()))
-            .unwrap();
+        let edge_idx_list = self.edge_idx_map.get(&(*u_idx, *v_idx)).unwrap();
 
         let mut weight = 0.0;
         if get_all_parallel.unwrap_or(false) {
@@ -401,7 +367,7 @@ impl Graph {
                 .weight;
         } else {
             for edge_idx in edge_idx_list {
-                weight += self.g.edge_weight(edge_idx.clone()).unwrap().weight;
+                weight += self.g.edge_weight(*edge_idx).unwrap().weight;
             }
         }
 
@@ -432,74 +398,66 @@ impl Graph {
             return print_error_and_return(&error_message);
         }
 
-        let u_idx = self.node_idx_map.get(&u).unwrap().clone();
-        let v_idx = self.node_idx_map.get(&v).unwrap().clone();
+        let u_idx = *self.node_idx_map.get(&u).unwrap();
+        let v_idx = *self.node_idx_map.get(&v).unwrap();
 
         // Check if edge does not exist
-        if !self.g.contains_edge(u_idx.clone(), v_idx.clone()) {
+        if !self.g.contains_edge(u_idx, v_idx) {
             println!("Edge: ({}, {}) does not exist", u, v);
             return print_error_and_return("Edge does not exist");
         }
 
-        let edge_idx_list = self
-            .edge_idx_map
-            .get(&(u_idx.clone(), v_idx.clone()))
-            .unwrap()
-            .clone();
+        let edge_idx_list = self.edge_idx_map.get(&(u_idx, v_idx)).unwrap().clone();
 
         // If remove_all_parallel is false, then remove the single edge in the list whose
         // index is parallel_edge_idx (default 0).
         if !remove_all_parallel.unwrap_or(false) {
             let weight = self
                 .g
-                .edge_weight(edge_idx_list.clone()[parallel_edge_idx.unwrap_or(0)])
-                .unwrap_or(&Edge::new(u_idx.clone(), v_idx.clone(), 0.0))
+                .edge_weight(edge_idx_list[parallel_edge_idx.unwrap_or(0)])
+                .unwrap_or(&Edge::new(u_idx, v_idx, 0.0))
                 .weight;
 
-            let node_u = self.g.node_weight(u_idx.clone()).unwrap();
-            let node_v = self.g.node_weight(v_idx.clone()).unwrap();
+            let node_u = self.g.node_weight(u_idx).unwrap();
+            let node_v = self.g.node_weight(v_idx).unwrap();
 
             let u_weight = node_u.optimal_weighted_degree - weight;
             let v_weight = node_v.optimal_weighted_degree - weight;
 
             self.g
-                .remove_edge(edge_idx_list.clone()[parallel_edge_idx.unwrap_or(0)]);
+                .remove_edge(edge_idx_list[parallel_edge_idx.unwrap_or(0)]);
 
-            let edge_idx_list_mut = self
-                .edge_idx_map
-                .entry((v_idx.clone(), u_idx.clone()))
-                .or_insert(Vec::new());
+            let edge_idx_list_mut: &mut Vec<EdgeIndex> =
+                self.edge_idx_map.entry((v_idx, u_idx)).or_default();
 
             edge_idx_list_mut.swap_remove(parallel_edge_idx.unwrap_or(0));
 
-            let edge_idx_list_mut = self
-                .edge_idx_map
-                .entry((u_idx.clone(), v_idx.clone()))
-                .or_insert(Vec::new());
+            let edge_idx_list_mut: &mut Vec<EdgeIndex> =
+                self.edge_idx_map.entry((u_idx, v_idx)).or_default();
 
             edge_idx_list_mut.swap_remove(parallel_edge_idx.unwrap_or(0));
 
-            self.change_node_opt_weight(u_idx.clone(), u_weight);
-            self.change_node_opt_weight(v_idx.clone(), v_weight);
+            self.change_node_opt_weight(u_idx, u_weight);
+            self.change_node_opt_weight(v_idx, v_weight);
         } else {
-            let node_u = self.g.node_weight(u_idx.clone()).unwrap();
-            let node_v = self.g.node_weight(v_idx.clone()).unwrap();
+            let node_u = self.g.node_weight(u_idx).unwrap();
+            let node_v = self.g.node_weight(v_idx).unwrap();
 
             let u_weight = node_u.optimal_weighted_degree;
             let v_weight = node_v.optimal_weighted_degree;
 
             // If remove_all_parallel is true, then remove all edges in the list.
-            for edge_idx in edge_idx_list.clone() {
-                let weight = self.g.edge_weight(edge_idx.clone()).unwrap().weight;
+            for edge_idx in edge_idx_list {
+                let weight = self.g.edge_weight(edge_idx).unwrap().weight;
 
-                self.g.remove_edge(edge_idx.clone());
+                self.g.remove_edge(edge_idx);
 
-                self.change_node_opt_weight(u_idx.clone(), u_weight - weight);
-                self.change_node_opt_weight(v_idx.clone(), v_weight - weight);
+                self.change_node_opt_weight(u_idx, u_weight - weight);
+                self.change_node_opt_weight(v_idx, v_weight - weight);
             }
 
-            self.edge_idx_map.remove(&(u_idx.clone(), v_idx.clone()));
-            self.edge_idx_map.remove(&(v_idx.clone(), u_idx.clone()));
+            self.edge_idx_map.remove(&(u_idx, v_idx));
+            self.edge_idx_map.remove(&(v_idx, u_idx));
         }
     }
 
@@ -518,22 +476,16 @@ impl Graph {
         let nodes = self.get_nodes();
         let edges = self.get_edges();
 
-        let mut ordering_counter = 0 as usize;
         let mut node_id_to_int = HashMap::new();
         let mut int_to_node_id = HashMap::new();
 
-        for node in &nodes {
-            node_id_to_int.insert(node.name.clone(), ordering_counter);
-            int_to_node_id.insert(ordering_counter, node.name.clone());
-            ordering_counter += 1;
+        for (idx, node) in nodes.iter().enumerate() {
+            node_id_to_int.insert(node.name.clone(), idx);
+            int_to_node_id.insert(idx, node.name.clone());
         }
 
         for _ in 0..nodes.len() {
-            let mut row = Vec::new();
-            for _ in 0..nodes.len() {
-                row.push(0.0);
-            }
-            adj_matrix.push(row);
+            adj_matrix.push(vec![0.0; nodes.len()]);
         }
 
         for edge in edges {
@@ -552,21 +504,19 @@ impl Graph {
         let n = self.get_order();
         let flattened_matrix = &adj_matrix
             .iter()
-            .map(|row| row.iter())
-            .flatten()
-            .map(|x| *x)
+            .flat_map(|row| row.iter())
+            .copied()
             .collect::<Vec<f64>>();
 
         let d_adj_matrix = DMatrix::from_row_slice(n, n, flattened_matrix);
 
-        return (adj_matrix, int_to_node_id, d_adj_matrix);
+        (adj_matrix, int_to_node_id, d_adj_matrix)
     }
 
     pub fn eigenvals(&self, adj_matrix: &DMatrix<f64>) -> EigenvalsResult {
-        let n = self.get_order();
         let schur = adj_matrix.clone().schur();
         let eigenvalues_option = schur.eigenvalues();
-        
+
         match eigenvalues_option {
             // If eigenvalues are real, then we can unwrap them
             Some(eigenvalues) => {
@@ -629,7 +579,7 @@ impl Graph {
     ///
     /// * `node_id` - String identifier of the node we want to get.
     pub fn get_node_idx(&self, node: String) -> petgraph::graph::NodeIndex {
-        self.node_idx_map.get(&node).unwrap().clone()
+        *self.node_idx_map.get(&node).unwrap()
     }
 
     /// Returns a list of all the edges in the graph.
@@ -649,7 +599,7 @@ impl Graph {
     pub fn get_neighbors(&self, node: String) -> Vec<Node> {
         let node_weight = self.node_idx_map.get(&node).unwrap();
         let mut neighbors = Vec::new();
-        for neighbor in self.g.neighbors_undirected(node_weight.clone()) {
+        for neighbor in self.g.neighbors_undirected(*node_weight) {
             neighbors.push(self.g.node_weight(neighbor).unwrap().clone());
         }
 
@@ -664,8 +614,8 @@ impl Graph {
     pub fn get_neighbors_idx(&self, node: String) -> Vec<petgraph::graph::NodeIndex> {
         let node_weight = self.node_idx_map.get(&node).unwrap();
         let mut neighbors = Vec::new();
-        for neighbor in self.g.neighbors_undirected(node_weight.clone()) {
-            neighbors.push(neighbor.clone());
+        for neighbor in self.g.neighbors_undirected(*node_weight) {
+            neighbors.push(neighbor);
         }
 
         neighbors
@@ -686,11 +636,11 @@ impl Graph {
         let mut degree = 0.0;
         let node_idx = self.node_idx_map.get(&node).unwrap();
 
-        for edge in self.g.edges(node_idx.clone()) {
+        for edge in self.g.edges(*node_idx) {
             degree += self.g.edge_weight(edge.id()).unwrap().weight;
         }
 
-        return degree;
+        degree
     }
 
     /// Returns a list of cumulative edge weights.
@@ -703,10 +653,10 @@ impl Graph {
         }
         cumulative_edge_weights
     }
+}
 
-    /// Convert graph to string representation.
-    /// This is used for debugging purposes.
-    pub fn to_string(&self) -> String {
+impl Display for Graph {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut s = String::new();
 
         for edge in self.get_edges() {
@@ -719,14 +669,14 @@ impl Graph {
                 edge.weight
             ));
         }
-        s
+
+        write!(f, "{}", s)
     }
 }
 
 // Function to print given error and return
 fn print_error_and_return(error: &str) {
     println!("{}", error);
-    return;
 }
 
 // Create a unit test for the Graph struct
@@ -750,14 +700,14 @@ mod tests {
 
         assert_eq!(g.get_order(), 3);
 
-        g.add_edge(u.clone(), v.clone(), 1 as f64);
-        g.add_edge(u.clone(), w.clone(), 1 as f64);
-        g.add_edge(v.clone(), w.clone(), 35 as f64);
+        g.add_edge(u.clone(), v.clone(), 1_f64);
+        g.add_edge(u.clone(), w.clone(), 1_f64);
+        g.add_edge(v.clone(), w.clone(), 35_f64);
 
         assert_eq!(g.get_size(), 3);
 
-        g.update_edge(u.clone(), v.clone(), 11 as f64, None, Some(false));
-        g.remove_edge(u.clone(), w.clone(), None, Some(true));
+        g.update_edge(u.clone(), v, 11_f64, None, Some(false));
+        g.remove_edge(u, w, None, Some(true));
 
         assert_eq!(g.get_size(), 2);
     }
@@ -772,13 +722,13 @@ mod tests {
         let _u_idx = g.add_node(u.clone());
         let _v_idx = g.add_node(v.clone());
 
-        g.add_edge(u.clone(), v.clone(), 1 as f64);
-        g.add_edge(u.clone(), v.clone(), 2 as f64);
+        g.add_edge(u.clone(), v.clone(), 1_f64);
+        g.add_edge(u.clone(), v.clone(), 2_f64);
 
         assert_eq!(g.get_size(), 2);
 
         // update edge
-        g.update_edge(u.clone(), v.clone(), 11 as f64, Some(0), None);
+        g.update_edge(u, v, 11_f64, Some(0), None);
     }
 
     #[test]
@@ -791,19 +741,19 @@ mod tests {
         let c = "c".to_string();
         let d = "d".to_string();
 
-        let mut a_node = Node::new(a.clone());
+        let mut a_node = Node::new(a);
         a_node.set_gps(-72.28486, 43.71489, 1.0);
         let a_idx = g1.add_node_from_struct(a_node);
 
-        let mut b_node = Node::new(b.clone());
+        let mut b_node = Node::new(b);
         b_node.set_gps(-72.28239, 43.71584, 1.0);
         let b_idx = g1.add_node_from_struct(b_node);
 
-        let mut c_node = Node::new(c.clone());
+        let mut c_node = Node::new(c);
         c_node.set_gps(-72.28332, 43.7114, 1.0);
         let c_idx = g1.add_node_from_struct(c_node);
 
-        let mut d_node = Node::new(d.clone());
+        let mut d_node = Node::new(d);
         d_node.set_gps(-72.28085, 43.71235, 1.0);
         let d_idx = g1.add_node_from_struct(d_node);
 
@@ -819,7 +769,7 @@ mod tests {
         let b_d = Edge::new(b_idx, d_idx, 0.6);
         g1.add_edge_from_struct(b_d);
 
-        let (adj_matrix, int_to_node_id, d_adj) = g1.convert_to_adj_matrix();
+        let (adj_matrix, _int_to_node_id, _d_adj) = g1.convert_to_adj_matrix();
 
         // assert that the adjacency matrix is correct
         assert_eq!(

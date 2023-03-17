@@ -40,10 +40,11 @@ pub fn random_select(g: &Graph) -> Edge {
     let cumulative_edge_weights = g.get_cumulative_edge_weights();
     let total_weight = cumulative_edge_weights[cumulative_edge_weights.len() - 1];
 
-    let r = rand::random::<f64>() * (total_weight as f64);
+    let r = rand::random::<f64>() * total_weight;
     let i = bisect_left(&cumulative_edge_weights, r);
     let edges = g.get_edges();
-    return edges[i].clone();
+
+    edges[i].clone()
 }
 
 pub fn contract(g: &Graph, k: usize) -> Graph {
@@ -52,11 +53,11 @@ pub fn contract(g: &Graph, k: usize) -> Graph {
     while g.get_order() > k {
         let e = random_select(&g);
 
-        let start_idx = e.u.clone();
-        let finish_idx = e.v.clone();
+        let start_idx = e.u;
+        let finish_idx = e.v;
 
-        let start = g.get_node(start_idx.clone());
-        let finish = g.get_node(finish_idx.clone());
+        let start = g.get_node(start_idx);
+        let finish = g.get_node(finish_idx);
 
         for node in g.get_neighbors(finish.name.clone()) {
             if !node.name.eq(&start.name) {
@@ -65,9 +66,10 @@ pub fn contract(g: &Graph, k: usize) -> Graph {
                 g.add_edge(start.name.clone(), node.name.clone(), weight);
             }
         }
-        g.remove_node(finish_idx.clone());
+        g.remove_node(finish_idx);
     }
-    return g.clone();
+
+    g.clone()
 }
 
 pub fn karger_stein_gmincut(g: &Graph, n: i32) -> f64 {
@@ -77,21 +79,22 @@ pub fn karger_stein_gmincut(g: &Graph, n: i32) -> f64 {
         for edge in g_prime.get_edges() {
             cut_sum += edge.weight;
         }
+
         return cut_sum;
-    } else {
-        let n = (n as f64 / 2.0f64.sqrt()) as i32 + 1;
-        let g_prime_1 = contract(g, n as usize);
-        let g_prime_1_min_cut = karger_stein_gmincut(&g_prime_1, n);
-
-        let g_prime_2 = contract(g, n as usize);
-        let g_prime_2_min_cut = karger_stein_gmincut(&g_prime_2, n);
-
-        if g_prime_1_min_cut > g_prime_2_min_cut {
-            return g_prime_2_min_cut;
-        } else {
-            return g_prime_1_min_cut;
-        }
     }
+
+    let n = (n as f64 / 2.0f64.sqrt()) as i32 + 1;
+    let g_prime_1 = contract(g, n as usize);
+    let g_prime_1_min_cut = karger_stein_gmincut(&g_prime_1, n);
+
+    let g_prime_2 = contract(g, n as usize);
+    let g_prime_2_min_cut = karger_stein_gmincut(&g_prime_2, n);
+
+    if g_prime_1_min_cut > g_prime_2_min_cut {
+        return g_prime_2_min_cut;
+    }
+
+    g_prime_1_min_cut
 }
 
 // Create a unit test for the Graph struct
@@ -126,13 +129,13 @@ mod tests {
         // Add edges
         g.add_edge(u.clone(), v.clone(), 1.0);
         g.add_edge(u.clone(), w.clone(), 1.0);
-        g.add_edge(u.clone(), x.clone(), 1.0);
+        g.add_edge(u, x.clone(), 1.0);
         g.add_edge(w.clone(), x.clone(), 1.0);
-        g.add_edge(v.clone(), y.clone(), 1.0);
+        g.add_edge(v, y.clone(), 1.0);
         g.add_edge(x.clone(), y.clone(), 1.0);
-        g.add_edge(w.clone(), z.clone(), 1.0);
-        g.add_edge(x.clone(), a.clone(), 1.0);
-        g.add_edge(y.clone(), b.clone(), 1.0);
+        g.add_edge(w, z, 1.0);
+        g.add_edge(x, a, 1.0);
+        g.add_edge(y, b, 1.0);
 
         let mut mincut_2 = 0;
         for _ in 0..1000 {

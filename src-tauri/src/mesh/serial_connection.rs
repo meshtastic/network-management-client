@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use app::protobufs;
 use async_trait::async_trait;
 use prost::Message;

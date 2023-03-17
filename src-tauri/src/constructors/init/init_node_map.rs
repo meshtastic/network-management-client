@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use crate::mesh::device::MeshNode;
 use std::collections::HashMap;
 
@@ -6,7 +8,7 @@ pub fn init_node_map(meshnode_vec: Vec<MeshNode>) -> HashMap<u32, MeshNode> {
     let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
     for meshnode in meshnode_vec {
         let node_id = meshnode.data.num;
-        loc_hashmap.insert(node_id as u32, meshnode);
+        loc_hashmap.insert(node_id, meshnode);
     }
     loc_hashmap
 }
@@ -17,7 +19,7 @@ mod tests {
     use app::protobufs;
 
     fn generate_zeroed_position() -> protobufs::Position {
-        let position = protobufs::Position {
+        protobufs::Position {
             latitude_i: 0,
             longitude_i: 0,
             altitude: 0,
@@ -40,29 +42,26 @@ mod tests {
             sensor_id: 0,
             next_update: 0,
             seq_number: 0,
-        };
-        position
+        }
     }
 
     fn generate_test_user() -> protobufs::User {
-        let user = protobufs::User {
+        protobufs::User {
             id: "test".to_string(),
             long_name: "test".to_string(),
             short_name: "test".to_string(),
             macaddr: Vec::new(),
             hw_model: 0,
             is_licensed: false,
-        };
-        user
+        }
     }
     fn generate_zeroed_device_metrics() -> protobufs::DeviceMetrics {
-        let devicemetrics = protobufs::DeviceMetrics {
+        protobufs::DeviceMetrics {
             battery_level: 0,
             voltage: 0.0,
             channel_utilization: 0.0,
             air_util_tx: 0.0,
-        };
-        devicemetrics
+        }
     }
 
     #[test]

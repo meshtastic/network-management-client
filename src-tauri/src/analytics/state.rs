@@ -81,7 +81,7 @@ impl State {
         match curr_graph_opt {
             Some(curr_graph) => {
                 self.algo_controller.run_algos(
-                    &curr_graph,
+                    curr_graph,
                     &self.algo_configs,
                     &mut self.history,
                     &mut self.algo_store,
@@ -114,22 +114,22 @@ mod tests {
     fn test_state() {
         let mut state = State::new(HashMap::new(), false);
 
-        let mut G1 = Graph::new();
+        let mut graph1 = Graph::new();
 
         // Create a few nodes and edges and add to graph
         let u: String = "u".to_string();
         let v: String = "v".to_string();
         let w: String = "w".to_string();
 
-        let _u_idx = G1.add_node(u.clone());
-        let _v_idx = G1.add_node(v.clone());
-        let _w_idx = G1.add_node(w.clone());
+        let _u_idx = graph1.add_node(u.clone());
+        let _v_idx = graph1.add_node(v.clone());
+        let _w_idx = graph1.add_node(w.clone());
 
-        G1.add_edge(u.clone(), v.clone(), 1 as f64);
-        G1.add_edge(u.clone(), w.clone(), 7 as f64);
-        G1.add_edge(v.clone(), w.clone(), 35 as f64);
+        graph1.add_edge(u.clone(), v.clone(), 1_f64);
+        graph1.add_edge(u, w.clone(), 7_f64);
+        graph1.add_edge(v, w, 35_f64);
 
-        state.add_graph(&G1);
+        state.add_graph(&graph1);
         state.set_algos(0b00001);
         state.run_algos();
 
@@ -153,22 +153,22 @@ mod tests {
     fn test_diffusion_centrality() {
         let mut state = State::new(HashMap::new(), false);
 
-        let mut G1 = Graph::new();
+        let mut graph1 = Graph::new();
 
         // Create a few nodes and edges and add to graph
         let u: String = "u".to_string();
         let v: String = "v".to_string();
         let w: String = "w".to_string();
 
-        let _u_idx = G1.add_node(u.clone());
-        let _v_idx = G1.add_node(v.clone());
-        let _w_idx = G1.add_node(w.clone());
+        let _u_idx = graph1.add_node(u.clone());
+        let _v_idx = graph1.add_node(v.clone());
+        let _w_idx = graph1.add_node(w.clone());
 
-        G1.add_edge(u.clone(), v.clone(), 1 as f64);
-        G1.add_edge(u.clone(), w.clone(), 7 as f64);
-        G1.add_edge(v.clone(), w.clone(), 35 as f64);
+        graph1.add_edge(u.clone(), v.clone(), 1_f64);
+        graph1.add_edge(u, w.clone(), 7_f64);
+        graph1.add_edge(v, w, 35_f64);
 
-        state.add_graph(&G1);
+        state.add_graph(&graph1);
         state.set_algos(0b00100);
         state.run_algos();
 

@@ -1,10 +1,10 @@
-use std::{collections::HashMap, hash::Hash};
+use std::collections::HashMap;
 
-use crate::data_conversion::distance_conversion::{get_distance, total_distance};
+use crate::data_conversion::distance_conversion::total_distance;
 use crate::graph::graph_ds::Graph;
 
 fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
-    let mut nodes = graph.get_nodes().clone();
+    let mut nodes = graph.get_nodes();
     let node_fts = take_snapshot_of_node_fts(graph);
 
     let smallest_longitude_node = nodes.iter().fold(nodes[0].clone(), |acc, node| {
@@ -36,22 +36,20 @@ fn save_relative_ordering(graph: &Graph, graph_text: &mut String) {
         a_distance.partial_cmp(&b_distance).unwrap()
     });
 
-    let mut ordering_counter = 0;
     let order = graph.get_order();
 
     graph_text.push_str(order.to_string().as_str());
-    graph_text.push_str("\n");
+    graph_text.push('\n');
 
-    for node in nodes {
+    for (idx, node) in nodes.into_iter().enumerate() {
         graph_text.push_str("O: ");
         graph_text.push_str(&node.name);
-        graph_text.push_str(" ");
-        graph_text.push_str(ordering_counter.to_string().as_str());
-        graph_text.push_str(" ");
+        graph_text.push(' ');
+        graph_text.push_str(idx.to_string().as_str());
+        graph_text.push(' ');
         let node_fts_txt = node_fts.get(&node.name).unwrap();
         graph_text.push_str(node_fts_txt);
-        ordering_counter += 1;
-        graph_text.push_str("\n");
+        graph_text.push('\n');
     }
 }
 
@@ -70,21 +68,20 @@ pub fn take_snapshot_of_graph(graph: &Graph) -> String {
         let u_idx = edge.get_u();
         let node_u = graph.get_node(u_idx);
         graph_string.push_str(&node_u.name);
-        graph_string.push_str(" ");
+        graph_string.push(' ');
 
         let b_idx = edge.get_v();
         let node_b = graph.get_node(b_idx);
         graph_string.push_str(&node_b.name);
-        graph_string.push_str(" ");
+        graph_string.push(' ');
 
         let weight = edge.get_weight();
         graph_string.push_str(&weight.to_string());
-        graph_string.push_str("\n");
+        graph_string.push('\n');
     }
 
     graph_string.pop();
-
-    return graph_string;
+    graph_string
 }
 
 pub fn take_snapshot_of_node_fts(graph: &Graph) -> HashMap<String, String> {
@@ -112,5 +109,6 @@ pub fn take_snapshot_of_node_fts(graph: &Graph) -> HashMap<String, String> {
 
         node_fts.insert(node.name.clone(), node_ft_txt);
     }
+
     node_fts
 }

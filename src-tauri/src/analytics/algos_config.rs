@@ -228,11 +228,12 @@ mod tests {
     fn test_set_algos() {
         let mut algo_config = AlgoConfig::new();
         algo_config.set_algos(0b00111);
-        assert_eq!(algo_config.get_ap_activation(), true);
-        assert_eq!(algo_config.get_mincut_activation(), true);
-        assert_eq!(algo_config.get_diff_cent_activation(), true);
-        assert_eq!(algo_config.get_most_sim_t_activation(), false);
-        assert_eq!(algo_config.get_pred_state_activation(), false);
+
+        assert!(algo_config.get_ap_activation());
+        assert!(algo_config.get_mincut_activation());
+        assert!(algo_config.get_diff_cent_activation());
+        assert!(!algo_config.get_most_sim_t_activation());
+        assert!(!algo_config.get_pred_state_activation());
 
         println!("algo_config: {:?}", algo_config);
     }

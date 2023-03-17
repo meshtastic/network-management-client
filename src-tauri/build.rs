@@ -1,4 +1,3 @@
-use prost_build;
 use walkdir::WalkDir;
 
 fn main() -> std::io::Result<()> {

@@ -31,7 +31,7 @@ pub fn get_channel_name(device: &mut MeshDevice, channel_id: &u32) -> Option<Str
     let db_channel = device.channels.get(channel_id)?;
     let db_channel_settings = db_channel.config.settings.as_ref()?;
 
-    if db_channel_settings.name == "".to_string() {
+    if db_channel_settings.name.is_empty() {
         return format!("Channel {}", db_channel.config.index).into();
     }
 

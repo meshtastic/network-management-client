@@ -14,28 +14,31 @@ impl UnionFind {
         let mut uf_ds = UnionFind {
             sets: HashMap::new(),
             reps: HashSet::new(),
-            size: v.clone().len() as i32,
+            size: v.len() as i32,
         };
-        for node_idx in v.clone() {
+
+        for node_idx in v {
             uf_ds.sets.insert(node_idx.clone(), node_idx.clone());
             uf_ds.reps.insert(node_idx.clone());
         }
+
         uf_ds
     }
 
     pub fn find(&mut self, v: String) -> String {
         if self.sets.get(&v).unwrap() == &v {
-            return v.clone();
+            return v;
         }
-        let parent = self.find(self.sets.get(&v.to_string().clone()).unwrap().clone());
-        self.sets.insert(v, parent.to_string().clone());
-        parent.clone()
+
+        let parent = self.find(self.sets.get(&v).unwrap().clone());
+        self.sets.insert(v, parent.to_string());
+        parent
     }
 
     pub fn union(&mut self, v1: String, v2: String) {
         let v1_rep = self.find(v1);
-        self.sets.insert(v2.clone(), v1_rep.to_string());
-        self.reps.remove(&v2.to_string().clone());
+        self.sets.insert(v2.clone(), v1_rep);
+        self.reps.remove(&v2);
     }
 
     pub fn get_sets(&self) -> &HashSet<String> {
@@ -63,9 +66,9 @@ mod tests {
         let v: String = "v".to_string();
         let w: String = "w".to_string();
 
-        let mut uf = UnionFind::new(vec![u.clone(), v.clone(), w.clone()]);
+        let mut uf = UnionFind::new(vec![u.clone(), v.clone(), w]);
         uf.union(u.clone(), v.clone());
 
-        assert_eq!(uf.find(u.clone()), uf.find(v.clone()));
+        assert_eq!(uf.find(u), uf.find(v));
     }
 }
