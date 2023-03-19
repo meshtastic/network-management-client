@@ -2,6 +2,7 @@ use crate::analytics;
 use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
+use crate::analytics::configuration::AlgorithmConfigFlags;
 use crate::mesh::{self, serial_connection::MeshConnection};
 use crate::state;
 
@@ -273,7 +274,7 @@ pub async fn get_node_edges(
 
 #[tauri::command]
 pub async fn run_algorithms(
-    bitfield: u8,
+    flags: AlgorithmConfigFlags,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
     algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<APMincutStringResults, CommandError> {
@@ -283,8 +284,10 @@ pub async fn run_algorithms(
     let graph_struct = guard.as_mut().ok_or("Graph not initialized")?;
     let state = state_guard.as_mut().ok_or("State not initialized")?;
 
+    println!("Running algorithms with flags:\n{:#?}", flags);
+
     state.add_graph(&graph_struct.graph);
-    state.set_algos(bitfield);
+    state.set_algorithm_flags(flags);
     state.run_algos();
     let algo_result = state.get_algo_results();
 

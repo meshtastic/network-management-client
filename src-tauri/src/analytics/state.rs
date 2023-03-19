@@ -3,10 +3,10 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
-use super::data_structures::timeline::Timeline;
-use crate::analytics::history::History;
+use super::data_structures::timeline::NetworkTimeline;
+use crate::analytics::history::AlgorithmRunHistory;
 
-use super::configuration::AlgorithmConfiguration;
+use super::configuration::{AlgorithmConfigFlags, AlgorithmConfiguration};
 use crate::graph::graph_ds::Graph;
 
 use super::controller::AlgoController;
@@ -23,14 +23,13 @@ use super::results_store::ResultsStore;
 /// * `node_id_to_int` - A HashMap from String to usize representing the mapping from node IDs to integers.
 /// * `history` - A History object.
 /// * `time` - A SystemTime object.
-/// * `algos_to_run` - A Vec of Strings representing the algorithms to run.
-/// * `algos_run_mode_auto` - A boolean indicating whether the algorithms should be run automatically or not.
+/// * `auto_run_algos` - A boolean indicating whether the algorithms should be run automatically or not.
 pub struct AnalyticsState {
-    timeline: Timeline,
-    history: History,
+    timeline: NetworkTimeline,
+    history: AlgorithmRunHistory,
     time: SystemTime,
     algo_configs: AlgorithmConfiguration,
-    algo_run_mode_auto: bool,
+    auto_run_algos: bool,
     algo_store: ResultsStore,
     algo_controller: AlgoController,
 }
@@ -48,11 +47,11 @@ impl AnalyticsState {
     /// * `AnalyticsState` - A new AnalyticsState object.
     pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> AnalyticsState {
         AnalyticsState {
-            timeline: Timeline::new(config_fields, is_save),
-            history: History::new(),
+            timeline: NetworkTimeline::new(config_fields, is_save),
+            history: AlgorithmRunHistory::new(),
             time: SystemTime::now(),
             algo_configs: AlgorithmConfiguration::new(),
-            algo_run_mode_auto: true,
+            auto_run_algos: true,
             algo_store: ResultsStore::new(),
             algo_controller: AlgoController::new(),
         }
@@ -72,8 +71,8 @@ impl AnalyticsState {
     /// # Arguments
     ///
     /// * `algos_bitfield` - A u8 representing the algorithms to run.
-    pub fn set_algos(&mut self, algos_bitfield: u8) {
-        self.algo_configs.set_algos(algos_bitfield);
+    pub fn set_algorithm_flags(&mut self, flags: AlgorithmConfigFlags) {
+        self.algo_configs.set_algorithm_flags(flags);
     }
 
     pub fn run_algos(&mut self) {
@@ -131,7 +130,15 @@ mod tests {
         graph1.add_edge(v, w, 35_f64);
 
         state.add_graph(&graph1);
-        state.set_algos(0b00001);
+
+        state.set_algorithm_flags(AlgorithmConfigFlags {
+            articulation_point: Some(true),
+            diffusion_centrality: None,
+            global_mincut: None,
+            most_similar_timeline: None,
+            predicted_state: None,
+        });
+
         state.run_algos();
 
         let algo_results = state.get_algo_results();
@@ -170,7 +177,15 @@ mod tests {
         graph1.add_edge(v, w, 35_f64);
 
         state.add_graph(&graph1);
-        state.set_algos(0b00100);
+
+        state.set_algorithm_flags(AlgorithmConfigFlags {
+            articulation_point: None,
+            diffusion_centrality: Some(true),
+            global_mincut: None,
+            most_similar_timeline: None,
+            predicted_state: None,
+        });
+
         state.run_algos();
 
         let algo_results = state.get_algo_results();

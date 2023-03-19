@@ -2,6 +2,8 @@
 
 use std::{any::Any, collections::HashMap};
 
+use serde::{Deserialize, Serialize};
+
 /// The activation struct is used to determine whether an algorithm should be run.
 ///
 /// # Fields
@@ -113,6 +115,16 @@ pub struct AlgorithmConfiguration {
     pub pred_state: PredStateConf,
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AlgorithmConfigFlags {
+    pub articulation_point: Option<bool>,
+    pub diffusion_centrality: Option<bool>,
+    pub global_mincut: Option<bool>,
+    pub most_similar_timeline: Option<bool>,
+    pub predicted_state: Option<bool>,
+}
+
 impl AlgorithmConfiguration {
     pub fn new() -> Self {
         AlgorithmConfiguration {
@@ -151,12 +163,26 @@ impl AlgorithmConfiguration {
     /// To run the most similar timeline algorithm, the bitfield is 0b01000.
     /// To run the predicted state algorithm, the bitfield is 0b10000.
     /// To run all algorithms, the bitfield is 0b11111.
-    pub fn set_algos(&mut self, bitfield: u8) {
-        self.set_ap(bitfield & 0b00001 != 0);
-        self.set_mincut(bitfield & 0b00010 != 0);
-        self.set_diff_cent(bitfield & 0b00100 != 0);
-        self.set_most_sim_t(bitfield & 0b01000 != 0);
-        self.set_pred_state(bitfield & 0b10000 != 0);
+    pub fn set_algorithm_flags(&mut self, flags: AlgorithmConfigFlags) {
+        if let Some(f) = flags.articulation_point {
+            self.set_ap(f);
+        }
+
+        if let Some(f) = flags.diffusion_centrality {
+            self.set_diff_cent(f);
+        }
+
+        if let Some(f) = flags.global_mincut {
+            self.set_mincut(f);
+        }
+
+        if let Some(f) = flags.most_similar_timeline {
+            self.set_most_sim_t(f);
+        }
+
+        if let Some(f) = flags.predicted_state {
+            self.set_pred_state(f);
+        }
     }
 
     pub fn set_ap(&mut self, ap: bool) {
@@ -227,7 +253,14 @@ mod tests {
     #[test]
     fn test_set_algos() {
         let mut algo_config = AlgorithmConfiguration::new();
-        algo_config.set_algos(0b00111);
+
+        algo_config.set_algorithm_flags(AlgorithmConfigFlags {
+            articulation_point: Some(true),
+            diffusion_centrality: Some(true),
+            global_mincut: Some(true),
+            most_similar_timeline: None,
+            predicted_state: None,
+        });
 
         assert!(algo_config.get_ap_activation());
         assert!(algo_config.get_mincut_activation());

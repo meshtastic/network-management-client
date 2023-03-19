@@ -10,7 +10,7 @@ use crate::analytics::aux_functions::take_snapshot::take_snapshot_of_graph;
 use crate::graph::graph_ds::Graph;
 
 // Created at the beginning of each rescue attempt.
-pub struct Timeline {
+pub struct NetworkTimeline {
     curr_snapshot: Option<Graph>,
     label: i32,
     curr_timeline_id: i32,
@@ -20,7 +20,7 @@ pub struct Timeline {
     save: bool,
 }
 
-impl Timeline {
+impl NetworkTimeline {
     /// Creates a new timeline.
     ///
     /// # Arguments
@@ -31,7 +31,7 @@ impl Timeline {
     /// # Returns
     ///
     /// * `Timeline` - a new timeline
-    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> Timeline {
+    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> NetworkTimeline {
         let mut curr_timeline_id = 0;
 
         let timeline_data_dir = config_fields.get("timeline_data_dir").unwrap_or(&"");
@@ -52,7 +52,7 @@ impl Timeline {
 
         curr_timeline_id += 1;
 
-        Timeline {
+        NetworkTimeline {
             curr_snapshot: None,
             label: 1,
             curr_timeline_id,
@@ -167,7 +167,7 @@ mod tests {
         config_fields.insert("timeline_data_dir", "data/timelines");
         config_fields.insert("timeline_label_dir", "data");
 
-        let mut timeline = Timeline::new(config_fields, false);
+        let mut timeline = NetworkTimeline::new(config_fields, false);
 
         let mut graph1 = Graph::new();
 

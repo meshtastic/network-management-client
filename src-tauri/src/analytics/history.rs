@@ -10,7 +10,7 @@ use std::time::SystemTime;
 /// * `diff_cent_history` - A Vec of SystemTimes representing the history of the last diffusion centrality calculation.
 /// * `most_sim_t_history` - A Vec of SystemTimes representing the history of the last most similar timeline calculation.
 /// * `pred_stt_history` - A Vec of SystemTimes representing the history of the last predicted state calculation.
-pub struct History {
+pub struct AlgorithmRunHistory {
     ap_history: Vec<SystemTime>,
     mincut_history: Vec<SystemTime>,
     diff_cent_history: Vec<SystemTime>,
@@ -18,9 +18,9 @@ pub struct History {
     pred_stt_history: Vec<SystemTime>,
 }
 
-impl History {
+impl AlgorithmRunHistory {
     pub fn new() -> Self {
-        History {
+        AlgorithmRunHistory {
             ap_history: Vec::new(),
             mincut_history: Vec::new(),
             diff_cent_history: Vec::new(),

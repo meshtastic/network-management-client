@@ -7,7 +7,10 @@ import ArticulationPoints from "@components/Map/algorithms/ArticulationPoints";
 import MincutEdges from "@components/Map/algorithms/MinCutEdges";
 import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation";
 
-import { requestRunAllAlgorithms } from "@features/algorithms/algorithmsActions";
+import {
+  AlgorithmConfigFlags,
+  requestRunAllAlgorithms,
+} from "@features/algorithms/algorithmsActions";
 import { selectAlgorithmsResults } from "@features/algorithms/algorithmsSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
@@ -26,18 +29,19 @@ const AnalyticsPane = () => {
   const [isDiffusionActive, setDiffusionActive] = useState(false);
 
   const requestRunAlgorithms = () => {
-    let bitfield = 0b0;
+    const flags: AlgorithmConfigFlags = {};
 
-    if (isAPActive) bitfield |= 0b1;
-    if (isMCEActive) bitfield |= 0b10;
-    if (isDiffusionActive) bitfield |= 0b100;
+    if (isAPActive) flags.articulationPoint = true;
+    if (isDiffusionActive) flags.diffusionCentrality = true;
+    if (isMCEActive) flags.globalMincut = true;
 
-    if (!bitfield) {
+    // Don't trigger IPC if no flags set
+    if (!Object.entries(flags).length) {
       console.warn("No algorithms selected, not running...");
       return;
     }
 
-    dispatch(requestRunAllAlgorithms({ bitfield }));
+    dispatch(requestRunAllAlgorithms({ flags }));
   };
 
   return (

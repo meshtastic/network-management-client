@@ -11,7 +11,7 @@ use super::algorithms::diffusion_centrality::{
 use super::algorithms::stoer_wagner::{GlobalMinCutParams, GlobalMinCutRunner};
 use super::algorithms::AlgorithmRunner;
 use super::configuration::{AlgorithmConfiguration, Params};
-use super::history::History;
+use super::history::AlgorithmRunHistory;
 use super::results_store::ResultsStore;
 use crate::graph::graph_ds::Graph;
 
@@ -35,7 +35,7 @@ impl AlgoController {
         &mut self,
         graph: &Graph,
         algo_conf: &AlgorithmConfiguration,
-        history: &mut History,
+        history: &mut AlgorithmRunHistory,
         store: &mut ResultsStore,
     ) {
         if algo_conf.get_ap_activation() {
@@ -123,7 +123,7 @@ impl AlgoController {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::graph::graph_ds::Graph;
+    use crate::{analytics::configuration::AlgorithmConfigFlags, graph::graph_ds::Graph};
 
     #[test]
     fn test_run_controller() {
@@ -144,9 +144,16 @@ mod tests {
         graph1.add_edge(v, w, 35_f64);
 
         let mut algo_config = AlgorithmConfiguration::new();
-        let history = &mut History::new();
+        let history = &mut AlgorithmRunHistory::new();
         let store = &mut ResultsStore::new();
-        algo_config.set_algos(0b00100);
+
+        algo_config.set_algorithm_flags(AlgorithmConfigFlags {
+            articulation_point: None,
+            diffusion_centrality: Some(true),
+            global_mincut: None,
+            most_similar_timeline: None,
+            predicted_state: None,
+        });
 
         algo_controller.run_algos(&graph1, &algo_config, history, store);
 
