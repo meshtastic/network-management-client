@@ -1,20 +1,19 @@
 #![allow(dead_code)]
 
 use crate::analytics::data_structures::cut::Cut;
+use crate::graph::edge::Edge;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum SWCutResult {
     Success(Cut),
     Error(String),
     Empty(bool),
 }
 
-impl Clone for SWCutResult {
-    fn clone(&self) -> Self {
-        match self {
-            SWCutResult::Success(sw_cut) => SWCutResult::Success(sw_cut.clone()),
-            SWCutResult::Error(err) => SWCutResult::Error(err.clone()),
-            SWCutResult::Empty(empty) => SWCutResult::Empty(*empty),
-        }
-    }
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum MinCutResult {
+    Success(Vec<Edge>),
+    Error(String),
+    Empty(bool),
 }

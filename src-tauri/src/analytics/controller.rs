@@ -1,15 +1,16 @@
-use super::algorithms::articulation_point::results::APResult;
-use super::algorithms::diffusion_centrality::results::{
-    DiffCenError, DiffCenResult, EigenvalsResult,
-};
-use super::algorithms::global_mincut::results::MinCutResult;
-use super::algorithms::stoer_wagner::results::SWCutResult;
+#![allow(clippy::let_unit_value)]
 
-use super::algorithms::articulation_point::articulation_point;
-use super::algorithms::diffusion_centrality::diffusion_centrality;
-use super::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
+use super::algorithms::articulation_point::results::APResult;
+use super::algorithms::diffusion_centrality::results::DiffCenResult;
+use super::algorithms::stoer_wagner::results::MinCutResult;
+
+use super::algorithms::articulation_point::{ArticulationPointParams, ArticulationPointRunner};
+use super::algorithms::diffusion_centrality::{
+    DiffusionCentralityParams, DiffusionCentralityRunner,
+};
+use super::algorithms::stoer_wagner::{GlobalMinCutParams, GlobalMinCutRunner};
+use super::algorithms::AlgorithmRunner;
 use super::configuration::{AlgorithmConfiguration, Params};
-use super::data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use super::history::History;
 use super::results_store::ResultsStore;
 use crate::graph::graph_ds::Graph;
@@ -71,7 +72,9 @@ impl AlgoController {
     ///
     /// APResult - The result of the algorithm. Can be an error too.
     pub fn run_ap(&mut self, graph: &Graph, _params: &Params) -> APResult {
-        articulation_point(graph)
+        let params = ArticulationPointParams;
+        let mut runner = ArticulationPointRunner::new(params);
+        runner.run(graph)
     }
 
     /// Runs the mincut algorithm.
@@ -85,19 +88,9 @@ impl AlgoController {
     ///
     /// MinCutResult - The result of the algorithm. Can be an error too.
     pub fn run_mincut(&mut self, g: &Graph, _params: &Params) -> MinCutResult {
-        let sw_graph = &mut StoerWagnerGraph::new(g.clone());
-        let _mincut_res = stoer_wagner(sw_graph);
-        match _mincut_res {
-            SWCutResult::Success(_mincut) => {
-                let mut nodes_string = Vec::new();
-                for node in g.get_nodes() {
-                    nodes_string.push(node.name.clone());
-                }
-                recover_mincut(sw_graph, nodes_string)
-            }
-            SWCutResult::Error(er_str) => MinCutResult::Error(er_str),
-            SWCutResult::Empty(b) => MinCutResult::Empty(b),
-        }
+        let params = GlobalMinCutParams;
+        let mut runner = GlobalMinCutRunner::new(params);
+        runner.run(g)
     }
 
     /// Runs the diffusion centrality algorithm.
@@ -111,21 +104,11 @@ impl AlgoController {
     ///
     /// DiffCenResult - The result of the algorithm. Can be an error too.
     pub fn run_diff_cent(&mut self, g: &Graph, params: &Params) -> DiffCenResult {
-        let n = g.get_order();
-        let (_, int_to_node_id, d_adj) = g.convert_to_adj_matrix();
-        let eigenvals_res = g.eigenvals(&d_adj);
+        let t_param = params.get("T").unwrap_or(&(5_u32)).to_owned();
 
-        match eigenvals_res {
-            EigenvalsResult::Success(eigenvals_vec) => {
-                let diff_cent =
-                    diffusion_centrality(&d_adj, int_to_node_id, params, eigenvals_vec, n).unwrap();
-                DiffCenResult::Success(diff_cent)
-            }
-            EigenvalsResult::Error(er_str) => {
-                DiffCenResult::Error(DiffCenError::EigenvalueError(er_str))
-            }
-            EigenvalsResult::Empty(b) => DiffCenResult::Empty(b),
-        }
+        let params = DiffusionCentralityParams { t_param };
+        let mut runner = DiffusionCentralityRunner::new(params);
+        runner.run(g)
     }
 
     // pub fn run_most_sim_t(&mut self, g: &Graph, params: &Params) {

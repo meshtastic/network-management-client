@@ -1,7 +1,7 @@
 use crate::analytics;
 use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
-use crate::analytics::algorithms::global_mincut::results::MinCutResult;
+use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::mesh::{self, serial_connection::MeshConnection};
 use crate::state;
 

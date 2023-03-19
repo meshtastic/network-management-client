@@ -526,16 +526,15 @@ impl Graph {
 
     pub fn eigenvals(&self, adj_matrix: &DMatrix<f64>) -> EigenvalsResult {
         let schur = adj_matrix.clone().schur();
-        let eigenvalues_option = schur.eigenvalues();
 
-        match eigenvalues_option {
-            // If eigenvalues are real, then we can unwrap them
-            Some(eigenvalues) => {
-                let eigenvalues_vec: Vec<f64> = eigenvalues.data.as_vec().clone();
-                EigenvalsResult::Success(eigenvalues_vec)
-            }
-            None => EigenvalsResult::Error("Eigenvalues are not real.".to_string()),
-        }
+        // Ensure eigenvalues are real
+        let eigenvalues = match schur.eigenvalues() {
+            Some(vals) => vals,
+            None => return EigenvalsResult::Error("Eigenvalues are not real.".to_string()),
+        };
+
+        let eigenvalues_vec = eigenvalues.data.as_vec().clone();
+        EigenvalsResult::Success(eigenvalues_vec)
     }
 
     /// Returns the number of nodes in the graph.

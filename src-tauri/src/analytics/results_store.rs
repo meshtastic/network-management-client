@@ -2,9 +2,9 @@
 
 use super::algorithms::articulation_point::results::APResult;
 use super::algorithms::diffusion_centrality::results::DiffCenResult;
-use super::algorithms::global_mincut::results::MinCutResult;
 use super::algorithms::most_similar_timeline::results::MostSimTResult;
 use super::algorithms::predicted_state::results::PredStateResult;
+use super::algorithms::stoer_wagner::results::MinCutResult;
 
 use crate::graph::graph_ds::Graph;
 use serde::{Deserialize, Serialize};
