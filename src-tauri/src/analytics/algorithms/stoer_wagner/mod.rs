@@ -1,9 +1,12 @@
 #![allow(dead_code)]
 
-use super::super::algo_result_enums::{mincut::MinCutResult, sw_cut::SWCutResult};
+pub mod results;
+
 use super::super::aux_data_structures::{
     binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
 };
+use super::global_mincut::results::MinCutResult;
+use results::SWCutResult;
 use std::collections::HashMap;
 
 pub fn st_mincut(g: &mut StoerWagnerGraph) -> SWCutResult {

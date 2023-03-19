@@ -1,10 +1,10 @@
 use nalgebra::DMatrix;
 use std::collections::HashMap;
 
-use crate::analytics::{
-    algo_result_enums::diff_cen::{DiffCenError, DiffCenMap},
-    algos_config::Params,
-};
+pub mod results;
+
+use crate::analytics::algos_config::Params;
+use results::{DiffCenError, DiffCenMap};
 
 fn query_node_id(
     id: usize,

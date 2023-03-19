@@ -1,10 +1,12 @@
 #![allow(dead_code)]
 #![allow(clippy::too_many_arguments)]
 
-use super::super::algo_result_enums::ap::APResult;
+pub mod results;
+
 use crate::graph::graph_ds::Graph;
-use core::cmp::min;
 use defaultdict::DefaultHashMap;
+use results::APResult;
+use std::cmp::min;
 
 pub fn articulation_point_helper(
     graph: &Graph,

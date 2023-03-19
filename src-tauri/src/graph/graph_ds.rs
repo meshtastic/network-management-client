@@ -1,6 +1,5 @@
 #![allow(dead_code)]
-#![allow(non_snake_case)]
-use crate::analytics::algo_result_enums::eigenvals::EigenvalsResult;
+use crate::analytics::algorithms::diffusion_centrality::results::EigenvalsResult;
 use crate::graph::edge::Edge;
 use crate::graph::node::Node;
 

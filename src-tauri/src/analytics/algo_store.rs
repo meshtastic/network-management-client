@@ -1,10 +1,11 @@
 #![allow(dead_code)]
 
-use super::algo_result_enums::ap::APResult;
-use super::algo_result_enums::diff_cen::DiffCenResult;
-use super::algo_result_enums::mincut::MinCutResult;
-use super::algo_result_enums::most_sim_timeline::MostSimTResult;
-use super::algo_result_enums::pred_state::PredStateResult;
+use super::algorithms::articulation_point::results::APResult;
+use super::algorithms::diffusion_centrality::results::DiffCenResult;
+use super::algorithms::global_mincut::results::MinCutResult;
+use super::algorithms::most_similar_timeline::results::MostSimTResult;
+use super::algorithms::predicted_state::results::PredStateResult;
+
 use crate::graph::graph_ds::Graph;
 use serde::{Deserialize, Serialize};
 

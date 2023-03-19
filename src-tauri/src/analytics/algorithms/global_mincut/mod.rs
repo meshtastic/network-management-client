@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+pub mod results;
+
 use crate::graph::edge::Edge;
 use crate::graph::graph_ds::Graph;
 

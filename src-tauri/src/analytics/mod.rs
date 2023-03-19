@@ -1,5 +1,4 @@
 pub(crate) mod algo_controller;
-pub(crate) mod algo_result_enums;
 pub(crate) mod algo_store;
 pub(crate) mod algorithms;
 pub(crate) mod algos_config;

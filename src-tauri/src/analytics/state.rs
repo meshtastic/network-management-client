@@ -106,8 +106,9 @@ impl State {
 /// Unit test
 #[cfg(test)]
 mod tests {
-    use crate::analytics::algo_result_enums::{ap::APResult, diff_cen::DiffCenResult};
-
+    use super::super::algorithms::{
+        articulation_point::results::APResult, diffusion_centrality::results::DiffCenResult,
+    };
     use super::*;
 
     #[test]

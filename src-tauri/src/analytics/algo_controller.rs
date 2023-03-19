@@ -1,8 +1,10 @@
-use super::algo_result_enums::ap::APResult;
-use super::algo_result_enums::diff_cen::{DiffCenError, DiffCenResult};
-use super::algo_result_enums::eigenvals::EigenvalsResult;
-use super::algo_result_enums::mincut::MinCutResult;
-use super::algo_result_enums::sw_cut::SWCutResult;
+use super::algorithms::articulation_point::results::APResult;
+use super::algorithms::diffusion_centrality::results::{
+    DiffCenError, DiffCenResult, EigenvalsResult,
+};
+use super::algorithms::global_mincut::results::MinCutResult;
+use super::algorithms::stoer_wagner::results::SWCutResult;
+
 use super::algo_store::AlgoStore;
 use super::algorithms::articulation_point::articulation_point;
 use super::algorithms::diffusion_centrality::diffusion_centrality;
