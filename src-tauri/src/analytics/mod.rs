@@ -1,8 +1,8 @@
-pub(crate) mod algo_controller;
-pub(crate) mod algo_store;
-pub(crate) mod algorithms;
-pub(crate) mod algos_config;
-pub(crate) mod aux_data_structures;
-pub(crate) mod aux_functions;
-pub(crate) mod history;
-pub(crate) mod state;
+pub mod algo_controller;
+pub mod algo_store;
+pub mod algorithms;
+pub mod algos_config;
+pub mod aux_functions;
+pub mod data_structures;
+pub mod history;
+pub mod state;

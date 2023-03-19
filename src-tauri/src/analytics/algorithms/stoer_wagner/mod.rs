@@ -2,7 +2,7 @@
 
 pub mod results;
 
-use super::super::aux_data_structures::{
+use super::super::data_structures::{
     binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
 };
 use super::global_mincut::results::MinCutResult;

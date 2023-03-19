@@ -96,7 +96,7 @@ pub fn add_node_and_location_to_graph(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::analytics::aux_data_structures::neighbor_info::Neighbor;
+    use crate::analytics::data_structures::neighbor_info::Neighbor;
     use crate::data_conversion::distance_conversion::gps_degrees_to_protobuf_field;
     use app::protobufs;
 

@@ -10,7 +10,7 @@ use super::algorithms::articulation_point::articulation_point;
 use super::algorithms::diffusion_centrality::diffusion_centrality;
 use super::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
 use super::algos_config::{AlgoConfig, Params};
-use super::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
+use super::data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use super::history::History;
 use crate::graph::graph_ds::Graph;
 

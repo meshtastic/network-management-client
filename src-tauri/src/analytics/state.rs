@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
-use super::aux_data_structures::timeline::Timeline;
+use super::data_structures::timeline::Timeline;
 use crate::analytics::history::History;
 
 use super::algos_config::AlgoConfig;

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::analytics::aux_data_structures::cut::Cut;
+use crate::analytics::data_structures::cut::Cut;
 
 #[derive(Debug)]
 pub enum SWCutResult {
