@@ -10,10 +10,10 @@ pub struct ActiveMeshDevice {
     pub inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
 }
 
-pub struct ActiveMeshGraph {
+pub struct NetworkGraph {
     pub inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
 }
 
-pub struct ActiveMeshState {
+pub struct AnalyticsState {
     pub inner: Arc<async_runtime::Mutex<Option<analytics::state::AnalyticsState>>>,
 }

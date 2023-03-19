@@ -15,8 +15,8 @@ use super::{events, APMincutStringResults};
 
 #[tauri::command]
 pub async fn initialize_graph_state(
-    mesh_graph: tauri::State<'_, state::ActiveMeshGraph>,
-    algo_state: tauri::State<'_, state::ActiveMeshState>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
+    algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<(), CommandError> {
     let new_graph = mesh::device::MeshGraph::new();
     let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
@@ -48,7 +48,7 @@ pub async fn connect_to_serial_port(
     app_handle: tauri::AppHandle,
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
     serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
-    mesh_graph: tauri::State<'_, state::ActiveMeshGraph>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     let mut connection = mesh::serial_connection::SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
@@ -258,7 +258,7 @@ pub async fn send_waypoint(
 
 #[tauri::command]
 pub async fn get_node_edges(
-    mesh_graph: tauri::State<'_, state::ActiveMeshGraph>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<geojson::FeatureCollection, CommandError> {
     let mut guard = mesh_graph.inner.lock().await;
     let graph = guard
@@ -274,8 +274,8 @@ pub async fn get_node_edges(
 #[tauri::command]
 pub async fn run_algorithms(
     bitfield: u8,
-    mesh_graph: tauri::State<'_, state::ActiveMeshGraph>,
-    algo_state: tauri::State<'_, state::ActiveMeshState>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
+    algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<APMincutStringResults, CommandError> {
     let mut guard = mesh_graph.inner.lock().await;
     let mut state_guard = algo_state.inner.lock().await;
