@@ -41,47 +41,55 @@ impl StoerWagnerGraph {
         let s = sets[0];
         let t = sets[1];
 
-        let t_idx = self.graph.get_node_idx(t.to_string());
-        let t_node = self.graph.get_node(t_idx);
+        let t_idx = self.graph.get_node_idx(t);
+        let t_node = self
+            .graph
+            .get_node(t_idx)
+            .expect("Index from cut should exist");
+
         let weight = t_node.optimal_weighted_degree;
 
         Cut::new(weight, s.to_string(), t.to_string())
     }
 
-    pub fn contract_edge(&mut self, v1: String, v2: String) {
-        let start_idx = self.graph.get_node_idx(v1.clone());
-        let finish_idx = self.graph.get_node_idx(v2.clone());
+    pub fn contract_edge(&mut self, v1: &String, v2: &String) {
+        let start_idx = self.graph.get_node_idx(v1);
+        let finish_idx = self.graph.get_node_idx(v2);
 
-        let mut start = self.graph.get_node(start_idx);
-        let finish = self.graph.get_node(finish_idx);
+        let mut start = self
+            .graph
+            .get_node(start_idx)
+            .expect("Index from edge should exist");
 
-        self.uf.union(v1, v2.clone());
+        let finish = self
+            .graph
+            .get_node(finish_idx)
+            .expect("Index from edge should exist");
+
+        self.uf.union(v1, v2);
 
         for mut node in self.graph.get_neighbors(finish.name.clone()) {
             if !node.name.eq(&start.name) {
-                let weight =
-                    self.graph
-                        .get_edge_weight(finish.name.clone(), node.name.clone(), None, None)
-                        + self.graph.get_edge_weight(
-                            start.name.clone(),
-                            node.name.clone(),
-                            None,
-                            None,
-                        );
+                let weight = self
+                    .graph
+                    .get_edge_weight(&finish.name, &node.name, None, None)
+                    + self
+                        .graph
+                        .get_edge_weight(&start.name, &node.name, None, None);
 
                 self.graph
                     .update_edge(start.name.clone(), node.name.clone(), weight, None, None);
 
                 start.optimal_weighted_degree +=
                     self.graph
-                        .get_edge_weight(finish.name.clone(), node.name.clone(), None, None);
+                        .get_edge_weight(&finish.name, &node.name, None, None);
                 node.optimal_weighted_degree +=
                     self.graph
-                        .get_edge_weight(finish.name.clone(), node.name.clone(), None, None);
+                        .get_edge_weight(&finish.name, &node.name, None, None);
             }
         }
 
-        self.uncontracted.remove(&v2);
+        self.uncontracted.remove(v2);
         self.graph.remove_node(finish_idx);
     }
 

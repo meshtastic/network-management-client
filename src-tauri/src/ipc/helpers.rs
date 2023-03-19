@@ -9,13 +9,28 @@ pub fn generate_graph_edges_geojson(
         .get_edges()
         .iter()
         .filter(|e| {
-            let u = graph.graph.get_node(e.u);
-            let v = graph.graph.get_node(e.v);
+            let u = graph
+                .graph
+                .get_node(e.u)
+                .expect("Index from edge should exist");
+
+            let v = graph
+                .graph
+                .get_node(e.v)
+                .expect("Index from edge should exist");
+
             u.longitude != 0.0 && u.latitude != 0.0 && v.latitude != 0.0 && v.longitude != 0.0
         })
         .map(|e| {
-            let u = graph.graph.get_node(e.u);
-            let v = graph.graph.get_node(e.v);
+            let u = graph
+                .graph
+                .get_node(e.u)
+                .expect("Index from edge should exist");
+
+            let v = graph
+                .graph
+                .get_node(e.v)
+                .expect("Index from edge should exist");
 
             geojson::Feature {
                 id: Some(geojson::feature::Id::String(format!(

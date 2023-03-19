@@ -1,5 +1,5 @@
 use super::algo_result_enums::ap::APResult;
-use super::algo_result_enums::diff_cen::DiffCenResult;
+use super::algo_result_enums::diff_cen::{DiffCenError, DiffCenResult};
 use super::algo_result_enums::eigenvals::EigenvalsResult;
 use super::algo_result_enums::mincut::MinCutResult;
 use super::algo_result_enums::sw_cut::SWCutResult;
@@ -116,10 +116,12 @@ impl AlgoController {
         match eigenvals_res {
             EigenvalsResult::Success(eigenvals_vec) => {
                 let diff_cent =
-                    diffusion_centrality(&d_adj, int_to_node_id, params, eigenvals_vec, n);
+                    diffusion_centrality(&d_adj, int_to_node_id, params, eigenvals_vec, n).unwrap();
                 DiffCenResult::Success(diff_cent)
             }
-            EigenvalsResult::Error(er_str) => DiffCenResult::Error(er_str),
+            EigenvalsResult::Error(er_str) => {
+                DiffCenResult::Error(DiffCenError::EigenvalueError(er_str))
+            }
             EigenvalsResult::Empty(b) => DiffCenResult::Empty(b),
         }
     }
@@ -169,8 +171,8 @@ mod tests {
             DiffCenResult::Success(diff_cent) => {
                 println!("Diffusion centrality: {:?}", diff_cent);
             }
-            DiffCenResult::Error(er_str) => {
-                panic!("Error in diffusion centrality: {}", er_str);
+            DiffCenResult::Error(err) => {
+                panic!("Error in diffusion centrality: {:?}", err);
             }
             DiffCenResult::Empty(_b) => {
                 panic!("Empty graph");

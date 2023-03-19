@@ -19,7 +19,7 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> SWCutResult {
         for node_id in g.uncontracted.clone() {
             let w = g
                 .graph
-                .get_edge_weight(node_id.clone(), max.node.name.clone(), None, None);
+                .get_edge_weight(&node_id, &max.node.name, None, None);
             bheap.update(node_id.clone(), w);
         }
         bheap.build_heap();
@@ -43,7 +43,7 @@ pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> SWCutResult {
     let opt_cut = st_mincut(graph);
     match opt_cut {
         SWCutResult::Success(cut) => {
-            graph.contract_edge(cut.get_a().to_string(), cut.get_b().to_string());
+            graph.contract_edge(cut.get_a(), cut.get_b());
             let opt_other_cut = stoer_wagner(graph);
             match opt_other_cut {
                 SWCutResult::Success(other_cut) => {
@@ -66,7 +66,7 @@ pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> M
     let mut parent_map = HashMap::new();
 
     for node in all_nodes {
-        let parent = graph.uf.find(node.clone());
+        let parent = graph.uf.find(&node);
         let children: &mut Vec<String> = parent_map.entry(parent.clone()).or_default();
         children.push(node.clone());
     }
@@ -83,7 +83,7 @@ pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> M
 
     for node_s in s_cut {
         for node_t in &t_cut {
-            let edge = graph.graph.get_edge(node_s.clone(), node_t.clone());
+            let edge = graph.graph.get_edge(&node_s, node_t);
 
             if let Some(e) = edge {
                 st_cut_edges.push(e.clone());

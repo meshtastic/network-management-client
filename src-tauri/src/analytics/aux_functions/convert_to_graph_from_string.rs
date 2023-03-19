@@ -31,8 +31,8 @@ pub fn convert_to_graph(graph_string: Vec<&str>) -> Graph {
         let node2 = edge_split[1];
         let weight = edge_split[2].parse::<f64>().unwrap();
 
-        let node1_idx = graph.get_node_idx(node1.to_string());
-        let node2_idx = graph.get_node_idx(node2.to_string());
+        let node1_idx = graph.get_node_idx(&node1.to_string());
+        let node2_idx = graph.get_node_idx(&node2.to_string());
 
         let edge_struct = Edge::new(node1_idx, node2_idx, weight);
         graph.add_edge_from_struct(edge_struct);

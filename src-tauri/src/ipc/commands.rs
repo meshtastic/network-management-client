@@ -334,7 +334,10 @@ pub async fn run_algorithms(
                 (key, val)
             })
             .collect(),
-        DiffCenResult::Error(err) => return Err(err.to_owned().into()),
+        DiffCenResult::Error(err) => {
+            eprintln!("{:?}", err);
+            return Err("Diffusion centrality algorithm failed".into());
+        }
         DiffCenResult::Empty(_) => HashMap::new(),
     };
 

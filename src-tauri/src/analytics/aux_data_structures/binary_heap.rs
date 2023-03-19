@@ -7,6 +7,7 @@ use crate::graph::node::Node;
 
 use super::stoer_wagner_ds::StoerWagnerGraph;
 
+#[derive(Clone, Debug)]
 pub struct Vertex {
     pub node: Node,
     pub weight: f64,
@@ -40,8 +41,12 @@ impl BinaryHeap {
         };
 
         for node_id in G.uncontracted.clone() {
-            let node_idx = G.graph.get_node_idx(node_id.clone());
-            let node = G.graph.get_node(node_idx);
+            let node_idx = G.graph.get_node_idx(&node_id);
+            let node = G
+                .graph
+                .get_node(node_idx)
+                .expect("Index from graph should exist");
+
             let vertex = Vertex {
                 node: node.clone(),
                 weight: 0.0,

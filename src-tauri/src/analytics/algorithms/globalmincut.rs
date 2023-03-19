@@ -56,13 +56,17 @@ pub fn contract(g: &Graph, k: usize) -> Graph {
         let start_idx = e.u;
         let finish_idx = e.v;
 
-        let start = g.get_node(start_idx);
-        let finish = g.get_node(finish_idx);
+        let start = g
+            .get_node(start_idx)
+            .expect("Index from graph should exist");
+
+        let finish = g
+            .get_node(finish_idx)
+            .expect("Index from graph should exist");
 
         for node in g.get_neighbors(finish.name.clone()) {
             if !node.name.eq(&start.name) {
-                let weight =
-                    g.get_edge_weight(finish.name.clone(), node.name.clone(), None, Some(true));
+                let weight = g.get_edge_weight(&finish.name, &node.name, None, Some(true));
                 g.add_edge(start.name.clone(), node.name.clone(), weight);
             }
         }

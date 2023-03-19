@@ -179,8 +179,8 @@ mod tests {
             DiffCenResult::Success(diff_cents) => {
                 println!("Diffusion centrality algorithm returned: {:?}", diff_cents);
             }
-            DiffCenResult::Error(err_str) => {
-                panic!("Error running diffusion centrality algorithm: {}", err_str);
+            DiffCenResult::Error(err) => {
+                panic!("Error running diffusion centrality algorithm: {:?}", err);
             }
             DiffCenResult::Empty(b) => {
                 panic!(

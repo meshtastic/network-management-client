@@ -1,7 +1,21 @@
 use nalgebra::DMatrix;
 use std::collections::HashMap;
 
-use crate::analytics::algos_config::Params;
+use crate::analytics::{
+    algo_result_enums::diff_cen::{DiffCenError, DiffCenMap},
+    algos_config::Params,
+};
+
+fn query_node_id(
+    id: usize,
+    int_to_node_id: &HashMap<usize, String>,
+) -> Result<String, DiffCenError> {
+    let id = int_to_node_id
+        .get(&id)
+        .ok_or(DiffCenError::NodeIdLookupError(id as u32))?;
+
+    Ok(id.to_owned())
+}
 
 /// Calculates the diffusion centrality of each node in the graph.
 /// Diffusion centrality is a measure of how much information a node
@@ -20,14 +34,14 @@ pub fn diffusion_centrality(
     params: &Params,
     eigenvals: Vec<f64>,
     n: usize,
-) -> HashMap<String, HashMap<String, HashMap<String, f64>>> {
+) -> Result<DiffCenMap, DiffCenError> {
     let t_param = params.get("T").unwrap_or(&(5_u32));
 
     let mut node_to_diffcen = HashMap::new();
 
     let largest_eigenvalue = eigenvals
         .iter()
-        .max_by(|a, b| a.partial_cmp(b).unwrap())
+        .max_by(|a, b| a.total_cmp(b))
         .unwrap_or(&1.0);
 
     let q = 1.0 / largest_eigenvalue;
@@ -51,18 +65,18 @@ pub fn diffusion_centrality(
             for (j, col) in row_normalized.iter().enumerate() {
                 if i == j {
                     let sum = row.sum();
-                    node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), sum);
+                    node_to_diffcen_inner.insert(query_node_id(j, &int_to_node_id)?, sum);
                     continue;
                 }
-                node_to_diffcen_inner.insert(int_to_node_id.get(&j).unwrap().clone(), *col);
+
+                node_to_diffcen_inner.insert(query_node_id(j, &int_to_node_id)?, *col);
             }
-            node_to_diffcen_at_t.insert(
-                int_to_node_id.get(&i).unwrap().clone(),
-                node_to_diffcen_inner,
-            );
+
+            node_to_diffcen_at_t.insert(query_node_id(i, &int_to_node_id)?, node_to_diffcen_inner);
         }
+
         node_to_diffcen.insert(t.to_string(), node_to_diffcen_at_t);
     }
 
-    node_to_diffcen
+    Ok(node_to_diffcen)
 }

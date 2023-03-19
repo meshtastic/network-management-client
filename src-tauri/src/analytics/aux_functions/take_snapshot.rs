@@ -66,12 +66,12 @@ pub fn take_snapshot_of_graph(graph: &Graph) -> String {
     for edge in graph.get_edges() {
         graph_string.push_str("E: ");
         let u_idx = edge.get_u();
-        let node_u = graph.get_node(u_idx);
+        let node_u = graph.get_node(u_idx).expect("Index from edge should exist");
         graph_string.push_str(&node_u.name);
         graph_string.push(' ');
 
         let b_idx = edge.get_v();
-        let node_b = graph.get_node(b_idx);
+        let node_b = graph.get_node(b_idx).expect("Index from edge should exist");
         graph_string.push_str(&node_b.name);
         graph_string.push(' ');
 

@@ -25,20 +25,21 @@ impl UnionFind {
         uf_ds
     }
 
-    pub fn find(&mut self, v: String) -> String {
-        if self.sets.get(&v).unwrap() == &v {
-            return v;
+    pub fn find(&mut self, v: &String) -> String {
+        if self.sets.get(v).unwrap() == v {
+            return v.clone();
         }
 
-        let parent = self.find(self.sets.get(&v).unwrap().clone());
-        self.sets.insert(v, parent.to_string());
+        let set_find_result = self.sets.get(v).unwrap().clone();
+        let parent = self.find(&set_find_result);
+        self.sets.insert(v.clone(), parent.to_string());
         parent
     }
 
-    pub fn union(&mut self, v1: String, v2: String) {
+    pub fn union(&mut self, v1: &String, v2: &String) {
         let v1_rep = self.find(v1);
         self.sets.insert(v2.clone(), v1_rep);
-        self.reps.remove(&v2);
+        self.reps.remove(v2);
     }
 
     pub fn get_sets(&self) -> &HashSet<String> {
@@ -67,8 +68,8 @@ mod tests {
         let w: String = "w".to_string();
 
         let mut uf = UnionFind::new(vec![u.clone(), v.clone(), w]);
-        uf.union(u.clone(), v.clone());
+        uf.union(&u, &v);
 
-        assert_eq!(uf.find(u), uf.find(v));
+        assert_eq!(uf.find(&u), uf.find(&v));
     }
 }

@@ -29,6 +29,20 @@ impl History {
         }
     }
 
+    fn get_last_time_entry(entries: &[SystemTime]) -> Option<std::time::Duration> {
+        if let Some(last) = entries.last() {
+            return last.elapsed().ok();
+        }
+
+        None
+    }
+
+    fn log_last_run_time(history: &mut Vec<SystemTime>) -> SystemTime {
+        let time = SystemTime::now();
+        history.push(time);
+        time
+    }
+
     /// Logs the time of the last articulation point calculation.
     ///
     /// # Arguments
@@ -39,8 +53,7 @@ impl History {
     ///
     /// * `SystemTime` - The time of the last articulation point calculation.
     pub fn log_ap(&mut self) -> SystemTime {
-        self.ap_history.push(SystemTime::now());
-        *self.ap_history.last().unwrap()
+        Self::log_last_run_time(&mut self.ap_history)
     }
 
     /// Logs the time of the last mincut calculation.
@@ -53,8 +66,7 @@ impl History {
     ///
     /// * `SystemTime` - The time of the last mincut calculation.
     pub fn log_mincut(&mut self) -> SystemTime {
-        self.mincut_history.push(SystemTime::now());
-        *self.mincut_history.last().unwrap()
+        Self::log_last_run_time(&mut self.mincut_history)
     }
 
     /// Logs the time of the last diffusion centrality calculation.
@@ -67,8 +79,7 @@ impl History {
     ///
     /// * `SystemTime` - The time of the last diffusion centrality calculation.
     pub fn log_diff_cent(&mut self) -> SystemTime {
-        self.diff_cent_history.push(SystemTime::now());
-        *self.diff_cent_history.last().unwrap()
+        Self::log_last_run_time(&mut self.diff_cent_history)
     }
 
     /// Logs the time of the last most similar timeline calculation.
@@ -81,8 +92,7 @@ impl History {
     ///
     /// * `SystemTime` - The time of the last most similar timeline calculation.
     pub fn log_most_sim_t(&mut self) -> SystemTime {
-        self.most_sim_t_history.push(SystemTime::now());
-        *self.most_sim_t_history.last().unwrap()
+        Self::log_last_run_time(&mut self.diff_cent_history)
     }
 
     /// Logs the time of the last predicted state calculation.
@@ -95,8 +105,7 @@ impl History {
     ///
     /// * `SystemTime` - The time of the last predicted state calculation.
     pub fn log_pred_stt(&mut self) -> SystemTime {
-        self.pred_stt_history.push(SystemTime::now());
-        *self.pred_stt_history.last().unwrap()
+        Self::log_last_run_time(&mut self.pred_stt_history)
     }
 
     /// Returns the history of the articulation point calculation.
@@ -174,10 +183,7 @@ impl History {
     ///
     /// * `Option<std::time::Duration>` - The last elapsed time of the articulation point calculation.
     pub fn get_ap_history_last_elapsed(&self) -> Option<std::time::Duration> {
-        match self.ap_history.len() {
-            0 => None,
-            _ => Some(self.ap_history.last().unwrap().elapsed().unwrap()),
-        }
+        Self::get_last_time_entry(&self.ap_history)
     }
 
     /// Returns the last elapsed time of the mincut calculation.
@@ -190,10 +196,7 @@ impl History {
     ///
     /// * `Option<std::time::Duration>` - The last elapsed time of the mincut calculation.
     pub fn get_mincut_history_last_elapsed(&self) -> Option<std::time::Duration> {
-        match self.mincut_history.len() {
-            0 => None,
-            _ => Some(self.mincut_history.last().unwrap().elapsed().unwrap()),
-        }
+        Self::get_last_time_entry(&self.mincut_history)
     }
 
     /// Returns the last elapsed time of the diffusion centrality calculation.
@@ -206,10 +209,7 @@ impl History {
     ///
     /// * `Option<std::time::Duration>` - The last elapsed time of the diffusion centrality calculation.
     pub fn get_diffusion_centrality_history_last_elapsed(&self) -> Option<std::time::Duration> {
-        match self.diff_cent_history.len() {
-            0 => None,
-            _ => Some(self.diff_cent_history.last().unwrap().elapsed().unwrap()),
-        }
+        Self::get_last_time_entry(&self.diff_cent_history)
     }
 
     /// Returns the last elapsed time of the most similar timeline calculation.
@@ -222,10 +222,7 @@ impl History {
     ///
     /// * `Option<std::time::Duration>` - The last elapsed time of the most similar timeline calculation.
     pub fn get_most_sim_timeline_history_last_elapsed(&self) -> Option<std::time::Duration> {
-        match self.most_sim_t_history.len() {
-            0 => None,
-            _ => Some(self.most_sim_t_history.last().unwrap().elapsed().unwrap()),
-        }
+        Self::get_last_time_entry(&self.most_sim_t_history)
     }
 
     /// Returns the last elapsed time of the predicted state calculation.
@@ -238,9 +235,6 @@ impl History {
     ///
     /// * `Option<std::time::Duration>` - The last elapsed time of the predicted state calculation.
     pub fn get_predicted_state_history_last_elapsed(&self) -> Option<std::time::Duration> {
-        match self.pred_stt_history.len() {
-            0 => None,
-            _ => Some(self.pred_stt_history.last().unwrap().elapsed().unwrap()),
-        }
+        Self::get_last_time_entry(&self.pred_stt_history)
     }
 }

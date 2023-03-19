@@ -75,8 +75,11 @@ pub fn add_node_and_location_to_graph(
         return graph.add_node_from_struct(node);
     }
 
-    let node_idx = graph.get_node_idx(name.clone());
-    let node = graph.get_node_mut(node_idx);
+    let node_idx = graph.get_node_idx(&name);
+    let node = graph
+        .get_node_mut(node_idx)
+        .expect("Index from edge should exist");
+
     if let Some(node_loc) = node_loc {
         let node_pos = &node_loc.data.position;
         if let Some(node_pos) = node_pos {
@@ -87,7 +90,7 @@ pub fn add_node_and_location_to_graph(
         }
     }
 
-    graph.get_node_idx(name)
+    graph.get_node_idx(&name)
 }
 
 #[cfg(test)]
@@ -318,8 +321,8 @@ mod tests {
         // Check the edge weights to check that they are both the weight of the 1-2 edge, which has neighbor 2's SNR
         // Assert that the 1-2 edge is the correct (smaller) SNR
         let first_edge_weight = graph.get_edge_weight(
-            neighbor_1.id.to_string(),
-            neighbor_2.id.to_string(),
+            &neighbor_1.id.to_string(),
+            &neighbor_2.id.to_string(),
             None,
             Some(false),
         );

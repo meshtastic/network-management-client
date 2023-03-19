@@ -116,7 +116,7 @@ impl Graph {
     ///
     /// * `node1` - Name of the first node
     /// * `node2` - Name of the second node
-    pub fn contains_edge(&mut self, node1: String, node2: String) -> bool {
+    pub fn contains_edge(&mut self, node1: &String, node2: &String) -> bool {
         let node1_idx = self.get_node_idx(node1);
         let node2_idx = self.get_node_idx(node2);
 
@@ -140,8 +140,8 @@ impl Graph {
     /// # Returns
     ///
     /// * `Option<Edge>` - The edge between the two nodes if it exists
-    pub fn get_edge(&mut self, node1: String, node2: String) -> Option<Edge> {
-        if self.contains_edge(node1.clone(), node2.clone()) {
+    pub fn get_edge(&mut self, node1: &String, node2: &String) -> Option<Edge> {
+        if self.contains_edge(node1, node2) {
             let node1_idx = self.get_node_idx(node1);
             let node2_idx = self.get_node_idx(node2);
 
@@ -332,29 +332,29 @@ impl Graph {
     /// * `get_all_parallel` - Optional bool flag to get weight sum of all parallel edges.
     pub fn get_edge_weight(
         &mut self,
-        u: String,
-        v: String,
+        u: &String,
+        v: &String,
         parallel_edge_idx: Option<usize>,
         get_all_parallel: Option<bool>,
     ) -> f64 {
-        if !self.node_idx_map.contains_key(&u) {
+        if !self.node_idx_map.contains_key(u) {
             let error_message = format!("Node {} does not exist", u);
             eprintln!("{}", error_message);
             return 0.0;
         }
-        if !self.node_idx_map.contains_key(&v) {
+        if !self.node_idx_map.contains_key(v) {
             let error_message = format!("Node {} does not exist", v);
             eprintln!("{}", error_message);
             return 0.0;
         }
 
-        if !self.contains_edge(u.clone(), v.clone()) {
+        if !self.contains_edge(u, v) {
             eprintln!("Graph doesn't contain edge: ({}, {})", u, v);
             return 0.0;
         }
 
-        let u_idx = self.node_idx_map.get(&u).unwrap();
-        let v_idx = self.node_idx_map.get(&v).unwrap();
+        let u_idx = self.node_idx_map.get(u).unwrap();
+        let v_idx = self.node_idx_map.get(v).unwrap();
 
         let edge_idx_list = self.edge_idx_map.get(&(*u_idx, *v_idx)).unwrap();
 
@@ -489,11 +489,23 @@ impl Graph {
         }
 
         for edge in edges {
-            let u_name = self.get_node(edge.get_u()).name.clone();
-            let v_name = self.get_node(edge.get_v()).name.clone();
+            let u_name = self
+                .get_node(edge.get_u())
+                .expect("Index from edge should exist")
+                .name;
 
-            let u_id = node_id_to_int.get(&u_name).unwrap();
-            let v_id = node_id_to_int.get(&v_name).unwrap();
+            let v_name = self
+                .get_node(edge.get_v())
+                .expect("Index from edge should exist")
+                .name;
+
+            let u_id = node_id_to_int
+                .get(&u_name)
+                .expect("Name from edge should exist");
+
+            let v_id = node_id_to_int
+                .get(&v_name)
+                .expect("Name from edge should exist");
 
             let weight = edge.get_weight();
 
@@ -560,8 +572,8 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node_idx` - NodeIndex of the node we want to get.
-    pub fn get_node(&self, idx: petgraph::graph::NodeIndex) -> Node {
-        self.g.node_weight(idx).unwrap().clone()
+    pub fn get_node(&self, idx: petgraph::graph::NodeIndex) -> Option<Node> {
+        Some(self.g.node_weight(idx)?.clone())
     }
 
     /// Returns the node associated with the given node index.
@@ -569,8 +581,8 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node_idx` - NodeIndex of the node we want to get.
-    pub fn get_node_mut(&mut self, idx: petgraph::graph::NodeIndex) -> &mut Node {
-        self.g.node_weight_mut(idx).unwrap()
+    pub fn get_node_mut(&mut self, idx: petgraph::graph::NodeIndex) -> Option<&mut Node> {
+        self.g.node_weight_mut(idx)
     }
 
     /// Returns the node index associated with the given node identifier.
@@ -578,8 +590,8 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node_id` - String identifier of the node we want to get.
-    pub fn get_node_idx(&self, node: String) -> petgraph::graph::NodeIndex {
-        *self.node_idx_map.get(&node).unwrap()
+    pub fn get_node_idx(&self, node: &String) -> petgraph::graph::NodeIndex {
+        *self.node_idx_map.get(node).unwrap()
     }
 
     /// Returns a list of all the edges in the graph.
@@ -660,8 +672,9 @@ impl Display for Graph {
         let mut s = String::new();
 
         for edge in self.get_edges() {
-            let node_u = self.get_node(edge.u);
-            let node_v = self.get_node(edge.v);
+            let node_u = self.get_node(edge.u).expect("Index from edge should exist");
+            let node_v = self.get_node(edge.v).expect("Index from edge should exist");
+
             s.push_str(&format!(
                 "{} - {} {}\n",
                 node_u.name.clone(),

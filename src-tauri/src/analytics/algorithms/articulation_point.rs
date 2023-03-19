@@ -84,7 +84,7 @@ pub fn articulation_point(graph: &Graph) -> APResult {
     let mut articulation_points = Vec::new();
     for key in ap.keys() {
         if *ap.get(key) {
-            articulation_points.push(graph.get_node_idx(key.to_string()));
+            articulation_points.push(graph.get_node_idx(key));
         }
     }
 
@@ -140,8 +140,8 @@ mod tests {
                 let len_articulation_points = aps.len();
                 assert_eq!(len_articulation_points, 3);
                 // Check if node u is an articulation point
-                assert!(!aps.contains(&g.get_node_idx(u)));
-                assert!(aps.contains(&g.get_node_idx(x)));
+                assert!(!aps.contains(&g.get_node_idx(&u)));
+                assert!(aps.contains(&g.get_node_idx(&x)));
                 println!("Articulation Points: {:?}", aps);
             }
             APResult::Error(aps) => {
