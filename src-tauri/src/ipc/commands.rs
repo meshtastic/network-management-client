@@ -19,7 +19,7 @@ pub async fn initialize_graph_state(
     algo_state: tauri::State<'_, state::ActiveMeshState>,
 ) -> Result<(), CommandError> {
     let new_graph = mesh::device::MeshGraph::new();
-    let state = analytics::state::State::new(HashMap::new(), false);
+    let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
     let mesh_graph_arc = mesh_graph.inner.clone();
     let algo_state_arc = algo_state.inner.clone();
 

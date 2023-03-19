@@ -105,7 +105,7 @@ pub struct PredStateConf {
 }
 
 #[derive(Debug)]
-pub struct AlgoConfig {
+pub struct AlgorithmConfiguration {
     pub ap: APConf,
     pub mincut: MinCutConf,
     pub diff_cent: DiffCentConf,
@@ -113,9 +113,9 @@ pub struct AlgoConfig {
     pub pred_state: PredStateConf,
 }
 
-impl AlgoConfig {
+impl AlgorithmConfiguration {
     pub fn new() -> Self {
-        AlgoConfig {
+        AlgorithmConfiguration {
             ap: APConf {
                 activation: Activation::new(),
                 params: Params::new(),
@@ -226,7 +226,7 @@ mod tests {
 
     #[test]
     fn test_set_algos() {
-        let mut algo_config = AlgoConfig::new();
+        let mut algo_config = AlgorithmConfiguration::new();
         algo_config.set_algos(0b00111);
 
         assert!(algo_config.get_ap_activation());

@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 /// * `pred_state` - [`crate::state_err_enums::pred_state::PredStateResult`] that stores Success/Error/Empty of state prediction algorithm.
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct AlgoStore {
+pub struct ResultsStore {
     pub aps: APResult,
     pub mincut: MinCutResult,
     pub diff_cent: DiffCenResult,
@@ -28,9 +28,9 @@ pub struct AlgoStore {
     pub pred_state: PredStateResult,
 }
 
-impl AlgoStore {
+impl ResultsStore {
     pub fn new() -> Self {
-        AlgoStore {
+        ResultsStore {
             aps: APResult::Empty(true),
             mincut: MinCutResult::Empty(true),
             diff_cent: DiffCenResult::Empty(true),

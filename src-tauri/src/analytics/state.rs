@@ -6,13 +6,13 @@ use std::time::SystemTime;
 use super::data_structures::timeline::Timeline;
 use crate::analytics::history::History;
 
-use super::algos_config::AlgoConfig;
+use super::configuration::AlgorithmConfiguration;
 use crate::graph::graph_ds::Graph;
 
-use super::algo_controller::AlgoController;
-use super::algo_store::AlgoStore;
+use super::controller::AlgoController;
+use super::results_store::ResultsStore;
 
-/// The GlobalState struct contains all the data that is not specific to a particular algorithm.
+/// The AnalyticsState struct contains all the data that is not specific to a particular algorithm.
 /// It is used to store the state of the application.
 ///
 /// # Fields
@@ -25,18 +25,18 @@ use super::algo_store::AlgoStore;
 /// * `time` - A SystemTime object.
 /// * `algos_to_run` - A Vec of Strings representing the algorithms to run.
 /// * `algos_run_mode_auto` - A boolean indicating whether the algorithms should be run automatically or not.
-pub struct State {
+pub struct AnalyticsState {
     timeline: Timeline,
     history: History,
     time: SystemTime,
-    algo_configs: AlgoConfig,
+    algo_configs: AlgorithmConfiguration,
     algo_run_mode_auto: bool,
-    algo_store: AlgoStore,
+    algo_store: ResultsStore,
     algo_controller: AlgoController,
 }
 
-impl State {
-    /// Creates a new GlobalState object.
+impl AnalyticsState {
+    /// Creates a new AnalyticsState object.
     ///
     /// # Arguments
     ///
@@ -45,15 +45,15 @@ impl State {
     ///
     /// # Returns
     ///
-    /// * `GlobalState` - A new GlobalState object.
-    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> State {
-        State {
+    /// * `AnalyticsState` - A new AnalyticsState object.
+    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> AnalyticsState {
+        AnalyticsState {
             timeline: Timeline::new(config_fields, is_save),
             history: History::new(),
             time: SystemTime::now(),
-            algo_configs: AlgoConfig::new(),
+            algo_configs: AlgorithmConfiguration::new(),
             algo_run_mode_auto: true,
-            algo_store: AlgoStore::new(),
+            algo_store: ResultsStore::new(),
             algo_controller: AlgoController::new(),
         }
     }
@@ -98,7 +98,7 @@ impl State {
     /// # Returns
     ///
     /// * `AlgoStore` - The algorithm result store.
-    pub fn get_algo_results(&self) -> &AlgoStore {
+    pub fn get_algo_results(&self) -> &ResultsStore {
         &self.algo_store
     }
 }
@@ -113,7 +113,7 @@ mod tests {
 
     #[test]
     fn test_state() {
-        let mut state = State::new(HashMap::new(), false);
+        let mut state = AnalyticsState::new(HashMap::new(), false);
 
         let mut graph1 = Graph::new();
 
@@ -152,7 +152,7 @@ mod tests {
 
     #[test]
     fn test_diffusion_centrality() {
-        let mut state = State::new(HashMap::new(), false);
+        let mut state = AnalyticsState::new(HashMap::new(), false);
 
         let mut graph1 = Graph::new();
 

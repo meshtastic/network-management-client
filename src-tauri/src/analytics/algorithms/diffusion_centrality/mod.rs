@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 pub mod results;
 
-use crate::analytics::algos_config::Params;
+use crate::analytics::configuration::Params;
 use results::{DiffCenError, DiffCenMap};
 
 fn query_node_id(

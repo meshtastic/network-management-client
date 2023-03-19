@@ -1,8 +1,8 @@
-pub mod algo_controller;
-pub mod algo_store;
 pub mod algorithms;
-pub mod algos_config;
 pub mod aux_functions;
+pub mod configuration;
+pub mod controller;
 pub mod data_structures;
 pub mod history;
+pub mod results_store;
 pub mod state;

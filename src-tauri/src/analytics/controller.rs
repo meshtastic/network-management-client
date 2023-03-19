@@ -5,13 +5,13 @@ use super::algorithms::diffusion_centrality::results::{
 use super::algorithms::global_mincut::results::MinCutResult;
 use super::algorithms::stoer_wagner::results::SWCutResult;
 
-use super::algo_store::AlgoStore;
 use super::algorithms::articulation_point::articulation_point;
 use super::algorithms::diffusion_centrality::diffusion_centrality;
 use super::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
-use super::algos_config::{AlgoConfig, Params};
+use super::configuration::{AlgorithmConfiguration, Params};
 use super::data_structures::stoer_wagner_ds::StoerWagnerGraph;
 use super::history::History;
+use super::results_store::ResultsStore;
 use crate::graph::graph_ds::Graph;
 
 pub struct AlgoController;
@@ -33,9 +33,9 @@ impl AlgoController {
     pub fn run_algos(
         &mut self,
         graph: &Graph,
-        algo_conf: &AlgoConfig,
+        algo_conf: &AlgorithmConfiguration,
         history: &mut History,
-        store: &mut AlgoStore,
+        store: &mut ResultsStore,
     ) {
         if algo_conf.get_ap_activation() {
             let aps = self.run_ap(graph, algo_conf.get_ap_params());
@@ -160,9 +160,9 @@ mod tests {
         graph1.add_edge(u, w.clone(), 7_f64);
         graph1.add_edge(v, w, 35_f64);
 
-        let mut algo_config = AlgoConfig::new();
+        let mut algo_config = AlgorithmConfiguration::new();
         let history = &mut History::new();
-        let store = &mut AlgoStore::new();
+        let store = &mut ResultsStore::new();
         algo_config.set_algos(0b00100);
 
         algo_controller.run_algos(&graph1, &algo_config, history, store);

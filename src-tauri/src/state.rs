@@ -15,5 +15,5 @@ pub struct ActiveMeshGraph {
 }
 
 pub struct ActiveMeshState {
-    pub inner: Arc<async_runtime::Mutex<Option<analytics::state::State>>>,
+    pub inner: Arc<async_runtime::Mutex<Option<analytics::state::AnalyticsState>>>,
 }
