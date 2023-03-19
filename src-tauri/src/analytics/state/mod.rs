@@ -3,14 +3,18 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
+use self::configuration::{AlgorithmConfigFlags, AlgorithmConfiguration};
+use self::controller::AlgoController;
+use self::history::AlgorithmRunHistory;
+use self::store::ResultsStore;
 use super::data_structures::timeline::NetworkTimeline;
-use crate::analytics::history::AlgorithmRunHistory;
 
-use super::configuration::{AlgorithmConfigFlags, AlgorithmConfiguration};
 use crate::graph::graph_ds::Graph;
 
-use super::controller::AlgoController;
-use super::results_store::ResultsStore;
+pub mod configuration;
+pub mod controller;
+pub mod history;
+pub mod store;
 
 /// The AnalyticsState struct contains all the data that is not specific to a particular algorithm.
 /// It is used to store the state of the application.
@@ -57,12 +61,12 @@ impl AnalyticsState {
         }
     }
 
-    /// Adds a graph to the timeline.
+    /// Adds a graph snapshot to the timeline.
     ///
     /// # Arguments
     ///
     /// * `graph` - A Graph object.
-    pub fn add_graph(&mut self, graph: &Graph) {
+    pub fn add_graph_snapshot(&mut self, graph: &Graph) {
         self.timeline.add_snapshot(graph);
     }
 
@@ -129,7 +133,7 @@ mod tests {
         graph1.add_edge(u, w.clone(), 7_f64);
         graph1.add_edge(v, w, 35_f64);
 
-        state.add_graph(&graph1);
+        state.add_graph_snapshot(&graph1);
 
         state.set_algorithm_flags(AlgorithmConfigFlags {
             articulation_point: Some(true),
@@ -176,7 +180,7 @@ mod tests {
         graph1.add_edge(u, w.clone(), 7_f64);
         graph1.add_edge(v, w, 35_f64);
 
-        state.add_graph(&graph1);
+        state.add_graph_snapshot(&graph1);
 
         state.set_algorithm_flags(AlgorithmConfigFlags {
             articulation_point: None,

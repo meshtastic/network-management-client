@@ -1,19 +1,21 @@
 #![allow(clippy::let_unit_value)]
 
-use super::algorithms::articulation_point::results::APResult;
-use super::algorithms::diffusion_centrality::results::DiffCenResult;
-use super::algorithms::stoer_wagner::results::MinCutResult;
-
-use super::algorithms::articulation_point::{ArticulationPointParams, ArticulationPointRunner};
-use super::algorithms::diffusion_centrality::{
+use crate::analytics::algorithms::articulation_point::results::APResult;
+use crate::analytics::algorithms::articulation_point::{
+    ArticulationPointParams, ArticulationPointRunner,
+};
+use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
+use crate::analytics::algorithms::diffusion_centrality::{
     DiffusionCentralityParams, DiffusionCentralityRunner,
 };
-use super::algorithms::stoer_wagner::{GlobalMinCutParams, GlobalMinCutRunner};
-use super::algorithms::AlgorithmRunner;
+use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
+use crate::analytics::algorithms::stoer_wagner::{GlobalMinCutParams, GlobalMinCutRunner};
+use crate::analytics::algorithms::AlgorithmRunner;
+use crate::graph::graph_ds::Graph;
+
 use super::configuration::{AlgorithmConfiguration, Params};
 use super::history::AlgorithmRunHistory;
-use super::results_store::ResultsStore;
-use crate::graph::graph_ds::Graph;
+use super::store::ResultsStore;
 
 pub struct AlgoController;
 
@@ -123,7 +125,8 @@ impl AlgoController {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{analytics::configuration::AlgorithmConfigFlags, graph::graph_ds::Graph};
+    use crate::analytics::state::configuration::AlgorithmConfigFlags;
+    use crate::graph::graph_ds::Graph;
 
     #[test]
     fn test_run_controller() {

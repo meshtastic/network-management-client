@@ -1,10 +1,10 @@
 #![allow(dead_code)]
 
-use super::algorithms::articulation_point::results::APResult;
-use super::algorithms::diffusion_centrality::results::DiffCenResult;
-use super::algorithms::most_similar_timeline::results::MostSimTResult;
-use super::algorithms::predicted_state::results::PredStateResult;
-use super::algorithms::stoer_wagner::results::MinCutResult;
+use crate::analytics::algorithms::articulation_point::results::APResult;
+use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
+use crate::analytics::algorithms::most_similar_timeline::results::MostSimTResult;
+use crate::analytics::algorithms::predicted_state::results::PredStateResult;
+use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 
 use crate::graph::graph_ds::Graph;
 use serde::{Deserialize, Serialize};
