@@ -5,7 +5,7 @@ use super::algo_result_enums::mincut::MinCutResult;
 use super::algo_result_enums::sw_cut::SWCutResult;
 use super::algo_store::AlgoStore;
 use super::algorithms::articulation_point::articulation_point;
-use super::algorithms::diffcen::diffusion_centrality;
+use super::algorithms::diffusion_centrality::diffusion_centrality;
 use super::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
 use super::algos_config::{AlgoConfig, Params};
 use super::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
