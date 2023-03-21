@@ -4,17 +4,19 @@ import { useSelector, useDispatch } from "react-redux";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import {
   selectAllowOnMapWaypointCreation,
-  selectShowAlgosAccordion,
+  selectInfoPane,
+  selectActiveWaypoint
 } from "@features/device/deviceSelectors";
 
 import { MapIconButton } from "@components/Map/MapIconButton";
-import { MapPinIcon, Square3Stack3DIcon } from "@heroicons/react/24/outline";
+import { MapPinIcon, Square3Stack3DIcon, SparklesIcon } from "@heroicons/react/24/outline";
 
 const MapInteractionPane = () => {
   const dispatch = useDispatch();
 
   const newWaypoint = useSelector(selectAllowOnMapWaypointCreation());
-  const accordionShown = useSelector(selectShowAlgosAccordion());
+  const accordionShown = (useSelector(selectInfoPane())=="algos" ? true : false);
+
 
   // Toggles newWaypoint state, which allows for creation of new waypoints on map
   const handleClickMapPin = () => {
@@ -22,11 +24,23 @@ const MapInteractionPane = () => {
   };
 
   const handleClickStacks = () => {
-    dispatch(deviceSliceActions.setShowAlgosAccordion(!accordionShown));
+    dispatch(deviceSliceActions.setInfoPane(accordionShown ? null : "algos"));
   };
+
+  // const handleClickSparks = () => {
+  //   console.log("temp sanity checker");
+  // }
 
   return (
     <div className="absolute top-9 right-9 flex gap-4">
+      {/* <MapIconButton selected={false} onClick={handleClickSparks}>
+        <SparklesIcon
+          className={`w-6 h-6 text-gray-400 ${
+            newWaypoint ? "text-gray-200" : "text-gray-500"
+          }`}
+        />
+      </MapIconButton> */}
+
       {/* Toggles newWaypoint state */}
       <MapIconButton selected={newWaypoint} onClick={handleClickMapPin}>
         <MapPinIcon

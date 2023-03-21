@@ -31,9 +31,8 @@ import {
   selectActiveNodeId,
   selectAllNodes,
   selectAllWaypoints,
-  selectIsWaypointEdit,
   selectAllowOnMapWaypointCreation,
-  selectShowAlgosAccordion,
+  selectInfoPane,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -46,10 +45,9 @@ export const MapView = () => {
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
   const { edgesFeatureCollection, viewState } = useSelector(selectMapState());
-  const showAnalyticsPane = useSelector(selectShowAlgosAccordion());
+  const showInfoPane = useSelector(selectInfoPane());
 
   const waypoints = useSelector(selectAllWaypoints());
-  const isWaypointEdit = useSelector(selectIsWaypointEdit());
   const showNewWaypointView = useSelector(selectAllowOnMapWaypointCreation());
 
   const handleClick = (e: MapLayerMouseEvent) => {
@@ -136,7 +134,6 @@ export const MapView = () => {
           </Source>
         )}
 
-        {showAnalyticsPane ? <AnalyticsPane /> : null}
 
         {/* Visualize all nodes */}
         {nodes
@@ -163,8 +160,17 @@ export const MapView = () => {
           ))}
 
         {/* Other popups */}
-        {isWaypointEdit ? <WaypointMenuEdit /> : <WaypointMenu />}
-        <MapSelectedNodeMenu />
+        {showInfoPane=="waypoint" ? <WaypointMenu /> : 
+        showInfoPane=="waypointEdit" ? <WaypointMenuEdit /> :
+        showInfoPane=="algos" ? <AnalyticsPane /> : null}
+
+
+        <MapSelectedNodeMenu /> 
+        {/* me note: also get this one */}
+
+
+
+
         <NodeSearchDock />
         <MapInteractionPane />
       </Map>

@@ -49,7 +49,7 @@ const WaypointMenuEdit = () => {
       dispatch(
         requestNewWaypoint({ waypoint: updatedWaypoint, channel: channelNum })
       );
-      dispatch(deviceSliceActions.setWaypointEdit(false));
+      dispatch(deviceSliceActions.setInfoPane("waypoint"));
     } else {
       console.warn("Error: No active waypoint");
     }

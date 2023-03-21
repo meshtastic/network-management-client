@@ -16,7 +16,7 @@ const AnalyticsPane = () => {
   const { apResult, mincutResult } = useSelector(selectAlgorithmsResults());
 
   const handleClosePane = () => {
-    dispatch(deviceSliceActions.setShowAlgosAccordion(false));
+    dispatch(deviceSliceActions.setInfoPane(null));
   };
 
   const diffcen = new Map();

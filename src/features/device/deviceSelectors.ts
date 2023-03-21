@@ -108,11 +108,8 @@ export const selectActiveWaypoint =
   };
 
 // Are we currently in the waypoint edit state
-export const selectIsWaypointEdit = () => (state: RootState) =>
-  state.devices.waypointEdit;
+export const selectInfoPane = () => (state: RootState) =>
+  state.devices.infoPane;
 
 export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
   state.devices.allowOnMapWaypointCreation;
-
-export const selectShowAlgosAccordion = () => (state: RootState) =>
-  state.devices.showAlgosAccordion;
