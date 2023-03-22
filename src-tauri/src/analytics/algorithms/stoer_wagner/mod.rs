@@ -1,10 +1,43 @@
 #![allow(dead_code)]
 
-use super::super::algo_result_enums::{mincut::MinCutResult, sw_cut::SWCutResult};
-use super::super::aux_data_structures::{
-    binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
+pub mod results;
+
+use self::results::MinCutResult;
+
+use super::{
+    super::data_structures::{
+        binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
+    },
+    AlgorithmRunner,
 };
+use results::SWCutResult;
 use std::collections::HashMap;
+
+pub struct GlobalMinCutRunner;
+
+pub struct GlobalMinCutParams;
+
+impl AlgorithmRunner for GlobalMinCutRunner {
+    type Parameters = GlobalMinCutParams;
+    type Result = MinCutResult;
+
+    fn new(_params: Self::Parameters) -> Self {
+        GlobalMinCutRunner
+    }
+
+    fn run(&mut self, graph: &crate::graph::graph_ds::Graph) -> Self::Result {
+        let sw_graph = &mut StoerWagnerGraph::new(graph.clone());
+
+        match stoer_wagner(sw_graph) {
+            SWCutResult::Success(_) => {}
+            SWCutResult::Error(er_str) => return MinCutResult::Error(er_str),
+            SWCutResult::Empty(b) => return MinCutResult::Empty(b),
+        }
+
+        let node_names = graph.get_nodes().iter().map(|n| n.name.clone()).collect();
+        recover_mincut(sw_graph, node_names)
+    }
+}
 
 pub fn st_mincut(g: &mut StoerWagnerGraph) -> SWCutResult {
     let mut bheap = BinaryHeap::new(g);
@@ -153,18 +186,18 @@ mod tests {
                         assert_eq!(mincut_edges.len(), 1);
                     }
                     MinCutResult::Error(err_str) => {
-                        println!("Error: {}", err_str);
+                        panic!("Failed to find mincut from SWCut: {}", err_str);
                     }
                     MinCutResult::Empty(empty) => {
-                        println!("Empty: {}", empty);
+                        panic!("Empty MinCut result: {}", empty);
                     }
                 }
             }
             SWCutResult::Error(err_str) => {
-                println!("Error: {}", err_str);
+                panic!("Failed to find SWCut: {}", err_str);
             }
             SWCutResult::Empty(empty) => {
-                println!("Empty: {}", empty);
+                panic!("Empty SWCut result: {}", empty);
             }
         }
 
@@ -179,14 +212,66 @@ mod tests {
                     }
                 }
                 SWCutResult::Error(err_str) => {
-                    println!("Error: {}", err_str);
+                    panic!("Error: {}", err_str);
                 }
                 SWCutResult::Empty(empty) => {
-                    println!("Empty: {}", empty);
+                    panic!("Empty: {}", empty);
                 }
             }
         }
 
         assert_eq!(correct_mincut_weight_count, 100);
+    }
+
+    #[test]
+    fn test_mincut_runner() {
+        // Create a graph
+        let mut g = Graph::new();
+
+        // Add nodes
+        let u: String = "u".to_string();
+        let v: String = "v".to_string();
+        let w: String = "w".to_string();
+        let x: String = "x".to_string();
+        let y: String = "y".to_string();
+        let z: String = "z".to_string();
+        let a: String = "a".to_string();
+        let b: String = "b".to_string();
+
+        g.add_node(u.clone());
+        g.add_node(v.clone());
+        g.add_node(w.clone());
+        g.add_node(x.clone());
+        g.add_node(y.clone());
+        g.add_node(z.clone());
+        g.add_node(a.clone());
+        g.add_node(b.clone());
+
+        // Add edges
+        g.add_edge(u.clone(), v.clone(), 1.0);
+        g.add_edge(u.clone(), w.clone(), 1.0);
+        g.add_edge(u, x.clone(), 1.0);
+        g.add_edge(w.clone(), x.clone(), 1.0);
+        g.add_edge(v, y.clone(), 1.0);
+        g.add_edge(x.clone(), y.clone(), 1.0);
+        g.add_edge(w, z, 1.0);
+        g.add_edge(x, a, 1.0);
+        g.add_edge(y, b, 1.0);
+
+        let params = GlobalMinCutParams;
+        let mut runner = GlobalMinCutRunner::new(params);
+        let result = runner.run(&g);
+
+        match result {
+            MinCutResult::Success(mincut_edges) => {
+                assert_eq!(mincut_edges.len(), 1);
+            }
+            MinCutResult::Error(err_str) => {
+                panic!("Runner failed to find minimum cut: {}", err_str);
+            }
+            MinCutResult::Empty(empty) => {
+                panic!("Runner returned empty cut: {}", empty);
+            }
+        }
     }
 }

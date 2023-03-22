@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use petgraph::graph::NodeIndex;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum APResult {

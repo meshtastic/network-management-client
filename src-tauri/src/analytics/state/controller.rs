@@ -1,16 +1,21 @@
-use super::algo_result_enums::ap::APResult;
-use super::algo_result_enums::diff_cen::{DiffCenError, DiffCenResult};
-use super::algo_result_enums::eigenvals::EigenvalsResult;
-use super::algo_result_enums::mincut::MinCutResult;
-use super::algo_result_enums::sw_cut::SWCutResult;
-use super::algo_store::AlgoStore;
-use super::algorithms::articulation_point::articulation_point;
-use super::algorithms::diffusion_centrality::diffusion_centrality;
-use super::algorithms::stoer_wagner::{recover_mincut, stoer_wagner};
-use super::algos_config::{AlgoConfig, Params};
-use super::aux_data_structures::stoer_wagner_ds::StoerWagnerGraph;
-use super::history::History;
+#![allow(clippy::let_unit_value)]
+
+use crate::analytics::algorithms::articulation_point::results::APResult;
+use crate::analytics::algorithms::articulation_point::{
+    ArticulationPointParams, ArticulationPointRunner,
+};
+use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
+use crate::analytics::algorithms::diffusion_centrality::{
+    DiffusionCentralityParams, DiffusionCentralityRunner,
+};
+use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
+use crate::analytics::algorithms::stoer_wagner::{GlobalMinCutParams, GlobalMinCutRunner};
+use crate::analytics::algorithms::AlgorithmRunner;
 use crate::graph::graph_ds::Graph;
+
+use super::configuration::{AlgorithmConfiguration, Params};
+use super::history::AlgorithmRunHistory;
+use super::store::ResultsStore;
 
 pub struct AlgoController;
 
@@ -31,9 +36,9 @@ impl AlgoController {
     pub fn run_algos(
         &mut self,
         graph: &Graph,
-        algo_conf: &AlgoConfig,
-        history: &mut History,
-        store: &mut AlgoStore,
+        algo_conf: &AlgorithmConfiguration,
+        history: &mut AlgorithmRunHistory,
+        store: &mut ResultsStore,
     ) {
         if algo_conf.get_ap_activation() {
             let aps = self.run_ap(graph, algo_conf.get_ap_params());
@@ -69,7 +74,9 @@ impl AlgoController {
     ///
     /// APResult - The result of the algorithm. Can be an error too.
     pub fn run_ap(&mut self, graph: &Graph, _params: &Params) -> APResult {
-        articulation_point(graph)
+        let params = ArticulationPointParams;
+        let mut runner = ArticulationPointRunner::new(params);
+        runner.run(graph)
     }
 
     /// Runs the mincut algorithm.
@@ -83,19 +90,9 @@ impl AlgoController {
     ///
     /// MinCutResult - The result of the algorithm. Can be an error too.
     pub fn run_mincut(&mut self, g: &Graph, _params: &Params) -> MinCutResult {
-        let sw_graph = &mut StoerWagnerGraph::new(g.clone());
-        let _mincut_res = stoer_wagner(sw_graph);
-        match _mincut_res {
-            SWCutResult::Success(_mincut) => {
-                let mut nodes_string = Vec::new();
-                for node in g.get_nodes() {
-                    nodes_string.push(node.name.clone());
-                }
-                recover_mincut(sw_graph, nodes_string)
-            }
-            SWCutResult::Error(er_str) => MinCutResult::Error(er_str),
-            SWCutResult::Empty(b) => MinCutResult::Empty(b),
-        }
+        let params = GlobalMinCutParams;
+        let mut runner = GlobalMinCutRunner::new(params);
+        runner.run(g)
     }
 
     /// Runs the diffusion centrality algorithm.
@@ -109,21 +106,11 @@ impl AlgoController {
     ///
     /// DiffCenResult - The result of the algorithm. Can be an error too.
     pub fn run_diff_cent(&mut self, g: &Graph, params: &Params) -> DiffCenResult {
-        let n = g.get_order();
-        let (_, int_to_node_id, d_adj) = g.convert_to_adj_matrix();
-        let eigenvals_res = g.eigenvals(&d_adj);
+        let t_param = params.get("T").unwrap_or(&(5_u32)).to_owned();
 
-        match eigenvals_res {
-            EigenvalsResult::Success(eigenvals_vec) => {
-                let diff_cent =
-                    diffusion_centrality(&d_adj, int_to_node_id, params, eigenvals_vec, n).unwrap();
-                DiffCenResult::Success(diff_cent)
-            }
-            EigenvalsResult::Error(er_str) => {
-                DiffCenResult::Error(DiffCenError::EigenvalueError(er_str))
-            }
-            EigenvalsResult::Empty(b) => DiffCenResult::Empty(b),
-        }
+        let params = DiffusionCentralityParams { t_param };
+        let mut runner = DiffusionCentralityRunner::new(params);
+        runner.run(g)
     }
 
     // pub fn run_most_sim_t(&mut self, g: &Graph, params: &Params) {
@@ -138,6 +125,7 @@ impl AlgoController {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::analytics::state::configuration::AlgorithmConfigFlags;
     use crate::graph::graph_ds::Graph;
 
     #[test]
@@ -158,10 +146,17 @@ mod tests {
         graph1.add_edge(u, w.clone(), 7_f64);
         graph1.add_edge(v, w, 35_f64);
 
-        let mut algo_config = AlgoConfig::new();
-        let history = &mut History::new();
-        let store = &mut AlgoStore::new();
-        algo_config.set_algos(0b00100);
+        let mut algo_config = AlgorithmConfiguration::new();
+        let history = &mut AlgorithmRunHistory::new();
+        let store = &mut ResultsStore::new();
+
+        algo_config.set_algorithm_flags(AlgorithmConfigFlags {
+            articulation_point: None,
+            diffusion_centrality: Some(true),
+            global_mincut: None,
+            most_similar_timeline: None,
+            predicted_state: None,
+        });
 
         algo_controller.run_algos(&graph1, &algo_config, history, store);
 

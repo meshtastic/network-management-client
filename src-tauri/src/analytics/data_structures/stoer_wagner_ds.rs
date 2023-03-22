@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 #![allow(non_snake_case)]
 
-use super::super::aux_data_structures::cut::Cut;
-use super::super::aux_data_structures::union_find::UnionFind;
+use super::super::data_structures::cut::Cut;
+use super::super::data_structures::union_find::UnionFind;
 use crate::graph::graph_ds::Graph;
 use std::collections::HashSet;
 

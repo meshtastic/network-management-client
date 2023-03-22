@@ -1,12 +1,61 @@
 #![allow(dead_code)]
 #![allow(clippy::too_many_arguments)]
 
-use super::super::algo_result_enums::ap::APResult;
-use crate::graph::graph_ds::Graph;
-use core::cmp::min;
-use defaultdict::DefaultHashMap;
+pub mod results;
 
-pub fn articulation_point_helper(
+use super::AlgorithmRunner;
+use crate::graph::graph_ds::Graph;
+use defaultdict::DefaultHashMap;
+use results::APResult;
+use std::cmp::min;
+
+pub struct ArticulationPointRunner;
+
+pub struct ArticulationPointParams;
+
+impl AlgorithmRunner for ArticulationPointRunner {
+    type Parameters = ArticulationPointParams;
+    type Result = APResult;
+
+    fn new(_params: Self::Parameters) -> Self {
+        ArticulationPointRunner
+    }
+
+    fn run(&mut self, graph: &crate::graph::graph_ds::Graph) -> Self::Result {
+        let mut disc = DefaultHashMap::<String, i32>::new();
+        let mut low = DefaultHashMap::<String, i32>::new();
+        let mut visited = DefaultHashMap::<String, bool>::new();
+        let mut ap = DefaultHashMap::<String, bool>::new();
+        let mut time = 0;
+        let parent = "-1".to_string();
+
+        for node in graph.get_nodes() {
+            if !visited.get(&node.name) {
+                articulation_point_helper(
+                    graph,
+                    node.name,
+                    &mut visited,
+                    &mut disc,
+                    &mut low,
+                    &mut time,
+                    parent.clone(),
+                    &mut ap,
+                );
+            }
+        }
+
+        let mut articulation_points = Vec::new();
+        for key in ap.keys() {
+            if *ap.get(key) {
+                articulation_points.push(graph.get_node_idx(key));
+            }
+        }
+
+        APResult::Success(articulation_points)
+    }
+}
+
+fn articulation_point_helper(
     graph: &Graph,
     node_idx: String,
     visited: &mut DefaultHashMap<String, bool>,
@@ -58,39 +107,6 @@ pub fn articulation_point_helper(
     }
 }
 
-pub fn articulation_point(graph: &Graph) -> APResult {
-    let mut disc = DefaultHashMap::<String, i32>::new();
-    let mut low = DefaultHashMap::<String, i32>::new();
-    let mut visited = DefaultHashMap::<String, bool>::new();
-    let mut ap = DefaultHashMap::<String, bool>::new();
-    let mut time = 0;
-    let parent = "-1".to_string();
-
-    for node in graph.get_nodes() {
-        if !visited.get(&node.name) {
-            articulation_point_helper(
-                graph,
-                node.name,
-                &mut visited,
-                &mut disc,
-                &mut low,
-                &mut time,
-                parent.clone(),
-                &mut ap,
-            );
-        }
-    }
-
-    let mut articulation_points = Vec::new();
-    for key in ap.keys() {
-        if *ap.get(key) {
-            articulation_points.push(graph.get_node_idx(key));
-        }
-    }
-
-    APResult::Success(articulation_points)
-}
-
 // Create a unit test for the Graph struct
 #[cfg(test)]
 mod tests {
@@ -134,7 +150,9 @@ mod tests {
         println!("\n");
 
         // Test the articulation point function
-        let articulation_points_res = articulation_point(&g);
+        let mut runner = ArticulationPointRunner::new(ArticulationPointParams);
+        let articulation_points_res = runner.run(&g);
+
         match articulation_points_res {
             APResult::Success(aps) => {
                 let len_articulation_points = aps.len();

@@ -3,16 +3,20 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
-use super::aux_data_structures::timeline::Timeline;
-use crate::analytics::history::History;
+use self::configuration::{AlgorithmConfigFlags, AlgorithmConfiguration};
+use self::controller::AlgoController;
+use self::history::AlgorithmRunHistory;
+use self::store::ResultsStore;
+use super::data_structures::timeline::NetworkTimeline;
 
-use super::algos_config::AlgoConfig;
 use crate::graph::graph_ds::Graph;
 
-use super::algo_controller::AlgoController;
-use super::algo_store::AlgoStore;
+pub mod configuration;
+pub mod controller;
+pub mod history;
+pub mod store;
 
-/// The GlobalState struct contains all the data that is not specific to a particular algorithm.
+/// The AnalyticsState struct contains all the data that is not specific to a particular algorithm.
 /// It is used to store the state of the application.
 ///
 /// # Fields
@@ -23,20 +27,19 @@ use super::algo_store::AlgoStore;
 /// * `node_id_to_int` - A HashMap from String to usize representing the mapping from node IDs to integers.
 /// * `history` - A History object.
 /// * `time` - A SystemTime object.
-/// * `algos_to_run` - A Vec of Strings representing the algorithms to run.
-/// * `algos_run_mode_auto` - A boolean indicating whether the algorithms should be run automatically or not.
-pub struct State {
-    timeline: Timeline,
-    history: History,
+/// * `auto_run_algos` - A boolean indicating whether the algorithms should be run automatically or not.
+pub struct AnalyticsState {
+    timeline: NetworkTimeline,
+    history: AlgorithmRunHistory,
     time: SystemTime,
-    algo_configs: AlgoConfig,
-    algo_run_mode_auto: bool,
-    algo_store: AlgoStore,
+    algo_configs: AlgorithmConfiguration,
+    auto_run_algos: bool,
+    algo_store: ResultsStore,
     algo_controller: AlgoController,
 }
 
-impl State {
-    /// Creates a new GlobalState object.
+impl AnalyticsState {
+    /// Creates a new AnalyticsState object.
     ///
     /// # Arguments
     ///
@@ -45,25 +48,25 @@ impl State {
     ///
     /// # Returns
     ///
-    /// * `GlobalState` - A new GlobalState object.
-    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> State {
-        State {
-            timeline: Timeline::new(config_fields, is_save),
-            history: History::new(),
+    /// * `AnalyticsState` - A new AnalyticsState object.
+    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> AnalyticsState {
+        AnalyticsState {
+            timeline: NetworkTimeline::new(config_fields, is_save),
+            history: AlgorithmRunHistory::new(),
             time: SystemTime::now(),
-            algo_configs: AlgoConfig::new(),
-            algo_run_mode_auto: true,
-            algo_store: AlgoStore::new(),
+            algo_configs: AlgorithmConfiguration::new(),
+            auto_run_algos: true,
+            algo_store: ResultsStore::new(),
             algo_controller: AlgoController::new(),
         }
     }
 
-    /// Adds a graph to the timeline.
+    /// Adds a graph snapshot to the timeline.
     ///
     /// # Arguments
     ///
     /// * `graph` - A Graph object.
-    pub fn add_graph(&mut self, graph: &Graph) {
+    pub fn add_graph_snapshot(&mut self, graph: &Graph) {
         self.timeline.add_snapshot(graph);
     }
 
@@ -72,8 +75,8 @@ impl State {
     /// # Arguments
     ///
     /// * `algos_bitfield` - A u8 representing the algorithms to run.
-    pub fn set_algos(&mut self, algos_bitfield: u8) {
-        self.algo_configs.set_algos(algos_bitfield);
+    pub fn set_algorithm_flags(&mut self, flags: AlgorithmConfigFlags) {
+        self.algo_configs.set_algorithm_flags(flags);
     }
 
     pub fn run_algos(&mut self) {
@@ -98,7 +101,7 @@ impl State {
     /// # Returns
     ///
     /// * `AlgoStore` - The algorithm result store.
-    pub fn get_algo_results(&self) -> &AlgoStore {
+    pub fn get_algo_results(&self) -> &ResultsStore {
         &self.algo_store
     }
 }
@@ -106,13 +109,14 @@ impl State {
 /// Unit test
 #[cfg(test)]
 mod tests {
-    use crate::analytics::algo_result_enums::{ap::APResult, diff_cen::DiffCenResult};
-
+    use super::super::algorithms::{
+        articulation_point::results::APResult, diffusion_centrality::results::DiffCenResult,
+    };
     use super::*;
 
     #[test]
     fn test_state() {
-        let mut state = State::new(HashMap::new(), false);
+        let mut state = AnalyticsState::new(HashMap::new(), false);
 
         let mut graph1 = Graph::new();
 
@@ -129,8 +133,16 @@ mod tests {
         graph1.add_edge(u, w.clone(), 7_f64);
         graph1.add_edge(v, w, 35_f64);
 
-        state.add_graph(&graph1);
-        state.set_algos(0b00001);
+        state.add_graph_snapshot(&graph1);
+
+        state.set_algorithm_flags(AlgorithmConfigFlags {
+            articulation_point: Some(true),
+            diffusion_centrality: None,
+            global_mincut: None,
+            most_similar_timeline: None,
+            predicted_state: None,
+        });
+
         state.run_algos();
 
         let algo_results = state.get_algo_results();
@@ -151,7 +163,7 @@ mod tests {
 
     #[test]
     fn test_diffusion_centrality() {
-        let mut state = State::new(HashMap::new(), false);
+        let mut state = AnalyticsState::new(HashMap::new(), false);
 
         let mut graph1 = Graph::new();
 
@@ -168,8 +180,16 @@ mod tests {
         graph1.add_edge(u, w.clone(), 7_f64);
         graph1.add_edge(v, w, 35_f64);
 
-        state.add_graph(&graph1);
-        state.set_algos(0b00100);
+        state.add_graph_snapshot(&graph1);
+
+        state.set_algorithm_flags(AlgorithmConfigFlags {
+            articulation_point: None,
+            diffusion_centrality: Some(true),
+            global_mincut: None,
+            most_similar_timeline: None,
+            predicted_state: None,
+        });
+
         state.run_algos();
 
         let algo_results = state.get_algo_results();
