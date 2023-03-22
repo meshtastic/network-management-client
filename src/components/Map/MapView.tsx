@@ -24,7 +24,6 @@ import Waypoints from "@app/components/Waypoints/Waypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
 
-import { requestNewWaypoint } from "@app/features/device/deviceActions";
 import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 import {
@@ -33,6 +32,7 @@ import {
   selectAllWaypoints,
   selectAllowOnMapWaypointCreation,
   selectInfoPane,
+  selectTempWaypoint,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -48,11 +48,12 @@ export const MapView = () => {
   const showInfoPane = useSelector(selectInfoPane());
 
   const waypoints = useSelector(selectAllWaypoints());
-  const showNewWaypointView = useSelector(selectAllowOnMapWaypointCreation());
+  const newWaypointAllowed = useSelector(selectAllowOnMapWaypointCreation());
+  const tempWaypoint = useSelector(selectTempWaypoint());
 
   const handleClick = (e: MapLayerMouseEvent) => {
     // Can only create new waypoint if the state is toggled
-    if (showNewWaypointView) {
+    if (newWaypointAllowed) {
       const createdWaypoint: Waypoint = {
         id: 0,
         latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
@@ -64,8 +65,12 @@ export const MapView = () => {
         icon: 0, // Default
       };
 
+      dispatch(deviceSliceActions.setTempWaypoint(createdWaypoint));
+      dispatch(deviceSliceActions.setActiveWaypoint(0));
+
+      dispatch(deviceSliceActions.setInfoPane("waypointEdit"));
       // Request a new waypoint and disallow newWaypoint
-      dispatch(requestNewWaypoint({ waypoint: createdWaypoint, channel: 0 }));
+      // dispatch(requestNewWaypoint({ waypoint: createdWaypoint, channel: 0 }));
       dispatch(deviceSliceActions.setAllowOnMapWaypointCreation(false));
     }
   };
@@ -134,7 +139,6 @@ export const MapView = () => {
           </Source>
         )}
 
-
         {/* Visualize all nodes */}
         {nodes
           .filter(
@@ -159,17 +163,20 @@ export const MapView = () => {
             <Waypoints key={eachWaypoint.id} currWaypoint={eachWaypoint} />
           ))}
 
-        {/* Other popups */}
-        {showInfoPane=="waypoint" ? <WaypointMenu /> : 
-        showInfoPane=="waypointEdit" ? <WaypointMenuEdit /> :
-        showInfoPane=="algos" ? <AnalyticsPane /> : null}
+        <Waypoints currWaypoint={tempWaypoint}></Waypoints>
+        {/* <TempWaypoint></TempWaypoint> */}
 
+        {/* Popups */}
+        {showInfoPane == "waypoint" ? (
+          <WaypointMenu />
+        ) : showInfoPane == "waypointEdit" ? (
+          <WaypointMenuEdit />
+        ) : showInfoPane == "algos" ? (
+          <AnalyticsPane />
+        ) : null}
 
-        <MapSelectedNodeMenu /> 
-        {/* me note: also get this one */}
-
-
-
+        <MapSelectedNodeMenu />
+        {/* sher note: also get this one */}
 
         <NodeSearchDock />
         <MapInteractionPane />

@@ -107,9 +107,22 @@ export const selectActiveWaypoint =
     }
   };
 
-// Are we currently in the waypoint edit state
+// What info pane are we showing
 export const selectInfoPane = () => (state: RootState) =>
   state.devices.infoPane;
 
 export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
   state.devices.allowOnMapWaypointCreation;
+
+export const selectTempWaypoint = () => (state: RootState) =>
+  state.devices.tempWaypoint;
+
+export const selectWaypointByLocation =
+  (long: number, lat: number) =>
+  (state: RootState): Waypoint | null => {
+    for (const waypoint of selectAllWaypoints()(state)) {
+      if (waypoint.latitudeI === lat && waypoint.longitudeI === long)
+        return waypoint;
+    }
+    return null;
+  };

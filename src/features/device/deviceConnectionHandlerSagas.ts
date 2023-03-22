@@ -58,7 +58,7 @@ export const createDeviceDisconnectChannel = (): DeviceDisconnectChannel => {
 };
 
 export function* handleDeviceDisconnectChannel(
-  channel: DeviceDisconnectChannel,
+  channel: DeviceDisconnectChannel
 ) {
   try {
     while (true) {
