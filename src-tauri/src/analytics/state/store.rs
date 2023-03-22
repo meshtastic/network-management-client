@@ -1,10 +1,11 @@
 #![allow(dead_code)]
 
-use super::algo_result_enums::ap::APResult;
-use super::algo_result_enums::diff_cen::DiffCenResult;
-use super::algo_result_enums::mincut::MinCutResult;
-use super::algo_result_enums::most_sim_timeline::MostSimTResult;
-use super::algo_result_enums::pred_state::PredStateResult;
+use crate::analytics::algorithms::articulation_point::results::APResult;
+use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
+use crate::analytics::algorithms::most_similar_timeline::results::MostSimTResult;
+use crate::analytics::algorithms::predicted_state::results::PredStateResult;
+use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
+
 use crate::graph::graph_ds::Graph;
 use serde::{Deserialize, Serialize};
 
@@ -19,7 +20,7 @@ use serde::{Deserialize, Serialize};
 /// * `pred_state` - [`crate::state_err_enums::pred_state::PredStateResult`] that stores Success/Error/Empty of state prediction algorithm.
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct AlgoStore {
+pub struct ResultsStore {
     pub aps: APResult,
     pub mincut: MinCutResult,
     pub diff_cent: DiffCenResult,
@@ -27,9 +28,9 @@ pub struct AlgoStore {
     pub pred_state: PredStateResult,
 }
 
-impl AlgoStore {
+impl ResultsStore {
     pub fn new() -> Self {
-        AlgoStore {
+        ResultsStore {
             aps: APResult::Empty(true),
             mincut: MinCutResult::Empty(true),
             diff_cent: DiffCenResult::Empty(true),

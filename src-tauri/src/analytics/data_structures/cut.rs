@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Cut {
     weight: f64,
     a: String,
@@ -20,13 +22,5 @@ impl Cut {
 
     pub fn get_b(&self) -> &String {
         &self.b
-    }
-
-    pub fn clone(&self) -> Self {
-        Cut {
-            weight: self.weight,
-            a: self.a.clone(),
-            b: self.b.clone(),
-        }
     }
 }

@@ -5,10 +5,9 @@ use super::take_snapshot::take_snapshot_of_graph;
 use crate::graph::graph_ds::Graph;
 
 use reqwest::Client;
-
 use serde_json::json;
 
-pub async fn get_most_similar(graphs: Vec<&Graph>) -> Result<Graph, String> {
+pub async fn request_most_similar(graphs: Vec<&Graph>) -> Result<Graph, String> {
     let client = Client::new();
 
     let mut snapshots = "".to_owned();

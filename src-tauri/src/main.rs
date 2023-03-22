@@ -18,10 +18,10 @@ fn main() {
         .manage(state::ActiveMeshDevice {
             inner: Arc::new(async_runtime::Mutex::new(None)),
         })
-        .manage(state::ActiveMeshGraph {
+        .manage(state::NetworkGraph {
             inner: Arc::new(async_runtime::Mutex::new(None)),
         })
-        .manage(state::ActiveMeshState {
+        .manage(state::AnalyticsState {
             inner: Arc::new(async_runtime::Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![

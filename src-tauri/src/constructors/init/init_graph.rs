@@ -2,7 +2,7 @@ use crate::analytics::aux_functions::edge_factory::edge_factory;
 use crate::data_conversion::distance_constants::{
     ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR, SPEED_CONVERSION_FACTOR,
 };
-use crate::data_conversion::distance_conversion::get_distance;
+use crate::data_conversion::distance_conversion::get_spherical_distance;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
 use crate::mesh::device::MeshNode;
@@ -29,7 +29,7 @@ pub fn init_graph(
         let neighbor_loc = loc_hashmap.get(&neighbor_id);
         let node_idx = add_node_and_location_to_graph(node_id, &mut graph, node_loc);
         let neighbor_idx = add_node_and_location_to_graph(neighbor_id, &mut graph, neighbor_loc);
-        let distance = get_distance(node_loc, neighbor_loc);
+        let distance = get_spherical_distance(node_loc, neighbor_loc);
         edge_left_endpoints.push(node_idx);
         edge_right_endpoints.push(neighbor_idx);
         edge_distances.push(distance);
@@ -96,7 +96,7 @@ pub fn add_node_and_location_to_graph(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::analytics::aux_data_structures::neighbor_info::Neighbor;
+    use crate::analytics::data_structures::neighbor_info::Neighbor;
     use crate::data_conversion::distance_conversion::gps_degrees_to_protobuf_field;
     use app::protobufs;
 

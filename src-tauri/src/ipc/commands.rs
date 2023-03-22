@@ -1,7 +1,8 @@
 use crate::analytics;
-use crate::analytics::algo_result_enums::ap::APResult;
-use crate::analytics::algo_result_enums::diff_cen::DiffCenResult;
-use crate::analytics::algo_result_enums::mincut::MinCutResult;
+use crate::analytics::algorithms::articulation_point::results::APResult;
+use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
+use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
+use crate::analytics::state::configuration::AlgorithmConfigFlags;
 use crate::mesh::{self, serial_connection::MeshConnection};
 use crate::state;
 
@@ -15,11 +16,11 @@ use super::{events, APMincutStringResults};
 
 #[tauri::command]
 pub async fn initialize_graph_state(
-    mesh_graph: tauri::State<'_, state::ActiveMeshGraph>,
-    algo_state: tauri::State<'_, state::ActiveMeshState>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
+    algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<(), CommandError> {
     let new_graph = mesh::device::MeshGraph::new();
-    let state = analytics::state::State::new(HashMap::new(), false);
+    let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
     let mesh_graph_arc = mesh_graph.inner.clone();
     let algo_state_arc = algo_state.inner.clone();
 
@@ -48,7 +49,7 @@ pub async fn connect_to_serial_port(
     app_handle: tauri::AppHandle,
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
     serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
-    mesh_graph: tauri::State<'_, state::ActiveMeshGraph>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     let mut connection = mesh::serial_connection::SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
@@ -258,7 +259,7 @@ pub async fn send_waypoint(
 
 #[tauri::command]
 pub async fn get_node_edges(
-    mesh_graph: tauri::State<'_, state::ActiveMeshGraph>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<geojson::FeatureCollection, CommandError> {
     let mut guard = mesh_graph.inner.lock().await;
     let graph = guard
@@ -273,9 +274,9 @@ pub async fn get_node_edges(
 
 #[tauri::command]
 pub async fn run_algorithms(
-    bitfield: u8,
-    mesh_graph: tauri::State<'_, state::ActiveMeshGraph>,
-    algo_state: tauri::State<'_, state::ActiveMeshState>,
+    flags: AlgorithmConfigFlags,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
+    algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<APMincutStringResults, CommandError> {
     let mut guard = mesh_graph.inner.lock().await;
     let mut state_guard = algo_state.inner.lock().await;
@@ -283,8 +284,10 @@ pub async fn run_algorithms(
     let graph_struct = guard.as_mut().ok_or("Graph not initialized")?;
     let state = state_guard.as_mut().ok_or("State not initialized")?;
 
-    state.add_graph(&graph_struct.graph);
-    state.set_algos(bitfield);
+    println!("Running algorithms with flags:\n{:#?}", flags);
+
+    state.add_graph_snapshot(&graph_struct.graph);
+    state.set_algorithm_flags(flags);
     state.run_algos();
     let algo_result = state.get_algo_results();
 
