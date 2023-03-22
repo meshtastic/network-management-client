@@ -68,6 +68,20 @@
         "timestampUrl": ""
       }
     },
+    "cli": {
+      "description": "",
+      "longDescription": "",
+      "beforeHelp": "",
+      "afterHelp": "",
+      "args": [
+        {
+          "name": "port",
+          "short": "P",
+          "takesValue": true,
+          "multiple": false
+        }
+      ]
+    },
     "security": {
       "csp": null
     },

@@ -3,12 +3,11 @@ use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
-use crate::mesh::{self, serial_connection::MeshConnection};
+use crate::mesh;
 use crate::state;
 
 use app::protobufs;
 use std::collections::HashMap;
-use tauri::Manager;
 
 use super::helpers;
 use super::CommandError;
@@ -51,89 +50,24 @@ pub async fn connect_to_serial_port(
     serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
-    let mut connection = mesh::serial_connection::SerialConnection::new();
-    let new_device = mesh::device::MeshDevice::new();
+    let (connection, new_device) = helpers::initialize_serial_connection_handlers(
+        port_name,
+        app_handle,
+        mesh_device.inner.clone(),
+        mesh_graph.inner.clone(),
+    )?;
 
-    connection.connect(app_handle.clone(), port_name, 115_200)?;
-    connection.configure(new_device.config_id)?;
-
-    let mut decoded_listener = connection
-        .on_decoded_packet
-        .as_ref()
-        .ok_or("Decoded packet listener not open")?
-        .resubscribe();
-
-    let handle = app_handle.app_handle().clone();
     let mesh_device_arc = mesh_device.inner.clone();
+
+    {
+        let mut state_connection = serial_connection.inner.lock().await;
+        *state_connection = Some(connection);
+    }
 
     // Only need to lock to set device in tauri state
     {
         let mut new_device_guard = mesh_device_arc.lock().await;
         *new_device_guard = Some(new_device);
-    }
-
-    let graph_arc = mesh_graph.inner.clone();
-
-    tauri::async_runtime::spawn(async move {
-        while let Ok(message) = decoded_listener.recv().await {
-            let variant = match message.payload_variant {
-                Some(v) => v,
-                None => continue,
-            };
-
-            let mut device_guard = mesh_device_arc.lock().await;
-            let device = match device_guard.as_mut().ok_or("Device not initialized") {
-                Ok(d) => d,
-                Err(e) => {
-                    eprintln!("{:?}", e);
-                    continue;
-                }
-            };
-            let mut graph_guard = graph_arc.lock().await;
-            let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
-                Ok(g) => g,
-                Err(e) => {
-                    eprintln!("{:?}", e);
-                    continue;
-                }
-            };
-
-            let (device_updated, graph_updated) =
-                match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
-                    Ok(d) => d,
-                    Err(e) => {
-                        eprintln!("Error transmitting packet: {}", e);
-                        continue;
-                    }
-                };
-
-            println!("Updates: {:?}, {:?}", device_updated, graph_updated);
-
-            if device_updated {
-                match events::dispatch_updated_device(handle.clone(), device.clone()) {
-                    Ok(_) => (),
-                    Err(e) => {
-                        eprintln!("Error emitting event to client: {:?}", e.to_string());
-                        continue;
-                    }
-                };
-            }
-
-            if graph_updated {
-                match events::dispatch_updated_edges(handle.clone(), graph) {
-                    Ok(_) => (),
-                    Err(e) => {
-                        eprintln!("Error emitting event to client: {:?}", e.to_string());
-                        continue;
-                    }
-                };
-            }
-        }
-    });
-
-    {
-        let mut state_connection = serial_connection.inner.lock().await;
-        *state_connection = Some(connection);
     }
 
     Ok(())
