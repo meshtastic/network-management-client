@@ -1,11 +1,9 @@
-use std::sync::Arc;
-use tauri::async_runtime;
+use std::collections::HashMap;
 
-use crate::graph;
 use crate::ipc::events;
-use crate::mesh;
-use crate::mesh::device::{MeshDevice, MeshGraph};
 use crate::mesh::serial_connection::MeshConnection;
+use crate::{analytics, mesh};
+use crate::{graph, state};
 
 use super::CommandError;
 
@@ -74,18 +72,35 @@ pub fn node_index_to_node_id(
     })
 }
 
-pub fn initialize_serial_connection_handlers(
+pub async fn initialize_graph_state(
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
+    algo_state: tauri::State<'_, state::AnalyticsState>,
+) -> Result<(), CommandError> {
+    let new_graph = mesh::device::MeshGraph::new();
+    let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
+    let mesh_graph_arc = mesh_graph.inner.clone();
+    let algo_state_arc = algo_state.inner.clone();
+
+    {
+        let mut new_graph_guard = mesh_graph_arc.lock().await;
+        *new_graph_guard = Some(new_graph);
+    }
+
+    {
+        let mut new_state_guard = algo_state_arc.lock().await;
+        *new_state_guard = Some(state);
+    }
+
+    Ok(())
+}
+
+pub async fn initialize_serial_connection_handlers(
     port_name: String,
     app_handle: tauri::AppHandle,
-    mesh_device_arc: Arc<async_runtime::Mutex<Option<MeshDevice>>>,
-    mesh_graph_arc: Arc<async_runtime::Mutex<Option<MeshGraph>>>,
-) -> Result<
-    (
-        mesh::serial_connection::SerialConnection,
-        mesh::device::MeshDevice,
-    ),
-    CommandError,
-> {
+    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
+    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
+) -> Result<(), CommandError> {
     let mut connection = mesh::serial_connection::SerialConnection::new();
     let new_device = mesh::device::MeshDevice::new();
 
@@ -98,7 +113,16 @@ pub fn initialize_serial_connection_handlers(
         .ok_or("Decoded packet listener not open")?
         .resubscribe();
 
-    let handle = app_handle;
+    let handle = app_handle.clone();
+    let mesh_device_arc = mesh_device.inner.clone();
+
+    // Only need to lock to set device in tauri state
+    {
+        let mut new_device_guard = mesh_device_arc.lock().await;
+        *new_device_guard = Some(new_device);
+    }
+
+    let graph_arc = mesh_graph.inner.clone();
 
     tauri::async_runtime::spawn(async move {
         while let Ok(message) = decoded_listener.recv().await {
@@ -115,7 +139,7 @@ pub fn initialize_serial_connection_handlers(
                     continue;
                 }
             };
-            let mut graph_guard = mesh_graph_arc.lock().await;
+            let mut graph_guard = graph_arc.lock().await;
             let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
                 Ok(g) => g,
                 Err(e) => {
@@ -157,5 +181,10 @@ pub fn initialize_serial_connection_handlers(
         }
     });
 
-    Ok((connection, new_device))
+    {
+        let mut state_connection = serial_connection.inner.lock().await;
+        *state_connection = Some(connection);
+    }
+
+    Ok(())
 }

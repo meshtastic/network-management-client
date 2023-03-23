@@ -40,42 +40,41 @@ fn main() {
                     app.app_handle().manage(initial_device_state);
 
                     if let Some(port_arg) = args.get("port") {
+                        if port_arg.occurrences == 0 {
+                            return Ok(());
+                        }
+
                         if let serde_json::Value::String(port_name) = port_arg.value.clone() {
                             println!("Connecting to port: {:?}", port_name);
 
                             let handle = app.app_handle();
 
+                            let analytics_state = handle.state::<state::AnalyticsState>();
                             let connection_state = handle.state::<state::ActiveSerialConnection>();
                             let device_state = handle.state::<state::ActiveMeshDevice>();
                             let graph_state = handle.state::<state::NetworkGraph>();
 
-                            let (connection, device) =
-                                ipc::helpers::initialize_serial_connection_handlers(
-                                    port_name,
-                                    app.app_handle(),
-                                    device_state.inner.clone(),
-                                    graph_state.inner.clone(),
-                                )?;
-
-                            let connection_arc = connection_state.inner.clone();
-                            let device_arc = device_state.inner.clone();
-
                             // Need this to unlock async locks in sync function
-                            tokio::runtime::Builder::new_multi_thread()
+                            tokio::runtime::Builder::new_current_thread()
                                 .enable_all()
                                 .build()
                                 .unwrap()
                                 .block_on(async move {
-                                    {
-                                        let mut connection_guard = connection_arc.lock().await;
-                                        *connection_guard = Some(connection);
-                                    }
+                                    let _result_1 = ipc::helpers::initialize_graph_state(
+                                        graph_state.clone(),
+                                        analytics_state,
+                                    )
+                                    .await;
 
-                                    // Only need to lock to set device in tauri state
-                                    {
-                                        let mut device_guard = device_arc.lock().await;
-                                        *device_guard = Some(device);
-                                    }
+                                    let _result_2 =
+                                        ipc::helpers::initialize_serial_connection_handlers(
+                                            port_name,
+                                            app.app_handle(),
+                                            device_state,
+                                            connection_state,
+                                            graph_state,
+                                        )
+                                        .await;
                                 });
                         }
                     }
@@ -88,6 +87,8 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            ipc::commands::check_device_connected,
+            ipc::commands::request_device_state,
             ipc::commands::get_all_serial_ports,
             ipc::commands::connect_to_serial_port,
             ipc::commands::disconnect_from_serial_port,

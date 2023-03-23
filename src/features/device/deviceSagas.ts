@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { all, call, put, takeEvery } from "redux-saga/effects";
 
+import type { MeshDevice } from "@bindings/MeshDevice";
 import {
   createDeviceDisconnectChannel,
   createDeviceUpdateChannel,
@@ -15,6 +16,7 @@ import {
 import {
   requestAvailablePorts,
   requestConnectToDevice,
+  requestDeviceConnectionStatus,
   requestDisconnectFromDevice,
   requestNewWaypoint,
   requestSendMessage,
@@ -23,6 +25,37 @@ import {
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestSliceActions } from "@features/requests/requestReducer";
 import type { CommandError } from "@utils/errors";
+
+function* getDeviceConnectionStatusWorker(
+  action: ReturnType<typeof requestDeviceConnectionStatus>,
+) {
+  try {
+    yield put(requestSliceActions.setRequestPending({ name: action.type }));
+
+    const isDeviceConnected = (yield call(
+      invoke,
+      "check_device_connected",
+    )) as boolean;
+
+    if (isDeviceConnected) {
+      const device = (yield call(
+        invoke,
+        "request_device_state",
+      )) as MeshDevice;
+
+      yield put(deviceSliceActions.setDevice(device));
+    }
+
+    yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
+  } catch (error) {
+    yield put(
+      requestSliceActions.setRequestFailed({
+        name: action.type,
+        message: (error as CommandError).message,
+      }),
+    );
+  }
+}
 
 function* subscribeAll() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -165,6 +198,10 @@ function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
 
 export function* devicesSaga() {
   yield all([
+    takeEvery(
+      requestDeviceConnectionStatus.type,
+      getDeviceConnectionStatusWorker,
+    ),
     takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
     takeEvery(requestConnectToDevice.type, connectToDeviceWorker),
     takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
