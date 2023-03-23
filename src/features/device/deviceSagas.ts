@@ -1,7 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { all, call, put, takeEvery } from "redux-saga/effects";
 
-import type { MeshDevice } from "@bindings/MeshDevice";
 import {
   createDeviceDisconnectChannel,
   createDeviceUpdateChannel,
@@ -14,9 +13,9 @@ import {
   handleGraphUpdateChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import {
+  requestAutoConnectPort,
   requestAvailablePorts,
   requestConnectToDevice,
-  requestDeviceConnectionStatus,
   requestDisconnectFromDevice,
   requestNewWaypoint,
   requestSendMessage,
@@ -26,25 +25,18 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestSliceActions } from "@features/requests/requestReducer";
 import type { CommandError } from "@utils/errors";
 
-function* getDeviceConnectionStatusWorker(
-  action: ReturnType<typeof requestDeviceConnectionStatus>,
+function* getAutoConnectPortWorker(
+  action: ReturnType<typeof requestAutoConnectPort>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    const isDeviceConnected = (yield call(
+    const portName = (yield call(
       invoke,
-      "check_device_connected",
-    )) as boolean;
+      "request_autoconnect_port",
+    )) as string;
 
-    if (isDeviceConnected) {
-      const device = (yield call(
-        invoke,
-        "request_device_state",
-      )) as MeshDevice;
-
-      yield put(deviceSliceActions.setDevice(device));
-    }
+    yield put(deviceSliceActions.setAutoConnectPort(portName));
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {
@@ -199,8 +191,8 @@ function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
 export function* devicesSaga() {
   yield all([
     takeEvery(
-      requestDeviceConnectionStatus.type,
-      getDeviceConnectionStatusWorker,
+      requestAutoConnectPort.type,
+      getAutoConnectPortWorker,
     ),
     takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
     takeEvery(requestConnectToDevice.type, connectToDeviceWorker),

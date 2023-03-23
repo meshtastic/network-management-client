@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 
 import SplashScreen from "@components/SplashScreen/SplashScreen";
 import Sidebar from "@components/Sidebar/Sidebar";
@@ -16,8 +15,6 @@ import RadioConfigPage from "@components/pages/config/RadioConfigPage";
 import PluginConfigPage from "@components/pages/config/PluginConfigPage";
 import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
 
-import { requestDeviceConnectionStatus } from "@features/device/deviceActions";
-import { selectDeviceConnected } from "@features/device/deviceSelectors";
 import { AppRoutes } from "@utils/routing";
 
 const AppWrapper = () => (
@@ -28,26 +25,11 @@ const AppWrapper = () => (
 );
 
 const App = () => {
-  const dispatch = useDispatch();
-  const isDeviceConnected = useSelector(selectDeviceConnected());
-
   // Bool to allow/disallow the splash screen at startup
   const splashEnabled = true;
 
-  const [isSplashAnimationStarted, setSplashAnimationStarted] = useState(false);
   const [isSplashMounted, setSplashMounted] = useState(splashEnabled);
   const [isOnboardMounted, setOnboardMounted] = useState(true);
-
-  useEffect(() => {
-    if (!isSplashAnimationStarted) {
-      setOnboardMounted(!isDeviceConnected);
-    }
-  }, [isDeviceConnected]);
-
-  const handleSplashAnimationStart = () => {
-    setSplashAnimationStarted(true);
-    dispatch(requestDeviceConnectionStatus());
-  };
 
   const handleSplashUnmount = () => {
     setSplashMounted(false);
@@ -55,12 +37,7 @@ const App = () => {
 
   return (
     <div className="flex flex-row relative">
-      {isSplashMounted && (
-        <SplashScreen
-          onAnimationStart={handleSplashAnimationStart}
-          unmountSelf={handleSplashUnmount}
-        />
-      )}
+      {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
 
       {isOnboardMounted && (
         <SerialConnectPage unmountSelf={() => setOnboardMounted(false)} />

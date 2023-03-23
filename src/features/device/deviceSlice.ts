@@ -12,6 +12,7 @@ export interface IDeviceState {
   waypointEdit: boolean; // Controls if the waypoint edit menu, or the normal menu shows up on map
   allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
   showAlgosAccordion: boolean;
+  autoConnectPort: string | null; // Port to automatically connect to on startup
 }
 
 export const initialDeviceState: IDeviceState = {
@@ -23,6 +24,7 @@ export const initialDeviceState: IDeviceState = {
   waypointEdit: false,
   allowOnMapWaypointCreation: false,
   showAlgosAccordion: true,
+  autoConnectPort: null,
 };
 
 export const deviceSlice = createSlice({
@@ -31,7 +33,7 @@ export const deviceSlice = createSlice({
   reducers: {
     setAvailableSerialPorts: (
       state,
-      action: PayloadAction<string[] | null>
+      action: PayloadAction<string[] | null>,
     ) => {
       state.availableSerialPorts = action.payload;
     },
@@ -46,7 +48,7 @@ export const deviceSlice = createSlice({
 
     setActiveNode: (
       state,
-      action: PayloadAction<MeshNode["data"]["num"] | null>
+      action: PayloadAction<MeshNode["data"]["num"] | null>,
     ) => {
       state.activeNode = action.payload;
       if (action.payload) {
@@ -58,7 +60,7 @@ export const deviceSlice = createSlice({
 
     setActiveWaypoint: (
       state,
-      action: PayloadAction<Waypoint["id"] | null>
+      action: PayloadAction<Waypoint["id"] | null>,
     ) => {
       state.activeWaypoint = action.payload;
       if (action.payload) {
@@ -84,6 +86,10 @@ export const deviceSlice = createSlice({
         state.activeNode = null;
         state.activeWaypoint = null;
       }
+    },
+
+    setAutoConnectPort: (state, action: PayloadAction<string | null>) => {
+      state.autoConnectPort = action.payload;
     },
   },
 });

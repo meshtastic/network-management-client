@@ -157,8 +157,6 @@ pub async fn initialize_serial_connection_handlers(
                     }
                 };
 
-            println!("Updates: {:?}, {:?}", device_updated, graph_updated);
-
             if device_updated {
                 match events::dispatch_updated_device(handle.clone(), device.clone()) {
                     Ok(_) => (),

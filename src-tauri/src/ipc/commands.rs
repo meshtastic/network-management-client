@@ -13,27 +13,16 @@ use super::CommandError;
 use super::{events, APMincutStringResults};
 
 #[tauri::command]
-pub async fn check_device_connected(
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
-) -> Result<bool, CommandError> {
-    let device_guard = mesh_device.inner.lock().await;
-    let serial_guard = serial_connection.inner.lock().await;
-
-    Ok(device_guard.is_some() && serial_guard.is_some())
-}
-
-#[tauri::command]
-pub async fn request_device_state(
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-) -> Result<mesh::device::MeshDevice, CommandError> {
-    let device_guard = mesh_device.inner.lock().await;
-    let device = device_guard
+pub async fn request_autoconnect_port(
+    autoconnect_state: tauri::State<'_, state::AutoConnectState>,
+) -> Result<String, CommandError> {
+    let autoconnect_port_guard = autoconnect_state.inner.lock().await;
+    let autoconnect_port = autoconnect_port_guard
         .as_ref()
-        .ok_or("Device not initialized")?
+        .ok_or("Autoconnect port state not initialized")?
         .clone();
 
-    Ok(device)
+    Ok(autoconnect_port)
 }
 
 #[tauri::command]

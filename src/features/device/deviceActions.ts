@@ -2,10 +2,6 @@ import { createAction } from "@reduxjs/toolkit";
 import type { User } from "@bindings/protobufs/User";
 import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
-export const requestDeviceConnectionStatus = createAction(
-  "@device/device-connection-status",
-);
-
 export const requestAvailablePorts = createAction(
   "@device/request-available-ports",
 );
@@ -31,3 +27,7 @@ export const requestNewWaypoint = createAction<{
   waypoint: Waypoint;
   channel: number;
 }>("@device/send-waypoint");
+
+export const requestAutoConnectPort = createAction(
+  "@device/request-autoconnect-port",
+);
