@@ -11,10 +11,14 @@ import SplashScreenLogo from "@components/SplashScreen/SplashScreenLogo";
 import "@components/SplashScreen/SplashScreen.css";
 
 export interface ISplashScreenProps {
+  onAnimationStart: () => void;
   unmountSelf: () => void;
 }
 
-const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
+const SplashScreen = ({
+  onAnimationStart,
+  unmountSelf,
+}: ISplashScreenProps) => {
   const [isParticlesLoaded, setParticlesLoaded] = useState(false);
   const [isScreenLoaded, setScreenLoaded] = useState(false);
   const [isScreenActive, setScreenActive] = useState(true);
@@ -33,6 +37,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
     if (!isParticlesLoaded) return;
 
     const loadingHandle = setTimeout(() => {
+      onAnimationStart();
       setScreenLoaded(true);
     }, 900);
 

@@ -34,21 +34,33 @@ const App = () => {
   // Bool to allow/disallow the splash screen at startup
   const splashEnabled = true;
 
+  const [isSplashAnimationStarted, setSplashAnimationStarted] = useState(false);
   const [isSplashMounted, setSplashMounted] = useState(splashEnabled);
   const [isOnboardMounted, setOnboardMounted] = useState(true);
 
   useEffect(() => {
-    setOnboardMounted(!isDeviceConnected);
+    if (!isSplashAnimationStarted) {
+      setOnboardMounted(!isDeviceConnected);
+    }
   }, [isDeviceConnected]);
 
-  const handleSplashUnmount = () => {
+  const handleSplashAnimationStart = () => {
+    setSplashAnimationStarted(true);
     dispatch(requestDeviceConnectionStatus());
+  };
+
+  const handleSplashUnmount = () => {
     setSplashMounted(false);
   };
 
   return (
     <div className="flex flex-row relative">
-      {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
+      {isSplashMounted && (
+        <SplashScreen
+          onAnimationStart={handleSplashAnimationStart}
+          unmountSelf={handleSplashUnmount}
+        />
+      )}
 
       {isOnboardMounted && (
         <SerialConnectPage unmountSelf={() => setOnboardMounted(false)} />
