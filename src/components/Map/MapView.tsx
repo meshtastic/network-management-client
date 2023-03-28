@@ -177,7 +177,6 @@ export const MapView = () => {
         ) : null}
 
         <MapSelectedNodeMenu />
-        {/* sher note: also get this one */}
 
         <NodeSearchDock />
         <MapInteractionPane />

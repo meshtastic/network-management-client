@@ -95,7 +95,7 @@ export const selectWaypointByID =
 export const selectActiveWaypointID = () => (state: RootState) =>
   state.devices.activeWaypoint?.id ?? null;
 
-// Get actual Waypoint object that's active
+// Get actual Waypoint object
 export const selectActiveWaypoint = () => (state: RootState) =>
   state.devices.activeWaypoint;
 
