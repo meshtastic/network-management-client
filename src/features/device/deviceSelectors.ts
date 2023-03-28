@@ -93,19 +93,11 @@ export const selectWaypointByID =
 
 // Get ID of the active waypoint
 export const selectActiveWaypointID = () => (state: RootState) =>
-  state.devices.activeWaypoint;
+  state.devices.activeWaypoint?.id ?? null;
 
 // Get actual Waypoint object that's active
-export const selectActiveWaypoint =
-  () =>
-  (state: RootState): Waypoint | null => {
-    const activeID = selectActiveWaypointID()(state);
-    if (activeID) {
-      return selectWaypointByID(activeID)(state);
-    } else {
-      return null;
-    }
-  };
+export const selectActiveWaypoint = () => (state: RootState) =>
+  state.devices.activeWaypoint;
 
 // What info pane are we showing
 export const selectInfoPane = () => (state: RootState) =>
@@ -114,11 +106,8 @@ export const selectInfoPane = () => (state: RootState) =>
 export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
   state.devices.allowOnMapWaypointCreation;
 
-export const selectTempWaypoint = () => (state: RootState) =>
-  state.devices.tempWaypoint;
-
 export const selectWaypointByLocation =
-  (long: number, lat: number) =>
+  (lat: number, long: number) =>
   (state: RootState): Waypoint | null => {
     for (const waypoint of selectAllWaypoints()(state)) {
       if (waypoint.latitudeI === lat && waypoint.longitudeI === long)

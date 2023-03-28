@@ -11,11 +11,11 @@ import { MapIconButton } from "@components/Map/MapIconButton";
 import {
   MapPinIcon,
   Square3Stack3DIcon,
-  SparklesIcon,
 } from "@heroicons/react/24/outline";
 
 const MapInteractionPane = () => {
   const dispatch = useDispatch();
+
 
   const newWaypoint = useSelector(selectAllowOnMapWaypointCreation());
   const accordionShown =
@@ -30,19 +30,9 @@ const MapInteractionPane = () => {
     dispatch(deviceSliceActions.setInfoPane(accordionShown ? null : "algos"));
   };
 
-  const handleClickSparks = () => {
-    console.log("temp sanity check placehold");
-  };
 
   return (
     <div className="absolute top-9 right-9 flex gap-4">
-      <MapIconButton selected={false} onClick={handleClickSparks}>
-        <SparklesIcon
-          className={`w-6 h-6 text-gray-400 ${
-            newWaypoint ? "text-gray-200" : "text-gray-500"
-          }`}
-        />
-      </MapIconButton>
 
       {/* Toggles newWaypoint state */}
       <MapIconButton selected={newWaypoint} onClick={handleClickMapPin}>

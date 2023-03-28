@@ -8,11 +8,7 @@ import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestNewWaypoint } from "@features/device/deviceActions";
-import {
-  selectActiveWaypoint,
-  selectTempWaypoint,
-  selectWaypointByLocation,
-} from "@app/features/device/deviceSelectors";
+import { selectActiveWaypoint } from "@app/features/device/deviceSelectors";
 
 import { useToggleEditWaypoint } from "@app/utils/hooks";
 
@@ -22,7 +18,6 @@ import { useToggleEditWaypoint } from "@app/utils/hooks";
 const WaypointMenuEdit = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
-  const tempWaypoint = useSelector(selectTempWaypoint());
 
   // Waypoint info
   const [waypointTitle, setWaypointTitle] = useState(activeWaypoint?.name);
@@ -38,6 +33,7 @@ const WaypointMenuEdit = () => {
 
   // Utils
   const toggleEditWaypoint = useToggleEditWaypoint();
+
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
@@ -51,27 +47,30 @@ const WaypointMenuEdit = () => {
         name: waypointTitle ? waypointTitle : "",
         description: waypointDescription ? waypointDescription : "",
       };
+
       dispatch(
         requestNewWaypoint({ waypoint: updatedWaypoint, channel: channelNum })
       );
+    }
+
+    // Only closes popup if is a new waypoint
+    if (activeWaypoint?.id != 0) {
       dispatch(deviceSliceActions.setInfoPane("waypoint"));
-    } else if (tempWaypoint) {
-      dispatch(
-        requestNewWaypoint({ waypoint: tempWaypoint, channel: channelNum })
-      );
-      dispatch(deviceSliceActions.setInfoPane("waypoint"));
-      dispatch(deviceSliceActions.setTempWaypoint(null));
+    } else {
+      dispatch(deviceSliceActions.setInfoPane(null));
     }
   };
 
   const handleClickCancel = () => {
     toggleEditWaypoint;
-    dispatch(deviceSliceActions.setTempWaypoint(null));
+    if (activeWaypoint?.id == 0) {
+      dispatch(deviceSliceActions.setActiveWaypoint(null));
+    }
     dispatch(deviceSliceActions.setInfoPane(null));
   };
 
   // Only display if there is a selected waypoint
-  if (!activeWaypoint && !selectTempWaypoint) {
+  if (!activeWaypoint) {
     return null;
   }
   return (
@@ -144,9 +143,16 @@ const WaypointMenuEdit = () => {
             id="channel"
             className="self-center bg-gray-100 rounded-md bg-gray-100 p-2 w-11/12 rounded-md items-center text-gray-500 text-base font-normal "
           >
+
             <option value="0">Channel 0</option>
             <option value="1">Channel 1</option>
             <option value="2">Channel 2</option>
+            <option value="3">Channel 3</option>
+            <option value="4">Channel 4</option>
+            <option value="5">Channel 5</option>
+            <option value="6">Channel 6</option>
+            <option value="7">Channel 7</option>
+
           </select>
         </div>
 

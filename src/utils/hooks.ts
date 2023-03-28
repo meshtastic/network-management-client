@@ -67,6 +67,4 @@ const useToggleEditWaypoint = () => {
   };
 };
 
-// TODO: const useSendWaypoint = (waypoint: Waypoint) => {}
-
 export { useComponentReload, useDeleteWaypoint, useToggleEditWaypoint };

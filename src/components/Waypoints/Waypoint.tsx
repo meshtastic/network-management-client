@@ -27,11 +27,13 @@ const Waypoints = ({ currWaypoint }: IWaypoints) => {
   // Set current waypoint ID as active if it's not already;
   // Otherwise turn off active if it is already active.
   const handleClick = () => {
+
+    // Do nothing if you click on a temporary waypoint
     if (currWaypoint?.id) {
-      // Do nothing if you click on a temporary waypoint
+      
       dispatch(
         deviceSliceActions.setActiveWaypoint(
-          !isSelected && currWaypoint ? currWaypoint.id : null
+          !isSelected && currWaypoint ? currWaypoint : null
         )
       );
     }

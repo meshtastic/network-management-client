@@ -8,8 +8,6 @@ export type AlgorithmConfigFlags = {
   predictedState?: boolean;
 };
 
-export const requestRunAllAlgorithms = createAction<
-  { flags: AlgorithmConfigFlags }
->(
-  "@device/request-run-all-algorithms",
-);
+export const requestRunAllAlgorithms = createAction<{
+  flags: AlgorithmConfigFlags;
+}>("@device/request-run-all-algorithms");

@@ -8,9 +8,8 @@ export interface IDeviceState {
   activeNode: MeshNode["data"]["num"] | null;
   availableSerialPorts: string[] | null;
   activeSerialPort: string | null;
-  activeWaypoint: Waypoint["id"] | null;
+  activeWaypoint: Waypoint | null;
   allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
-  tempWaypoint: Waypoint | null;
   infoPane: "waypoint" | "waypointEdit" | "algos" | null;
 }
 
@@ -20,10 +19,7 @@ export const initialDeviceState: IDeviceState = {
   availableSerialPorts: null,
   activeSerialPort: null,
   activeWaypoint: null,
-  // waypointEdit: false,
   allowOnMapWaypointCreation: false,
-  // showAlgosAccordion: true,
-  tempWaypoint: null,
   infoPane: null,
 };
 
@@ -58,10 +54,7 @@ export const deviceSlice = createSlice({
       }
     },
 
-    setActiveWaypoint: (
-      state,
-      action: PayloadAction<Waypoint["id"] | null>
-    ) => {
+    setActiveWaypoint: (state, action: PayloadAction<Waypoint | null>) => {
       state.activeWaypoint = action.payload;
       if (action.payload) {
         // If there is an active waypoint then we don't want another info screen
@@ -80,12 +73,7 @@ export const deviceSlice = createSlice({
         state.activeNode = null;
       } else {
         state.activeWaypoint = null;
-        state.tempWaypoint = null;
       }
-    },
-
-    setTempWaypoint: (state, action: PayloadAction<Waypoint | null>) => {
-      state.tempWaypoint = action.payload;
     },
 
     setAllowOnMapWaypointCreation: (state, action: PayloadAction<boolean>) => {

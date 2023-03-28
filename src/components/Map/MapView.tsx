@@ -32,7 +32,7 @@ import {
   selectAllWaypoints,
   selectAllowOnMapWaypointCreation,
   selectInfoPane,
-  selectTempWaypoint,
+  selectActiveWaypoint,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -49,12 +49,13 @@ export const MapView = () => {
 
   const waypoints = useSelector(selectAllWaypoints());
   const newWaypointAllowed = useSelector(selectAllowOnMapWaypointCreation());
-  const tempWaypoint = useSelector(selectTempWaypoint());
+  const activeWaypoint = useSelector(selectActiveWaypoint());
 
   const handleClick = (e: MapLayerMouseEvent) => {
+
     // Can only create new waypoint if the state is toggled
     if (newWaypointAllowed) {
-      const createdWaypoint: Waypoint = {
+      const tempWaypoint: Waypoint = {
         id: 0,
         latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
         longitudeI: Math.round(e.lngLat.lng * 1e7),
@@ -65,12 +66,9 @@ export const MapView = () => {
         icon: 0, // Default
       };
 
-      dispatch(deviceSliceActions.setTempWaypoint(createdWaypoint));
-      dispatch(deviceSliceActions.setActiveWaypoint(0));
-
+      // Save temporary waypoint in ActiveWaypoint state, and change the type of popup
+      dispatch(deviceSliceActions.setActiveWaypoint(tempWaypoint));
       dispatch(deviceSliceActions.setInfoPane("waypointEdit"));
-      // Request a new waypoint and disallow newWaypoint
-      // dispatch(requestNewWaypoint({ waypoint: createdWaypoint, channel: 0 }));
       dispatch(deviceSliceActions.setAllowOnMapWaypointCreation(false));
     }
   };
@@ -163,8 +161,11 @@ export const MapView = () => {
             <Waypoints key={eachWaypoint.id} currWaypoint={eachWaypoint} />
           ))}
 
-        <Waypoints currWaypoint={tempWaypoint}></Waypoints>
-        {/* <TempWaypoint></TempWaypoint> */}
+        {activeWaypoint?.id == 0 ? (
+          <Waypoints currWaypoint={activeWaypoint}></Waypoints>
+        ) : (
+          <></>
+        )}
 
         {/* Popups */}
         {showInfoPane == "waypoint" ? (
