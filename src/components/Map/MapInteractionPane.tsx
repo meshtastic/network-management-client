@@ -8,18 +8,13 @@ import {
 } from "@features/device/deviceSelectors";
 
 import { MapIconButton } from "@components/Map/MapIconButton";
-import {
-  MapPinIcon,
-  Square3Stack3DIcon,
-} from "@heroicons/react/24/outline";
+import { MapPinIcon, Square3Stack3DIcon } from "@heroicons/react/24/outline";
 
 const MapInteractionPane = () => {
   const dispatch = useDispatch();
 
-
   const newWaypoint = useSelector(selectAllowOnMapWaypointCreation());
-  const accordionShown =
-    useSelector(selectInfoPane()) == "algos" ? true : false;
+  const accordionShown = useSelector(selectInfoPane()) === "algos";
 
   // Toggles newWaypoint state, which allows for creation of new waypoints on map
   const handleClickMapPin = () => {
@@ -30,10 +25,8 @@ const MapInteractionPane = () => {
     dispatch(deviceSliceActions.setInfoPane(accordionShown ? null : "algos"));
   };
 
-
   return (
     <div className="absolute top-9 right-9 flex gap-4">
-
       {/* Toggles newWaypoint state */}
       <MapIconButton selected={newWaypoint} onClick={handleClickMapPin}>
         <MapPinIcon

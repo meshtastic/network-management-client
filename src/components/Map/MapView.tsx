@@ -32,7 +32,7 @@ import {
   selectAllWaypoints,
   selectAllowOnMapWaypointCreation,
   selectInfoPane,
-  selectActiveWaypoint,
+  selectPlaceholderWaypoint,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -49,13 +49,12 @@ export const MapView = () => {
 
   const waypoints = useSelector(selectAllWaypoints());
   const newWaypointAllowed = useSelector(selectAllowOnMapWaypointCreation());
-  const activeWaypoint = useSelector(selectActiveWaypoint());
+  const tempWaypoint = useSelector(selectPlaceholderWaypoint());
 
   const handleClick = (e: MapLayerMouseEvent) => {
-
     // Can only create new waypoint if the state is toggled
     if (newWaypointAllowed) {
-      const tempWaypoint: Waypoint = {
+      const createdWaypoint: Waypoint = {
         id: 0,
         latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
         longitudeI: Math.round(e.lngLat.lng * 1e7),
@@ -66,8 +65,9 @@ export const MapView = () => {
         icon: 0, // Default
       };
 
-      // Save temporary waypoint in ActiveWaypoint state, and change the type of popup
-      dispatch(deviceSliceActions.setActiveWaypoint(tempWaypoint));
+      // Save temporary waypoint in redux, and change the type of popup
+      dispatch(deviceSliceActions.setActiveWaypoint(0));
+      dispatch(deviceSliceActions.setPlaceholderWaypoint(createdWaypoint));
       dispatch(deviceSliceActions.setInfoPane("waypointEdit"));
       dispatch(deviceSliceActions.setAllowOnMapWaypointCreation(false));
     }
@@ -161,11 +161,7 @@ export const MapView = () => {
             <Waypoints key={eachWaypoint.id} currWaypoint={eachWaypoint} />
           ))}
 
-        {activeWaypoint?.id == 0 ? (
-          <Waypoints currWaypoint={activeWaypoint}></Waypoints>
-        ) : (
-          <></>
-        )}
+        <Waypoints currWaypoint={tempWaypoint}></Waypoints>
 
         {/* Popups */}
         {showInfoPane == "waypoint" ? (

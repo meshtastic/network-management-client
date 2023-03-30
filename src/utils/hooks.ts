@@ -55,8 +55,7 @@ const useDeleteWaypoint = () => {
 // Toggles state of editWaypoint
 const useToggleEditWaypoint = () => {
   const dispatch = useDispatch();
-  const isWaypointEdit =
-    useSelector(selectInfoPane()) == "waypointEdit" ? true : false;
+  const isWaypointEdit = useSelector(selectInfoPane()) === "waypointEdit";
 
   return () => {
     dispatch(
