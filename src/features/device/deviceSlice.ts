@@ -9,9 +9,9 @@ export interface IDeviceState {
   availableSerialPorts: string[] | null;
   activeSerialPort: string | null;
   activeWaypoint: Waypoint["id"] | null;
-  waypointEdit: boolean; // Controls if the waypoint edit menu, or the normal menu shows up on map
   allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
-  showAlgosAccordion: boolean;
+  placeholderWaypoint: Waypoint | null;
+  infoPane: "waypoint" | "waypointEdit" | "algos" | null;
 }
 
 export const initialDeviceState: IDeviceState = {
@@ -20,9 +20,9 @@ export const initialDeviceState: IDeviceState = {
   availableSerialPorts: null,
   activeSerialPort: null,
   activeWaypoint: null,
-  waypointEdit: false,
   allowOnMapWaypointCreation: false,
-  showAlgosAccordion: true,
+  placeholderWaypoint: null,
+  infoPane: null,
 };
 
 export const deviceSlice = createSlice({
@@ -52,38 +52,38 @@ export const deviceSlice = createSlice({
       if (action.payload) {
         // If whatever is passed in when this is called is not null
         state.activeWaypoint = null;
-        state.showAlgosAccordion = false;
+        state.infoPane = null;
       }
     },
 
-    setActiveWaypoint: (
-      state,
-      action: PayloadAction<Waypoint["id"] | null>
-    ) => {
+    setActiveWaypoint: (state, action: PayloadAction<number | null>) => {
       state.activeWaypoint = action.payload;
       if (action.payload) {
-        // If whatever is passed in when this is called is not null; want only one active of either node, wp, or accordion
+        // If there is an active waypoint then we don't want another info screen
+        state.infoPane = "waypoint";
         state.activeNode = null;
-        state.showAlgosAccordion = false;
-        // Only want edit to be true if someone explicitly clicks on edit; prevent holdover from exiting previous node exit
-        state.waypointEdit = false;
       }
     },
 
-    setWaypointEdit: (state, action: PayloadAction<boolean>) => {
-      state.waypointEdit = action.payload;
+    setInfoPane: (
+      state,
+      action: PayloadAction<"waypoint" | "waypointEdit" | "algos" | null>
+    ) => {
+      state.infoPane = action.payload;
+
+      if (action.payload) {
+        state.activeNode = null;
+      } else {
+        state.activeWaypoint = null;
+      }
+    },
+
+    setPlaceholderWaypoint: (state, action: PayloadAction<Waypoint | null>) => {
+      state.placeholderWaypoint = action.payload;
     },
 
     setAllowOnMapWaypointCreation: (state, action: PayloadAction<boolean>) => {
       state.allowOnMapWaypointCreation = action.payload;
-    },
-
-    setShowAlgosAccordion: (state, action: PayloadAction<boolean>) => {
-      state.showAlgosAccordion = action.payload;
-      if (action.payload) {
-        state.activeNode = null;
-        state.activeWaypoint = null;
-      }
     },
   },
 });

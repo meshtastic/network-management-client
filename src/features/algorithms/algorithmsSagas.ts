@@ -11,7 +11,7 @@ import { requestSliceActions } from "@features/requests/requestReducer";
 import type { CommandError } from "@utils/errors";
 
 function* runAllAlgorithmsWorker(
-  action: ReturnType<typeof requestRunAllAlgorithms>,
+  action: ReturnType<typeof requestRunAllAlgorithms>
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -19,7 +19,7 @@ function* runAllAlgorithmsWorker(
     const results = (yield call(
       invoke,
       "run_algorithms",
-      action.payload,
+      action.payload
     )) as IAlgorithmsState;
 
     yield put(algorithmsSliceActions.setApResult(results.apResult));
@@ -31,13 +31,11 @@ function* runAllAlgorithmsWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      }),
+      })
     );
   }
 }
 
 export function* algorithmsSaga() {
-  yield all([
-    takeEvery(requestRunAllAlgorithms.type, runAllAlgorithmsWorker),
-  ]);
+  yield all([takeEvery(requestRunAllAlgorithms.type, runAllAlgorithmsWorker)]);
 }

@@ -95,7 +95,7 @@ export const selectWaypointByID =
 export const selectActiveWaypointID = () => (state: RootState) =>
   state.devices.activeWaypoint;
 
-// Get actual Waypoint object that's active
+// Get actual Waypoint object
 export const selectActiveWaypoint =
   () =>
   (state: RootState): Waypoint | null => {
@@ -107,12 +107,22 @@ export const selectActiveWaypoint =
     }
   };
 
-// Are we currently in the waypoint edit state
-export const selectIsWaypointEdit = () => (state: RootState) =>
-  state.devices.waypointEdit;
+// What info pane are we showing
+export const selectInfoPane = () => (state: RootState) =>
+  state.devices.infoPane;
 
 export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
   state.devices.allowOnMapWaypointCreation;
 
-export const selectShowAlgosAccordion = () => (state: RootState) =>
-  state.devices.showAlgosAccordion;
+export const selectWaypointByLocation =
+  (lat: number, long: number) =>
+  (state: RootState): Waypoint | null => {
+    return (
+      selectAllWaypoints()(state).find(
+        (waypoint) => waypoint.latitudeI === lat && waypoint.longitudeI === long
+      ) ?? null
+    );
+  };
+
+export const selectPlaceholderWaypoint = () => (state: RootState) =>
+  state.devices.placeholderWaypoint;
