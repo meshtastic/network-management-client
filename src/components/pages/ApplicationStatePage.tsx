@@ -11,7 +11,7 @@ const ApplicationStatePage = () => {
 
   return (
     <div className="flex flex-col w-full h-screen">
-      <div className="flex justify-center align-middle px-9 h-20 border-b border-gray-100">
+      <div className="flex justify-center align-middle px-9 min-h-[5rem] border-b border-gray-100">
         <NavigationBacktrace className="my-auto mr-auto" levels={backtrace} />
       </div>
 
