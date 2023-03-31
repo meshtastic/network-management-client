@@ -107,8 +107,6 @@ pub async fn connect_to_serial_port(
                     }
                 };
 
-            println!("Updates: {:?}, {:?}", device_updated, graph_updated);
-
             if device_updated {
                 match events::dispatch_updated_device(handle.clone(), device.clone()) {
                     Ok(_) => (),
