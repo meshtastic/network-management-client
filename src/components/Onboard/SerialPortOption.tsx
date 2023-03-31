@@ -22,9 +22,13 @@ const SerialPortOption = ({
   switch (connectionState.status) {
     case "IDLE":
       return (
-        <button type="button" onClick={() => onClick(name)}>
+        <button
+          className="hover:cursor-pointer"
+          type="button"
+          onClick={() => onClick(name)}
+        >
           <div className="flex justify-center select-none">
-            <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg hover:cursor-pointer">
+            <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg">
               <RadioIcon className="text-gray-500 w-6 h-6" />
               <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
                 Serial port on {name}

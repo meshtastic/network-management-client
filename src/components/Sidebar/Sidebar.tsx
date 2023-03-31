@@ -9,10 +9,10 @@ import {
   RadioIcon,
   CubeIcon,
   EnvelopeIcon,
-  DocumentArrowDownIcon,
   Cog8ToothIcon,
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
+  DocumentTextIcon,
 } from "@heroicons/react/24/outline";
 
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
@@ -114,12 +114,12 @@ const Sidebar = () => {
         <div className="">
           <SidebarTab title="Settings" isSidebarExpanded={isSidebarExpanded}>
             <SidebarIcon
-              name="Export Data"
-              isActive={location.pathname === AppRoutes.EXPORT_APP_DATA}
+              name="Application State"
+              isActive={location.pathname === AppRoutes.APPLICATION_STATE}
               isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.EXPORT_APP_DATA)}
+              onClick={() => navigateTo(AppRoutes.APPLICATION_STATE)}
             >
-              <DocumentArrowDownIcon className="w-6 h-6" />
+              <DocumentTextIcon className="w-6 h-6" />
             </SidebarIcon>
 
             <SidebarIcon
