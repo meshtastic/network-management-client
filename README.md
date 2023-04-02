@@ -1,7 +1,7 @@
 ![image](https://user-images.githubusercontent.com/46639306/206589911-37289193-1b7f-441b-81c4-68304b0c55b2.png)
 
 <div align="center">
-  <h1 align="center">Meshtastic Emergency Response Client</h1>
+  <h1 align="center">Meshtastic Network Management Client</h1>
   <p align="center">An unofficial Meshtastic desktop client, allowing simple, offline deployment and administration of a mesh communication network.</p>
 </div>
 
@@ -70,7 +70,7 @@ This project is in early stages of development, but here's a rough roadmap of fu
   - [ ] Graph initialization and management
   - [x] Algorithm implementations
   - [ ] Insight utility UI
-- [ ] :floppy_disk: Response summary and export flow
+- [ ] :floppy_disk: Management summary and export flow
 
 ## Development
 

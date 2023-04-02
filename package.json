@@ -1,7 +1,7 @@
 {
-  "name": "meshtastic-emergency-response-client",
+  "name": "meshtastic-network-management-client",
   "version": "0.0.0",
-  "description": "Meshtastic client for emergency response",
+  "description": "Meshtastic client for network management",
   "license": "GPL-3.0-only",
   "type": "module",
   "scripts": {
