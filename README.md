@@ -34,38 +34,36 @@
   </a>
 </p>
 
-## Introduction
+## :wave: Introduction
 
 <!-- > :bangbang: **This application is in early alpha development. For the time being, all images shown in this README are Figma designs and are likely not implemented. We will update this README when this functionality is implemented.** :bangbang: -->
 
 This application is an unofficial desktop client for the [Meshtastic Project](https://meshtastic.org/), designed to allow users to reliably manage large, decentralized mesh networks. Currently the Meshtastic client ecosystem has strong support for managing single nodes, but minimal support for network-level management and analysis. The goal of this project is to give users confidence in their Meshtastic networks as a reliable communications infrastructure through novel algorithmic analysis and connection-level insights.
 
-<!-- ![image](https://user-images.githubusercontent.com/46639306/197882383-e993add8-0900-4114-9cb6-9e9cb4d331d4.png) -->
-
-![image](https://user-images.githubusercontent.com/46639306/206596246-0619edd5-7303-4fad-81f0-8c84263016b1.png)
+![image](https://user-images.githubusercontent.com/46639306/229554644-b5c728b6-141d-4034-8a38-9faa14d42a5a.png)
 
 This application is built using the [Tauri Framework](https://tauri.app/), a modern, secure successor to the [Electron Framework](https://www.electronjs.org/). This allows us to natively support Linux, macOS, and Windows within the same codebase without the performance or memory overhead of a Chromium browser. Our core application infrastructure is written in Rust due to its performance and safety, and our UI and client functionality is written in React TypeScript using [Vite](https://vitejs.dev/). This project is in early stages of development, and as such is **not yet suitable for production use**.
 
-## Functionality
+## :rocket: Functionality
 
 This project is still in early stages of development, but here's a rough roadmap of functionality we're working on. We're placing a high priority on getting our core infrastructure right, since this is the core of any robust and effective UI layer.
 
-- [x] Core dataflow infrastructure
+- [x] :link: Core dataflow infrastructure
   - [x] Serial data send/receive
   - [x] Rust protobuf integration (.proto -> .rs)
   - [x] Packet encode/decode
   - [x] Device state management
-- [x] Core UI infrastructure
+- [x] :art: Core UI infrastructure
   - [x] Tauri command management
   - [x] Tauri event management
   - [x] Redux saga dataflow
-- [ ] Network topology collection
+- [ ] :artificial_satellite: Network topology collection
   - [x] RFC for novel packet ([link](https://www.adammcquilkin.com/Adam_McQuilkin_-_Meshtastic_Network_Centralization_Proposal.pdf))
   - [x] MVP protobuf changes ([link](https://github.com/uhuruhashimoto/protobufs))
   - [x] MVP firmware changes ([link](https://github.com/uhuruhashimoto/firmware))
   - [ ] Community protobuf review
   - [ ] Community firmware review
-- [ ] Algorithmic analysis
+- [ ] :nerd_face: Algorithmic analysis
   - [x] Infrastructure
     - [x] Network packet collation
     - [x] Network graph construction
@@ -74,24 +72,24 @@ This project is still in early stages of development, but here's a rough roadmap
     - [x] MVP algorithm runner pane
     - [ ] On-map algorithm UI
     - [ ] Automatic algorithm rerunning
-- [ ] Node management
+- [ ] :radio: Node management
   - [x] Node peer table
   - [ ] Remote node configuration
-- [ ] Waypoint management
+- [ ] :pushpin: Waypoint management
   - [x] Managed waypoint table
   - [x] In-channel waypoint sending
   - [ ] On-map waypoint tooltip
-- [ ] Web client parity (UI)
+- [ ] :globe_with_meridians: Web client parity (UI)
   - [x] Map node view
   - [x] Text messaging
   - [ ] Configuration
     - [ ] Device configuration
     - [ ] Module configuration
     - [ ] Channel configuration
-- [ ] Offline map view
+- [ ] :mount_fuji: Offline map view
   - [ ] Offline map storage
   - [ ] Region-based downloading
-- [ ] Network data export
+- [ ] :page_facing_up: Network data export
 
 <!-- - [ ] :earth_americas: Node in-map viewing
   - [x] Mapping service integration
@@ -115,7 +113,7 @@ This project is still in early stages of development, but here's a rough roadmap
   - [ ] Insight utility UI
 - [ ] :floppy_disk: Management summary and export flow -->
 
-## Development
+## :computer: Development
 
 ### Prerequisites
 
@@ -169,6 +167,6 @@ We are currently working to add support for the [Storybook](https://storybook.js
 
 > **Note:** On Linux, your user may not have permission to access a given serial port. If this happens, you will likely need to add your user to the group that controls the serial port you want to access. You can find the group that controls a serial port via the `ls -ld PATH_TO_PORT_HERE` command. You can add your user to this group via the `usermod -a -G GROUP_NAME_HERE $USER` command.
 
-## Contributing
+## :heart: Contributing
 
 As we are still very early in development, we don't yet have a standardized framework for accepting contributions. This being said, we are very open to suggestions and/or code changes! If you're interested in contributing to this repository, we would ask that you first check our issue board to ensure your work isn't duplicating the work of others. Then, please make an issue on our board so we know what you're interested in working on. If you have any questions about the project, we would love to hear from you!
