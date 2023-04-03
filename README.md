@@ -2,7 +2,7 @@
 
 <div align="center">
   <h1 align="center">Meshtastic Network Management Client</h1>
-  <p align="center">An unofficial Meshtastic desktop client, allowing simple, offline deployment and administration of a mesh communication network.</p>
+  <p align="center">An unofficial Meshtastic desktop client for analyzing and managing large-scale, low-bandwidth mesh networks</p>
 </div>
 
 <p align="center">
@@ -38,19 +38,62 @@
 
 <!-- > :bangbang: **This application is in early alpha development. For the time being, all images shown in this README are Figma designs and are likely not implemented. We will update this README when this functionality is implemented.** :bangbang: -->
 
-This application is an unofficial desktop client for the [Meshtastic Project](https://meshtastic.org/), with the goal of allowing emergency response workers to deploy and manage an off-grid mesh network. Currently, many emergency response teams utilize UHF/VHF analog radios, and while reliable, cannot reliably transmit vital data over long distances (GPS waypoints, regions of interest, etc). Our goal is to allow response coordinators to purchase [cheap, off-shelf radio hardware](https://meshtastic.org/docs/supported-hardware) and quickly and reliably use that hardware to communicate this vital response information.
-
-This application is built using the [Tauri Framework](https://tauri.app/), a modern, secure successor to the [Electron Framework](https://www.electronjs.org/). This allows us to natively support Linux, macOS, and Windows within the same codebase without the performance or memory overhead of a Chromium browser. Our core application infrastructure is written in Rust, and UI and client functionality is written in React TypeScript and bundled using [Vite](https://vitejs.dev/). This project is in early stages of development, and as such is not yet suitable for production use.
+This application is an unofficial desktop client for the [Meshtastic Project](https://meshtastic.org/), designed to allow users to reliably manage large, decentralized mesh networks. Currently the Meshtastic client ecosystem has strong support for managing single nodes, but minimal support for network-level management and analysis. The goal of this project is to give users confidence in their Meshtastic networks as a reliable communications infrastructure through novel algorithmic analysis and connection-level insights.
 
 <!-- ![image](https://user-images.githubusercontent.com/46639306/197882383-e993add8-0900-4114-9cb6-9e9cb4d331d4.png) -->
 
 ![image](https://user-images.githubusercontent.com/46639306/206596246-0619edd5-7303-4fad-81f0-8c84263016b1.png)
 
-## Features
+This application is built using the [Tauri Framework](https://tauri.app/), a modern, secure successor to the [Electron Framework](https://www.electronjs.org/). This allows us to natively support Linux, macOS, and Windows within the same codebase without the performance or memory overhead of a Chromium browser. Our core application infrastructure is written in Rust due to its performance and safety, and our UI and client functionality is written in React TypeScript using [Vite](https://vitejs.dev/). This project is in early stages of development, and as such is **not yet suitable for production use**.
 
-This project is in early stages of development, but here's a rough roadmap of functionality we're working on.
+## Functionality
 
-- [ ] :earth_americas: Node in-map viewing
+This project is still in early stages of development, but here's a rough roadmap of functionality we're working on. We're placing a high priority on getting our core infrastructure right, since this is the core of any robust and effective UI layer.
+
+- [x] Core dataflow infrastructure
+  - [x] Serial data send/receive
+  - [x] Rust protobuf integration (.proto -> .rs)
+  - [x] Packet encode/decode
+  - [x] Device state management
+- [x] Core UI infrastructure
+  - [x] Tauri command management
+  - [x] Tauri event management
+  - [x] Redux saga dataflow
+- [ ] Network topology collection
+  - [x] RFC for novel packet ([link](https://www.adammcquilkin.com/Adam_McQuilkin_-_Meshtastic_Network_Centralization_Proposal.pdf))
+  - [x] MVP protobuf changes ([link](https://github.com/uhuruhashimoto/protobufs))
+  - [x] MVP firmware changes ([link](https://github.com/uhuruhashimoto/firmware))
+  - [ ] Community protobuf review
+  - [ ] Community firmware review
+- [ ] Algorithmic analysis
+  - [x] Infrastructure
+    - [x] Network packet collation
+    - [x] Network graph construction
+    - [x] Algorithm runners
+  - [ ] UI
+    - [x] MVP algorithm runner pane
+    - [ ] On-map algorithm UI
+    - [ ] Automatic algorithm rerunning
+- [ ] Node management
+  - [x] Node peer table
+  - [ ] Remote node configuration
+- [ ] Waypoint management
+  - [x] Managed waypoint table
+  - [x] In-channel waypoint sending
+  - [ ] On-map waypoint tooltip
+- [ ] Web client parity (UI)
+  - [x] Map node view
+  - [x] Text messaging
+  - [ ] Configuration
+    - [ ] Device configuration
+    - [ ] Module configuration
+    - [ ] Channel configuration
+- [ ] Offline map view
+  - [ ] Offline map storage
+  - [ ] Region-based downloading
+- [ ] Network data export
+
+<!-- - [ ] :earth_americas: Node in-map viewing
   - [x] Mapping service integration
   - [x] Node positioning on map
   - [ ] Offline map usage
@@ -70,7 +113,7 @@ This project is in early stages of development, but here's a rough roadmap of fu
   - [ ] Graph initialization and management
   - [x] Algorithm implementations
   - [ ] Insight utility UI
-- [ ] :floppy_disk: Management summary and export flow
+- [ ] :floppy_disk: Management summary and export flow -->
 
 ## Development
 
