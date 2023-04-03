@@ -82,31 +82,47 @@ This project is built in Rust and React TypeScript, and managed using the PNPM p
 - [Node.js](https://nodejs.org/en/)
 - [PNPM Package Manager](https://pnpm.io/installation)
 
-Additionally, this project uses [Git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to include the [meshtastic/protobufs](https://github.com/meshtastic/protobufs) repository. To install this submodule, run `git submodule update --init` after cloning this repository.
+### Installation
+
+For the time being, the only way to run this project is to clone this repository. To do this, follow the steps below:
+
+1. Ensure you have Rust, Node.js, and PNPM installed (see [Prerequisites](#prerequisites))
+2. Clone this repositiory to a local directory. This can be done by running `git clone https://github.com/ajmcquilkin/meshtastic-emergency-response-client.git`
+3. Recursively clone our Git submodules by running `git submodule update --init`
+4. Install all required NPM packages with `pnpm i`
+5. Once you have completed these steps, verify your installation with the `pnpm run rust:dev` command. The application should compile successfully, and you should see the application open successfully. If this process fails for you, please [let us know](https://github.com/ajmcquilkin/meshtastic-emergency-response-client/issues)!
 
 ### Recommended IDE Setup
 
 While this project can be developed within any text editor, we recommend the [Visual Studio Code](https://code.visualstudio.com/) editor. If using VSCode, we strongly recommend that you install the following Visual Studio Code extensions. These extensions both enforce code style and enable language and framework support for our tech stack.
 
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-- [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
-- [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode)
-- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) (optional)
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - Formatter for our UI code
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) - Linter for our UI code
+- [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) - Rust LSP with code linting, formatting, and quality suggestions
 
-### Commands
+Some optional extensions that aren't required but we find very helpful:
 
-To standardise and simplify our development flow, we utilize PNPM commands (defined in `package.json`). We have created commands which allow for the development of the client only, or development of the client embeddeded in a desktop application window. We support running the application UI in a browser in the event that a contributor wants to make UI changes but is unable to install the required project dependences, although we strongly recommend developing using the `rust:*` commands. You will be unable to connect to a serial device when developing in-browser. Project dependencies can be installed with `pnpm i`.
+- [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) - Adds Tauri [command](https://tauri.app/v1/guides/features/command/) snippets and configuration JSON validation
+- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) - A helpful plugin for working with Git histories
 
-> **Reminder:** When using any `rust:*` command, you will need to have the `src-tauri/protobufs` git submodule initialized. To do so, run `git submodule update --init` in the root of the project.
+### Development Commands
+
+To standardize our development flow, we utilize PNPM commands, defined in `package.json`. These commands can be run with the `pnpm run NAME ...ARGS` syntax. Our commands are broken out into two primary categories, `rust:*` commands and `ui:*` commands. The `rust:*` commands run the entire desktop application, where the `ui:*` commands only run the UI layer.
+
+> **Note:** We strongly recommend against using the `ui:dev` and `ui:build` commands manually. These commands are invoked internally by the `rust:dev` and `rust:build` commands, respectively. You will **not** be able to connect to a serial devce when running the `ui:dev` command, as this logic is not handled in the UI layer.
+
+We are currently working to add support for the [Storybook](https://storybook.js.org/) framework, which will allow contributors to develop UI components without running the entire desktop application.
+
+- `pnpm run rust:dev` - Starts the desktop application in development mode, allowing for hot reloading of UI and Rust code
+- `pnpm run rust:build` - Builds the desktop application in production mode for your system architecture. Currently we only use this command for testing our application's CLI argument parser.
+- `pnpm run rust:test` - Runs backend tests on the Rust codebase directory (`/src-tauri`). This command also generates TypeScript client bindings in the `/src-tauri/bindings` directory. Add `-- --show-output` to show Rust `println!` macro calls within test suites.
 
 - `pnpm run ui:dev` - Starts the UI development server, allowing for UI development in a browser environment. Note that any code that interfaces with the Rust backend **will not function** within this browser environment, meaning you will be unable to connect to serial devices in this context
 - `pnpm run ui:build`: - Runs a production build on the UI code into the `dist` directory
-- `pnpm run ui:preview` - Runs the built UI from the `dist` directory. This command must be run after `ui:build`
-- `pnpm run ui:format` - Formats the UI codebase using [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/)
-- `pnpm run ui:test` - Runs UI test suite using [Jest](https://jestjs.io/)
-- `pnpm run rust:dev` - Starts the desktop application in development mode, allowing for hot reloading of UI and Rust code
-- `pnpm run rust:test` - Runs backend tests on the Rust codebase directory (`/src-tauri`). This command also generates TypeScript client bindings in the `/src-tauri/bindings` directory. Add `-- --show-output` to show Rust `println!` macro calls within test suites.
+- `pnpm run ui:lint` - Uses ESLint to check for code style errors. Note that our CI pipeline requires that this command succeeds before any changes can be merged
+- `pnpm run ui:format` - Formats the UI codebase using [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/). We strongly recommend you run this before creating a PR!
+- `pnpm run ui:test` - Runs UI test suite using [Jest](https://jestjs.io/). Currently the project does not have a UI testing suite, but we're very open to contributions!
+- ~~`pnpm run ui:preview` - Runs the built UI from the `dist` directory. This command must be run after `ui:build`~~ (deprecated)
 
 > **Note:** On Linux, your user may not have permission to access a given serial port. If this happens, you will likely need to add your user to the group that controls the serial port you want to access. You can find the group that controls a serial port via the `ls -ld PATH_TO_PORT_HERE` command. You can add your user to this group via the `usermod -a -G GROUP_NAME_HERE $USER` command.
 

@@ -5,15 +5,15 @@
   "license": "GPL-3.0-only",
   "type": "module",
   "scripts": {
+    "rust:dev": "tauri dev",
+    "rust:build": "tauri build --",
+    "rust:test": "cd src-tauri; cargo test",
     "ui:dev": "vite",
     "ui:build": "tsc && vite build",
-    "ui:preview": "vite preview",
     "ui:lint": "eslint src/*.{ts,tsx}",
     "ui:format": "prettier --write ./src && eslint src/*.{ts,tsx}",
     "ui:test": "jest --passWithNoTests",
-    "rust:dev": "tauri dev",
-    "rust:build": "tauri build --",
-    "rust:test": "cd src-tauri; cargo test"
+    "ui:preview": "vite preview"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.13",
