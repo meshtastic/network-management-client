@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/46639306/206589911-37289193-1b7f-441b-81c4-68304b0c55b2.png)
+![image](https://user-images.githubusercontent.com/46639306/229531059-2f07b9c1-982f-4eaa-aae7-b8663e1e94a5.png)
 
 <div align="center">
   <h1 align="center">Meshtastic Network Management Client</h1>
