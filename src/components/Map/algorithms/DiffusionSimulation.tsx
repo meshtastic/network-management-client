@@ -21,7 +21,9 @@ const DiffusionSimulation = ({
         setAlgorithm={setDiffusion}
       />
       <p>
-      This score between source node a and destination node b is the expected number of times a will be able to communicate with b in selected T periods.
+        This score between source node a and destination node b is the expected
+        number of times a will be able to communicate with b in selected T
+        periods.
       </p>
       <DiffSimTotalChartTimeline />
       <LastRan lastRanMinutes={5} />

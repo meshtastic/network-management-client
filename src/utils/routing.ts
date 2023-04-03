@@ -6,6 +6,6 @@ export enum AppRoutes {
   CONFIGURE_RADIO = "/config/radio",
   CONFIGURE_PLUGINS = "/config/plugins",
   CONFIGURE_CHANNELS = "/config/channels",
-  EXPORT_APP_DATA = "/export-data",
+  APPLICATION_STATE = "/app-state",
   APPLICATION_SETTINGS = "/settings",
 }

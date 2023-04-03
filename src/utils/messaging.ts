@@ -10,7 +10,7 @@ export const getChannelName = (channel: MeshChannel): string => {
 export const formatMessageUsername = (
   longName: string | undefined,
   ownNodeId: number,
-  from: number,
+  from: number
 ): { displayText: string; isSelf: boolean } => {
   if (from === 0 || from == ownNodeId) {
     return { displayText: "You", isSelf: true };
@@ -42,7 +42,7 @@ export const getPacketDisplayText = ({ data, type }: ChannelMessagePayload) => {
 };
 
 export const getLastChannelMessageDisplayText = (
-  lastMessage: ChannelMessageWithState | null,
+  lastMessage: ChannelMessageWithState | null
 ) => {
   if (lastMessage?.payload.type) {
     return getPacketDisplayText(lastMessage.payload);

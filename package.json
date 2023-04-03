@@ -35,6 +35,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-charts": "3.0.0-beta.54",
     "react-dom": "^18.2.0",
+    "react-json-view": "^1.21.3",
     "react-map-gl": "^7.0.19",
     "react-redux": "^8.0.4",
     "react-router-dom": "^6.6.1",

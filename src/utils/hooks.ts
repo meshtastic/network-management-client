@@ -6,7 +6,7 @@ import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 import {
   selectActiveWaypoint,
-  selectIsWaypointEdit,
+  selectInfoPane,
 } from "@features/device/deviceSelectors";
 import { requestNewWaypoint } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
@@ -55,12 +55,15 @@ const useDeleteWaypoint = () => {
 // Toggles state of editWaypoint
 const useToggleEditWaypoint = () => {
   const dispatch = useDispatch();
-  const isWaypointEdit = useSelector(selectIsWaypointEdit());
+  const isWaypointEdit = useSelector(selectInfoPane()) === "waypointEdit";
+
   return () => {
-    dispatch(deviceSliceActions.setWaypointEdit(!isWaypointEdit));
+    dispatch(
+      deviceSliceActions.setInfoPane(
+        isWaypointEdit ? "waypoint" : "waypointEdit"
+      )
+    );
   };
 };
-
-// TODO: const useSendWaypoint = (waypoint: Waypoint) => {}
 
 export { useComponentReload, useDeleteWaypoint, useToggleEditWaypoint };

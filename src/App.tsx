@@ -14,6 +14,7 @@ import ManageNodePage from "@components/pages/ManageNodePage";
 import RadioConfigPage from "@components/pages/config/RadioConfigPage";
 import PluginConfigPage from "@components/pages/config/PluginConfigPage";
 import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
+import ApplicationStatePage from "@components/pages/ApplicationStatePage";
 
 import { AppRoutes } from "@utils/routing";
 
@@ -69,6 +70,10 @@ const App = () => {
           <Route
             path={AppRoutes.CONFIGURE_CHANNELS}
             element={<ChannelConfigPage />}
+          />
+          <Route
+            path={AppRoutes.APPLICATION_STATE}
+            element={<ApplicationStatePage />}
           />
 
           <Route path={AppRoutes.APPLICATION_SETTINGS} element={<Settings />} />

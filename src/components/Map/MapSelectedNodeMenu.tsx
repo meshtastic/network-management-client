@@ -25,14 +25,20 @@ const MapSelectedNodeMenu = () => {
   const deviceName = activeNode?.data.user?.longName ?? "N/A";
   const deviceLtCoord = (activeNode?.data.position?.latitudeI ?? 0) / 1e7;
   const deviceLgCoord = (activeNode?.data.position?.longitudeI ?? 0) / 1e7;
-  const devicePercentCharge = activeNode?.data.deviceMetrics?.batteryLevel ?? 0;
-  const deviceIsCharging =
-    activeNode?.deviceMetrics.at(-1)?.metrics.batteryLevel === 0;
   const deviceSpeed = activeNode?.data.position?.groundSpeed ?? 0;
   const deviceDirection = activeNode?.data.position?.groundTrack ?? 0;
 
   const clearActiveNode = () => {
     dispatch(deviceSliceActions.setActiveNode(null));
+  };
+
+  const getBatteryStateString = () => {
+    const devicePercentCharge =
+      activeNode?.data.deviceMetrics?.batteryLevel ?? null;
+
+    if (!devicePercentCharge) return "Unknown";
+    if (devicePercentCharge === 101) return "Powered";
+    return `${devicePercentCharge}%, discharging`;
   };
 
   if (!activeNode) return <></>;
@@ -53,7 +59,7 @@ const MapSelectedNodeMenu = () => {
         {lastPacketTime ? (
           <TimeAgo datetime={lastPacketTime} locale="en_us" />
         ) : (
-          "UNK"
+          "Unknown"
         )}
       </p>
 
@@ -66,7 +72,7 @@ const MapSelectedNodeMenu = () => {
             <MapPinIcon className="w-5 h-5 text-gray-500 mt-0.5" />
             <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
               {!deviceLtCoord || !deviceLgCoord ? (
-                <span>UNK</span>
+                <span>Unknown</span>
               ) : (
                 <span>
                   {deviceLtCoord}&#176;, {deviceLgCoord}&#176;
@@ -90,19 +96,12 @@ const MapSelectedNodeMenu = () => {
           <div className="flex justify-start">
             <Battery50Icon className="w-5 h-5 text-gray-500 mt-0.5" />
             <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
-              {devicePercentCharge}%,{" "}
-              {deviceIsCharging === true ? "charging" : "discharging"}
+              {getBatteryStateString()}
             </h2>
           </div>
           <button
             type="button"
-            onClick={() =>
-              void writeValueToClipboard(
-                `${devicePercentCharge}%, ${
-                  deviceIsCharging === true ? "charging" : "discharging"
-                }`
-              )
-            }
+            onClick={() => void writeValueToClipboard(getBatteryStateString())}
           >
             <DocumentDuplicateIcon className="w-5 h-5 text-gray-500" />
           </button>
@@ -113,7 +112,7 @@ const MapSelectedNodeMenu = () => {
             <ArrowRightCircleIcon className="w-5 h-5 outline-gray-400 mt-0.5 text-gray-500" />
             <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
               {!deviceSpeed || !deviceDirection ? (
-                <span>UNK</span>
+                <span>Unknown</span>
               ) : (
                 <span>
                   {deviceSpeed} mph, {deviceDirection % 360}&#176;

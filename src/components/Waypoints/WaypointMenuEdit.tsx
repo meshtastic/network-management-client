@@ -8,7 +8,11 @@ import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestNewWaypoint } from "@features/device/deviceActions";
-import { selectActiveWaypoint } from "@app/features/device/deviceSelectors";
+import {
+  selectActiveWaypoint,
+  selectActiveWaypointID,
+  selectPlaceholderWaypoint,
+} from "@app/features/device/deviceSelectors";
 
 import { useToggleEditWaypoint } from "@app/utils/hooks";
 
@@ -18,6 +22,9 @@ import { useToggleEditWaypoint } from "@app/utils/hooks";
 const WaypointMenuEdit = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
+  const activeWaypointID = useSelector(selectActiveWaypointID());
+
+  const placeholderWaypoint = useSelector(selectPlaceholderWaypoint());
 
   // Waypoint info
   const [waypointTitle, setWaypointTitle] = useState(activeWaypoint?.name);
@@ -33,6 +40,7 @@ const WaypointMenuEdit = () => {
 
   // Utils
   const toggleEditWaypoint = useToggleEditWaypoint();
+
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
@@ -40,6 +48,7 @@ const WaypointMenuEdit = () => {
       Number((document.getElementById("channel") as HTMLInputElement).value) ??
       0;
 
+    // If updating existing waypoint
     if (activeWaypoint) {
       const updatedWaypoint: Waypoint = {
         ...activeWaypoint,
@@ -49,14 +58,40 @@ const WaypointMenuEdit = () => {
       dispatch(
         requestNewWaypoint({ waypoint: updatedWaypoint, channel: channelNum })
       );
-      dispatch(deviceSliceActions.setWaypointEdit(false));
-    } else {
-      console.warn("Error: No active waypoint");
+      dispatch(deviceSliceActions.setInfoPane("waypoint"));
+    } else if (placeholderWaypoint && activeWaypointID === 0) {
+      const updatedWaypoint: Waypoint = {
+        ...placeholderWaypoint,
+        name: waypointTitle ? waypointTitle : "",
+        description: waypointDescription ? waypointDescription : "",
+      };
+
+      dispatch(
+        requestNewWaypoint({ waypoint: updatedWaypoint, channel: channelNum })
+      );
+      dispatch(deviceSliceActions.setInfoPane(null));
+      dispatch(deviceSliceActions.setPlaceholderWaypoint(null));
     }
   };
 
+  const handleClickCancel = () => {
+    if (activeWaypointID) {
+      toggleEditWaypoint();
+    } else {
+      dispatch(deviceSliceActions.setPlaceholderWaypoint(null));
+      dispatch(deviceSliceActions.setInfoPane(null));
+      dispatch(deviceSliceActions.setActiveWaypoint(null));
+    }
+  };
+
+  const handleClickX = () => {
+    dispatch(deviceSliceActions.setInfoPane(null));
+    dispatch(deviceSliceActions.setActiveWaypoint(null));
+    dispatch(deviceSliceActions.setPlaceholderWaypoint(null));
+  };
+
   // Only display if there is a selected waypoint
-  if (!activeWaypoint) {
+  if (!activeWaypoint && activeWaypointID !== 0) {
     return null;
   }
   return (
@@ -67,10 +102,7 @@ const WaypointMenuEdit = () => {
           <h1 className="text-gray-500 text-base leading-6 font-semibold pt-2 ">
             Title
           </h1>
-          <button
-            type="button"
-            onClick={() => dispatch(deviceSliceActions.setActiveWaypoint(null))}
-          >
+          <button type="button" onClick={handleClickX}>
             <XMarkIcon className="w-5 h-5 text-gray-500" />
           </button>
         </div>
@@ -132,6 +164,11 @@ const WaypointMenuEdit = () => {
             <option value="0">Channel 0</option>
             <option value="1">Channel 1</option>
             <option value="2">Channel 2</option>
+            <option value="3">Channel 3</option>
+            <option value="4">Channel 4</option>
+            <option value="5">Channel 5</option>
+            <option value="6">Channel 6</option>
+            <option value="7">Channel 7</option>
           </select>
         </div>
 
@@ -143,7 +180,7 @@ const WaypointMenuEdit = () => {
           <button
             className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
             type="button"
-            onClick={toggleEditWaypoint}
+            onClick={handleClickCancel}
           >
             <div className="self-center pr-2 text-gray-500 text-base font-semibold">
               Cancel
