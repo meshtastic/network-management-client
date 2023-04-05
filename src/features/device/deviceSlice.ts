@@ -10,6 +10,7 @@ export interface IDeviceState {
   activeSerialPort: string | null;
   activeWaypoint: Waypoint["id"] | null;
   allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
+  autoConnectPort: string | null; // Port to automatically connect to on startup
   placeholderWaypoint: Waypoint | null;
   infoPane: "waypoint" | "waypointEdit" | "algos" | null;
 }
@@ -21,6 +22,7 @@ export const initialDeviceState: IDeviceState = {
   activeSerialPort: null,
   activeWaypoint: null,
   allowOnMapWaypointCreation: false,
+  autoConnectPort: null,
   placeholderWaypoint: null,
   infoPane: null,
 };
@@ -31,7 +33,7 @@ export const deviceSlice = createSlice({
   reducers: {
     setAvailableSerialPorts: (
       state,
-      action: PayloadAction<string[] | null>
+      action: PayloadAction<string[] | null>,
     ) => {
       state.availableSerialPorts = action.payload;
     },
@@ -46,7 +48,7 @@ export const deviceSlice = createSlice({
 
     setActiveNode: (
       state,
-      action: PayloadAction<MeshNode["data"]["num"] | null>
+      action: PayloadAction<MeshNode["data"]["num"] | null>,
     ) => {
       state.activeNode = action.payload;
       if (action.payload) {
@@ -56,7 +58,10 @@ export const deviceSlice = createSlice({
       }
     },
 
-    setActiveWaypoint: (state, action: PayloadAction<number | null>) => {
+    setActiveWaypoint: (
+      state,
+      action: PayloadAction<Waypoint["id"] | null>,
+    ) => {
       state.activeWaypoint = action.payload;
       if (action.payload) {
         // If there is an active waypoint then we don't want another info screen
@@ -67,7 +72,7 @@ export const deviceSlice = createSlice({
 
     setInfoPane: (
       state,
-      action: PayloadAction<"waypoint" | "waypointEdit" | "algos" | null>
+      action: PayloadAction<"waypoint" | "waypointEdit" | "algos" | null>,
     ) => {
       state.infoPane = action.payload;
 
@@ -84,6 +89,10 @@ export const deviceSlice = createSlice({
 
     setAllowOnMapWaypointCreation: (state, action: PayloadAction<boolean>) => {
       state.allowOnMapWaypointCreation = action.payload;
+    },
+
+    setAutoConnectPort: (state, action: PayloadAction<string | null>) => {
+      state.autoConnectPort = action.payload;
     },
   },
 });

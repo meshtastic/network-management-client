@@ -13,6 +13,7 @@ import {
   handleGraphUpdateChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import {
+  requestAutoConnectPort,
   requestAvailablePorts,
   requestConnectToDevice,
   requestDisconnectFromDevice,
@@ -23,6 +24,30 @@ import {
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestSliceActions } from "@features/requests/requestReducer";
 import type { CommandError } from "@utils/errors";
+
+function* getAutoConnectPortWorker(
+  action: ReturnType<typeof requestAutoConnectPort>,
+) {
+  try {
+    yield put(requestSliceActions.setRequestPending({ name: action.type }));
+
+    const portName = (yield call(
+      invoke,
+      "request_autoconnect_port",
+    )) as string;
+
+    yield put(deviceSliceActions.setAutoConnectPort(portName));
+
+    yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
+  } catch (error) {
+    yield put(
+      requestSliceActions.setRequestFailed({
+        name: action.type,
+        message: (error as CommandError).message,
+      }),
+    );
+  }
+}
 
 function* subscribeAll() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -165,6 +190,10 @@ function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
 
 export function* devicesSaga() {
   yield all([
+    takeEvery(
+      requestAutoConnectPort.type,
+      getAutoConnectPortWorker,
+    ),
     takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
     takeEvery(requestConnectToDevice.type, connectToDeviceWorker),
     takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),

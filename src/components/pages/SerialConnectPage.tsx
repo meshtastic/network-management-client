@@ -8,10 +8,14 @@ import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 import SerialPortOption from "@components/Onboard/SerialPortOption";
 
 import {
+  requestAutoConnectPort,
   requestAvailablePorts,
   requestConnectToDevice,
 } from "@features/device/deviceActions";
-import { selectAvailablePorts } from "@features/device/deviceSelectors";
+import {
+  selectAutoConnectPort,
+  selectAvailablePorts,
+} from "@features/device/deviceSelectors";
 import { selectRequestStateByName } from "@features/requests/requestSelectors";
 import {
   IRequestState,
@@ -27,6 +31,8 @@ export interface IOnboardPageProps {
 const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
+  const autoConnectPort = useSelector(selectAutoConnectPort());
+
   const [selectedPortName, setSelectedPortName] = useState("");
   const [isScreenActive, setScreenActive] = useState(true);
 
@@ -57,8 +63,17 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   };
 
   useEffect(() => {
+    dispatch(requestAutoConnectPort());
     requestPorts();
   }, []);
+
+  // If a port has been marked for automatic connection,
+  // connect to it as if a user selected it manually
+  useEffect(() => {
+    if (autoConnectPort) {
+      handlePortSelected(autoConnectPort);
+    }
+  }, [autoConnectPort]);
 
   // Wait to allow user to recognize serial connection succeeded
   useEffect(() => {

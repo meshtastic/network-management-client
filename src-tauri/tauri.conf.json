@@ -68,6 +68,18 @@
         "timestampUrl": ""
       }
     },
+    "cli": {
+      "description": "A command line interface for launching the (unofficial) Meshtastic Emergency Response Client.",
+      "longDescription": "A CLI that allows for programatic connection to Meshtastic devices while launching the desktop client.",
+      "args": [
+        {
+          "name": "port",
+          "short": "P",
+          "takesValue": true,
+          "multiple": false
+        }
+      ]
+    },
     "security": {
       "csp": null
     },

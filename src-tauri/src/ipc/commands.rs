@@ -1,40 +1,36 @@
-use crate::analytics;
 use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
-use crate::mesh::{self, serial_connection::MeshConnection};
+use crate::mesh;
 use crate::state;
 
 use app::protobufs;
 use std::collections::HashMap;
-use tauri::Manager;
 
 use super::helpers;
 use super::CommandError;
 use super::{events, APMincutStringResults};
 
 #[tauri::command]
+pub async fn request_autoconnect_port(
+    autoconnect_state: tauri::State<'_, state::AutoConnectState>,
+) -> Result<String, CommandError> {
+    let autoconnect_port_guard = autoconnect_state.inner.lock().await;
+    let autoconnect_port = autoconnect_port_guard
+        .as_ref()
+        .ok_or("Autoconnect port state not initialized")?
+        .clone();
+
+    Ok(autoconnect_port)
+}
+
+#[tauri::command]
 pub async fn initialize_graph_state(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
     algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<(), CommandError> {
-    let new_graph = mesh::device::MeshGraph::new();
-    let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
-    let mesh_graph_arc = mesh_graph.inner.clone();
-    let algo_state_arc = algo_state.inner.clone();
-
-    {
-        let mut new_graph_guard = mesh_graph_arc.lock().await;
-        *new_graph_guard = Some(new_graph);
-    }
-
-    {
-        let mut new_state_guard = algo_state_arc.lock().await;
-        *new_state_guard = Some(state);
-    }
-
-    Ok(())
+    helpers::initialize_graph_state(mesh_graph, algo_state).await
 }
 
 #[tauri::command]
@@ -51,90 +47,14 @@ pub async fn connect_to_serial_port(
     serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
-    let mut connection = mesh::serial_connection::SerialConnection::new();
-    let new_device = mesh::device::MeshDevice::new();
-
-    connection.connect(app_handle.clone(), port_name, 115_200)?;
-    connection.configure(new_device.config_id)?;
-
-    let mut decoded_listener = connection
-        .on_decoded_packet
-        .as_ref()
-        .ok_or("Decoded packet listener not open")?
-        .resubscribe();
-
-    let handle = app_handle.app_handle().clone();
-    let mesh_device_arc = mesh_device.inner.clone();
-
-    // Only need to lock to set device in tauri state
-    {
-        let mut new_device_guard = mesh_device_arc.lock().await;
-        *new_device_guard = Some(new_device);
-    }
-
-    let graph_arc = mesh_graph.inner.clone();
-
-    tauri::async_runtime::spawn(async move {
-        while let Ok(message) = decoded_listener.recv().await {
-            let variant = match message.payload_variant {
-                Some(v) => v,
-                None => continue,
-            };
-
-            let mut device_guard = mesh_device_arc.lock().await;
-            let device = match device_guard.as_mut().ok_or("Device not initialized") {
-                Ok(d) => d,
-                Err(e) => {
-                    eprintln!("{:?}", e);
-                    continue;
-                }
-            };
-            let mut graph_guard = graph_arc.lock().await;
-            let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
-                Ok(g) => g,
-                Err(e) => {
-                    eprintln!("{:?}", e);
-                    continue;
-                }
-            };
-
-            let (device_updated, graph_updated) =
-                match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
-                    Ok(d) => d,
-                    Err(e) => {
-                        eprintln!("Error transmitting packet: {}", e);
-                        continue;
-                    }
-                };
-
-            if device_updated {
-                match events::dispatch_updated_device(handle.clone(), device.clone()) {
-                    Ok(_) => (),
-                    Err(e) => {
-                        eprintln!("Error emitting event to client: {:?}", e.to_string());
-                        continue;
-                    }
-                };
-            }
-
-            if graph_updated {
-                match events::dispatch_updated_edges(handle.clone(), graph) {
-                    Ok(_) => (),
-                    Err(e) => {
-                        eprintln!("Error emitting event to client: {:?}", e.to_string());
-                        continue;
-                    }
-                };
-            }
-        }
-    });
-
-    {
-        let mut state_connection = serial_connection.inner.lock().await;
-        *state_connection = Some(connection);
-    }
-
-    Ok(())
+    helpers::initialize_serial_connection_handlers(
+        port_name,
+        app_handle,
+        mesh_device,
+        serial_connection,
+        mesh_graph,
+    )
+    .await
 }
 
 #[tauri::command]
@@ -262,7 +182,7 @@ pub async fn get_node_edges(
     let mut guard = mesh_graph.inner.lock().await;
     let graph = guard
         .as_mut()
-        .ok_or("Graph not initialized")
+        .ok_or("Graph edges not initialized")
         .map_err(|e| e.to_string())?;
 
     let edges = helpers::generate_graph_edges_geojson(graph);

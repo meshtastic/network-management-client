@@ -106,3 +106,6 @@ export const selectWaypointByLocation =
 
 export const selectPlaceholderWaypoint = () => (state: RootState) =>
   state.devices.placeholderWaypoint;
+
+export const selectAutoConnectPort = () => (state: RootState) =>
+  state.devices.autoConnectPort;

@@ -30,20 +30,22 @@ const App = () => {
   const splashEnabled = true;
 
   const [isSplashMounted, setSplashMounted] = useState(splashEnabled);
-  const [isOnboardMounted, setOnboardMounted] = useState(splashEnabled);
+  const [isOnboardMounted, setOnboardMounted] = useState(true);
+
+  const handleSplashUnmount = () => {
+    setSplashMounted(false);
+  };
+
+  const handleSerialConnectUnmount = () => {
+    setOnboardMounted(false);
+  };
 
   return (
     <div className="flex flex-row relative">
-      {isSplashMounted && (
-        <SplashScreen
-          unmountSelf={() => {
-            setSplashMounted(false);
-          }}
-        />
-      )}
+      {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
 
       {isOnboardMounted && (
-        <SerialConnectPage unmountSelf={() => setOnboardMounted(false)} />
+        <SerialConnectPage unmountSelf={handleSerialConnectUnmount} />
       )}
 
       <Routes>
