@@ -67,7 +67,9 @@ impl MeshDevice {
     // TODO set module config
 
     pub fn set_my_node_info(&mut self, info: protobufs::MyNodeInfo) {
-        debug!("Setting own hardware info: {:?}", info);
+        debug!("Setting own hardware info");
+        trace!("{:?}", info);
+
         self.my_node_info = info;
     }
 
@@ -89,9 +91,10 @@ impl MeshDevice {
             };
 
             debug!(
-                "Inserting node with id {:?}: {:?}",
-                metrics.packet.from, new_node
+                "Inserting new node with id {} from metrics",
+                metrics.packet.from,
             );
+            trace!("{:?}", new_node);
 
             self.nodes.insert(metrics.packet.from, new_node);
             origin_node = self.nodes.get_mut(&metrics.packet.from);
@@ -139,7 +142,8 @@ impl MeshDevice {
     }
 
     pub fn add_channel(&mut self, channel: MeshChannel) {
-        debug!("Adding own channel: {:?}", channel);
+        debug!("Adding device channel at index {}", channel.config.index);
+        trace!("{:?}", channel);
 
         self.channels.insert(
             channel
@@ -160,16 +164,14 @@ impl MeshDevice {
         let existing_node = self.nodes.get_mut(&node_info.num);
 
         if let Some(ex_node) = existing_node {
-            debug!(
-                "Setting existing node info {:?}: {:?}",
-                node_info.num, node_info
-            );
+            debug!("Updating existing node with id {} from info", node_info.num,);
+            trace!("{:?}", node_info);
+
             ex_node.data = node_info;
         } else {
-            debug!(
-                "Inserting new node with info {:?}: {:?}",
-                node_info.num, node_info
-            );
+            debug!("Inserting new node with id {} from info", node_info.num,);
+            trace!("{:?}", node_info);
+
             self.nodes.insert(
                 node_info.num,
                 MeshNode {
