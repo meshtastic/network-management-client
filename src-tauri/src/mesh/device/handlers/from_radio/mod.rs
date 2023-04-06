@@ -1,55 +1,56 @@
-use super::super::{helpers::get_current_time_u32, DeviceUpdateResult, MeshChannel, MeshDevice};
+mod handlers;
+
+use super::{super::MeshDevice, DeviceUpdateError, DeviceUpdateMetadata};
 use app::protobufs;
 
 impl MeshDevice {
     pub fn handle_packet_from_radio(
         &mut self,
         variant: protobufs::from_radio::PayloadVariant,
-    ) -> Result<DeviceUpdateResult, String> {
-        let mut update_result = DeviceUpdateResult::new();
+    ) -> Result<DeviceUpdateMetadata, DeviceUpdateError> {
+        let mut update_result = DeviceUpdateMetadata::new();
 
         match variant {
-            protobufs::from_radio::PayloadVariant::Channel(c) => {
-                self.add_channel(MeshChannel {
-                    config: c,
-                    last_interaction: get_current_time_u32(),
-                    messages: vec![],
-                });
-
-                update_result.device_updated = true;
+            protobufs::from_radio::PayloadVariant::Channel(channel) => {
+                handlers::handle_channel_packet(self, &mut update_result, channel)?;
             }
-            protobufs::from_radio::PayloadVariant::Config(c) => {
-                self.set_config(c);
-                update_result.device_updated = true;
+            protobufs::from_radio::PayloadVariant::Config(config) => {
+                handlers::handle_config_packet(self, &mut update_result, config)?;
             }
             protobufs::from_radio::PayloadVariant::ConfigCompleteId(_c) => {
-                // println!("Config complete id data: {:#?}", c);
+                return Err(DeviceUpdateError::RadioMessageNotSupported(
+                    "config complete".into(),
+                ));
             }
             protobufs::from_radio::PayloadVariant::LogRecord(_l) => {
-                // println!("Log record data: {:#?}", l);
+                return Err(DeviceUpdateError::RadioMessageNotSupported(
+                    "log record".into(),
+                ));
             }
             protobufs::from_radio::PayloadVariant::ModuleConfig(_m) => {
-                // println!("Module config data: {:#?}", m);
+                return Err(DeviceUpdateError::RadioMessageNotSupported(
+                    "module config".into(),
+                ));
             }
-            protobufs::from_radio::PayloadVariant::MyInfo(m) => {
-                self.set_my_node_info(m);
-                update_result.device_updated = true;
+            protobufs::from_radio::PayloadVariant::MyInfo(my_node_info) => {
+                handlers::handle_my_node_info_packet(self, &mut update_result, my_node_info)?;
             }
-            protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
-                self.add_node_info(n);
-                update_result.device_updated = true;
+            protobufs::from_radio::PayloadVariant::NodeInfo(node_info) => {
+                handlers::handle_node_info_packet(self, &mut update_result, node_info)?;
             }
-            protobufs::from_radio::PayloadVariant::Packet(p) => {
-                update_result = self.handle_mesh_packet(p)?;
+            protobufs::from_radio::PayloadVariant::Packet(mesh_packet) => {
+                update_result = self.handle_mesh_packet(mesh_packet)?;
             }
             protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
-                // println!("Queue status data: {:#?}", q);
+                return Err(DeviceUpdateError::RadioMessageNotSupported(
+                    "queue status".into(),
+                ));
             }
             protobufs::from_radio::PayloadVariant::Rebooted(_r) => {
-                // println!("Rebooted data: {:#?}", r);
+                return Err(DeviceUpdateError::RadioMessageNotSupported("reboot".into()));
             }
             protobufs::from_radio::PayloadVariant::XmodemPacket(_p) => {
-                // println!("Xmodem packet: {:#?}", p);
+                return Err(DeviceUpdateError::RadioMessageNotSupported("xmodem".into()));
             }
         };
 
@@ -68,7 +69,7 @@ mod tests {
     }
 
     #[test]
-    fn test_add_and_update_channel() {
+    fn set_and_update_channel() {
         // Set channel in device storage
 
         let channel1 = protobufs::Channel {
@@ -115,7 +116,7 @@ mod tests {
     }
 
     #[test]
-    fn test_set_config() {
+    fn set_config() {
         let display_config = protobufs::config::DisplayConfig {
             ..Default::default()
         };
@@ -137,7 +138,7 @@ mod tests {
     }
 
     #[test]
-    fn test_set_my_node_info() {
+    fn set_my_node_info() {
         let my_node_info = protobufs::MyNodeInfo {
             max_channels: 12,
             ..Default::default()
@@ -156,7 +157,7 @@ mod tests {
     }
 
     #[test]
-    fn test_set_node_info() {
+    fn set_and_update_node_info() {
         // Set NodeInfo in device storage
 
         let node_info1 = protobufs::NodeInfo {
@@ -197,5 +198,5 @@ mod tests {
     }
 
     // #[test]
-    // fn test_handle_mesh_packet() {}
+    // fn handle_mesh_packet() {}
 }

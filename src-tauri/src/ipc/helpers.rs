@@ -171,9 +171,9 @@ fn spawn_decoded_handler(
             };
 
             let update_result = match device.handle_packet_from_radio(variant) {
-                Ok(r) => r,
-                Err(e) => {
-                    eprintln!("Error updating device:\n{}", e);
+                Ok(result) => result,
+                Err(err) => {
+                    eprintln!("{}", err);
                     continue;
                 }
             };
