@@ -3,6 +3,7 @@ use crate::analytics::algorithms::diffusion_centrality::results::EigenvalsResult
 use crate::graph::edge::Edge;
 use crate::graph::node::Node;
 
+use log::warn;
 use nalgebra::DMatrix;
 use petgraph::prelude::*;
 use petgraph::stable_graph::StableUnGraph;
@@ -337,18 +338,26 @@ impl Graph {
         get_all_parallel: Option<bool>,
     ) -> f64 {
         if !self.node_idx_map.contains_key(u) {
-            let error_message = format!("Node {} does not exist", u);
-            eprintln!("{}", error_message);
+            warn!(
+                "{}",
+                format!("Node {} does not exist, returning empty edge weight", u)
+            );
             return 0.0;
         }
+
         if !self.node_idx_map.contains_key(v) {
-            let error_message = format!("Node {} does not exist", v);
-            eprintln!("{}", error_message);
+            warn!(
+                "{}",
+                format!("Node {} does not exist, returning empty edge weight", v)
+            );
             return 0.0;
         }
 
         if !self.contains_edge(u, v) {
-            eprintln!("Graph doesn't contain edge: ({}, {})", u, v);
+            warn!(
+                "Graph doesn't contain edge: ({}, {}), returning empty edge weight",
+                u, v
+            );
             return 0.0;
         }
 
@@ -402,7 +411,7 @@ impl Graph {
 
         // Check if edge does not exist
         if !self.g.contains_edge(u_idx, v_idx) {
-            println!("Edge: ({}, {}) does not exist", u, v);
+            warn!("Edge: ({}, {}) does not exist", u, v);
             return print_error_and_return("Edge does not exist");
         }
 
@@ -687,7 +696,7 @@ impl Display for Graph {
 
 // Function to print given error and return
 fn print_error_and_return(error: &str) {
-    println!("{}", error);
+    eprintln!("{}", error);
 }
 
 // Create a unit test for the Graph struct

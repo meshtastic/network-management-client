@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use app::protobufs;
+use log::{error, warn};
 use tauri::api::notification::Notification;
 use tauri::async_runtime;
 use tokio::sync::broadcast;
@@ -156,7 +157,7 @@ fn spawn_decoded_handler(
             let device = match device_guard.as_mut().ok_or("Device not initialized") {
                 Ok(d) => d,
                 Err(e) => {
-                    eprintln!("{}", e);
+                    warn!("{}", e);
                     continue;
                 }
             };
@@ -165,7 +166,7 @@ fn spawn_decoded_handler(
             let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
                 Ok(g) => g,
                 Err(e) => {
-                    eprintln!("{}", e);
+                    warn!("{}", e);
                     continue;
                 }
             };
@@ -173,7 +174,7 @@ fn spawn_decoded_handler(
             let update_result = match device.handle_packet_from_radio(variant) {
                 Ok(result) => result,
                 Err(err) => {
-                    eprintln!("{}", err);
+                    warn!("{}", err);
                     continue;
                 }
             };
@@ -182,7 +183,7 @@ fn spawn_decoded_handler(
                 match events::dispatch_updated_device(handle.clone(), device.clone()) {
                     Ok(_) => (),
                     Err(e) => {
-                        eprintln!("Error emitting event to client:\n{}", e);
+                        error!("Failed to dispatch device to client:\n{}", e);
                         continue;
                     }
                 };
@@ -194,7 +195,7 @@ fn spawn_decoded_handler(
                 match events::dispatch_updated_edges(handle.clone(), graph) {
                     Ok(_) => (),
                     Err(e) => {
-                        eprintln!("Error emitting event to client:\n{}", e);
+                        error!("Failed to dispatch edges to client:\n{}", e);
                         continue;
                     }
                 };
@@ -208,7 +209,7 @@ fn spawn_decoded_handler(
                 {
                     Ok(_) => (),
                     Err(e) => {
-                        eprintln!("Error sending system-level notification:\n{}", e);
+                        error!("Failed to send system-level notification:\n{}", e);
                         continue;
                     }
                 }

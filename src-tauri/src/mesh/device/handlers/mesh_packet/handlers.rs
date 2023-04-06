@@ -1,4 +1,5 @@
 use app::protobufs;
+use log::debug;
 
 use crate::mesh::device::{
     handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
@@ -103,10 +104,10 @@ pub fn handle_routing_mesh_packet(
                 }
             }
             protobufs::routing::Variant::RouteReply(r) => {
-                println!("Route reply: {:?}", r);
+                debug!("Route reply: {:?}", r);
             }
             protobufs::routing::Variant::RouteRequest(r) => {
-                println!("Route request: {:?}", r);
+                debug!("Route request: {:?}", r);
             }
         }
     }

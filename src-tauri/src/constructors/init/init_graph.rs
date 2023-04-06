@@ -6,6 +6,7 @@ use crate::data_conversion::distance_conversion::get_spherical_distance;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
 use crate::mesh::device::MeshNode;
+use log::warn;
 use petgraph::graph::NodeIndex;
 use std::collections::HashMap;
 
@@ -68,7 +69,7 @@ pub fn add_node_and_location_to_graph(
                 node.speed = node_pos.ground_speed as f64 * SPEED_CONVERSION_FACTOR;
                 node.direction = node_pos.ground_track as f64;
             } else {
-                eprintln!("We do not have position info for node {}", name);
+                warn!("We do not have position info for node {}", name);
             }
         }
 

@@ -1,4 +1,5 @@
 use app::protobufs::{Neighbor, NeighborInfo};
+use log::{info, warn};
 use std::collections::HashMap;
 
 /*
@@ -42,7 +43,7 @@ pub fn init_edge_map(neighbors: &HashMap<u32, NeighborInfo>) -> HashMap<(u32, u3
                         Some(opposite_node) => {
                             // If the other is more recent, we drop the edge
                             if opposite_node.tx_time > neighbor_packet.tx_time {
-                                println!("{} -> {} is a dropped edge", node_1, node_2);
+                                info!("{} -> {} is a dropped edge", node_1, node_2);
                                 if snr_hashmap.contains_key(&as_key(node_1, node_2)) {
                                     snr_hashmap.remove(&as_key(node_1, node_2));
                                 }
@@ -50,7 +51,7 @@ pub fn init_edge_map(neighbors: &HashMap<u32, NeighborInfo>) -> HashMap<(u32, u3
                         }
                         _ => {
                             // If the other node is not found in the neighbors hashmap, we don't add the edge (drop it)
-                            println!("{} not found in neighbors", node_2);
+                            warn!("{} not found in neighbors", node_2);
                         }
                     }
                 }

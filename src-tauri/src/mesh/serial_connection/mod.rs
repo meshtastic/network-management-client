@@ -2,6 +2,7 @@
 
 use app::protobufs;
 use async_trait::async_trait;
+use log::{error, warn};
 use prost::Message;
 use serialport::SerialPort;
 use std::{
@@ -181,7 +182,7 @@ impl SerialConnection {
                     break;
                 }
                 Err(err) => {
-                    eprintln!("Read failed: {:?}", err);
+                    error!("Serial read failed: {:?}", err);
                     continue;
                 }
             };
@@ -211,7 +212,7 @@ impl SerialConnection {
             if let Ok(data) = write_input_rx.recv_timeout(Duration::from_millis(10)) {
                 match SerialConnection::write_to_radio(&mut port, data) {
                     Ok(()) => (),
-                    Err(e) => eprintln!("Error writing to radio: {:?}", e.to_string()),
+                    Err(e) => error!("Error writing to radio: {:?}", e.to_string()),
                 };
             }
         }));
@@ -250,7 +251,7 @@ impl SerialConnection {
                             match transform_serial_buf.iter().position(|&b| b == 0x94) {
                                 Some(idx) => idx,
                                 None => {
-                                    eprintln!("Could not find index of 0x94");
+                                    warn!("Could not find index of 0x94");
                                     processing_exhausted = true;
                                     continue;
                                 }
@@ -280,7 +281,7 @@ impl SerialConnection {
                             Some(val) => val,
                             None => {
                                 // TODO This should be abstracted into a function, repeated in many places
-                                eprintln!("Could not find value for MSB");
+                                warn!("Could not find value for MSB");
                                 processing_exhausted = true;
                                 continue;
                             }
@@ -289,7 +290,7 @@ impl SerialConnection {
                         let lsb = match transform_serial_buf.get(3) {
                             Some(val) => val,
                             None => {
-                                eprintln!("Could not find value for LSB");
+                                warn!("Could not find value for LSB");
                                 processing_exhausted = true;
                                 continue;
                             }
@@ -344,7 +345,7 @@ impl SerialConnection {
                         let decoded_packet = match protobufs::FromRadio::decode(packet.as_slice()) {
                             Ok(d) => d,
                             Err(err) => {
-                                eprintln!("deserialize failed: {:?}", err);
+                                error!("FromRadio packet deserialize failed: {:?}", err);
                                 continue;
                             }
                         };

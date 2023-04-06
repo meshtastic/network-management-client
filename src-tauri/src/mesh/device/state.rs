@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 use app::protobufs;
+use log::{debug, trace};
 
 use super::helpers::get_current_time_u32;
 use super::{
@@ -15,12 +16,12 @@ use crate::mesh::device::ChannelMessageState;
 
 impl MeshDevice {
     pub fn set_ready(&mut self, ready: bool) {
-        println!("Set ready: {:?}", ready);
+        debug!("Set ready: {:?}", ready);
         self.ready = ready;
     }
 
     pub fn set_status(&mut self, status: MeshDeviceStatus) {
-        println!("Set status: {:?}", status);
+        debug!("Set status: {:?}", status);
         self.status = status;
     }
 
@@ -28,33 +29,33 @@ impl MeshDevice {
         if let Some(payload_variant) = config.payload_variant {
             match payload_variant {
                 protobufs::config::PayloadVariant::Device(device) => {
-                    println!("Updated own device config: {:?}", device);
+                    debug!("Updated own device config: {:?}", device);
                     self.config.device = Some(device);
                 }
                 protobufs::config::PayloadVariant::Position(position) => {
-                    println!("Updated own position config: {:?}", position);
+                    debug!("Updated own position config: {:?}", position);
                     self.config.position = Some(position);
                 }
                 protobufs::config::PayloadVariant::Power(power) => {
-                    println!("Updated own power config: {:?}", power);
+                    debug!("Updated own power config: {:?}", power);
                     self.config.power = Some(power);
                 }
                 protobufs::config::PayloadVariant::Network(network) => {
-                    println!("Updated own network config: {:?}", network);
+                    debug!("Updated own network config: {:?}", network);
                     self.config.network = Some(network);
                 }
                 protobufs::config::PayloadVariant::Display(display) => {
-                    println!("Updated own display config: {:?}", display);
+                    debug!("Updated own display config: {:?}", display);
                     self.config.display = Some(display);
                 }
                 protobufs::config::PayloadVariant::Lora(lora) => {
-                    println!("Updated own LoRa config: {:?}", lora);
+                    debug!("Updated own LoRa config: {:?}", lora);
                     self.region_unset =
                         lora.region == protobufs::config::lo_ra_config::RegionCode::Unset as i32;
                     self.config.lora = Some(lora);
                 }
                 protobufs::config::PayloadVariant::Bluetooth(bluetooth) => {
-                    println!("Updated own bluetooth config: {:?}", bluetooth);
+                    debug!("Updated own bluetooth config: {:?}", bluetooth);
                     self.config.bluetooth = Some(bluetooth);
                 }
             }
@@ -64,7 +65,7 @@ impl MeshDevice {
     // TODO set module config
 
     pub fn set_my_node_info(&mut self, info: protobufs::MyNodeInfo) {
-        println!("Setting own hardware info: {:?}", info);
+        debug!("Setting own hardware info: {:?}", info);
         self.my_node_info = info;
     }
 
@@ -85,7 +86,7 @@ impl MeshDevice {
                 environment_metrics: vec![],
             };
 
-            println!(
+            debug!(
                 "Inserting node with id {:?}: {:?}",
                 metrics.packet.from, new_node
             );
@@ -104,7 +105,7 @@ impl MeshDevice {
                         self.device_metrics.channel_utilization =
                             device_metrics.channel_utilization;
 
-                        println!(
+                        debug!(
                             "Adding device metrics to node {:?}: {:?}",
                             metrics.packet.from, device_metrics
                         );
@@ -115,7 +116,7 @@ impl MeshDevice {
                         });
                     }
                     protobufs::telemetry::Variant::EnvironmentMetrics(environment_metrics) => {
-                        println!(
+                        debug!(
                             "Adding environment metrics to node {:?}: {:?}",
                             metrics.packet.from, environment_metrics
                         );
@@ -128,7 +129,7 @@ impl MeshDevice {
                         });
                     }
                     protobufs::telemetry::Variant::AirQualityMetrics(air_quality_metrics) => {
-                        println!(
+                        debug!(
                             "Received air quality metrics, not handling: {:?}",
                             air_quality_metrics
                         );
@@ -139,7 +140,7 @@ impl MeshDevice {
     }
 
     pub fn add_channel(&mut self, channel: MeshChannel) {
-        println!("Adding own channel: {:?}", channel);
+        debug!("Adding own channel: {:?}", channel);
 
         self.channels.insert(
             channel
@@ -152,7 +153,7 @@ impl MeshDevice {
     }
 
     pub fn add_waypoint(&mut self, waypoint: protobufs::Waypoint) {
-        println!("Adding own managed waypoint: {:?}", waypoint);
+        debug!("Adding own managed waypoint: {:?}", waypoint);
         self.waypoints.insert(waypoint.id, waypoint);
     }
 
@@ -160,13 +161,13 @@ impl MeshDevice {
         let existing_node = self.nodes.get_mut(&node_info.num);
 
         if let Some(ex_node) = existing_node {
-            println!(
+            debug!(
                 "Setting existing node info {:?}: {:?}",
                 node_info.num, node_info
             );
             ex_node.data = node_info;
         } else {
-            println!(
+            debug!(
                 "Inserting new node with info {:?}: {:?}",
                 node_info.num, node_info
             );
@@ -185,13 +186,13 @@ impl MeshDevice {
         let existing_node = self.nodes.get_mut(&user.packet.from);
 
         if let Some(ex_node) = existing_node {
-            println!(
+            debug!(
                 "Updating user of existing node {:?}: {:?}",
                 user.packet.from, user.data
             );
             ex_node.data.user = Some(user.data);
         } else {
-            println!(
+            debug!(
                 "Adding user to new node {:?}: {:?}",
                 user.packet.from, user.data
             );
@@ -217,13 +218,13 @@ impl MeshDevice {
         let existing_node = self.nodes.get_mut(&position.packet.from);
 
         if let Some(ex_node) = existing_node {
-            println!(
+            debug!(
                 "Updating position of existing node {:?}: {:?}",
                 position.packet.from, position.data
             );
             ex_node.data.position = Some(position.data);
         } else {
-            println!(
+            debug!(
                 "Adding position to new node {:?}: {:?}",
                 position.packet.from, position.data
             );
@@ -249,12 +250,12 @@ impl MeshDevice {
         let existing_node = self.neighbors.get_mut(&neighborinfo.packet.from);
 
         if existing_node.is_some() {
-            println!(
+            debug!(
                 "Updating neighborinfo of existing node {:?}: {:?}",
                 neighborinfo.packet.from, neighborinfo.data
             );
         } else {
-            println!(
+            debug!(
                 "Adding neighborinfo to new node {:?}: {:?}",
                 neighborinfo.packet.from, neighborinfo.data
             );
@@ -267,7 +268,7 @@ impl MeshDevice {
         let channel = self.channels.get_mut(&message.packet.channel);
 
         if let Some(ch) = channel {
-            println!(
+            debug!(
                 "Adding text message to channel {:?}: {:?}",
                 message.packet.channel, message.data
             );
@@ -285,7 +286,7 @@ impl MeshDevice {
         let channel = self.channels.get_mut(&message.packet.channel);
 
         if let Some(ch) = channel {
-            println!(
+            debug!(
                 "Adding waypoint message to channel {:?}: {:?}",
                 message.packet.channel, message.data
             );
@@ -329,6 +330,6 @@ impl MeshGraph {
     pub fn regenerate_graph_from_device_info(&mut self, device: &MeshDevice) {
         let edge_hashmap = init_edge_map(&device.neighbors);
         self.graph = init_graph(&edge_hashmap, &device.nodes);
-        println!("Graph: {:?}", self.graph);
+        trace!("Graph: {:?}", self.graph);
     }
 }

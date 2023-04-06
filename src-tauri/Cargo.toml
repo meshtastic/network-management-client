@@ -36,6 +36,9 @@ async-trait = "0.1.60"
 time = { version = "0.3.17", features = ["macros", "serde"] }
 thiserror = "1.0.38"
 geojson = "0.24.0"
+log = "0.4"
+fern = "0.6"
+humantime = "2.1.0"
 
 [features]
 # by default Tauri runs in production mode

@@ -26,6 +26,7 @@ impl Vertex {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct BinaryHeap {
     heap: Vec<Vertex>,
     size: i32,
@@ -151,12 +152,13 @@ impl BinaryHeap {
         }
     }
 
-    pub fn print(&self) {
-        for i in 0..self.size {
-            println!(
-                "Node: {}, Weight: {}",
-                self.heap[i as usize].node.name, self.heap[i as usize].weight
-            );
-        }
-    }
+    // TODO this should be replaced with the `Display` trait
+    // pub fn print(&self) {
+    //     for i in 0..self.size {
+    //         println!(
+    //             "Node: {}, Weight: {}",
+    //             self.heap[i as usize].node.name, self.heap[i as usize].weight
+    //         );
+    //     }
+    // }
 }
