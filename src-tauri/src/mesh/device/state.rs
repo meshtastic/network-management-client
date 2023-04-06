@@ -26,36 +26,38 @@ impl MeshDevice {
     }
 
     pub fn set_config(&mut self, config: protobufs::Config) {
+        debug!("Updating own config");
+
         if let Some(payload_variant) = config.payload_variant {
             match payload_variant {
                 protobufs::config::PayloadVariant::Device(device) => {
-                    debug!("Updated own device config: {:?}", device);
+                    trace!("Updated own device config: {:?}", device);
                     self.config.device = Some(device);
                 }
                 protobufs::config::PayloadVariant::Position(position) => {
-                    debug!("Updated own position config: {:?}", position);
+                    trace!("Updated own position config: {:?}", position);
                     self.config.position = Some(position);
                 }
                 protobufs::config::PayloadVariant::Power(power) => {
-                    debug!("Updated own power config: {:?}", power);
+                    trace!("Updated own power config: {:?}", power);
                     self.config.power = Some(power);
                 }
                 protobufs::config::PayloadVariant::Network(network) => {
-                    debug!("Updated own network config: {:?}", network);
+                    trace!("Updated own network config: {:?}", network);
                     self.config.network = Some(network);
                 }
                 protobufs::config::PayloadVariant::Display(display) => {
-                    debug!("Updated own display config: {:?}", display);
+                    trace!("Updated own display config: {:?}", display);
                     self.config.display = Some(display);
                 }
                 protobufs::config::PayloadVariant::Lora(lora) => {
-                    debug!("Updated own LoRa config: {:?}", lora);
+                    trace!("Updated own LoRa config: {:?}", lora);
                     self.region_unset =
                         lora.region == protobufs::config::lo_ra_config::RegionCode::Unset as i32;
                     self.config.lora = Some(lora);
                 }
                 protobufs::config::PayloadVariant::Bluetooth(bluetooth) => {
-                    debug!("Updated own bluetooth config: {:?}", bluetooth);
+                    trace!("Updated own bluetooth config: {:?}", bluetooth);
                     self.config.bluetooth = Some(bluetooth);
                 }
             }
@@ -99,16 +101,14 @@ impl MeshDevice {
             if let Some(variant) = metrics.data.variant {
                 match variant {
                     protobufs::telemetry::Variant::DeviceMetrics(device_metrics) => {
+                        debug!("Adding device metrics to node {:?}", metrics.packet.from);
+                        trace!("{:?}", device_metrics);
+
                         self.device_metrics.battery_level = device_metrics.battery_level;
                         self.device_metrics.voltage = device_metrics.voltage;
                         self.device_metrics.air_util_tx = device_metrics.air_util_tx;
                         self.device_metrics.channel_utilization =
                             device_metrics.channel_utilization;
-
-                        debug!(
-                            "Adding device metrics to node {:?}: {:?}",
-                            metrics.packet.from, device_metrics
-                        );
 
                         node.device_metrics.push(MeshNodeDeviceMetrics {
                             metrics: protobufs::DeviceMetrics { ..device_metrics },
@@ -117,9 +117,10 @@ impl MeshDevice {
                     }
                     protobufs::telemetry::Variant::EnvironmentMetrics(environment_metrics) => {
                         debug!(
-                            "Adding environment metrics to node {:?}: {:?}",
-                            metrics.packet.from, environment_metrics
+                            "Adding environment metrics to node {:?}",
+                            metrics.packet.from
                         );
+                        trace!("{:?}", environment_metrics);
 
                         node.environment_metrics.push(MeshNodeEnvironmentMetrics {
                             metrics: protobufs::EnvironmentMetrics {
@@ -129,10 +130,8 @@ impl MeshDevice {
                         });
                     }
                     protobufs::telemetry::Variant::AirQualityMetrics(air_quality_metrics) => {
-                        debug!(
-                            "Received air quality metrics, not handling: {:?}",
-                            air_quality_metrics
-                        );
+                        debug!("Received air quality metrics, not handling");
+                        trace!("{:?}", air_quality_metrics);
                     }
                 }
             }
