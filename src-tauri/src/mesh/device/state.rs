@@ -63,7 +63,7 @@ impl MeshDevice {
 
     // TODO set module config
 
-    pub fn set_hardware_info(&mut self, info: protobufs::MyNodeInfo) {
+    pub fn set_my_node_info(&mut self, info: protobufs::MyNodeInfo) {
         println!("Setting own hardware info: {:?}", info);
         self.my_node_info = info;
     }

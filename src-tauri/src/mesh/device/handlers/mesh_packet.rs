@@ -1,82 +1,18 @@
+use super::super::{
+    helpers::{get_channel_name, get_node_user_name},
+    ChannelMessageState, DeviceUpdateResult, MeshDevice, NeighborInfoPacket, NotificationConfig,
+    PositionPacket, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
+};
 use app::protobufs;
 use prost::Message;
-use tauri::api::notification::Notification;
-
-use super::{
-    helpers::{get_channel_name, get_current_time_u32, get_node_user_name},
-    ChannelMessageState, MeshChannel, MeshDevice, MeshGraph, NeighborInfoPacket, PositionPacket,
-    TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
-};
 
 impl MeshDevice {
-    pub fn handle_packet_from_radio(
-        &mut self,
-        variant: app::protobufs::from_radio::PayloadVariant,
-        app_handle: Option<tauri::AppHandle>,
-        meshgraph: Option<&mut MeshGraph>,
-    ) -> Result<(bool, bool), String> {
-        let mut device_updated = false;
-        let mut graph_updated = false;
-
-        match variant {
-            protobufs::from_radio::PayloadVariant::Channel(c) => {
-                self.add_channel(MeshChannel {
-                    config: c,
-                    last_interaction: get_current_time_u32(),
-                    messages: vec![],
-                });
-                device_updated = true;
-            }
-            protobufs::from_radio::PayloadVariant::Config(c) => {
-                self.set_config(c);
-                device_updated = true;
-            }
-            protobufs::from_radio::PayloadVariant::ConfigCompleteId(_c) => {
-                // println!("Config complete id data: {:#?}", c);
-            }
-            protobufs::from_radio::PayloadVariant::LogRecord(_l) => {
-                // println!("Log record data: {:#?}", l);
-            }
-            protobufs::from_radio::PayloadVariant::ModuleConfig(_m) => {
-                // println!("Module config data: {:#?}", m);
-            }
-            protobufs::from_radio::PayloadVariant::MyInfo(m) => {
-                self.set_hardware_info(m);
-                device_updated = true;
-            }
-            protobufs::from_radio::PayloadVariant::NodeInfo(n) => {
-                self.add_node_info(n);
-                device_updated = true;
-            }
-            protobufs::from_radio::PayloadVariant::Packet(p) => {
-                let result = self.handle_mesh_packet(p, app_handle, meshgraph)?;
-
-                device_updated = result.0;
-                graph_updated = result.1;
-            }
-            protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
-                // println!("Queue status data: {:#?}", q);
-            }
-            protobufs::from_radio::PayloadVariant::Rebooted(_r) => {
-                // println!("Rebooted data: {:#?}", r);
-            }
-            protobufs::from_radio::PayloadVariant::XmodemPacket(_p) => {
-                // println!("Xmodem packet: {:#?}", p);
-            }
-        };
-
-        Ok((device_updated, graph_updated))
-    }
-
     pub fn handle_mesh_packet(
         &mut self,
         packet: protobufs::MeshPacket,
-        app_handle: Option<tauri::AppHandle>,
-        meshgraph: Option<&mut MeshGraph>,
-    ) -> Result<(bool, bool), String> {
+    ) -> Result<DeviceUpdateResult, String> {
+        let mut update_result = DeviceUpdateResult::new();
         let variant = packet.clone().payload_variant.ok_or("No payload variant")?;
-        let mut device_updated = false;
-        let mut graph_updated = false;
 
         match variant {
             protobufs::mesh_packet::PayloadVariant::Decoded(data) => match data.portnum() {
@@ -97,7 +33,7 @@ impl MeshDevice {
                         .map_err(|e| e.to_string())?;
 
                     self.add_user(UserPacket { packet, data });
-                    device_updated = true;
+                    update_result.device_updated = true;
                 }
                 protobufs::PortNum::PositionApp => {
                     let data = protobufs::Position::decode(data.payload.as_slice())
@@ -105,12 +41,8 @@ impl MeshDevice {
 
                     self.add_position(PositionPacket { packet, data });
 
-                    if let Some(meshgraph) = meshgraph {
-                        meshgraph.regenerate_graph_from_device_info(self);
-                    }
-
-                    device_updated = true;
-                    graph_updated = true;
+                    update_result.device_updated = true;
+                    update_result.regenerate_graph = true;
                 }
                 protobufs::PortNum::PrivateApp => {
                     println!("Private app not yet supported in Rust");
@@ -184,7 +116,7 @@ impl MeshDevice {
                                             );
                                         }
                                     }
-                                    device_updated = true;
+                                    update_result.device_updated = true;
                                 }
                             }
                             protobufs::routing::Variant::RouteReply(r) => {
@@ -210,7 +142,7 @@ impl MeshDevice {
                         .map_err(|e| e.to_string())?;
 
                     self.set_device_metrics(TelemetryPacket { packet, data });
-                    device_updated = true;
+                    update_result.device_updated = true;
                 }
                 protobufs::PortNum::TextMessageApp => {
                     let data = String::from_utf8(data.payload).map_err(|e| e.to_string())?;
@@ -218,21 +150,19 @@ impl MeshDevice {
                         packet: packet.clone(),
                         data: data.clone(),
                     });
-                    device_updated = true;
 
-                    if let Some(handle) = app_handle {
-                        let from_user_name = get_node_user_name(self, &packet.from)
-                            .unwrap_or_else(|| packet.from.to_string());
+                    update_result.device_updated = true;
 
-                        let channel_name = get_channel_name(self, &packet.channel)
-                            .unwrap_or_else(|| "Unknown channel".into());
+                    let from_user_name = get_node_user_name(self, &packet.from)
+                        .unwrap_or_else(|| packet.from.to_string());
 
-                        Notification::new(handle.config().tauri.bundle.identifier.clone())
-                            .title(format!("{} in {}", from_user_name, channel_name))
-                            .body(data)
-                            .notify(&handle)
-                            .map_err(|e| e.to_string())?;
-                    }
+                    let channel_name = get_channel_name(self, &packet.channel)
+                        .unwrap_or_else(|| "Unknown channel".into());
+
+                    let mut notification = NotificationConfig::new();
+                    notification.title = format!("{} in {}", from_user_name, channel_name);
+                    notification.body = data;
+                    update_result.notification_config = Some(notification);
                 }
                 protobufs::PortNum::TextMessageCompressedApp => {
                     eprintln!("Compressed text data not yet supported in Rust");
@@ -246,26 +176,23 @@ impl MeshDevice {
                         packet: packet.clone(),
                         data: data.clone(),
                     });
-                    device_updated = true;
+                    update_result.device_updated = true;
 
-                    if let Some(handle) = app_handle {
-                        let from_user_name = get_node_user_name(self, &packet.from)
-                            .unwrap_or_else(|| packet.from.to_string());
+                    let from_user_name = get_node_user_name(self, &packet.from)
+                        .unwrap_or_else(|| packet.from.to_string());
 
-                        let channel_name = get_channel_name(self, &packet.channel)
-                            .unwrap_or_else(|| "Unknown channel".into());
+                    let channel_name = get_channel_name(self, &packet.channel)
+                        .unwrap_or_else(|| "Unknown channel".into());
 
-                        Notification::new(handle.config().tauri.bundle.identifier.clone())
-                            .title(format!("{} in {}", from_user_name, channel_name))
-                            .body(format!(
-                                "Sent waypoint \"{}\" at {}, {}",
-                                data.name,
-                                data.latitude_i as f32 / 1e7,
-                                data.longitude_i as f32 / 1e7
-                            ))
-                            .notify(&handle)
-                            .map_err(|e| e.to_string())?;
-                    }
+                    let mut notification = NotificationConfig::new();
+                    notification.title = format!("{} in {}", from_user_name, channel_name);
+                    notification.body = format!(
+                        "Sent waypoint \"{}\" at {}, {}",
+                        data.name,
+                        data.latitude_i as f32 / 1e7,
+                        data.longitude_i as f32 / 1e7
+                    );
+                    update_result.notification_config = Some(notification);
                 }
                 protobufs::PortNum::ZpsApp => {
                     println!("ZPS app not yet supported in Rust");
@@ -279,12 +206,8 @@ impl MeshDevice {
                         data,
                     });
 
-                    if let Some(meshgraph) = meshgraph {
-                        meshgraph.regenerate_graph_from_device_info(self);
-                    }
-
-                    graph_updated = true;
-                    device_updated = true;
+                    update_result.device_updated = true;
+                    update_result.regenerate_graph = true;
                 }
                 protobufs::PortNum::TracerouteApp => {
                     println!("Traceroute app not yet supported in Rust");
@@ -301,6 +224,34 @@ impl MeshDevice {
             }
         }
 
-        Ok((device_updated, graph_updated))
+        Ok(update_result)
     }
+}
+
+#[cfg(test)]
+mod tests {
+    // use crate::mesh;
+
+    // use super::*;
+
+    // fn initialize_mock_device() -> mesh::device::MeshDevice {
+    //     mesh::device::MeshDevice::new()
+    // }
+
+    #[test]
+    fn test_node_info_app() {}
+    #[test]
+    fn test_position_app() {}
+    #[test]
+    fn test_routing_app_ack() {}
+    #[test]
+    fn test_routing_app_error() {}
+    #[test]
+    fn test_telemetry_app() {}
+    #[test]
+    fn test_text_message_app() {}
+    #[test]
+    fn test_waypoint_app() {}
+    #[test]
+    fn test_neighbor_info_app() {}
 }

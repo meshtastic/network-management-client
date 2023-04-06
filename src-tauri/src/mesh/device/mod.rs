@@ -122,6 +122,35 @@ pub struct ChannelMessageWithState {
     pub state: ChannelMessageState,
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct NotificationConfig {
+    pub title: String,
+    pub body: String,
+}
+
+impl NotificationConfig {
+    pub fn new() -> Self {
+        Self {
+            ..Default::default()
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct DeviceUpdateResult {
+    pub device_updated: bool,
+    pub regenerate_graph: bool,
+    pub notification_config: Option<NotificationConfig>,
+}
+
+impl DeviceUpdateResult {
+    pub fn new() -> Self {
+        Self {
+            ..Default::default()
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshDevice {
