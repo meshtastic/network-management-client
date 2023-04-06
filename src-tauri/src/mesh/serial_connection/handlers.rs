@@ -1,5 +1,5 @@
 use app::protobufs;
-use log::{debug, error, info, warn};
+use log::{debug, error, info, trace, warn};
 use prost::Message;
 use serialport::SerialPort;
 use std::{
@@ -36,29 +36,37 @@ pub fn spawn_serial_read_handler(
         let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
 
         let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
-        Ok(o) => o,
-        Err(ref e) if e.kind() == ErrorKind::TimedOut => continue,
-        Err(ref e)
-            if e.kind() == ErrorKind::BrokenPipe // Linux disconnect
-                || e.kind() == ErrorKind::PermissionDenied // Windows disconnect
-                =>
-        {
-            app_handle
-                .app_handle()
-                .emit_all("device_disconnect", "")
-                .expect("Could not dispatch disconnection event");
-            break;
-        }
-        Err(err) => {
-            error!("Serial read failed: {:?}", err);
-            continue;
-        }
-    };
+            Ok(o) => o,
+            Err(ref e) if e.kind() == ErrorKind::TimedOut => continue,
+            Err(ref e)
+                if e.kind() == ErrorKind::BrokenPipe // Linux disconnect
+                    || e.kind() == ErrorKind::PermissionDenied // Windows disconnect
+                    =>
+            {
+                app_handle
+                    .app_handle()
+                    .emit_all("device_disconnect", "")
+                    .expect("Could not dispatch disconnection event");
 
-        match read_output_tx.send(incoming_serial_buf[..recv_bytes].to_vec()) {
-            Ok(_) => (),
-            Err(_) => continue,
+                break;
+            }
+            Err(err) => {
+                error!("Serial read failed: {:?}", err);
+                continue;
+            }
         };
+
+        if recv_bytes > 0 {
+            trace!(
+                "Received info from radio: {:?}",
+                incoming_serial_buf[..recv_bytes].to_vec()
+            );
+
+            match read_output_tx.send(incoming_serial_buf[..recv_bytes].to_vec()) {
+                Ok(_) => (),
+                Err(_) => continue,
+            };
+        }
     })
 }
 
@@ -96,7 +104,7 @@ pub fn spawn_message_processing_handle(
     decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
 ) -> JoinHandle<()> {
     thread::spawn(move || {
-        let mut transform_serial_buf: Vec<u8> = vec![0; 1024];
+        let mut transform_serial_buf: Vec<u8> = vec![];
 
         loop {
             // Kill thread if connection not active
@@ -112,7 +120,7 @@ pub fn spawn_message_processing_handle(
                 }
             }
 
-            if let Ok(message) = read_output_rx.recv_timeout(Duration::from_millis(10)) {
+            if let Ok(message) = read_output_rx.recv() {
                 process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
             }
         }
@@ -254,4 +262,86 @@ fn process_packet_buffer(
     };
 
     Some(decoded_packet)
+}
+
+#[cfg(test)]
+mod tests {
+    use app::protobufs;
+    use prost::Message;
+    use tokio::sync::broadcast;
+
+    use crate::mesh::serial_connection;
+
+    use super::*;
+
+    fn mock_encoded_from_radio_packet(
+        id: u32,
+        payload_variant: protobufs::from_radio::PayloadVariant,
+    ) -> (protobufs::FromRadio, Vec<u8>) {
+        let packet = protobufs::FromRadio {
+            id,
+            payload_variant: Some(payload_variant),
+        };
+
+        (packet.clone(), packet.encode_to_vec())
+    }
+
+    #[tokio::test]
+    async fn decodes_valid_buffer_single_packet() {
+        // Packet setup
+
+        let payload_variant =
+            protobufs::from_radio::PayloadVariant::MyInfo(protobufs::MyNodeInfo {
+                my_node_num: 1,
+                ..Default::default()
+            });
+
+        let (packet, packet_data) = mock_encoded_from_radio_packet(1, payload_variant);
+        let encoded_packet = serial_connection::helpers::format_serial_packet(packet_data);
+
+        let mut mock_serial_buf: Vec<u8> = vec![];
+        let (mock_tx, mut mock_rx) = broadcast::channel::<protobufs::FromRadio>(32);
+
+        // Attempt to decode packet
+
+        process_serial_bytes(&mut mock_serial_buf, &mock_tx, encoded_packet);
+
+        assert_eq!(mock_rx.recv().await.unwrap(), packet);
+        assert_eq!(mock_serial_buf.len(), 0);
+    }
+
+    #[tokio::test]
+    async fn decodes_valid_buffer_two_packets() {
+        // Packet setup
+
+        let payload_variant1 =
+            protobufs::from_radio::PayloadVariant::MyInfo(protobufs::MyNodeInfo {
+                my_node_num: 1,
+                ..Default::default()
+            });
+
+        let payload_variant2 =
+            protobufs::from_radio::PayloadVariant::MyInfo(protobufs::MyNodeInfo {
+                my_node_num: 2,
+                ..Default::default()
+            });
+
+        let (packet1, packet_data1) = mock_encoded_from_radio_packet(1, payload_variant1);
+        let (packet2, packet_data2) = mock_encoded_from_radio_packet(2, payload_variant2);
+
+        let mut encoded_packet1 = serial_connection::helpers::format_serial_packet(packet_data1);
+        let encoded_packet2 = serial_connection::helpers::format_serial_packet(packet_data2);
+
+        let mut mock_serial_buf: Vec<u8> = vec![];
+        mock_serial_buf.append(&mut encoded_packet1);
+        let (mock_tx, mut mock_rx) = broadcast::channel::<protobufs::FromRadio>(32);
+
+        // Attempt to decode packets
+
+        process_serial_bytes(&mut mock_serial_buf, &mock_tx, encoded_packet2);
+
+        assert_eq!(mock_rx.recv().await.unwrap(), packet1);
+        assert_eq!(mock_rx.recv().await.unwrap(), packet2);
+        assert_eq!(mock_serial_buf.len(), 0);
+    }
 }

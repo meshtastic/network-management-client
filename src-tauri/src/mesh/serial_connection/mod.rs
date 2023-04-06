@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 mod handlers;
+pub mod helpers;
 
 use app::protobufs;
 use async_trait::async_trait;
@@ -81,10 +82,7 @@ impl MeshConnection for SerialConnection {
     }
 
     fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), String> {
-        let magic_buffer = [0x94, 0xc3, 0x00, data.len() as u8];
-        let packet_slice = data.as_slice();
-
-        let binding = [&magic_buffer, packet_slice].concat();
+        let binding = helpers::format_serial_packet(data);
         let message_buffer: &[u8] = binding.as_slice();
         port.write(message_buffer).map_err(|e| e.to_string())?;
 
