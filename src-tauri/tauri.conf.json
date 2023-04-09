@@ -7,7 +7,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "meshtastic-emergency-response-client",
+    "productName": "meshtastic-network-management-client",
     "version": "0.0.0"
   },
   "tauri": {
@@ -50,7 +50,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "org.meshtastic.emergency",
+      "identifier": "org.meshtastic.network-management",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -90,7 +90,7 @@
       {
         "maximized": true,
         "resizable": true,
-        "title": "Meshtastic Emergency Response Client"
+        "title": "Meshtastic Network Management Client"
       }
     ]
   }
