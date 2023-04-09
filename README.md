@@ -38,7 +38,7 @@
 
 This application is an unofficial desktop client for the [Meshtastic Project](https://meshtastic.org/), designed to allow users to reliably manage large, decentralized mesh networks. Currently the Meshtastic client ecosystem has strong support for managing single nodes, but minimal support for network-level management and analysis. The goal of this project is to give users confidence in their Meshtastic networks as a reliable communications infrastructure through novel algorithmic analysis and connection-level insights.
 
-![image](https://user-images.githubusercontent.com/46639306/229562168-bfadd385-58de-4531-b332-bfcaaeb64ab8.png)
+![image](https://user-images.githubusercontent.com/46639306/230783389-330754f9-a1c3-4b8b-8db9-a226c612f011.png)
 
 This application is built using the [Tauri Framework](https://tauri.app/), a modern, secure successor to the [Electron Framework](https://www.electronjs.org/). This allows us to natively support Linux, macOS, and Windows within the same codebase without the performance or memory overhead of a Chromium browser. Our core application infrastructure is written in Rust due to its performance and safety, and our UI and client functionality is written in React TypeScript using [Vite](https://vitejs.dev/). This project is in early stages of development, and as such is **not yet suitable for production use**.
 
