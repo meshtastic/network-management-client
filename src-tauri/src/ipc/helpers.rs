@@ -1,4 +1,11 @@
 use std::collections::HashMap;
+use std::sync::Arc;
+
+use app::protobufs;
+use log::{error, warn};
+use tauri::api::notification::Notification;
+use tauri::async_runtime;
+use tokio::sync::broadcast;
 
 use crate::ipc::events;
 use crate::mesh::serial_connection::MeshConnection;
@@ -107,7 +114,7 @@ pub async fn initialize_serial_connection_handlers(
     connection.connect(app_handle.clone(), port_name, 115_200)?;
     connection.configure(new_device.config_id)?;
 
-    let mut decoded_listener = connection
+    let decoded_listener = connection
         .on_decoded_packet
         .as_ref()
         .ok_or("Decoded packet listener not open")?
@@ -115,6 +122,7 @@ pub async fn initialize_serial_connection_handlers(
 
     let handle = app_handle.clone();
     let mesh_device_arc = mesh_device.inner.clone();
+    let graph_arc = mesh_graph.inner.clone();
 
     // Only need to lock to set device in tauri state
     {
@@ -122,8 +130,22 @@ pub async fn initialize_serial_connection_handlers(
         *new_device_guard = Some(new_device);
     }
 
-    let graph_arc = mesh_graph.inner.clone();
+    {
+        let mut state_connection = serial_connection.inner.lock().await;
+        *state_connection = Some(connection);
+    }
 
+    spawn_decoded_handler(handle, decoded_listener, mesh_device_arc, graph_arc);
+
+    Ok(())
+}
+
+fn spawn_decoded_handler(
+    handle: tauri::AppHandle,
+    mut decoded_listener: broadcast::Receiver<protobufs::FromRadio>,
+    mesh_device_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
+    graph_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
+) {
     tauri::async_runtime::spawn(async move {
         while let Ok(message) = decoded_listener.recv().await {
             let variant = match message.payload_variant {
@@ -135,54 +157,63 @@ pub async fn initialize_serial_connection_handlers(
             let device = match device_guard.as_mut().ok_or("Device not initialized") {
                 Ok(d) => d,
                 Err(e) => {
-                    eprintln!("{:?}", e);
+                    warn!("{}", e);
                     continue;
                 }
             };
+
             let mut graph_guard = graph_arc.lock().await;
             let graph = match graph_guard.as_mut().ok_or("Graph not initialized") {
                 Ok(g) => g,
                 Err(e) => {
-                    eprintln!("{:?}", e);
+                    warn!("{}", e);
                     continue;
                 }
             };
 
-            let (device_updated, graph_updated) =
-                match device.handle_packet_from_radio(variant, Some(handle.clone()), Some(graph)) {
-                    Ok(d) => d,
-                    Err(e) => {
-                        eprintln!("Error transmitting packet: {}", e);
-                        continue;
-                    }
-                };
+            let update_result = match device.handle_packet_from_radio(variant) {
+                Ok(result) => result,
+                Err(err) => {
+                    warn!("{}", err);
+                    continue;
+                }
+            };
 
-            if device_updated {
+            if update_result.device_updated {
                 match events::dispatch_updated_device(handle.clone(), device.clone()) {
                     Ok(_) => (),
                     Err(e) => {
-                        eprintln!("Error emitting event to client: {:?}", e.to_string());
+                        error!("Failed to dispatch device to client:\n{}", e);
                         continue;
                     }
                 };
             }
 
-            if graph_updated {
+            if update_result.regenerate_graph {
+                graph.regenerate_graph_from_device_info(device);
+
                 match events::dispatch_updated_edges(handle.clone(), graph) {
                     Ok(_) => (),
                     Err(e) => {
-                        eprintln!("Error emitting event to client: {:?}", e.to_string());
+                        error!("Failed to dispatch edges to client:\n{}", e);
                         continue;
                     }
                 };
             }
+
+            if let Some(notification_config) = update_result.notification_config {
+                match Notification::new(handle.config().tauri.bundle.identifier.clone())
+                    .title(notification_config.title)
+                    .body(notification_config.body)
+                    .notify(&handle)
+                {
+                    Ok(_) => (),
+                    Err(e) => {
+                        error!("Failed to send system-level notification:\n{}", e);
+                        continue;
+                    }
+                }
+            }
         }
     });
-
-    {
-        let mut state_connection = serial_connection.inner.lock().await;
-        *state_connection = Some(connection);
-    }
-
-    Ok(())
 }

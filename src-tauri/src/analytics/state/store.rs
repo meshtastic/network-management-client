@@ -19,7 +19,7 @@ use serde::{Deserialize, Serialize};
 /// * `most_sim_t` - [`crate::state_err_enums::most_sim_timeline::MostSimTResult`] that stores Success/Error/Empty of most similar timeline algorithm.
 /// * `pred_state` - [`crate::state_err_enums::pred_state::PredStateResult`] that stores Success/Error/Empty of state prediction algorithm.
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ResultsStore {
     pub aps: APResult,
     pub mincut: MinCutResult,

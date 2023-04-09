@@ -1,5 +1,21 @@
 use app::protobufs::{Neighbor, NeighborInfo};
+use log::{info, warn};
 use std::collections::HashMap;
+
+#[derive(Clone, Debug)]
+pub struct GraphEdgeMetadata {
+    pub snr: f64,
+    pub timestamp: u64,
+}
+
+impl GraphEdgeMetadata {
+    fn new(snr: impl Into<f64>, timestamp: impl Into<u64>) -> Self {
+        Self {
+            snr: snr.into(),
+            timestamp: timestamp.into(),
+        }
+    }
+}
 
 /*
 * We're given a HashMap of NeighborInfo packets, each of which is considered to be the most up-to-date
@@ -11,17 +27,21 @@ use std::collections::HashMap;
 *
 * This is an O(n^2) algorithm, but our graph is small. Should be reworked at some point.
  */
-pub fn init_edge_map(neighbors: &HashMap<u32, NeighborInfo>) -> HashMap<(u32, u32), (f64, u64)> {
-    let mut snr_hashmap = HashMap::<(u32, u32), (f64, u64)>::new();
+pub fn init_edge_map(
+    neighbors: &HashMap<u32, NeighborInfo>,
+) -> HashMap<(u32, u32), GraphEdgeMetadata> {
+    let mut snr_hashmap = HashMap::<(u32, u32), GraphEdgeMetadata>::new();
     for neighbor_packet in neighbors.values() {
-        let node_1 = neighbor_packet.node_id;
+        let node_id_1 = neighbor_packet.node_id;
         for neighbor in &neighbor_packet.neighbors {
-            let node_2 = neighbor.node_id;
+            let node_id_2 = neighbor.node_id;
+
             snr_hashmap.insert(
-                as_key(node_1, node_2),
-                (neighbor.snr as f64, neighbor.rx_time as u64),
+                as_key(node_id_1, node_id_2),
+                GraphEdgeMetadata::new(neighbor.snr, neighbor.rx_time),
             );
-            let opposite_neighbor = check_other_node_agrees(node_2, node_1, neighbors);
+
+            let opposite_neighbor = check_other_node_agrees(node_id_2, node_id_1, neighbors);
             match opposite_neighbor {
                 // If the opposite neighbor is found on a recent packet, we take the most recent SNR
                 Some(opposite_neighbor) => {
@@ -31,26 +51,26 @@ pub fn init_edge_map(neighbors: &HashMap<u32, NeighborInfo>) -> HashMap<(u32, u3
                         &opposite_neighbor
                     };
                     snr_hashmap.insert(
-                        as_key(node_1, node_2),
-                        (most_recent_data.snr as f64, most_recent_data.rx_time as u64),
+                        as_key(node_id_1, node_id_2),
+                        GraphEdgeMetadata::new(most_recent_data.snr, most_recent_data.rx_time),
                     );
                 }
                 _ => {
                     // If the opposite neighbor is not found on a recent packet, we check if our packet is most recent
-                    let opt_opposite_node = neighbors.get(&node_2);
+                    let opt_opposite_node = neighbors.get(&node_id_2);
                     match opt_opposite_node {
                         Some(opposite_node) => {
                             // If the other is more recent, we drop the edge
                             if opposite_node.tx_time > neighbor_packet.tx_time {
-                                println!("{} -> {} is a dropped edge", node_1, node_2);
-                                if snr_hashmap.contains_key(&as_key(node_1, node_2)) {
-                                    snr_hashmap.remove(&as_key(node_1, node_2));
+                                info!("{} -> {} is a dropped edge", node_id_1, node_id_2);
+                                if snr_hashmap.contains_key(&as_key(node_id_1, node_id_2)) {
+                                    snr_hashmap.remove(&as_key(node_id_1, node_id_2));
                                 }
                             }
                         }
                         _ => {
                             // If the other node is not found in the neighbors hashmap, we don't add the edge (drop it)
-                            println!("{} not found in neighbors", node_2);
+                            warn!("{} not found in neighbors", node_id_2);
                         }
                     }
                 }
@@ -192,7 +212,7 @@ mod tests {
         let snr_hashmap = init_edge_map(&neighborinfo_hashmap);
         println!("snr_hashmap: {:?}", snr_hashmap);
         assert_eq!(snr_hashmap.len(), 1);
-        assert_eq!(snr_hashmap.get(&as_key(1, 2)).unwrap().0, 2.0);
+        assert_eq!(snr_hashmap.get(&as_key(1, 2)).unwrap().snr, 2.0);
     }
 
     #[test]

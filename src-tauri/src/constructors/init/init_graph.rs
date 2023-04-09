@@ -6,13 +6,16 @@ use crate::data_conversion::distance_conversion::get_spherical_distance;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
 use crate::mesh::device::MeshNode;
+use log::warn;
 use petgraph::graph::NodeIndex;
 use std::collections::HashMap;
+
+use super::init_edge_map::GraphEdgeMetadata;
 
 // Create a graph from a hashmap of edge info and a hashmap of node location info
 // Hashmaps will be stored in our `MeshDevice` struct
 pub fn init_graph(
-    snr_hashmap: &HashMap<(u32, u32), (f64, u64)>,
+    snr_hashmap: &HashMap<(u32, u32), GraphEdgeMetadata>,
     loc_hashmap: &HashMap<u32, MeshNode>,
 ) -> Graph {
     let mut graph = Graph::new();
@@ -24,17 +27,20 @@ pub fn init_graph(
     for neighbor_pair in snr_hashmap {
         let node_id = neighbor_pair.0 .0;
         let neighbor_id = neighbor_pair.0 .1;
-        let snr = neighbor_pair.1 .0;
+        let snr = neighbor_pair.1.snr;
         let node_loc = loc_hashmap.get(&node_id);
         let neighbor_loc = loc_hashmap.get(&neighbor_id);
+
         let node_idx = add_node_and_location_to_graph(node_id, &mut graph, node_loc);
         let neighbor_idx = add_node_and_location_to_graph(neighbor_id, &mut graph, neighbor_loc);
         let distance = get_spherical_distance(node_loc, neighbor_loc);
+
         edge_left_endpoints.push(node_idx);
         edge_right_endpoints.push(neighbor_idx);
         edge_distances.push(distance);
         edge_radio_quality.push(snr);
     }
+
     let edges = edge_factory(
         edge_left_endpoints,
         edge_right_endpoints,
@@ -68,7 +74,7 @@ pub fn add_node_and_location_to_graph(
                 node.speed = node_pos.ground_speed as f64 * SPEED_CONVERSION_FACTOR;
                 node.direction = node_pos.ground_track as f64;
             } else {
-                eprintln!("We do not have position info for node {}", name);
+                warn!("We do not have position info for node {}", name);
             }
         }
 
@@ -198,17 +204,61 @@ mod tests {
             },
         };
         let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
-        let mut snr_hashmap: HashMap<(u32, u32), (f64, u64)> = HashMap::new();
+        let mut snr_hashmap: HashMap<(u32, u32), GraphEdgeMetadata> = HashMap::new();
+
         loc_hashmap.insert(1, meshnode_1);
         loc_hashmap.insert(2, meshnode_2);
         loc_hashmap.insert(3, meshnode_3);
         loc_hashmap.insert(4, meshnode_4);
-        snr_hashmap.insert((1, 2), (0.9, 0));
-        snr_hashmap.insert((1, 3), (0.9, 0));
-        snr_hashmap.insert((1, 4), (0.9, 0));
-        snr_hashmap.insert((2, 3), (0.9, 0));
-        snr_hashmap.insert((2, 4), (0.9, 0));
-        snr_hashmap.insert((3, 4), (0.9, 0));
+
+        snr_hashmap.insert(
+            (1, 2),
+            GraphEdgeMetadata {
+                snr: 0.9,
+                timestamp: 0,
+            },
+        );
+
+        snr_hashmap.insert(
+            (1, 3),
+            GraphEdgeMetadata {
+                snr: 0.9,
+                timestamp: 0,
+            },
+        );
+
+        snr_hashmap.insert(
+            (1, 4),
+            GraphEdgeMetadata {
+                snr: 0.9,
+                timestamp: 0,
+            },
+        );
+
+        snr_hashmap.insert(
+            (2, 3),
+            GraphEdgeMetadata {
+                snr: 0.9,
+                timestamp: 0,
+            },
+        );
+
+        snr_hashmap.insert(
+            (2, 4),
+            GraphEdgeMetadata {
+                snr: 0.9,
+                timestamp: 0,
+            },
+        );
+
+        snr_hashmap.insert(
+            (3, 4),
+            GraphEdgeMetadata {
+                snr: 0.9,
+                timestamp: 0,
+            },
+        );
+
         let graph = init_graph(&snr_hashmap, &loc_hashmap);
         // Check that the graph has the correct number of nodes
         assert_eq!(graph.get_order(), 4);
@@ -309,10 +359,19 @@ mod tests {
             },
         };
         let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
-        let mut snr_hashmap: HashMap<(u32, u32), (f64, u64)> = HashMap::new();
+        let mut snr_hashmap: HashMap<(u32, u32), GraphEdgeMetadata> = HashMap::new();
+
         loc_hashmap.insert(1, meshnode_1);
         loc_hashmap.insert(2, meshnode_2);
-        snr_hashmap.insert((1, 2), (0.1, 100));
+
+        snr_hashmap.insert(
+            (1, 2),
+            GraphEdgeMetadata {
+                snr: 0.1,
+                timestamp: 100,
+            },
+        );
+
         let mut graph = init_graph(&snr_hashmap, &loc_hashmap);
 
         // Check that the graph has the correct number of edges

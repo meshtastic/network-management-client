@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+use log::error;
 use std::collections::HashMap;
 use std::fs;
 use std::fs::OpenOptions;
@@ -121,7 +122,7 @@ impl NetworkTimeline {
             .unwrap();
 
         if let Err(e) = writeln!(file, "{}", snapshot_string) {
-            eprintln!("Couldn't write snapshot to file {}: {}", filename, e);
+            error!("Couldn't write snapshot to file {}: {}", filename, e);
         }
     }
 
@@ -137,7 +138,7 @@ impl NetworkTimeline {
             .unwrap();
 
         if let Err(e) = writeln!(labels_file, "{}", label_text) {
-            eprintln!("Couldn't write label to file {}: {}", filename, e);
+            error!("Couldn't write label to file {}: {}", filename, e);
         }
     }
 

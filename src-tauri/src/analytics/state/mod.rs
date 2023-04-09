@@ -3,6 +3,8 @@
 use std::collections::HashMap;
 use std::time::SystemTime;
 
+use log::warn;
+
 use self::configuration::{AlgorithmConfigFlags, AlgorithmConfiguration};
 use self::controller::AlgoController;
 use self::history::AlgorithmRunHistory;
@@ -91,7 +93,7 @@ impl AnalyticsState {
                 );
             }
             None => {
-                println!("No graph to run algorithms on.");
+                warn!("No graph to run algorithms on.");
             }
         }
     }
