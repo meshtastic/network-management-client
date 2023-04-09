@@ -13,13 +13,13 @@ pub mod state;
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum SerialDeviceStatus {
-    Restarting,
-    Disconnected,
-    Connecting,
-    Reconnecting,
-    Connected,
-    Configuring,
-    Configured,
+    Restarting,   // unused
+    Disconnected, // no attempt or failure to connect
+    Connecting,   // connection initialized, not yet configured
+    Reconnecting, // unused
+    Connected,    // successful serial connection and device configuration, UI notified
+    Configuring,  // configuration in process
+    Configured,   // configured but UI not yet notified
 }
 
 impl Default for SerialDeviceStatus {
