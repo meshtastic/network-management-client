@@ -108,19 +108,20 @@ pub async fn initialize_serial_connection_handlers(
     port_name: String,
     app_handle: tauri::AppHandle,
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
-    let mut connection = mesh::serial_connection::SerialConnection::new();
     let mut device = mesh::device::MeshDevice::new();
 
     device.set_status(SerialDeviceStatus::Connecting);
-    connection.connect(app_handle.clone(), port_name.clone(), 115_200)?;
+    device
+        .connection
+        .connect(app_handle.clone(), port_name.clone(), 115_200)?;
 
     device.set_status(SerialDeviceStatus::Configuring);
-    connection.configure(device.config_id)?;
+    device.connection.configure(device.config_id)?;
 
-    let decoded_listener = connection
+    let decoded_listener = device
+        .connection
         .on_decoded_packet
         .as_ref()
         .ok_or("Decoded packet listener not open")?
@@ -134,11 +135,6 @@ pub async fn initialize_serial_connection_handlers(
     {
         let mut device_guard = mesh_device_arc.lock().await;
         *device_guard = Some(device);
-    }
-
-    {
-        let mut connection_guard = serial_connection.inner.lock().await;
-        *connection_guard = Some(connection);
     }
 
     spawn_connection_timeout_handler(handle.clone(), mesh_device_arc.clone(), port_name.clone());

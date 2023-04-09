@@ -51,7 +51,6 @@ pub async fn connect_to_serial_port(
     port_name: String,
     app_handle: tauri::AppHandle,
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     debug!(
@@ -59,37 +58,25 @@ pub async fn connect_to_serial_port(
         port_name
     );
 
-    helpers::initialize_serial_connection_handlers(
-        port_name,
-        app_handle,
-        mesh_device,
-        serial_connection,
-        mesh_graph,
-    )
-    .await
+    helpers::initialize_serial_connection_handlers(port_name, app_handle, mesh_device, mesh_graph)
+        .await
 }
 
 #[tauri::command]
 pub async fn disconnect_from_serial_port(
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
 ) -> Result<(), CommandError> {
     debug!("Called disconnect_from_serial_port command");
 
     // Completely drop device memory
     {
         let mut state_device = mesh_device.inner.lock().await;
-        *state_device = None;
-    }
 
-    // Clear serial connection state
-    {
-        let mut state_connection = serial_connection.inner.lock().await;
-
-        if let Some(connection) = state_connection.as_mut() {
-            debug!("Connection exists, disconnecting");
-            connection.disconnect()?;
+        if let Some(device) = state_device.as_mut() {
+            device.connection.disconnect()?;
         }
+
+        *state_device = None;
     }
 
     Ok(())
@@ -101,19 +88,14 @@ pub async fn send_text(
     channel: u32,
     app_handle: tauri::AppHandle,
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
 ) -> Result<(), CommandError> {
     debug!("Called send_text command",);
     trace!("Called with text {} on channel {}", text, channel);
 
-    let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
-
-    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
     let device = device_guard.as_mut().ok_or("Device not connected")?;
 
     device.send_text(
-        connection,
         text.clone(),
         mesh::serial_connection::PacketDestination::Broadcast,
         true,
@@ -129,18 +111,14 @@ pub async fn send_text(
 pub async fn update_device_config(
     config: protobufs::Config,
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
 ) -> Result<(), CommandError> {
     debug!("Called update_device_config command");
     trace!("Called with config {:?}", config);
 
-    let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
-
-    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
     let device = device_guard.as_mut().ok_or("Device not connected")?;
 
-    device.update_device_config(connection, config)?;
+    device.update_device_config(config)?;
 
     Ok(())
 }
@@ -149,18 +127,14 @@ pub async fn update_device_config(
 pub async fn update_device_user(
     user: protobufs::User,
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
 ) -> Result<(), CommandError> {
     debug!("Called update_device_user command");
     trace!("Called with user {:?}", user);
 
-    let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
-
-    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
     let device = device_guard.as_mut().ok_or("Device not connected")?;
 
-    device.update_device_user(connection, user)?;
+    device.update_device_user(user)?;
 
     Ok(())
 }
@@ -171,26 +145,17 @@ pub async fn send_waypoint(
     channel: u32,
     app_handle: tauri::AppHandle,
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
 ) -> Result<(), CommandError> {
     debug!("Called send_waypoint command");
     trace!("Called on channel {} with waypoint {:?}", channel, waypoint);
 
-    let mut serial_guard = serial_connection.inner.lock().await;
     let mut device_guard = mesh_device.inner.lock().await;
-
-    let connection = serial_guard
-        .as_mut()
-        .ok_or("Connection not initialized")
-        .map_err(|e| e.to_string())?;
-
     let device = device_guard
         .as_mut()
         .ok_or("Device not connected")
         .map_err(|e| e.to_string())?;
 
     device.send_waypoint(
-        connection,
         waypoint,
         mesh::serial_connection::PacketDestination::Broadcast,
         true,

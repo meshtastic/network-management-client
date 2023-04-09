@@ -69,10 +69,6 @@ fn main() {
     setup_logger().expect("Logging setup failed");
     debug!("Logger initialized");
 
-    let initial_connection_state = state::ActiveSerialConnection {
-        inner: Arc::new(async_runtime::Mutex::new(None)),
-    };
-
     let initial_device_state = state::ActiveMeshDevice {
         inner: Arc::new(async_runtime::Mutex::new(None)),
     };
@@ -99,7 +95,6 @@ fn main() {
             // Manage application state
             app.app_handle().manage(initial_analytics_state);
             app.app_handle().manage(initial_graph_state);
-            app.app_handle().manage(initial_connection_state);
             app.app_handle().manage(initial_device_state);
 
             // Autoconnect port state needs to be set after being mutated by CLI parser

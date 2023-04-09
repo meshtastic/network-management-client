@@ -3,11 +3,6 @@ use std::sync::Arc;
 use tauri::async_runtime;
 
 #[derive(Debug)]
-pub struct ActiveSerialConnection {
-    pub inner: Arc<async_runtime::Mutex<Option<mesh::serial_connection::SerialConnection>>>,
-}
-
-#[derive(Debug)]
 pub struct ActiveMeshDevice {
     pub inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
 }
