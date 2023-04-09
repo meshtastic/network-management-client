@@ -1,13 +1,15 @@
 use std::collections::HashMap;
 use std::sync::Arc;
+use std::time::Duration;
 
 use app::protobufs;
-use log::{error, warn};
+use log::{error, info, warn};
 use tauri::api::notification::Notification;
-use tauri::async_runtime;
+use tauri::{async_runtime, Manager};
 use tokio::sync::broadcast;
 
 use crate::ipc::events;
+use crate::mesh::device::SerialDeviceStatus;
 use crate::mesh::serial_connection::MeshConnection;
 use crate::{analytics, mesh};
 use crate::{graph, state};
@@ -109,10 +111,13 @@ pub async fn initialize_serial_connection_handlers(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     let mut connection = mesh::serial_connection::SerialConnection::new();
-    let new_device = mesh::device::MeshDevice::new();
+    let mut device = mesh::device::MeshDevice::new();
 
+    device.set_status(SerialDeviceStatus::Connecting);
     connection.connect(app_handle.clone(), port_name, 115_200)?;
-    connection.configure(new_device.config_id)?;
+
+    device.set_status(SerialDeviceStatus::Configuring);
+    connection.configure(device.config_id)?;
 
     let decoded_listener = connection
         .on_decoded_packet
@@ -126,18 +131,53 @@ pub async fn initialize_serial_connection_handlers(
 
     // Only need to lock to set device in tauri state
     {
-        let mut new_device_guard = mesh_device_arc.lock().await;
-        *new_device_guard = Some(new_device);
+        let mut device_guard = mesh_device_arc.lock().await;
+        *device_guard = Some(device);
     }
 
     {
-        let mut state_connection = serial_connection.inner.lock().await;
-        *state_connection = Some(connection);
+        let mut connection_guard = serial_connection.inner.lock().await;
+        *connection_guard = Some(connection);
     }
 
+    spawn_connection_timeout_handler(handle.clone(), mesh_device_arc.clone());
     spawn_decoded_handler(handle, decoded_listener, mesh_device_arc, graph_arc);
 
     Ok(())
+}
+
+fn spawn_connection_timeout_handler(
+    handle: tauri::AppHandle,
+    mesh_device_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
+) {
+    tauri::async_runtime::spawn(async move {
+        // Wait 1s for device to configure
+        tokio::time::sleep(Duration::from_millis(1000)).await;
+
+        let mut device_guard = mesh_device_arc.lock().await;
+        let device = match device_guard.as_mut().ok_or("Device not initialized") {
+            Ok(d) => d,
+            Err(e) => {
+                warn!("{}", e);
+                return;
+            }
+        };
+
+        // If device hasn't completed configuration in allotted time,
+        // tell UI to disconnect from device (temp workaround before backend disconnect)
+        if device.status != SerialDeviceStatus::Configured {
+            handle
+                .emit_all("device_disconnect", device.status.clone())
+                .expect("Failed to dispatch configuration failure message");
+
+            info!("Device configuration timed out, disconnecting device");
+            device.set_status(SerialDeviceStatus::Disconnected);
+            return;
+        }
+
+        // Otherwise, register device as connected
+        device.set_status(SerialDeviceStatus::Connected);
+    });
 }
 
 fn spawn_decoded_handler(

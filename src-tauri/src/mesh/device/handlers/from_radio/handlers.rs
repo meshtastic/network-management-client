@@ -3,7 +3,7 @@ use app::protobufs;
 use crate::mesh::device::{
     handlers::{DeviceUpdateError, DeviceUpdateMetadata},
     helpers::get_current_time_u32,
-    MeshChannel, MeshDevice,
+    MeshChannel, MeshDevice, SerialDeviceStatus,
 };
 
 pub fn handle_channel_packet(
@@ -28,6 +28,16 @@ pub fn handle_config_packet(
     config: protobufs::Config,
 ) -> Result<(), DeviceUpdateError> {
     device.set_config(config);
+    update_result.device_updated = true;
+
+    Ok(())
+}
+
+pub fn handle_config_complete_packet(
+    device: &mut MeshDevice,
+    update_result: &mut DeviceUpdateMetadata,
+) -> Result<(), DeviceUpdateError> {
+    device.set_status(SerialDeviceStatus::Configured);
     update_result.device_updated = true;
 
     Ok(())
