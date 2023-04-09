@@ -10,7 +10,7 @@ use petgraph::stable_graph::StableUnGraph;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fmt::Display};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Graph {
     pub g: StableGraph<Node, Edge, Undirected>,
     pub node_idx_map: HashMap<String, petgraph::graph::NodeIndex>,
@@ -18,27 +18,6 @@ pub struct Graph {
         (petgraph::graph::NodeIndex, petgraph::graph::NodeIndex),
         Vec<petgraph::graph::EdgeIndex>,
     >,
-}
-
-// implement debug for graph
-impl std::fmt::Debug for Graph {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Graph")
-            .field("g", &self.g)
-            .field("node_idx_map", &self.node_idx_map)
-            .field("edge_idx_map", &self.edge_idx_map)
-            .finish()
-    }
-}
-
-impl Clone for Graph {
-    fn clone(&self) -> Self {
-        Graph {
-            g: self.g.clone(),
-            node_idx_map: self.node_idx_map.clone(),
-            edge_idx_map: self.edge_idx_map.clone(),
-        }
-    }
 }
 
 impl Graph {
