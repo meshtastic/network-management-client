@@ -6,7 +6,7 @@ use super::ConfigurationStatus;
 
 pub fn dispatch_updated_device(
     handle: &tauri::AppHandle,
-    device: mesh::device::MeshDevice,
+    device: &mesh::device::MeshDevice,
 ) -> tauri::Result<()> {
     debug!("Dispatching updated device");
 

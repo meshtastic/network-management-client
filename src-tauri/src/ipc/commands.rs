@@ -120,7 +120,7 @@ pub async fn send_text(
         channel,
     )?;
 
-    events::dispatch_updated_device(&app_handle, device.clone()).map_err(|e| e.to_string())?;
+    events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -197,7 +197,7 @@ pub async fn send_waypoint(
         channel,
     )?;
 
-    events::dispatch_updated_device(&app_handle, device.clone()).map_err(|e| e.to_string())?;
+    events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 
     Ok(())
 }

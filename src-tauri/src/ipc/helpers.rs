@@ -241,7 +241,7 @@ fn spawn_decoded_handler(
             };
 
             if update_result.device_updated {
-                match events::dispatch_updated_device(&handle, device.clone()) {
+                match events::dispatch_updated_device(&handle, device) {
                     Ok(_) => (),
                     Err(e) => {
                         error!("Failed to dispatch device to client:\n{}", e);
