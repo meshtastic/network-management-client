@@ -1,7 +1,6 @@
 import type { RootState } from "@app/store";
-import type { IRequestState } from "./requestReducer";
+import type { RequestStatus } from "@features/requests/requestReducer";
 
 export const selectRequestStateByName =
-  (name: string) =>
-  (state: RootState): IRequestState | null =>
+  (name: string) => (state: RootState): RequestStatus | null =>
     state.requests.status?.[name] ?? null;

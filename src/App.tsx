@@ -4,7 +4,7 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import SplashScreen from "@components/SplashScreen/SplashScreen";
 import Sidebar from "@components/Sidebar/Sidebar";
 
-import HomePage from "@components/pages/HomePage";
+import MapPage from "@components/pages/MapPage";
 import FallbackPage from "@components/pages/FallbackPage";
 import SerialConnectPage from "@components/pages/SerialConnectPage";
 import MessagingPage from "@components/pages/MessagingPage";
@@ -50,7 +50,7 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<AppWrapper />}>
-          <Route index element={<HomePage />} />
+          <Route index element={<MapPage />} />
           <Route path={AppRoutes.MESSAGING} element={<MessagingPage />} />
 
           <Route

@@ -38,7 +38,9 @@ pub fn handle_config_complete_packet(
     update_result: &mut DeviceUpdateMetadata,
 ) -> Result<(), DeviceUpdateError> {
     device.set_status(SerialDeviceStatus::Configured);
+
     update_result.device_updated = true;
+    update_result.configuration_success = true;
 
     Ok(())
 }
