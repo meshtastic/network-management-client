@@ -19,7 +19,7 @@ const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
         style={isSidebarExpanded ? { opacity: 1 } : { opacity: 0 }}
       >
         <p className="text-gray-700 text-sm font-medium">Meshtastic</p>
-        <p className="text-gray-400 text-xs font-normal">Emergency Response</p>
+        <p className="text-gray-400 text-xs font-normal">Network Management</p>
       </div>
     </div>
   );
