@@ -6,11 +6,11 @@ import {
   EllipsisHorizontalCircleIcon,
 } from "@heroicons/react/24/outline";
 
-import type { IRequestState } from "@features/requests/requestReducer";
+import type { RequestStatus } from "@features/requests/requestReducer";
 
 export interface ISerialPortOptions {
   name: string;
-  connectionState: IRequestState;
+  connectionState: RequestStatus;
   onClick: (portName: string) => void;
 }
 

@@ -5,9 +5,9 @@ use log::{debug, trace};
 
 use super::helpers::get_current_time_u32;
 use super::{
-    ChannelMessagePayload, ChannelMessageWithState, MeshChannel, MeshDevice, MeshDeviceStatus,
-    MeshGraph, MeshNode, MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, NeighborInfoPacket,
-    PositionPacket, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
+    ChannelMessagePayload, ChannelMessageWithState, MeshChannel, MeshDevice, MeshGraph, MeshNode,
+    MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, NeighborInfoPacket, PositionPacket,
+    SerialDeviceStatus, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 
 use crate::constructors::init::init_edge_map::init_edge_map;
@@ -20,7 +20,7 @@ impl MeshDevice {
         self.ready = ready;
     }
 
-    pub fn set_status(&mut self, status: MeshDeviceStatus) {
+    pub fn set_status(&mut self, status: SerialDeviceStatus) {
         debug!("Set status: {:?}", status);
         self.status = status;
     }

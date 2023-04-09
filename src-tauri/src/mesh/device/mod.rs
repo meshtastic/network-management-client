@@ -10,21 +10,21 @@ pub mod handlers;
 pub mod helpers;
 pub mod state;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
-pub enum MeshDeviceStatus {
-    Restarting,
-    Disconnected,
-    Connecting,
-    Reconnecting,
-    Connected,
-    Configuring,
-    Configured,
+pub enum SerialDeviceStatus {
+    Restarting,   // unused
+    Disconnected, // no attempt or failure to connect
+    Connecting,   // connection initialized, not yet configured
+    Reconnecting, // unused
+    Connected,    // successful serial connection and device configuration, UI notified
+    Configuring,  // configuration in process
+    Configured,   // configured but UI not yet notified
 }
 
-impl Default for MeshDeviceStatus {
+impl Default for SerialDeviceStatus {
     fn default() -> Self {
-        MeshDeviceStatus::Disconnected
+        SerialDeviceStatus::Disconnected
     }
 }
 
@@ -125,14 +125,14 @@ pub struct ChannelMessageWithState {
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshDevice {
-    pub config_id: u32,           // unique identifier for configuration flow packets
-    pub ready: bool,              // is device configured to participate in mesh
-    pub status: MeshDeviceStatus, // current config status of device
+    pub config_id: u32,             // unique identifier for configuration flow packets
+    pub ready: bool,                // is device configured to participate in mesh
+    pub status: SerialDeviceStatus, // current config status of device
     pub channels: HashMap<u32, MeshChannel>, // channels device is able to access
     pub config: protobufs::LocalConfig, // local-only device configuration
     pub my_node_info: protobufs::MyNodeInfo, // debug information specific to device
     pub nodes: HashMap<u32, MeshNode>, // network devices this device has communicated with
-    pub region_unset: bool,       // flag for whether device has an unset LoRa region
+    pub region_unset: bool,         // flag for whether device has an unset LoRa region
     pub device_metrics: protobufs::DeviceMetrics, // information about functioning of device (e.g. battery level)
     pub waypoints: HashMap<u32, protobufs::Waypoint>, // updatable GPS positions managed by this device
     pub neighbors: HashMap<u32, protobufs::NeighborInfo>, //updated packets from each node containing their neighbors

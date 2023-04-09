@@ -38,3 +38,11 @@ pub struct APMincutStringResults {
     mincut_result: Vec<(u32, u32)>,
     diffcen_result: HashMap<u32, HashMap<u32, HashMap<u32, f64>>>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConfigurationStatus {
+    pub port_name: String,
+    pub successful: bool,
+    pub message: Option<String>,
+}

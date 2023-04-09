@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type IRequestState =
+export type RequestStatus =
   | { status: "IDLE" }
   | { status: "PENDING" }
   | { status: "SUCCESSFUL" }
   | { status: "FAILED"; message: string };
 
 export interface IRequestReducerState {
-  status: Record<string, IRequestState>;
+  status: Record<string, RequestStatus>;
 }
 
 const InitialRequestState: IRequestReducerState = { status: {} };
@@ -27,7 +27,7 @@ export const requestSlice = createSlice({
     },
     setRequestFailed: (
       state,
-      action: PayloadAction<{ name: string; message: string }>
+      action: PayloadAction<{ name: string; message: string }>,
     ) => {
       state.status[action.payload.name] = {
         status: "FAILED",

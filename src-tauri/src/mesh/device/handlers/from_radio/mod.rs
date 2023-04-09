@@ -18,9 +18,7 @@ impl MeshDevice {
                 handlers::handle_config_packet(self, &mut update_result, config)?;
             }
             protobufs::from_radio::PayloadVariant::ConfigCompleteId(_c) => {
-                return Err(DeviceUpdateError::RadioMessageNotSupported(
-                    "config complete".into(),
-                ));
+                handlers::handle_config_complete_packet(self, &mut update_result)?;
             }
             protobufs::from_radio::PayloadVariant::LogRecord(_l) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported(

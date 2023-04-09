@@ -21,6 +21,7 @@ impl NotificationConfig {
 pub struct DeviceUpdateMetadata {
     pub device_updated: bool,
     pub regenerate_graph: bool,
+    pub configuration_success: bool,
     pub notification_config: Option<NotificationConfig>,
 }
 
