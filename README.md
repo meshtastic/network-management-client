@@ -7,26 +7,26 @@
 
 <p align="center">
   <!-- [![status](https://img.shields.io/badge/status-stable-blue.svg)](https://github.com/tauri-apps/tauri/tree/dev)
-  [![License](https://img.shields.io/github/license/ajmcquilkin/meshtastic-emergency-response-client)](https://opencollective.com/tauri)
-  ![GitHub issues](https://img.shields.io/github/issues/ajmcquilkin/meshtastic-emergency-response-client)
+  [![License](https://img.shields.io/github/license/ajmcquilkin/meshtastic-network-management-client)](https://opencollective.com/tauri)
+  ![GitHub issues](https://img.shields.io/github/issues/ajmcquilkin/meshtastic-network-management-client)
   [![website](https://img.shields.io/badge/website-meshtastic.org-green.svg)]([https://meshtastic.org](https://meshtastic.org/))
   [![support meshtastic](https://img.shields.io/badge/sponsor-Open%20Collective-blue.svg)](https://opencollective.com/meshtastic) -->
   
-  <!--   <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/ajmcquilkin/meshtastic-emergency-response-client/main"> -->
-  <a href="https://github.com/ajmcquilkin/Meshtastic-emergency-response-client/commits/main">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ajmcquilkin/meshtastic-emergency-response-client">
+  <!--   <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/ajmcquilkin/meshtastic-network-management-client/main"> -->
+  <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client/commits/main">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ajmcquilkin/meshtastic-network-management-client">
   </a>
   
-  <a href="https://github.com/ajmcquilkin/Meshtastic-emergency-response-client/blob/main/LICENSE">
-    <img alt="GitHub" src="https://img.shields.io/github/license/ajmcquilkin/meshtastic-emergency-response-client">
+  <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client/blob/main/LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/github/license/ajmcquilkin/meshtastic-network-management-client">
   </a>
   
-  <a href="https://github.com/ajmcquilkin/Meshtastic-emergency-response-client/issues">
-    <img alt="GitHub issues" src="https://img.shields.io/github/issues/ajmcquilkin/meshtastic-emergency-response-client">
+  <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client/issues">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/ajmcquilkin/meshtastic-network-management-client">
   </a>
   
-  <a href="https://github.com/ajmcquilkin/Meshtastic-emergency-response-client">
-    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/ajmcquilkin/meshtastic-emergency-response-client">
+  <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client">
+    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/ajmcquilkin/meshtastic-network-management-client">
   </a>
   
   <a href="https://opencollective.com/meshtastic">
@@ -38,7 +38,7 @@
 
 This application is an unofficial desktop client for the [Meshtastic Project](https://meshtastic.org/), designed to allow users to reliably manage large, decentralized mesh networks. Currently the Meshtastic client ecosystem has strong support for managing single nodes, but minimal support for network-level management and analysis. The goal of this project is to give users confidence in their Meshtastic networks as a reliable communications infrastructure through novel algorithmic analysis and connection-level insights.
 
-![image](https://user-images.githubusercontent.com/46639306/229562168-bfadd385-58de-4531-b332-bfcaaeb64ab8.png)
+![image](https://user-images.githubusercontent.com/46639306/230783389-330754f9-a1c3-4b8b-8db9-a226c612f011.png)
 
 This application is built using the [Tauri Framework](https://tauri.app/), a modern, secure successor to the [Electron Framework](https://www.electronjs.org/). This allows us to natively support Linux, macOS, and Windows within the same codebase without the performance or memory overhead of a Chromium browser. Our core application infrastructure is written in Rust due to its performance and safety, and our UI and client functionality is written in React TypeScript using [Vite](https://vitejs.dev/). This project is in early stages of development, and as such is **not yet suitable for production use**.
 
@@ -126,10 +126,10 @@ This project is built in Rust and React TypeScript, and managed using the PNPM p
 For the time being, the only way to run this project is to clone this repository. To do this, follow the steps below:
 
 1. Ensure you have Rust, Node.js, and PNPM installed (see [Prerequisites](#prerequisites))
-2. Clone this repositiory to a local directory. This can be done by running `git clone https://github.com/ajmcquilkin/meshtastic-emergency-response-client.git`
+2. Clone this repositiory to a local directory. This can be done by running `git clone https://github.com/ajmcquilkin/meshtastic-network-management-client.git`
 3. Recursively clone our Git submodules by running `git submodule update --init`
 4. Install all required NPM packages with `pnpm i`
-5. Once you have completed these steps, verify your installation with the `pnpm run rust:dev` command. The application should compile successfully, and you should see the application open successfully. If this process fails for you, please [let us know](https://github.com/ajmcquilkin/meshtastic-emergency-response-client/issues)!
+5. Once you have completed these steps, verify your installation with the `pnpm run rust:dev` command. The application should compile successfully, and you should see the application open successfully. If this process fails for you, please [let us know](https://github.com/ajmcquilkin/meshtastic-network-management-client/issues)!
 
 ### Recommended IDE Setup
 
