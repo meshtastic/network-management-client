@@ -160,6 +160,7 @@ impl SerialConnection {
             self.is_connection_active.clone(),
             read_port,
             read_output_tx,
+            port_name.clone(),
         ));
 
         self.serial_write_handle = Some(handlers::spawn_serial_write_handler(

@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import { MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/outline";
 
@@ -11,6 +11,7 @@ import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
 
 import { requestSendMessage } from "@features/device/deviceActions";
+import { selectPrimarySerialPort } from "@features/device/deviceSelectors";
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
 
 export interface IChannelDetailViewProps {
@@ -23,6 +24,7 @@ const ChannelDetailView = ({
   className = "",
 }: IChannelDetailViewProps) => {
   const dispatch = useDispatch();
+  const primaryPortName = useSelector(selectPrimarySerialPort());
 
   const handleMessageSubmit = (message: string) => {
     if (!message) {
@@ -30,8 +32,17 @@ const ChannelDetailView = ({
       return;
     }
 
+    if (!primaryPortName) {
+      console.warn("No primary serial port, not sending message");
+      return;
+    }
+
     dispatch(
-      requestSendMessage({ text: message, channel: channel.config.index })
+      requestSendMessage({
+        portName: primaryPortName,
+        text: message,
+        channel: channel.config.index,
+      })
     );
   };
 

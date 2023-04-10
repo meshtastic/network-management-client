@@ -12,6 +12,7 @@ import {
   requestAutoConnectPort,
   requestAvailablePorts,
   requestConnectToDevice,
+  requestDisconnectFromAllDevices,
 } from "@features/device/deviceActions";
 import {
   selectAutoConnectPort,
@@ -52,7 +53,7 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   const handlePortSelected = (portName: string) => {
     setSelectedPortName(portName);
-    dispatch(requestConnectToDevice(portName));
+    dispatch(requestConnectToDevice({ portName, setPrimary: true }));
   };
 
   const openExternalLink = (url: string) => () => {
@@ -60,6 +61,7 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   };
 
   useEffect(() => {
+    dispatch(requestDisconnectFromAllDevices());
     dispatch(requestAutoConnectPort());
     requestPorts();
   }, []);

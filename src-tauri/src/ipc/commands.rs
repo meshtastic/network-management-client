@@ -51,7 +51,7 @@ pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
 pub async fn connect_to_serial_port(
     port_name: String,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     debug!(
@@ -59,25 +59,51 @@ pub async fn connect_to_serial_port(
         port_name
     );
 
-    helpers::initialize_serial_connection_handlers(port_name, app_handle, mesh_device, mesh_graph)
-        .await
+    helpers::initialize_serial_connection_handlers(
+        port_name,
+        app_handle,
+        connected_devices,
+        mesh_graph,
+    )
+    .await
 }
 
 #[tauri::command]
 pub async fn disconnect_from_serial_port(
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
+    port_name: String,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called disconnect_from_serial_port command");
 
-    // Completely drop device memory
     {
-        let mut state_device = mesh_device.inner.lock().await;
+        let mut state_devices = connected_devices.inner.lock().await;
 
-        if let Some(device) = state_device.as_mut() {
+        if let Some(device) = state_devices.get_mut(&port_name) {
             device.connection.disconnect()?;
         }
 
-        *state_device = None;
+        state_devices.remove(&port_name);
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn disconnect_from_all_serial_ports(
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called disconnect_from_all_serial_ports command");
+
+    {
+        let mut state_devices = connected_devices.inner.lock().await;
+
+        // Disconnect from all serial ports
+        for (_port_name, device) in state_devices.iter_mut() {
+            device.connection.disconnect()?;
+        }
+
+        // Clear connections map
+        state_devices.clear();
     }
 
     Ok(())
@@ -85,16 +111,19 @@ pub async fn disconnect_from_serial_port(
 
 #[tauri::command]
 pub async fn send_text(
+    port_name: String,
     text: String,
     channel: u32,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called send_text command",);
     trace!("Called with text {} on channel {}", text, channel);
 
-    let mut device_guard = mesh_device.inner.lock().await;
-    let device = device_guard.as_mut().ok_or("Device not connected")?;
+    let mut devices_guard = connected_devices.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")?;
 
     device.send_text(text.clone(), PacketDestination::Broadcast, true, channel)?;
 
@@ -105,14 +134,17 @@ pub async fn send_text(
 
 #[tauri::command]
 pub async fn update_device_config(
+    port_name: String,
     config: protobufs::Config,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called update_device_config command");
     trace!("Called with config {:?}", config);
 
-    let mut device_guard = mesh_device.inner.lock().await;
-    let device = device_guard.as_mut().ok_or("Device not connected")?;
+    let mut devices_guard = connected_devices.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")?;
 
     device.update_device_config(config)?;
 
@@ -121,14 +153,17 @@ pub async fn update_device_config(
 
 #[tauri::command]
 pub async fn update_device_user(
+    port_name: String,
     user: protobufs::User,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called update_device_user command");
     trace!("Called with user {:?}", user);
 
-    let mut device_guard = mesh_device.inner.lock().await;
-    let device = device_guard.as_mut().ok_or("Device not connected")?;
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")?;
 
     device.update_device_user(user)?;
 
@@ -137,17 +172,18 @@ pub async fn update_device_user(
 
 #[tauri::command]
 pub async fn send_waypoint(
+    port_name: String,
     waypoint: protobufs::Waypoint,
     channel: u32,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called send_waypoint command");
     trace!("Called on channel {} with waypoint {:?}", channel, waypoint);
 
-    let mut device_guard = mesh_device.inner.lock().await;
-    let device = device_guard
-        .as_mut()
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
         .ok_or("Device not connected")
         .map_err(|e| e.to_string())?;
 

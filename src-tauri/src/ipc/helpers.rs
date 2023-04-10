@@ -1,11 +1,9 @@
 use std::collections::HashMap;
-use std::sync::Arc;
 use std::time::Duration;
 
 use app::protobufs;
 use log::{debug, error, info, warn};
 use tauri::api::notification::Notification;
-use tauri::async_runtime;
 use tokio::sync::broadcast;
 
 use crate::device::serial_connection::MeshConnection;
@@ -105,7 +103,7 @@ pub async fn initialize_graph_state(
 pub async fn initialize_serial_connection_handlers(
     port_name: String,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     let mut device = device::MeshDevice::new();
@@ -126,13 +124,13 @@ pub async fn initialize_serial_connection_handlers(
         .resubscribe();
 
     let handle = app_handle.clone();
-    let mesh_device_arc = mesh_device.inner.clone();
+    let mesh_device_arc = connected_devices.inner.clone();
     let graph_arc = mesh_graph.inner.clone();
 
     // Only need to lock to set device in tauri state
     {
-        let mut device_guard = mesh_device_arc.lock().await;
-        *device_guard = Some(device);
+        let mut devices_guard = mesh_device_arc.lock().await;
+        devices_guard.insert(port_name.clone(), device);
     }
 
     spawn_connection_timeout_handler(handle.clone(), mesh_device_arc.clone(), port_name.clone());
@@ -150,15 +148,18 @@ pub async fn initialize_serial_connection_handlers(
 
 fn spawn_connection_timeout_handler(
     handle: tauri::AppHandle,
-    mesh_device_arc: Arc<async_runtime::Mutex<Option<device::MeshDevice>>>,
+    connected_devices_inner: state::ConnectedDevicesInner,
     port_name: String,
 ) {
     tauri::async_runtime::spawn(async move {
         // Wait 1s for device to configure
         tokio::time::sleep(Duration::from_millis(1500)).await;
 
-        let mut device_guard = mesh_device_arc.lock().await;
-        let device = match device_guard.as_mut().ok_or("Device not initialized") {
+        let mut devices_guard = connected_devices_inner.lock().await;
+        let device = match devices_guard
+            .get_mut(&port_name)
+            .ok_or("Device not initialized")
+        {
             Ok(d) => d,
             Err(e) => {
                 warn!("{}", e);
@@ -195,8 +196,8 @@ fn spawn_connection_timeout_handler(
 fn spawn_decoded_handler(
     handle: tauri::AppHandle,
     mut decoded_listener: broadcast::Receiver<protobufs::FromRadio>,
-    mesh_device_arc: Arc<async_runtime::Mutex<Option<device::MeshDevice>>>,
-    graph_arc: Arc<async_runtime::Mutex<Option<device::MeshGraph>>>,
+    connected_devices_arc: state::ConnectedDevicesInner,
+    graph_arc: state::NetworkGraphInner,
     port_name: String,
 ) {
     tauri::async_runtime::spawn(async move {
@@ -208,8 +209,11 @@ fn spawn_decoded_handler(
                 None => continue,
             };
 
-            let mut device_guard = mesh_device_arc.lock().await;
-            let device = match device_guard.as_mut().ok_or("Device not initialized") {
+            let mut devices_guard = connected_devices_arc.lock().await;
+            let device = match devices_guard
+                .get_mut(&port_name)
+                .ok_or("Device not initialized")
+            {
                 Ok(d) => d,
                 Err(e) => {
                     warn!("{}", e);

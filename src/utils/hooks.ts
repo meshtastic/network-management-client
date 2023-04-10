@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
 import type { Waypoint } from "@bindings/protobufs/Waypoint";
@@ -7,6 +7,7 @@ import type { Waypoint } from "@bindings/protobufs/Waypoint";
 import {
   selectActiveWaypoint,
   selectInfoPane,
+  selectPrimarySerialPort,
 } from "@features/device/deviceSelectors";
 import { requestNewWaypoint } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
@@ -32,23 +33,35 @@ const useComponentReload = (interval: number) => {
 const useDeleteWaypoint = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
+  const primaryPortName = useSelector(selectPrimarySerialPort());
 
   return () => {
     // Set expiry to time one second ago
-    if (activeWaypoint) {
-      const updatedWaypoint: Waypoint = {
-        ...activeWaypoint,
-        expire: Math.round(moment().valueOf() / 1000) - 1,
-      };
-
-      // Update waypoint and clear ActiveWaypoint
-      dispatch(requestNewWaypoint({ waypoint: updatedWaypoint, channel: 0 }));
-      dispatch(deviceSliceActions.setActiveWaypoint(null));
-
-      // Error
-    } else {
+    if (!activeWaypoint) {
       console.warn("Error: No active waypoint");
+      return;
     }
+
+    if (!primaryPortName) {
+      console.warn("No active port, not deleting waypoint");
+      return;
+    }
+
+    const updatedWaypoint: Waypoint = {
+      ...activeWaypoint,
+      expire: Math.round(moment().valueOf() / 1000) - 1,
+    };
+
+    // Update waypoint and clear ActiveWaypoint
+    dispatch(
+      requestNewWaypoint({
+        portName: primaryPortName,
+        waypoint: updatedWaypoint,
+        channel: 0,
+      }),
+    );
+
+    dispatch(deviceSliceActions.setActiveWaypoint(null));
   };
 };
 
@@ -60,8 +73,8 @@ const useToggleEditWaypoint = () => {
   return () => {
     dispatch(
       deviceSliceActions.setInfoPane(
-        isWaypointEdit ? "waypoint" : "waypointEdit"
-      )
+        isWaypointEdit ? "waypoint" : "waypointEdit",
+      ),
     );
   };
 };
