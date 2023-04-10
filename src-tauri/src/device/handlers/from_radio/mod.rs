@@ -17,18 +17,16 @@ impl MeshDevice {
             protobufs::from_radio::PayloadVariant::Config(config) => {
                 handlers::handle_config_packet(self, &mut update_result, config)?;
             }
-            protobufs::from_radio::PayloadVariant::ConfigCompleteId(_c) => {
+            protobufs::from_radio::PayloadVariant::ConfigCompleteId(_) => {
                 handlers::handle_config_complete_packet(self, &mut update_result)?;
             }
-            protobufs::from_radio::PayloadVariant::LogRecord(_l) => {
+            protobufs::from_radio::PayloadVariant::LogRecord(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported(
                     "log record".into(),
                 ));
             }
-            protobufs::from_radio::PayloadVariant::ModuleConfig(_m) => {
-                return Err(DeviceUpdateError::RadioMessageNotSupported(
-                    "module config".into(),
-                ));
+            protobufs::from_radio::PayloadVariant::ModuleConfig(module_config) => {
+                handlers::handle_module_config_packet(self, &mut update_result, module_config)?;
             }
             protobufs::from_radio::PayloadVariant::MyInfo(my_node_info) => {
                 handlers::handle_my_node_info_packet(self, &mut update_result, my_node_info)?;
@@ -39,15 +37,15 @@ impl MeshDevice {
             protobufs::from_radio::PayloadVariant::Packet(mesh_packet) => {
                 update_result = self.handle_mesh_packet(mesh_packet)?;
             }
-            protobufs::from_radio::PayloadVariant::QueueStatus(_q) => {
+            protobufs::from_radio::PayloadVariant::QueueStatus(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported(
                     "queue status".into(),
                 ));
             }
-            protobufs::from_radio::PayloadVariant::Rebooted(_r) => {
+            protobufs::from_radio::PayloadVariant::Rebooted(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported("reboot".into()));
             }
-            protobufs::from_radio::PayloadVariant::XmodemPacket(_p) => {
+            protobufs::from_radio::PayloadVariant::XmodemPacket(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported("xmodem".into()));
             }
         };

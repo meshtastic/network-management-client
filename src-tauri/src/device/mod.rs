@@ -137,6 +137,7 @@ pub struct MeshDevice {
     pub status: SerialDeviceStatus, // current config status of device
     pub channels: HashMap<u32, MeshChannel>, // channels device is able to access
     pub config: protobufs::LocalConfig, // local-only device configuration
+    pub module_config: protobufs::LocalModuleConfig, // configuration for meshtastic modules
     pub my_node_info: protobufs::MyNodeInfo, // debug information specific to device
     pub nodes: HashMap<u32, MeshNode>, // network devices this device has communicated with
     pub region_unset: bool, // flag for whether device has an unset LoRa region
