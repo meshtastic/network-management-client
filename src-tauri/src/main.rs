@@ -1,9 +1,9 @@
 mod analytics;
 mod constructors;
 mod data_conversion;
+mod device;
 mod graph;
 mod ipc;
-mod mesh;
 mod state;
 
 use log::{debug, error, info};

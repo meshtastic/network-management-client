@@ -270,7 +270,7 @@ mod tests {
     use prost::Message;
     use tokio::sync::broadcast;
 
-    use crate::mesh::serial_connection;
+    use crate::device::serial_connection;
 
     use super::*;
 

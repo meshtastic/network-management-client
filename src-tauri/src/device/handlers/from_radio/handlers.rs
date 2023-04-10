@@ -1,6 +1,6 @@
 use app::protobufs;
 
-use crate::mesh::device::{
+use crate::device::{
     handlers::{DeviceUpdateError, DeviceUpdateMetadata},
     helpers::get_current_time_u32,
     MeshChannel, MeshDevice, SerialDeviceStatus,

@@ -8,18 +8,16 @@ use tauri::api::notification::Notification;
 use tauri::async_runtime;
 use tokio::sync::broadcast;
 
+use crate::device::serial_connection::MeshConnection;
+use crate::device::SerialDeviceStatus;
 use crate::ipc::events::dispatch_configuration_status;
 use crate::ipc::{events, ConfigurationStatus};
-use crate::mesh::device::SerialDeviceStatus;
-use crate::mesh::serial_connection::MeshConnection;
-use crate::{analytics, mesh};
+use crate::{analytics, device};
 use crate::{graph, state};
 
 use super::CommandError;
 
-pub fn generate_graph_edges_geojson(
-    graph: &mut mesh::device::MeshGraph,
-) -> geojson::FeatureCollection {
+pub fn generate_graph_edges_geojson(graph: &mut device::MeshGraph) -> geojson::FeatureCollection {
     let edge_features: Vec<geojson::Feature> = graph
         .graph
         .get_edges()
@@ -86,7 +84,7 @@ pub async fn initialize_graph_state(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
     algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<(), CommandError> {
-    let new_graph = mesh::device::MeshGraph::new();
+    let new_graph = device::MeshGraph::new();
     let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
     let mesh_graph_arc = mesh_graph.inner.clone();
     let algo_state_arc = algo_state.inner.clone();
@@ -110,7 +108,7 @@ pub async fn initialize_serial_connection_handlers(
     mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
-    let mut device = mesh::device::MeshDevice::new();
+    let mut device = device::MeshDevice::new();
 
     device.set_status(SerialDeviceStatus::Connecting);
     device
@@ -152,7 +150,7 @@ pub async fn initialize_serial_connection_handlers(
 
 fn spawn_connection_timeout_handler(
     handle: tauri::AppHandle,
-    mesh_device_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
+    mesh_device_arc: Arc<async_runtime::Mutex<Option<device::MeshDevice>>>,
     port_name: String,
 ) {
     tauri::async_runtime::spawn(async move {
@@ -197,8 +195,8 @@ fn spawn_connection_timeout_handler(
 fn spawn_decoded_handler(
     handle: tauri::AppHandle,
     mut decoded_listener: broadcast::Receiver<protobufs::FromRadio>,
-    mesh_device_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
-    graph_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
+    mesh_device_arc: Arc<async_runtime::Mutex<Option<device::MeshDevice>>>,
+    graph_arc: Arc<async_runtime::Mutex<Option<device::MeshGraph>>>,
     port_name: String,
 ) {
     tauri::async_runtime::spawn(async move {

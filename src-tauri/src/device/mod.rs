@@ -2,14 +2,16 @@ use app::protobufs;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use self::helpers::generate_rand_id;
+use self::{
+    helpers::generate_rand_id,
+    serial_connection::{MeshConnection, SerialConnection},
+};
 use crate::graph::graph_ds::Graph;
-
-use super::serial_connection::{MeshConnection, SerialConnection};
 
 pub mod connection;
 pub mod handlers;
 pub mod helpers;
+pub mod serial_connection;
 pub mod state;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -124,10 +126,11 @@ pub struct ChannelMessageWithState {
     pub state: ChannelMessageState,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+// TODO can't deserialize `SerialConnection`
+#[derive(Clone, Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshDevice {
-    #[serde(skip)]
+    #[serde(skip_serializing, default)]
     pub connection: SerialConnection, // serial connection to hardware device
     pub config_id: u32, // unique identifier for configuration flow packets
     pub ready: bool,    // is device configured to participate in mesh

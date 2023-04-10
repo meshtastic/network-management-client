@@ -2,7 +2,8 @@ use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
-use crate::mesh;
+use crate::device;
+use crate::device::serial_connection::PacketDestination;
 use crate::state;
 
 use app::protobufs;
@@ -42,7 +43,7 @@ pub async fn initialize_graph_state(
 #[tauri::command]
 pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
     debug!("Called get_all_serial_ports command");
-    let ports = mesh::serial_connection::SerialConnection::get_available_ports()?;
+    let ports = device::serial_connection::SerialConnection::get_available_ports()?;
     Ok(ports)
 }
 
@@ -95,12 +96,7 @@ pub async fn send_text(
     let mut device_guard = mesh_device.inner.lock().await;
     let device = device_guard.as_mut().ok_or("Device not connected")?;
 
-    device.send_text(
-        text.clone(),
-        mesh::serial_connection::PacketDestination::Broadcast,
-        true,
-        channel,
-    )?;
+    device.send_text(text.clone(), PacketDestination::Broadcast, true, channel)?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 
@@ -155,12 +151,7 @@ pub async fn send_waypoint(
         .ok_or("Device not connected")
         .map_err(|e| e.to_string())?;
 
-    device.send_waypoint(
-        waypoint,
-        mesh::serial_connection::PacketDestination::Broadcast,
-        true,
-        channel,
-    )?;
+    device.send_waypoint(waypoint, PacketDestination::Broadcast, true, channel)?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 

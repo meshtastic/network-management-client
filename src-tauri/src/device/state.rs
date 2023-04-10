@@ -12,7 +12,7 @@ use super::{
 
 use crate::constructors::init::init_edge_map::init_edge_map;
 use crate::constructors::init::init_graph::init_graph;
-use crate::mesh::device::ChannelMessageState;
+use crate::device::ChannelMessageState;
 
 impl MeshDevice {
     pub fn set_ready(&mut self, ready: bool) {

@@ -58,12 +58,12 @@ impl MeshDevice {
 
 #[cfg(test)]
 mod tests {
-    use crate::mesh;
+    use crate::device;
 
     use super::*;
 
-    fn initialize_mock_device() -> mesh::device::MeshDevice {
-        mesh::device::MeshDevice::new()
+    fn initialize_mock_device() -> device::MeshDevice {
+        device::MeshDevice::new()
     }
 
     #[test]

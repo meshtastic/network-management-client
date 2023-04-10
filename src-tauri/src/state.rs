@@ -1,15 +1,15 @@
-use crate::{analytics, mesh};
+use crate::{analytics, device};
 use std::sync::Arc;
 use tauri::async_runtime;
 
 #[derive(Debug)]
 pub struct ActiveMeshDevice {
-    pub inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
+    pub inner: Arc<async_runtime::Mutex<Option<device::MeshDevice>>>,
 }
 
 #[derive(Debug)]
 pub struct NetworkGraph {
-    pub inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
+    pub inner: Arc<async_runtime::Mutex<Option<device::MeshGraph>>>,
 }
 
 pub struct AnalyticsState {
