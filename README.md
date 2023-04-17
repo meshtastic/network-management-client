@@ -72,6 +72,7 @@ This project is still in early stages of development, but here's a rough roadmap
     - [ ] Automatic algorithm rerunning
 - [ ] :radio: Node management
   - [x] Node peer table
+  - [ ] Network configuration (multi-device)
   - [ ] Remote node configuration
 - [ ] :pushpin: Waypoint management
   - [x] Managed waypoint table
