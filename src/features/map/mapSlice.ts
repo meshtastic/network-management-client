@@ -19,9 +19,14 @@ export const mapSlice = createSlice({
   name: "map",
   initialState: initialMapState,
   reducers: {
+    setViewState: (state, action: PayloadAction<IMapState["viewState"]>) => {
+      state.viewState = action.payload;
+
+      console.warn("setting view state", state.viewState);
+    },
     setPosition: (
       state,
-      action: PayloadAction<{ latitude: number; longitude: number }>
+      action: PayloadAction<{ latitude: number; longitude: number }>,
     ) => {
       state.viewState.latitude = action.payload.latitude;
       state.viewState.longitude = action.payload.longitude;
@@ -31,7 +36,7 @@ export const mapSlice = createSlice({
     },
     setEdgesFeatureCollection: (
       state,
-      action: PayloadAction<GeoJSON.FeatureCollection | null>
+      action: PayloadAction<GeoJSON.FeatureCollection | null>,
     ) => {
       state.edgesFeatureCollection = action.payload;
     },

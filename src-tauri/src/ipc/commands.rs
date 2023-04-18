@@ -7,6 +7,7 @@ use crate::state;
 
 use app::protobufs;
 use log::{debug, error, trace};
+use serde_json::json;
 use std::collections::HashMap;
 
 use super::helpers;
@@ -211,7 +212,49 @@ pub async fn get_node_edges(
     let mut guard = mesh_graph.inner.lock().await;
     let graph = guard.as_mut().ok_or("Graph edges not initialized")?;
 
-    let edges = helpers::generate_graph_edges_geojson(graph);
+    let mut properties_map_1 = serde_json::Map::new();
+    properties_map_1.insert("snr".into(), json!(1.));
+
+    let mut properties_map_2 = serde_json::Map::new();
+    properties_map_2.insert("snr".into(), json!(2.));
+
+    let mut properties_map_3 = serde_json::Map::new();
+    properties_map_3.insert("snr".into(), json!(3.));
+
+    // let edges = helpers::generate_graph_edges_geojson(graph);
+    let edges = geojson::FeatureCollection {
+        bbox: None,
+        foreign_members: None,
+        features: vec![
+            geojson::Feature {
+                id: Some(geojson::feature::Id::String("1".into())),
+                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
+                    vec![5., 10.],
+                    vec![-15., 17.],
+                ]))),
+                properties: Some(properties_map_1),
+                ..Default::default()
+            },
+            geojson::Feature {
+                id: Some(geojson::feature::Id::String("2".into())),
+                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
+                    vec![-15., 17.],
+                    vec![-18., 35.],
+                ]))),
+                properties: Some(properties_map_2),
+                ..Default::default()
+            },
+            geojson::Feature {
+                id: Some(geojson::feature::Id::String("3".into())),
+                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
+                    vec![-18., 35.],
+                    vec![5., 10.],
+                ]))),
+                properties: Some(properties_map_3),
+                ..Default::default()
+            },
+        ],
+    };
 
     trace!("Found edges {:?}", edges);
 
