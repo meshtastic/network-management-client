@@ -19,30 +19,7 @@ mod tests {
     use app::protobufs;
 
     fn generate_zeroed_position() -> protobufs::Position {
-        protobufs::Position {
-            latitude_i: 0,
-            longitude_i: 0,
-            altitude: 0,
-            time: 0,
-            location_source: 0,
-            altitude_source: 0,
-            timestamp: 0,
-            timestamp_millis_adjust: 0,
-            altitude_hae: 0,
-            altitude_geoidal_separation: 0,
-            pdop: 0,
-            hdop: 0,
-            vdop: 0,
-            gps_accuracy: 0,
-            ground_speed: 0,
-            ground_track: 0,
-            fix_quality: 0,
-            fix_type: 0,
-            sats_in_view: 0,
-            sensor_id: 0,
-            next_update: 0,
-            seq_number: 0,
-        }
+        protobufs::Position::default()
     }
 
     fn generate_test_user() -> protobufs::User {
@@ -55,6 +32,7 @@ mod tests {
             is_licensed: false,
         }
     }
+
     fn generate_zeroed_device_metrics() -> protobufs::DeviceMetrics {
         protobufs::DeviceMetrics {
             battery_level: 0,
@@ -73,9 +51,8 @@ mod tests {
                 num: 1,
                 user: Some(generate_test_user()),
                 position: Some(generate_zeroed_position()),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
         let meshnode_2: MeshNode = MeshNode {
@@ -85,11 +62,11 @@ mod tests {
                 num: 2,
                 user: Some(generate_test_user()),
                 position: Some(generate_zeroed_position()),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
+
         let meshnode_3 = MeshNode {
             device_metrics: vec![],
             environment_metrics: vec![],
@@ -97,11 +74,11 @@ mod tests {
                 num: 3,
                 user: Some(generate_test_user()),
                 position: Some(generate_zeroed_position()),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
+
         let meshnode_4 = MeshNode {
             device_metrics: vec![],
             environment_metrics: vec![],
@@ -109,11 +86,11 @@ mod tests {
                 num: 4,
                 user: Some(generate_test_user()),
                 position: Some(generate_zeroed_position()),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
+
         let meshnode_vec = vec![meshnode_1, meshnode_2, meshnode_3, meshnode_4];
         let node_map = init_node_map(meshnode_vec);
         assert_eq!(node_map.len(), 4);

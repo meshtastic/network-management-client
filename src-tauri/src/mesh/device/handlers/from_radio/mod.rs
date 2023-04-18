@@ -25,6 +25,11 @@ impl MeshDevice {
                     "log record".into(),
                 ));
             }
+            protobufs::from_radio::PayloadVariant::Metadata(_m) => {
+                return Err(DeviceUpdateError::RadioMessageNotSupported(
+                    "metadata".into(),
+                ));
+            }
             protobufs::from_radio::PayloadVariant::ModuleConfig(_m) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported(
                     "module config".into(),

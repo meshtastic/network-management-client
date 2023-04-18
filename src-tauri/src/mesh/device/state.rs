@@ -80,11 +80,9 @@ impl MeshDevice {
             let new_node = MeshNode {
                 data: protobufs::NodeInfo {
                     num: metrics.packet.from,
-                    user: None,
-                    position: None,
                     snr: metrics.packet.rx_snr,
                     last_heard: get_current_time_u32(),
-                    device_metrics: None,
+                    ..Default::default()
                 },
                 device_metrics: vec![],
                 environment_metrics: vec![],
@@ -205,10 +203,9 @@ impl MeshDevice {
                     data: protobufs::NodeInfo {
                         num: user.packet.from,
                         user: Some(user.data),
-                        position: None,
                         snr: user.packet.rx_snr,
                         last_heard: get_current_time_u32(),
-                        device_metrics: None,
+                        ..Default::default()
                     },
                 },
             );
@@ -236,11 +233,9 @@ impl MeshDevice {
                     environment_metrics: vec![],
                     data: protobufs::NodeInfo {
                         num: position.packet.from,
-                        user: None,
                         position: Some(position.data),
                         snr: position.packet.rx_snr,
-                        last_heard: 0,
-                        device_metrics: None,
+                        ..Default::default()
                     },
                 },
             );
@@ -262,7 +257,7 @@ impl MeshDevice {
             );
         }
         self.neighbors
-            .insert(neighborinfo.packet.from, neighborinfo.data);
+            .insert(neighborinfo.packet.from, neighborinfo);
     }
 
     pub fn add_text_message(&mut self, message: TextPacket) {
