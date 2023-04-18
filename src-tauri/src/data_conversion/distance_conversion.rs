@@ -1,7 +1,7 @@
 use crate::data_conversion::distance_constants::{
     ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR, RADIUS_EARTH_KM,
 };
-use crate::mesh::device::MeshNode;
+use crate::device::MeshNode;
 
 /*
 * Calculates the distance between two points on a sphere using helpers in graph snapshot

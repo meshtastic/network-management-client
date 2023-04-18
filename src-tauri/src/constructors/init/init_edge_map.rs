@@ -2,7 +2,7 @@ use app::protobufs::Neighbor;
 use log::{info, warn};
 use std::collections::HashMap;
 
-use crate::mesh::device::NeighborInfoPacket;
+use crate::device::NeighborInfoPacket;
 
 #[derive(Clone, Debug)]
 pub struct GraphEdgeMetadata {
@@ -209,6 +209,16 @@ mod tests {
             snr: 2.0,
         };
 
+        let packet_1 = MeshPacket {
+            rx_time: 1,
+            ..Default::default()
+        };
+
+        let packet_2 = MeshPacket {
+            rx_time: 100,
+            ..Default::default()
+        };
+
         let neighbor_info_1 = NeighborInfo {
             node_id: 1,
             neighbors: vec![neighbor_2],
@@ -221,15 +231,15 @@ mod tests {
             ..Default::default()
         };
 
-        let neighborinfo_vec = vec![neighbor_info_1, neighbor_info_2];
+        let neighborinfo_vec = vec![(neighbor_info_1, packet_1), (neighbor_info_2, packet_2)];
 
         let mut neighborinfo_hashmap = HashMap::new();
-        for neighborinfo in neighborinfo_vec {
+        for (neighborinfo, packet) in neighborinfo_vec {
             neighborinfo_hashmap.insert(
                 neighborinfo.node_id,
                 NeighborInfoPacket {
                     data: neighborinfo,
-                    ..Default::default()
+                    packet,
                 },
             );
         }

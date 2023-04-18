@@ -124,8 +124,8 @@ mod tests {
 
     // use super::*;
 
-    // fn initialize_mock_device() -> mesh::device::MeshDevice {
-    //     mesh::device::MeshDevice::new()
+    // fn initialize_mock_device() -> device::MeshDevice {
+    //     device::MeshDevice::new()
     // }
 
     #[test]

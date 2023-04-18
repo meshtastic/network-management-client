@@ -12,7 +12,7 @@ use super::{
 
 use crate::constructors::init::init_edge_map::init_edge_map;
 use crate::constructors::init::init_graph::init_graph;
-use crate::mesh::device::ChannelMessageState;
+use crate::device::ChannelMessageState;
 
 impl MeshDevice {
     pub fn set_ready(&mut self, ready: bool) {
@@ -64,7 +64,53 @@ impl MeshDevice {
         }
     }
 
-    // TODO set module config
+    pub fn set_module_config(&mut self, module_config: protobufs::ModuleConfig) {
+        debug!("Updating own module config");
+
+        if let Some(payload_variant) = module_config.payload_variant {
+            match payload_variant {
+                protobufs::module_config::PayloadVariant::Audio(config) => {
+                    trace!("Updated own audio module config: {:?}", config);
+                    self.module_config.audio = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::CannedMessage(config) => {
+                    trace!("Updated own canned message module config: {:?}", config);
+                    self.module_config.canned_message = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::ExternalNotification(config) => {
+                    trace!(
+                        "Updated own external notification module config: {:?}",
+                        config
+                    );
+                    self.module_config.external_notification = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::Mqtt(config) => {
+                    trace!("Updated own mqtt module config: {:?}", config);
+                    self.module_config.mqtt = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::RangeTest(config) => {
+                    trace!("Updated own range test module config: {:?}", config);
+                    self.module_config.range_test = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::RemoteHardware(config) => {
+                    trace!("Updated own remote hardware module config: {:?}", config);
+                    self.module_config.remote_hardware = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::Serial(config) => {
+                    trace!("Updated own serial module config: {:?}", config);
+                    self.module_config.serial = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::StoreForward(config) => {
+                    trace!("Updated own store-forward module config: {:?}", config);
+                    self.module_config.store_forward = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::Telemetry(config) => {
+                    trace!("Updated own telemetry module config: {:?}", config);
+                    self.module_config.telemetry = Some(config);
+                }
+            }
+        }
+    }
 
     pub fn set_my_node_info(&mut self, info: protobufs::MyNodeInfo) {
         debug!("Setting own hardware info");

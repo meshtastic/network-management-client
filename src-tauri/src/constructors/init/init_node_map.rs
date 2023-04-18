@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::mesh::device::MeshNode;
+use crate::device::MeshNode;
 use std::collections::HashMap;
 
 // This function takes a vector of MeshNodes and returns a HashMap of MeshNodes, keyed by node id.

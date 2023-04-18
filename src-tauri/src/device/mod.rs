@@ -2,12 +2,16 @@ use app::protobufs;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use self::helpers::generate_rand_id;
+use self::{
+    helpers::generate_rand_id,
+    serial_connection::{MeshConnection, SerialConnection},
+};
 use crate::graph::graph_ds::Graph;
 
 pub mod connection;
 pub mod handlers;
 pub mod helpers;
+pub mod serial_connection;
 pub mod state;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
@@ -122,17 +126,21 @@ pub struct ChannelMessageWithState {
     pub state: ChannelMessageState,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+// TODO can't deserialize `SerialConnection`
+#[derive(Clone, Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshDevice {
-    pub config_id: u32,             // unique identifier for configuration flow packets
-    pub ready: bool,                // is device configured to participate in mesh
+    #[serde(skip_serializing, default)]
+    pub connection: SerialConnection, // serial connection to hardware device
+    pub config_id: u32, // unique identifier for configuration flow packets
+    pub ready: bool,    // is device configured to participate in mesh
     pub status: SerialDeviceStatus, // current config status of device
     pub channels: HashMap<u32, MeshChannel>, // channels device is able to access
     pub config: protobufs::LocalConfig, // local-only device configuration
+    pub module_config: protobufs::LocalModuleConfig, // configuration for meshtastic modules
     pub my_node_info: protobufs::MyNodeInfo, // debug information specific to device
     pub nodes: HashMap<u32, MeshNode>, // network devices this device has communicated with
-    pub region_unset: bool,         // flag for whether device has an unset LoRa region
+    pub region_unset: bool, // flag for whether device has an unset LoRa region
     pub device_metrics: protobufs::DeviceMetrics, // information about functioning of device (e.g. battery level)
     pub waypoints: HashMap<u32, protobufs::Waypoint>, // updatable GPS positions managed by this device
     pub neighbors: HashMap<u32, NeighborInfoPacket>, //updated packets from each node containing their neighbors
@@ -141,6 +149,7 @@ pub struct MeshDevice {
 impl MeshDevice {
     pub fn new() -> Self {
         Self {
+            connection: SerialConnection::new(),
             config_id: generate_rand_id(),
             ready: false,
             region_unset: true,

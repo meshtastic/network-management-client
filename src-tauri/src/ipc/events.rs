@@ -1,4 +1,4 @@
-use crate::mesh;
+use crate::device;
 use log::{debug, trace};
 use tauri::Manager;
 
@@ -6,7 +6,7 @@ use super::ConfigurationStatus;
 
 pub fn dispatch_updated_device(
     handle: &tauri::AppHandle,
-    device: mesh::device::MeshDevice,
+    device: &device::MeshDevice,
 ) -> tauri::Result<()> {
     debug!("Dispatching updated device");
 
@@ -19,7 +19,7 @@ pub fn dispatch_updated_device(
 
 pub fn dispatch_updated_edges(
     handle: &tauri::AppHandle,
-    graph: &mut mesh::device::MeshGraph,
+    graph: &mut device::MeshGraph,
 ) -> tauri::Result<()> {
     debug!("Dispatching updated edges");
 

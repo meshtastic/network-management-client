@@ -1,6 +1,6 @@
 use app::protobufs;
 
-use crate::mesh::device::{
+use crate::device::{
     handlers::{DeviceUpdateError, DeviceUpdateMetadata},
     helpers::get_current_time_u32,
     MeshChannel, MeshDevice, SerialDeviceStatus,
@@ -28,6 +28,17 @@ pub fn handle_config_packet(
     config: protobufs::Config,
 ) -> Result<(), DeviceUpdateError> {
     device.set_config(config);
+    update_result.device_updated = true;
+
+    Ok(())
+}
+
+pub fn handle_module_config_packet(
+    device: &mut MeshDevice,
+    update_result: &mut DeviceUpdateMetadata,
+    module_config: protobufs::ModuleConfig,
+) -> Result<(), DeviceUpdateError> {
+    device.set_module_config(module_config);
     update_result.device_updated = true;
 
     Ok(())

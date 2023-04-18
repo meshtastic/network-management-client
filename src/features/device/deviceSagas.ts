@@ -20,6 +20,7 @@ import {
   requestAutoConnectPort,
   requestAvailablePorts,
   requestConnectToDevice,
+  requestDisconnectFromAllDevices,
   requestDisconnectFromDevice,
   requestNewWaypoint,
   requestSendMessage,
@@ -112,17 +113,24 @@ function* connectToDeviceWorker(
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
     yield put(
       connectionSliceActions.setConnectionState({
-        portName: action.payload,
+        portName: action.payload.portName,
         status: {
           status: "PENDING",
         },
       }),
     );
 
-    yield call(disconnectFromDeviceWorker);
-    yield call(invoke, "initialize_graph_state", { portName: action.payload });
-    yield call(invoke, "connect_to_serial_port", { portName: action.payload });
-    yield put(deviceSliceActions.setActiveSerialPort(action.payload));
+    yield call(invoke, "initialize_graph_state");
+
+    yield call(invoke, "connect_to_serial_port", {
+      portName: action.payload.portName,
+    });
+
+    if (action.payload.setPrimary) {
+      yield put(
+        deviceSliceActions.setPrimarySerialPort(action.payload.portName),
+      );
+    }
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
 
@@ -137,10 +145,25 @@ function* connectToDeviceWorker(
   }
 }
 
-function* disconnectFromDeviceWorker() {
+function* disconnectFromDeviceWorker(
+  action: ReturnType<typeof requestDisconnectFromDevice>,
+) {
   try {
-    yield call(invoke, "disconnect_from_serial_port");
-    yield put(deviceSliceActions.setActiveSerialPort(null));
+    yield call(invoke, "disconnect_from_serial_port", {
+      portName: action.payload,
+    });
+    yield put(deviceSliceActions.setPrimarySerialPort(null));
+    yield put(deviceSliceActions.setActiveNode(null));
+    yield put(deviceSliceActions.setDevice(null));
+  } catch (error) {
+    yield put({ type: "GENERAL_ERROR", payload: error });
+  }
+}
+
+function* disconnectFromAllDevicesWorker() {
+  try {
+    yield call(invoke, "disconnect_from_all_serial_ports");
+    yield put(deviceSliceActions.setPrimarySerialPort(null));
     yield put(deviceSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
   } catch (error) {
@@ -153,6 +176,7 @@ function* sendTextWorker(action: ReturnType<typeof requestSendMessage>) {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     yield call(invoke, "send_text", {
+      portName: action.payload.portName,
       channel: action.payload.channel,
       text: action.payload.text,
     });
@@ -173,6 +197,7 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     yield call(invoke, "update_device_user", {
+      portName: action.payload.portName,
       user: action.payload.user,
     });
 
@@ -191,6 +216,7 @@ function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
     yield call(invoke, "send_waypoint", {
+      portName: action.payload.portName,
       waypoint: action.payload.waypoint,
       channel: action.payload.channel,
     });
@@ -215,6 +241,10 @@ export function* devicesSaga() {
     takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
     takeEvery(requestConnectToDevice.type, connectToDeviceWorker),
     takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
+    takeEvery(
+      requestDisconnectFromAllDevices.type,
+      disconnectFromAllDevicesWorker,
+    ),
     takeEvery(requestSendMessage.type, sendTextWorker),
     takeEvery(requestUpdateUser.type, updateUserConfig),
     takeEvery(requestNewWaypoint.type, newWaypoint),

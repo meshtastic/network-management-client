@@ -65,8 +65,8 @@ export function* handleDeviceDisconnectChannel(
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      yield take(channel);
-      yield put(requestDisconnectFromDevice());
+      const portName: string = yield take(channel);
+      yield put(requestDisconnectFromDevice(portName));
       window.location.reload();
     }
   } catch (error) {

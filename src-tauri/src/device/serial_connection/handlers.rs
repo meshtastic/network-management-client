@@ -18,6 +18,7 @@ pub fn spawn_serial_read_handler(
     is_connection_active: Arc<Mutex<bool>>,
     mut read_port: Box<dyn SerialPort>,
     read_output_tx: mpsc::Sender<Vec<u8>>,
+    port_name: String,
 ) -> JoinHandle<()> {
     thread::spawn(move || loop {
         // Kill thread if connection not active
@@ -45,7 +46,7 @@ pub fn spawn_serial_read_handler(
             {
                 app_handle
                     .app_handle()
-                    .emit_all("device_disconnect", "")
+                    .emit_all("device_disconnect", port_name)
                     .expect("Could not dispatch disconnection event");
 
                 break;
@@ -270,7 +271,7 @@ mod tests {
     use prost::Message;
     use tokio::sync::broadcast;
 
-    use crate::mesh::serial_connection;
+    use crate::device::serial_connection;
 
     use super::*;
 

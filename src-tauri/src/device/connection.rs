@@ -1,6 +1,6 @@
 #![allow(clippy::too_many_arguments)]
 
-use crate::mesh::serial_connection::{MeshConnection, PacketDestination, SerialConnection};
+use crate::device::serial_connection::{MeshConnection, PacketDestination};
 
 use super::helpers::{generate_rand_id, get_current_time_u32};
 use super::MeshDevice;
@@ -10,7 +10,6 @@ use prost::Message;
 impl MeshDevice {
     pub fn send_text(
         &mut self,
-        connection: &mut SerialConnection,
         text: String,
         destination: PacketDestination,
         want_ack: bool,
@@ -19,7 +18,6 @@ impl MeshDevice {
         let byte_data = text.into_bytes();
 
         self.send_packet(
-            connection,
             byte_data,
             protobufs::PortNum::TextMessageApp,
             destination,
@@ -36,7 +34,6 @@ impl MeshDevice {
 
     pub fn send_waypoint(
         &mut self,
-        connection: &mut SerialConnection,
         waypoint: protobufs::Waypoint,
         destination: PacketDestination,
         want_ack: bool,
@@ -51,7 +48,6 @@ impl MeshDevice {
         let byte_data = new_waypoint.encode_to_vec();
 
         self.send_packet(
-            connection,
             byte_data,
             protobufs::PortNum::WaypointApp,
             destination,
@@ -66,11 +62,7 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub fn update_device_config(
-        &mut self,
-        connection: &mut SerialConnection,
-        config: protobufs::Config,
-    ) -> Result<(), String> {
+    pub fn update_device_config(&mut self, config: protobufs::Config) -> Result<(), String> {
         let config_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetConfig(config)),
         };
@@ -78,7 +70,6 @@ impl MeshDevice {
         let byte_data = config_packet.encode_to_vec();
 
         self.send_packet(
-            connection,
             byte_data,
             protobufs::PortNum::AdminApp,
             PacketDestination::Local,
@@ -93,11 +84,7 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub fn update_device_user(
-        &mut self,
-        connection: &mut SerialConnection,
-        user: protobufs::User,
-    ) -> Result<(), String> {
+    pub fn update_device_user(&mut self, user: protobufs::User) -> Result<(), String> {
         let user_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetOwner(user)),
         };
@@ -105,7 +92,6 @@ impl MeshDevice {
         let byte_data = user_packet.encode_to_vec();
 
         self.send_packet(
-            connection,
             byte_data,
             protobufs::PortNum::AdminApp,
             PacketDestination::Local,
@@ -122,7 +108,6 @@ impl MeshDevice {
 
     pub fn send_packet(
         &mut self,
-        connection: &mut SerialConnection,
         byte_data: Vec<u8>,
         port_num: protobufs::PortNum,
         destination: PacketDestination,
@@ -183,7 +168,7 @@ impl MeshDevice {
             .encode::<Vec<u8>>(&mut packet_buf)
             .map_err(|e| e.to_string())?;
 
-        connection.send_raw(packet_buf)?;
+        self.connection.send_raw(packet_buf)?;
 
         Ok(())
     }
