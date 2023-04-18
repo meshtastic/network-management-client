@@ -3,9 +3,9 @@ use crate::data_conversion::distance_constants::{
     ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR, SPEED_CONVERSION_FACTOR,
 };
 use crate::data_conversion::distance_conversion::get_spherical_distance;
+use crate::device::MeshNode;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
-use crate::mesh::device::MeshNode;
 use log::warn;
 use petgraph::graph::NodeIndex;
 use std::collections::HashMap;

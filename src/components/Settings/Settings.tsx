@@ -5,7 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
-import { selectActiveNode } from "@features/device/deviceSelectors";
+import {
+  selectActiveNode,
+  selectPrimarySerialPort,
+} from "@features/device/deviceSelectors";
 import type { User } from "@bindings/protobufs/User";
 import { requestUpdateUser } from "@features/device/deviceActions";
 
@@ -21,11 +24,10 @@ function convertMacAddr(macAddr: number[]) {
 }
 
 const Settings = () => {
-  // Allows for navigation upon pressing "x"
   const navigateTo = useNavigate();
 
-  // Type: Meshnode. (The currently active one)
   const activeNode = useSelector(selectActiveNode());
+  const primaryPortName = useSelector(selectPrimarySerialPort());
 
   // Functions to set device info. Forbidden non-null suppressed, but I checked if a device is connected.
   const [deviceID, setDeviceID] = useState(
@@ -48,19 +50,26 @@ const Settings = () => {
   const dispatch = useDispatch();
 
   // Submits the form. Triggered by pressing the save button
-  const handleSubmit: FormEventHandler = (e) => {
-    // e.preventDefault();
-    if (activeNode) {
-      const updatedUser: User = {
-        ...activeNode.data.user!,
-        longName: deviceName,
-        shortName: deviceNickname,
-      };
-
-      dispatch(requestUpdateUser({ user: updatedUser }));
-    } else {
+  const handleSubmit: FormEventHandler = () => {
+    if (!activeNode) {
       console.log("No active node selected");
+      return;
     }
+
+    if (!primaryPortName) {
+      console.warn("No primary serial port, not updating device");
+      return;
+    }
+
+    const updatedUser: User = {
+      ...activeNode.data.user!,
+      longName: deviceName,
+      shortName: deviceNickname,
+    };
+
+    dispatch(
+      requestUpdateUser({ portName: primaryPortName, user: updatedUser })
+    );
   };
 
   // Render the popup.
@@ -91,7 +100,7 @@ const Settings = () => {
         {/* Make a form where we put the options */}
         <div className="overflow-y-scroll h-4/5 mt-2">
           <form onSubmit={handleSubmit}>
-            <label className="pl-[4%] pl-2 text-xl"> Device ID </label>
+            <label className="pl-2 text-xl"> Device ID </label>
             <div className="pl-[6%] pr-[8%] font-sans text-sm">
               <Input
                 className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4 disabled:opacity-80"
@@ -103,10 +112,7 @@ const Settings = () => {
                 disabled={true}
               />
             </div>
-            <label className="flex pl-[4%] pt-[6%] pl-2 text-xl">
-              {" "}
-              Device Name{" "}
-            </label>
+            <label className="flex pt-[6%] pl-2 text-xl"> Device Name </label>
             <div className="pl-[6%] pr-[8%] font-sans text-sm">
               <Input
                 className="rounded-lg bg-gray-300 hover:bg-gray-200 p-4"
@@ -118,7 +124,7 @@ const Settings = () => {
                 disabled={!activeNode}
               />
             </div>
-            <label className="flex pl-[4%] pt-[6%] pl-2 text-xl">
+            <label className="flex pt-[6%] pl-2 text-xl">
               {" "}
               Device Nickname{" "}
             </label>
@@ -137,7 +143,7 @@ const Settings = () => {
             </div>
             {activeNode ? (
               <div>
-                <div className="flex pl-[4%] pt-[6%] pl-2 text-base justify-center">
+                <div className="flex pt-[6%] pl-2 text-base justify-center">
                   Details:
                 </div>
                 <div className="text-sm pl-[4%]">MAC Address: {mac}</div>

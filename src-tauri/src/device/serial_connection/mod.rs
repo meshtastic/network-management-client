@@ -33,6 +33,15 @@ pub struct SerialConnection {
     message_processing_handle: Option<JoinHandle<()>>,
 }
 
+// Not a complete implementation, this is only used
+// to transmit the `MeshDevice` struct to the UI, where
+// the `connection` field is skipped be serde
+impl Clone for SerialConnection {
+    fn clone(&self) -> Self {
+        Self::new()
+    }
+}
+
 #[async_trait]
 pub trait MeshConnection {
     fn new() -> Self;
@@ -151,6 +160,7 @@ impl SerialConnection {
             self.is_connection_active.clone(),
             read_port,
             read_output_tx,
+            port_name.clone(),
         ));
 
         self.serial_write_handle = Some(handlers::spawn_serial_write_handler(
