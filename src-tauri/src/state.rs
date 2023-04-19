@@ -1,27 +1,30 @@
-use crate::{analytics, mesh};
-use std::sync::Arc;
+use crate::{analytics, device};
+use std::{collections::HashMap, sync::Arc};
 use tauri::async_runtime;
 
-#[derive(Debug)]
-pub struct ActiveSerialConnection {
-    pub inner: Arc<async_runtime::Mutex<Option<mesh::serial_connection::SerialConnection>>>,
-}
+pub type ConnectedDevicesInner = Arc<async_runtime::Mutex<HashMap<String, device::MeshDevice>>>;
 
 #[derive(Debug)]
-pub struct ActiveMeshDevice {
-    pub inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
+pub struct ConnectedDevices {
+    pub inner: ConnectedDevicesInner,
 }
+
+pub type NetworkGraphInner = Arc<async_runtime::Mutex<Option<device::MeshGraph>>>;
 
 #[derive(Debug)]
 pub struct NetworkGraph {
-    pub inner: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
+    pub inner: NetworkGraphInner,
 }
 
+pub type AnalyticsStateInner = Arc<async_runtime::Mutex<Option<analytics::state::AnalyticsState>>>;
+
 pub struct AnalyticsState {
-    pub inner: Arc<async_runtime::Mutex<Option<analytics::state::AnalyticsState>>>,
+    pub inner: AnalyticsStateInner,
 }
+
+pub type AutoConnectStateInner = Arc<async_runtime::Mutex<Option<String>>>;
 
 #[derive(Debug)]
 pub struct AutoConnectState {
-    pub inner: Arc<async_runtime::Mutex<Option<String>>>,
+    pub inner: AutoConnectStateInner,
 }

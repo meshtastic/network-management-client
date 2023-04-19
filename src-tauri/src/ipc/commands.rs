@@ -2,7 +2,8 @@ use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
-use crate::mesh;
+use crate::device;
+use crate::device::serial_connection::PacketDestination;
 use crate::state;
 
 use app::protobufs;
@@ -43,7 +44,7 @@ pub async fn initialize_graph_state(
 #[tauri::command]
 pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
     debug!("Called get_all_serial_ports command");
-    let ports = mesh::serial_connection::SerialConnection::get_available_ports()?;
+    let ports = device::serial_connection::SerialConnection::get_available_ports()?;
     Ok(ports)
 }
 
@@ -51,8 +52,7 @@ pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
 pub async fn connect_to_serial_port(
     port_name: String,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     debug!(
@@ -63,8 +63,7 @@ pub async fn connect_to_serial_port(
     helpers::initialize_serial_connection_handlers(
         port_name,
         app_handle,
-        mesh_device,
-        serial_connection,
+        connected_devices,
         mesh_graph,
     )
     .await
@@ -72,25 +71,40 @@ pub async fn connect_to_serial_port(
 
 #[tauri::command]
 pub async fn disconnect_from_serial_port(
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
+    port_name: String,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called disconnect_from_serial_port command");
 
-    // Completely drop device memory
     {
-        let mut state_device = mesh_device.inner.lock().await;
-        *state_device = None;
+        let mut state_devices = connected_devices.inner.lock().await;
+
+        if let Some(device) = state_devices.get_mut(&port_name) {
+            device.connection.disconnect()?;
+        }
+
+        state_devices.remove(&port_name);
     }
 
-    // Clear serial connection state
-    {
-        let mut state_connection = serial_connection.inner.lock().await;
+    Ok(())
+}
 
-        if let Some(connection) = state_connection.as_mut() {
-            debug!("Connection exists, disconnecting");
-            connection.disconnect()?;
+#[tauri::command]
+pub async fn disconnect_from_all_serial_ports(
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called disconnect_from_all_serial_ports command");
+
+    {
+        let mut state_devices = connected_devices.inner.lock().await;
+
+        // Disconnect from all serial ports
+        for (_port_name, device) in state_devices.iter_mut() {
+            device.connection.disconnect()?;
         }
+
+        // Clear connections map
+        state_devices.clear();
     }
 
     Ok(())
@@ -98,107 +112,85 @@ pub async fn disconnect_from_serial_port(
 
 #[tauri::command]
 pub async fn send_text(
+    port_name: String,
     text: String,
     channel: u32,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called send_text command",);
     trace!("Called with text {} on channel {}", text, channel);
 
-    let mut serial_guard = serial_connection.inner.lock().await;
-    let mut device_guard = mesh_device.inner.lock().await;
+    let mut devices_guard = connected_devices.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")?;
 
-    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
-    let device = device_guard.as_mut().ok_or("Device not connected")?;
+    device.send_text(text.clone(), PacketDestination::Broadcast, true, channel)?;
 
-    device.send_text(
-        connection,
-        text.clone(),
-        mesh::serial_connection::PacketDestination::Broadcast,
-        true,
-        channel,
-    )?;
-
-    events::dispatch_updated_device(&app_handle, device.clone()).map_err(|e| e.to_string())?;
+    events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 
     Ok(())
 }
 
 #[tauri::command]
 pub async fn update_device_config(
+    port_name: String,
     config: protobufs::Config,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called update_device_config command");
     trace!("Called with config {:?}", config);
 
-    let mut serial_guard = serial_connection.inner.lock().await;
-    let mut device_guard = mesh_device.inner.lock().await;
+    let mut devices_guard = connected_devices.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")?;
 
-    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
-    let device = device_guard.as_mut().ok_or("Device not connected")?;
-
-    device.update_device_config(connection, config)?;
+    device.update_device_config(config)?;
 
     Ok(())
 }
 
 #[tauri::command]
 pub async fn update_device_user(
+    port_name: String,
     user: protobufs::User,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called update_device_user command");
     trace!("Called with user {:?}", user);
 
-    let mut serial_guard = serial_connection.inner.lock().await;
-    let mut device_guard = mesh_device.inner.lock().await;
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")?;
 
-    let connection = serial_guard.as_mut().ok_or("Connection not initialized")?;
-    let device = device_guard.as_mut().ok_or("Device not connected")?;
-
-    device.update_device_user(connection, user)?;
+    device.update_device_user(user)?;
 
     Ok(())
 }
 
 #[tauri::command]
 pub async fn send_waypoint(
+    port_name: String,
     waypoint: protobufs::Waypoint,
     channel: u32,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
     debug!("Called send_waypoint command");
     trace!("Called on channel {} with waypoint {:?}", channel, waypoint);
 
-    let mut serial_guard = serial_connection.inner.lock().await;
-    let mut device_guard = mesh_device.inner.lock().await;
-
-    let connection = serial_guard
-        .as_mut()
-        .ok_or("Connection not initialized")
-        .map_err(|e| e.to_string())?;
-
-    let device = device_guard
-        .as_mut()
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
         .ok_or("Device not connected")
         .map_err(|e| e.to_string())?;
 
-    device.send_waypoint(
-        connection,
-        waypoint,
-        mesh::serial_connection::PacketDestination::Broadcast,
-        true,
-        channel,
-    )?;
+    device.send_waypoint(waypoint, PacketDestination::Broadcast, true, channel)?;
 
-    events::dispatch_updated_device(&app_handle, device.clone()).map_err(|e| e.to_string())?;
+    events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 
     Ok(())
 }

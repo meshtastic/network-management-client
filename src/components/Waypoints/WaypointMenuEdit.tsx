@@ -9,10 +9,11 @@ import type { Waypoint } from "@bindings/protobufs/Waypoint";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestNewWaypoint } from "@features/device/deviceActions";
 import {
+  selectPrimarySerialPort,
   selectActiveWaypoint,
   selectActiveWaypointID,
   selectPlaceholderWaypoint,
-} from "@app/features/device/deviceSelectors";
+} from "@features/device/deviceSelectors";
 
 import { useToggleEditWaypoint } from "@app/utils/hooks";
 
@@ -23,6 +24,7 @@ const WaypointMenuEdit = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
   const activeWaypointID = useSelector(selectActiveWaypointID());
+  const primaryPortName = useSelector(selectPrimarySerialPort());
 
   const placeholderWaypoint = useSelector(selectPlaceholderWaypoint());
 
@@ -48,6 +50,11 @@ const WaypointMenuEdit = () => {
       Number((document.getElementById("channel") as HTMLInputElement).value) ??
       0;
 
+    if (!primaryPortName) {
+      console.warn("No primary serial port, not updating waypoint");
+      return;
+    }
+
     // If updating existing waypoint
     if (activeWaypoint) {
       const updatedWaypoint: Waypoint = {
@@ -56,7 +63,11 @@ const WaypointMenuEdit = () => {
         description: waypointDescription ? waypointDescription : "",
       };
       dispatch(
-        requestNewWaypoint({ waypoint: updatedWaypoint, channel: channelNum })
+        requestNewWaypoint({
+          portName: primaryPortName,
+          waypoint: updatedWaypoint,
+          channel: channelNum,
+        })
       );
       dispatch(deviceSliceActions.setInfoPane("waypoint"));
     } else if (placeholderWaypoint && activeWaypointID === 0) {
@@ -67,7 +78,11 @@ const WaypointMenuEdit = () => {
       };
 
       dispatch(
-        requestNewWaypoint({ waypoint: updatedWaypoint, channel: channelNum })
+        requestNewWaypoint({
+          portName: primaryPortName,
+          waypoint: updatedWaypoint,
+          channel: channelNum,
+        })
       );
       dispatch(deviceSliceActions.setInfoPane(null));
       dispatch(deviceSliceActions.setPlaceholderWaypoint(null));
@@ -159,7 +174,7 @@ const WaypointMenuEdit = () => {
         <div className=" ">
           <select
             id="channel"
-            className="self-center bg-gray-100 rounded-md bg-gray-100 p-2 w-11/12 rounded-md items-center text-gray-500 text-base font-normal "
+            className="self-center bg-gray-100 p-2 w-11/12 rounded-md items-center text-gray-500 text-base font-normal "
           >
             <option value="0">Channel 0</option>
             <option value="1">Channel 1</option>

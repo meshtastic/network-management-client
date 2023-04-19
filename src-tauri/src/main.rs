@@ -1,14 +1,14 @@
 mod analytics;
 mod constructors;
 mod data_conversion;
+mod device;
 mod graph;
 mod ipc;
-mod mesh;
 mod state;
 
 use log::{debug, error, info};
-use std::sync::Arc;
 use std::time::SystemTime;
+use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
 
 /// https://docs.rs/fern/0.6.2/fern/
@@ -69,12 +69,8 @@ fn main() {
     setup_logger().expect("Logging setup failed");
     debug!("Logger initialized");
 
-    let initial_connection_state = state::ActiveSerialConnection {
-        inner: Arc::new(async_runtime::Mutex::new(None)),
-    };
-
-    let initial_device_state = state::ActiveMeshDevice {
-        inner: Arc::new(async_runtime::Mutex::new(None)),
+    let initial_device_state = state::ConnectedDevices {
+        inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
     };
 
     let initial_graph_state = state::NetworkGraph {
@@ -99,7 +95,6 @@ fn main() {
             // Manage application state
             app.app_handle().manage(initial_analytics_state);
             app.app_handle().manage(initial_graph_state);
-            app.app_handle().manage(initial_connection_state);
             app.app_handle().manage(initial_device_state);
 
             // Autoconnect port state needs to be set after being mutated by CLI parser
@@ -112,6 +107,7 @@ fn main() {
             ipc::commands::get_all_serial_ports,
             ipc::commands::connect_to_serial_port,
             ipc::commands::disconnect_from_serial_port,
+            ipc::commands::disconnect_from_all_serial_ports,
             ipc::commands::send_text,
             ipc::commands::update_device_config,
             ipc::commands::update_device_user,

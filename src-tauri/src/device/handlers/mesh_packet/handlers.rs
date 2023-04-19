@@ -1,7 +1,7 @@
 use app::protobufs;
 use log::debug;
 
-use crate::mesh::device::{
+use crate::device::{
     handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
     helpers::{get_channel_name, get_node_user_name},
     ChannelMessageState, MeshDevice, NeighborInfoPacket, PositionPacket, TelemetryPacket,

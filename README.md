@@ -59,7 +59,7 @@ This project is still in early stages of development, but here's a rough roadmap
   - [x] RFC for novel packet ([link](https://www.adammcquilkin.com/Adam_McQuilkin_-_Meshtastic_Network_Centralization_Proposal.pdf))
   - [x] MVP protobuf changes ([link](https://github.com/uhuruhashimoto/protobufs))
   - [x] MVP firmware changes ([link](https://github.com/uhuruhashimoto/firmware))
-  - [ ] Community protobuf review (in-progress, [link](https://github.com/meshtastic/protobufs/pull/341))
+  - [x] Community protobuf review ([link](https://github.com/meshtastic/protobufs/pull/341))
   - [ ] Community firmware review
 - [ ] :nerd_face: Algorithmic analysis
   - [x] Infrastructure
@@ -72,6 +72,7 @@ This project is still in early stages of development, but here's a rough roadmap
     - [ ] Automatic algorithm rerunning
 - [ ] :radio: Node management
   - [x] Node peer table
+  - [ ] Network configuration (multi-device)
   - [ ] Remote node configuration
 - [ ] :pushpin: Waypoint management
   - [x] Managed waypoint table

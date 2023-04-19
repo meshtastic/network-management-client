@@ -10,8 +10,8 @@ export const selectRootState = () => (state: RootState) => state;
 export const selectAvailablePorts = () => (state: RootState): string[] | null =>
   state.devices.availableSerialPorts;
 
-export const selectActiveSerialPort = () => (state: RootState): string | null =>
-  state.devices.activeSerialPort;
+export const selectPrimarySerialPort =
+  () => (state: RootState): string | null => state.devices.primarySerialPort;
 
 export const selectDevice = () => (state: RootState): MeshDevice | null =>
   state.devices.device;

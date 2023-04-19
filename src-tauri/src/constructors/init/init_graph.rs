@@ -3,9 +3,9 @@ use crate::data_conversion::distance_constants::{
     ALT_CONVERSION_FACTOR, LAT_CONVERSION_FACTOR, LON_CONVERSION_FACTOR, SPEED_CONVERSION_FACTOR,
 };
 use crate::data_conversion::distance_conversion::get_spherical_distance;
+use crate::device::MeshNode;
 use crate::graph::graph_ds::Graph;
 use crate::graph::node::Node;
-use crate::mesh::device::MeshNode;
 use log::warn;
 use petgraph::graph::NodeIndex;
 use std::collections::HashMap;
@@ -162,9 +162,8 @@ mod tests {
                 num: 1,
                 user: Some(generate_test_user()),
                 position: Some(generate_zeroed_position()),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
         let meshnode_2: MeshNode = MeshNode {
@@ -174,9 +173,8 @@ mod tests {
                 num: 2,
                 user: Some(generate_test_user()),
                 position: Some(generate_zeroed_position()),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
         let meshnode_3 = MeshNode {
@@ -186,9 +184,8 @@ mod tests {
                 num: 3,
                 user: Some(generate_test_user()),
                 position: Some(generate_zeroed_position()),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
         let meshnode_4 = MeshNode {
@@ -198,9 +195,8 @@ mod tests {
                 num: 4,
                 user: Some(generate_test_user()),
                 position: Some(generate_zeroed_position()),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
         let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
@@ -313,9 +309,8 @@ mod tests {
                 num: 1,
                 user: Some(generate_test_user()),
                 position: Some(distance_1_info),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
         let lat_2 = 43.7030;
@@ -353,9 +348,8 @@ mod tests {
                 num: 2,
                 user: Some(generate_test_user()),
                 position: Some(distance_2_info),
-                snr: 0.0,
-                last_heard: 0,
                 device_metrics: Some(generate_zeroed_device_metrics()),
+                ..Default::default()
             },
         };
         let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();

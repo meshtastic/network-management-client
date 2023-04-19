@@ -1,25 +1,21 @@
 use std::collections::HashMap;
-use std::sync::Arc;
 use std::time::Duration;
 
 use app::protobufs;
 use log::{debug, error, info, warn};
 use tauri::api::notification::Notification;
-use tauri::async_runtime;
 use tokio::sync::broadcast;
 
+use crate::device::serial_connection::MeshConnection;
+use crate::device::SerialDeviceStatus;
 use crate::ipc::events::dispatch_configuration_status;
 use crate::ipc::{events, ConfigurationStatus};
-use crate::mesh::device::SerialDeviceStatus;
-use crate::mesh::serial_connection::MeshConnection;
-use crate::{analytics, mesh};
+use crate::{analytics, device};
 use crate::{graph, state};
 
 use super::CommandError;
 
-pub fn generate_graph_edges_geojson(
-    graph: &mut mesh::device::MeshGraph,
-) -> geojson::FeatureCollection {
+pub fn generate_graph_edges_geojson(graph: &mut device::MeshGraph) -> geojson::FeatureCollection {
     let edge_features: Vec<geojson::Feature> = graph
         .graph
         .get_edges()
@@ -86,7 +82,7 @@ pub async fn initialize_graph_state(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
     algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<(), CommandError> {
-    let new_graph = mesh::device::MeshGraph::new();
+    let new_graph = device::MeshGraph::new();
     let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
     let mesh_graph_arc = mesh_graph.inner.clone();
     let algo_state_arc = algo_state.inner.clone();
@@ -107,38 +103,34 @@ pub async fn initialize_graph_state(
 pub async fn initialize_serial_connection_handlers(
     port_name: String,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ActiveMeshDevice>,
-    serial_connection: tauri::State<'_, state::ActiveSerialConnection>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
-    let mut connection = mesh::serial_connection::SerialConnection::new();
-    let mut device = mesh::device::MeshDevice::new();
+    let mut device = device::MeshDevice::new();
 
     device.set_status(SerialDeviceStatus::Connecting);
-    connection.connect(app_handle.clone(), port_name.clone(), 115_200)?;
+    device
+        .connection
+        .connect(app_handle.clone(), port_name.clone(), 115_200)?;
 
     device.set_status(SerialDeviceStatus::Configuring);
-    connection.configure(device.config_id)?;
+    device.connection.configure(device.config_id)?;
 
-    let decoded_listener = connection
+    let decoded_listener = device
+        .connection
         .on_decoded_packet
         .as_ref()
         .ok_or("Decoded packet listener not open")?
         .resubscribe();
 
     let handle = app_handle.clone();
-    let mesh_device_arc = mesh_device.inner.clone();
+    let mesh_device_arc = connected_devices.inner.clone();
     let graph_arc = mesh_graph.inner.clone();
 
     // Only need to lock to set device in tauri state
     {
-        let mut device_guard = mesh_device_arc.lock().await;
-        *device_guard = Some(device);
-    }
-
-    {
-        let mut connection_guard = serial_connection.inner.lock().await;
-        *connection_guard = Some(connection);
+        let mut devices_guard = mesh_device_arc.lock().await;
+        devices_guard.insert(port_name.clone(), device);
     }
 
     spawn_connection_timeout_handler(handle.clone(), mesh_device_arc.clone(), port_name.clone());
@@ -156,15 +148,18 @@ pub async fn initialize_serial_connection_handlers(
 
 fn spawn_connection_timeout_handler(
     handle: tauri::AppHandle,
-    mesh_device_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
+    connected_devices_inner: state::ConnectedDevicesInner,
     port_name: String,
 ) {
     tauri::async_runtime::spawn(async move {
         // Wait 1s for device to configure
         tokio::time::sleep(Duration::from_millis(1500)).await;
 
-        let mut device_guard = mesh_device_arc.lock().await;
-        let device = match device_guard.as_mut().ok_or("Device not initialized") {
+        let mut devices_guard = connected_devices_inner.lock().await;
+        let device = match devices_guard
+            .get_mut(&port_name)
+            .ok_or("Device not initialized")
+        {
             Ok(d) => d,
             Err(e) => {
                 warn!("{}", e);
@@ -201,8 +196,8 @@ fn spawn_connection_timeout_handler(
 fn spawn_decoded_handler(
     handle: tauri::AppHandle,
     mut decoded_listener: broadcast::Receiver<protobufs::FromRadio>,
-    mesh_device_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshDevice>>>,
-    graph_arc: Arc<async_runtime::Mutex<Option<mesh::device::MeshGraph>>>,
+    connected_devices_arc: state::ConnectedDevicesInner,
+    graph_arc: state::NetworkGraphInner,
     port_name: String,
 ) {
     tauri::async_runtime::spawn(async move {
@@ -214,8 +209,11 @@ fn spawn_decoded_handler(
                 None => continue,
             };
 
-            let mut device_guard = mesh_device_arc.lock().await;
-            let device = match device_guard.as_mut().ok_or("Device not initialized") {
+            let mut devices_guard = connected_devices_arc.lock().await;
+            let device = match devices_guard
+                .get_mut(&port_name)
+                .ok_or("Device not initialized")
+            {
                 Ok(d) => d,
                 Err(e) => {
                     warn!("{}", e);
@@ -241,7 +239,7 @@ fn spawn_decoded_handler(
             };
 
             if update_result.device_updated {
-                match events::dispatch_updated_device(&handle, device.clone()) {
+                match events::dispatch_updated_device(&handle, device) {
                     Ok(_) => (),
                     Err(e) => {
                         error!("Failed to dispatch device to client:\n{}", e);

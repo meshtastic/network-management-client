@@ -12,7 +12,7 @@ use super::{
 
 use crate::constructors::init::init_edge_map::init_edge_map;
 use crate::constructors::init::init_graph::init_graph;
-use crate::mesh::device::ChannelMessageState;
+use crate::device::ChannelMessageState;
 
 impl MeshDevice {
     pub fn set_ready(&mut self, ready: bool) {
@@ -64,7 +64,53 @@ impl MeshDevice {
         }
     }
 
-    // TODO set module config
+    pub fn set_module_config(&mut self, module_config: protobufs::ModuleConfig) {
+        debug!("Updating own module config");
+
+        if let Some(payload_variant) = module_config.payload_variant {
+            match payload_variant {
+                protobufs::module_config::PayloadVariant::Audio(config) => {
+                    trace!("Updated own audio module config: {:?}", config);
+                    self.module_config.audio = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::CannedMessage(config) => {
+                    trace!("Updated own canned message module config: {:?}", config);
+                    self.module_config.canned_message = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::ExternalNotification(config) => {
+                    trace!(
+                        "Updated own external notification module config: {:?}",
+                        config
+                    );
+                    self.module_config.external_notification = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::Mqtt(config) => {
+                    trace!("Updated own mqtt module config: {:?}", config);
+                    self.module_config.mqtt = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::RangeTest(config) => {
+                    trace!("Updated own range test module config: {:?}", config);
+                    self.module_config.range_test = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::RemoteHardware(config) => {
+                    trace!("Updated own remote hardware module config: {:?}", config);
+                    self.module_config.remote_hardware = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::Serial(config) => {
+                    trace!("Updated own serial module config: {:?}", config);
+                    self.module_config.serial = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::StoreForward(config) => {
+                    trace!("Updated own store-forward module config: {:?}", config);
+                    self.module_config.store_forward = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::Telemetry(config) => {
+                    trace!("Updated own telemetry module config: {:?}", config);
+                    self.module_config.telemetry = Some(config);
+                }
+            }
+        }
+    }
 
     pub fn set_my_node_info(&mut self, info: protobufs::MyNodeInfo) {
         debug!("Setting own hardware info");
@@ -80,11 +126,9 @@ impl MeshDevice {
             let new_node = MeshNode {
                 data: protobufs::NodeInfo {
                     num: metrics.packet.from,
-                    user: None,
-                    position: None,
                     snr: metrics.packet.rx_snr,
                     last_heard: get_current_time_u32(),
-                    device_metrics: None,
+                    ..Default::default()
                 },
                 device_metrics: vec![],
                 environment_metrics: vec![],
@@ -205,10 +249,9 @@ impl MeshDevice {
                     data: protobufs::NodeInfo {
                         num: user.packet.from,
                         user: Some(user.data),
-                        position: None,
                         snr: user.packet.rx_snr,
                         last_heard: get_current_time_u32(),
-                        device_metrics: None,
+                        ..Default::default()
                     },
                 },
             );
@@ -236,11 +279,9 @@ impl MeshDevice {
                     environment_metrics: vec![],
                     data: protobufs::NodeInfo {
                         num: position.packet.from,
-                        user: None,
                         position: Some(position.data),
                         snr: position.packet.rx_snr,
-                        last_heard: 0,
-                        device_metrics: None,
+                        ..Default::default()
                     },
                 },
             );
@@ -262,7 +303,7 @@ impl MeshDevice {
             );
         }
         self.neighbors
-            .insert(neighborinfo.packet.from, neighborinfo.data);
+            .insert(neighborinfo.packet.from, neighborinfo);
     }
 
     pub fn add_text_message(&mut self, message: TextPacket) {
