@@ -67,11 +67,13 @@ pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
     for node_id in 0..num_nodes {
         const HANOVER_LAT_PREFIX: f64 = 43.70;
         const HANOVER_LON_PREFIX: f64 = 72.28;
+
         let latlngalt: (i32, i32, i32) = gps_degrees_to_protobuf_field(
             HANOVER_LAT_PREFIX + rand::random::<f64>() * 0.01,
             HANOVER_LON_PREFIX + rand::random::<f64>() * 0.01,
             rand::random::<f64>() * 100.0,
         );
+
         let position = protobufs::Position {
             latitude_i: latlngalt.0,
             longitude_i: latlngalt.1,
@@ -96,6 +98,7 @@ pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
             next_update: 0,
             seq_number: 0,
         };
+
         let user = protobufs::User {
             id: "test".to_string(),
             long_name: "test".to_string(),
@@ -104,25 +107,28 @@ pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
             hw_model: 0,
             is_licensed: false,
         };
+
         let device_metrics = protobufs::DeviceMetrics {
             battery_level: 0,
             voltage: 0.0,
             channel_utilization: 0.0,
             air_util_tx: 0.0,
         };
+
         let node_info = protobufs::NodeInfo {
             num: node_id as u32,
             user: Some(user),
             position: Some(position),
-            snr: 0.0,
-            last_heard: 0,
             device_metrics: Some(device_metrics),
+            ..Default::default()
         };
+
         let meshnode = MeshNode {
             device_metrics: vec![],
             environment_metrics: vec![],
             data: node_info,
         };
+
         meshnode_vec.push(meshnode);
     }
     meshnode_vec
