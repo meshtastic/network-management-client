@@ -3,6 +3,7 @@ import type { ViewState } from "react-map-gl";
 
 export interface IMapState {
   viewState: Partial<ViewState>;
+  nodesFeatureCollection: GeoJSON.FeatureCollection | null;
   edgesFeatureCollection: GeoJSON.FeatureCollection | null;
 }
 
@@ -12,6 +13,7 @@ export const initialMapState: IMapState = {
     longitude: 0.0,
     zoom: 0.0,
   },
+  nodesFeatureCollection: null,
   edgesFeatureCollection: null,
 };
 
@@ -21,8 +23,6 @@ export const mapSlice = createSlice({
   reducers: {
     setViewState: (state, action: PayloadAction<IMapState["viewState"]>) => {
       state.viewState = action.payload;
-
-      console.warn("setting view state", state.viewState);
     },
     setPosition: (
       state,
@@ -33,6 +33,12 @@ export const mapSlice = createSlice({
     },
     setZoom: (state, action: PayloadAction<number>) => {
       state.viewState.zoom = action.payload;
+    },
+    setNodesFeatureCollection: (
+      state,
+      action: PayloadAction<GeoJSON.FeatureCollection | null>,
+    ) => {
+      state.nodesFeatureCollection = action.payload;
     },
     setEdgesFeatureCollection: (
       state,

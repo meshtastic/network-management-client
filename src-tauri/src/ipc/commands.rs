@@ -4,10 +4,13 @@ use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
 use crate::device;
 use crate::device::serial_connection::PacketDestination;
+use crate::device::MeshNode;
 use crate::state;
 
 use app::protobufs;
 use log::{debug, error, trace};
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::json;
 use std::collections::HashMap;
 
@@ -195,23 +198,86 @@ pub async fn send_waypoint(
     Ok(())
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GraphGeoJSONResult {
+    pub nodes: geojson::FeatureCollection,
+    pub edges: geojson::FeatureCollection,
+}
+
+pub fn generate_node_feature(node: MeshNode) -> Option<geojson::Feature> {
+    let position = node.data.position?;
+    let num = node.data.num;
+
+    let properties = generate_node_properties(num);
+
+    Some(geojson::Feature {
+        id: Some(geojson::feature::Id::String(format!("{}", num))),
+        geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
+            (position.longitude_i as f64) / 1e7,
+            (position.latitude_i as f64) / 1e7,
+        ]))),
+        properties: Some(properties),
+        ..Default::default()
+    })
+}
+
+pub fn generate_node_properties(num: u32) -> serde_json::Map<String, serde_json::Value> {
+    let mut properties = serde_json::Map::new();
+    properties.insert("num".into(), json!(num));
+    properties
+}
+
+pub fn generate_edge_properties(snr: f64) -> serde_json::Map<String, serde_json::Value> {
+    let mut properties = serde_json::Map::new();
+    properties.insert("snr".into(), json!(snr));
+    properties
+}
+
 #[tauri::command]
 pub async fn get_node_edges(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
-) -> Result<geojson::FeatureCollection, CommandError> {
+) -> Result<GraphGeoJSONResult, CommandError> {
     debug!("Called get_node_edges command");
 
     let mut guard = mesh_graph.inner.lock().await;
     let graph = guard.as_mut().ok_or("Graph edges not initialized")?;
 
-    let mut properties_map_1 = serde_json::Map::new();
-    properties_map_1.insert("snr".into(), json!(1.));
+    let properties_node_map_1 = generate_node_properties(1);
+    let properties_node_map_2 = generate_node_properties(2);
+    let properties_node_map_3 = generate_node_properties(3);
 
-    let mut properties_map_2 = serde_json::Map::new();
-    properties_map_2.insert("snr".into(), json!(2.));
+    let nodes = geojson::FeatureCollection {
+        bbox: None,
+        foreign_members: None,
+        features: vec![
+            geojson::Feature {
+                id: Some(geojson::feature::Id::String("1".into())),
+                geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![5., 10.]))),
+                properties: Some(properties_node_map_1),
+                ..Default::default()
+            },
+            geojson::Feature {
+                id: Some(geojson::feature::Id::String("2".into())),
+                geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
+                    -15., 17.,
+                ]))),
+                properties: Some(properties_node_map_2),
+                ..Default::default()
+            },
+            geojson::Feature {
+                id: Some(geojson::feature::Id::String("3".into())),
+                geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
+                    -18., 35.,
+                ]))),
+                properties: Some(properties_node_map_3),
+                ..Default::default()
+            },
+        ],
+    };
 
-    let mut properties_map_3 = serde_json::Map::new();
-    properties_map_3.insert("snr".into(), json!(3.));
+    let properties_edge_map_1 = generate_edge_properties(1.);
+    let properties_edge_map_2 = generate_edge_properties(2.);
+    let properties_edge_map_3 = generate_edge_properties(3.);
 
     // let edges = helpers::generate_graph_edges_geojson(graph);
     let edges = geojson::FeatureCollection {
@@ -224,7 +290,7 @@ pub async fn get_node_edges(
                     vec![5., 10.],
                     vec![-15., 17.],
                 ]))),
-                properties: Some(properties_map_1),
+                properties: Some(properties_edge_map_1),
                 ..Default::default()
             },
             geojson::Feature {
@@ -233,7 +299,7 @@ pub async fn get_node_edges(
                     vec![-15., 17.],
                     vec![-18., 35.],
                 ]))),
-                properties: Some(properties_map_2),
+                properties: Some(properties_edge_map_2),
                 ..Default::default()
             },
             geojson::Feature {
@@ -242,7 +308,7 @@ pub async fn get_node_edges(
                     vec![-18., 35.],
                     vec![5., 10.],
                 ]))),
-                properties: Some(properties_map_3),
+                properties: Some(properties_edge_map_3),
                 ..Default::default()
             },
         ],
@@ -250,7 +316,7 @@ pub async fn get_node_edges(
 
     trace!("Found edges {:?}", edges);
 
-    Ok(edges)
+    Ok(GraphGeoJSONResult { nodes, edges })
 }
 
 #[tauri::command]

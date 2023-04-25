@@ -22,6 +22,7 @@ import {
   requestConnectToDevice,
   requestDisconnectFromAllDevices,
   requestDisconnectFromDevice,
+  requestInitializeApplication,
   requestNewWaypoint,
   requestSendMessage,
   requestUpdateUser,
@@ -106,6 +107,22 @@ function* getAvailableSerialPortsWorker(
   }
 }
 
+function* initializeApplicationWorker(
+  action: ReturnType<typeof requestInitializeApplication>,
+) {
+  try {
+    yield call(invoke, "initialize_graph_state");
+    yield call(subscribeAll);
+  } catch (error) {
+    yield put(
+      requestSliceActions.setRequestFailed({
+        name: action.type,
+        message: (error as CommandError).message,
+      }),
+    );
+  }
+}
+
 function* connectToDeviceWorker(
   action: ReturnType<typeof requestConnectToDevice>,
 ) {
@@ -120,7 +137,6 @@ function* connectToDeviceWorker(
       }),
     );
 
-    yield call(invoke, "initialize_graph_state");
 
     yield call(invoke, "connect_to_serial_port", {
       portName: action.payload.portName,
@@ -134,7 +150,6 @@ function* connectToDeviceWorker(
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
 
-    yield call(subscribeAll);
   } catch (error) {
     yield put(
       requestSliceActions.setRequestFailed({
@@ -239,6 +254,7 @@ export function* devicesSaga() {
       getAutoConnectPortWorker,
     ),
     takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
+    takeEvery(requestInitializeApplication.type, initializeApplicationWorker),
     takeEvery(requestConnectToDevice.type, connectToDeviceWorker),
     takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
     takeEvery(

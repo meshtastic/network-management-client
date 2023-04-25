@@ -4,9 +4,10 @@ import { logger } from "redux-logger";
 
 import { algorithmsReducer } from "@features/algorithms/algorithmsSlice";
 import { connectionReducer } from "@features/connection/connectionSlice";
+import { requestInitializeApplication } from "@features/device/deviceActions";
 import { deviceReducer } from "@features/device/deviceSlice";
-import { requestReducer } from "@features/requests/requestReducer";
 import { mapReducer } from "@features/map/mapSlice";
+import { requestReducer } from "@features/requests/requestReducer";
 
 import rootSaga from "@store/saga";
 
@@ -27,6 +28,8 @@ export const store = configureStore({
 });
 
 sagaMiddleware.run(rootSaga);
+
+store.dispatch(requestInitializeApplication());
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

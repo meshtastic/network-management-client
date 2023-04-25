@@ -56,7 +56,10 @@ const MapIconButton = ({
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
       className={`${className} p-2 rounded-lg border shadow-lg ${
         selected ? "bg-gray-700 border-gray-500" : "bg-white border-gray-200"
       }`}

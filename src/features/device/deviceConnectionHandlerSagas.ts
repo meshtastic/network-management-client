@@ -8,9 +8,14 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestDisconnectFromDevice } from "@features/device/deviceActions";
 import { mapSliceActions } from "@features/map/mapSlice";
 
+export type GraphGeoJSONResult = {
+  nodes: GeoJSON.FeatureCollection,
+  edges: GeoJSON.FeatureCollection
+};
+
 export type DeviceUpdateChannel = EventChannel<MeshDevice>;
 export type DeviceDisconnectChannel = EventChannel<string>;
-export type GraphUpdateChannel = EventChannel<GeoJSON.FeatureCollection>;
+export type GraphUpdateChannel = EventChannel<GraphGeoJSONResult>;
 export type ConfigStatusChannel = EventChannel<boolean>;
 
 function* handleSagaError(error: unknown) {
@@ -76,7 +81,7 @@ export function* handleDeviceDisconnectChannel(
 
 export const createGraphUpdateChannel = (): GraphUpdateChannel => {
   return eventChannel((emitter) => {
-    listen<GeoJSON.FeatureCollection>("graph_update", (event) => {
+    listen<GraphGeoJSONResult>("graph_update", (event) => {
       emitter(event.payload);
     })
       // .then((unlisten) => {
@@ -93,8 +98,10 @@ export function* handleGraphUpdateChannel(channel: GraphUpdateChannel) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const edgeFeatures: GeoJSON.FeatureCollection = yield take(channel);
-      yield put(mapSliceActions.setEdgesFeatureCollection(edgeFeatures));
+      const { nodes, edges }: GraphGeoJSONResult = yield take(channel);
+
+      yield put(mapSliceActions.setNodesFeatureCollection(nodes));
+      yield put(mapSliceActions.setEdgesFeatureCollection(edges));
     }
   } catch (error) {
     yield call(handleSagaError, error);

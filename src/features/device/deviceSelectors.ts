@@ -28,13 +28,8 @@ export const selectAllNodes = () => (state: RootState): MeshNode[] =>
   Object.values(state.devices.device?.nodes ?? []);
 
 export const selectNodeById =
-  (id: number) => (state: RootState): MeshNode | null => {
-    for (const node of selectAllNodes()(state)) {
-      if (node.data.num === id) return node;
-    }
-
-    return null;
-  };
+  (id: number | null) => (state: RootState): MeshNode | null =>
+    selectAllNodes()(state).find(n => n.data.num === id) ?? null;
 
 export const selectActiveNodeId = () => (state: RootState) =>
   state.devices.activeNode;

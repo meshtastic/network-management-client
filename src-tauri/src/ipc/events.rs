@@ -1,4 +1,4 @@
-use crate::device;
+use crate::{device, ipc::commands::GraphGeoJSONResult};
 use log::{debug, trace};
 use tauri::Manager;
 
@@ -24,7 +24,13 @@ pub fn dispatch_updated_edges(
     debug!("Dispatching updated edges");
 
     let edges = super::helpers::generate_graph_edges_geojson(graph);
-    handle.emit_all("graph_update", edges)?;
+    let nodes = geojson::FeatureCollection {
+        bbox: None,
+        features: vec![],
+        foreign_members: None,
+    };
+
+    handle.emit_all::<GraphGeoJSONResult>("graph_update", GraphGeoJSONResult { nodes, edges })?;
 
     debug!("Dispatched updated edges");
 

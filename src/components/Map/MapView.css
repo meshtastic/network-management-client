@@ -17,6 +17,30 @@
   @apply border-gray-100 !important;
 }
 
+/* Attribution */
+.maplibregl-ctrl-attrib {
+  margin-top: auto !important;
+  /* @apply rounded-sm !important; */
+}
+
+/* Attribution text */
+.maplibregl-ctrl-attrib-inner {
+  @apply font-sans !important;
+  @apply text-xs !important;
+  @apply font-normal !important;
+  @apply text-gray-700 !important;
+
+  @apply py-0.5 !important;
+}
+
+/* Attribution text */
+.maplibregl-ctrl-attrib-inner > * {
+  @apply font-sans !important;
+  @apply text-xs !important;
+  @apply font-normal !important;
+  @apply text-gray-700 !important;
+}
+
 /* Distance Scale */
 .maplibregl-ctrl-scale {
   background-color: transparent !important;
