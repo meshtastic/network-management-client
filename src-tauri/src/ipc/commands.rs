@@ -4,6 +4,7 @@ use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
 use crate::device;
 use crate::device::serial_connection::PacketDestination;
+use crate::device::SerialDeviceStatus;
 use crate::state;
 
 use app::protobufs;
@@ -79,7 +80,8 @@ pub async fn disconnect_from_serial_port(
         let mut state_devices = connected_devices.inner.lock().await;
 
         if let Some(device) = state_devices.get_mut(&port_name) {
-            device.connection.disconnect()?;
+            device.connection.disconnect().await?;
+            device.set_status(SerialDeviceStatus::Disconnected);
         }
 
         state_devices.remove(&port_name);
@@ -99,7 +101,7 @@ pub async fn disconnect_from_all_serial_ports(
 
         // Disconnect from all serial ports
         for (_port_name, device) in state_devices.iter_mut() {
-            device.connection.disconnect()?;
+            device.connection.disconnect().await?;
         }
 
         // Clear connections map

@@ -1,132 +1,167 @@
 use app::protobufs;
 use log::{debug, error, info, trace, warn};
 use prost::Message;
-use serialport::SerialPort;
+use serial2::SerialPort;
 use std::{
     io::ErrorKind,
-    sync::{mpsc, Arc, Mutex},
-    thread::{self, JoinHandle},
+    sync::{mpsc, Arc},
     time::Duration,
 };
-use tauri::Manager;
+use tauri::{async_runtime, Manager};
 use tokio::sync::broadcast;
+use tokio_util::sync::CancellationToken;
 
 use super::{MeshConnection, SerialConnection};
 
+// Handlers
+
 pub fn spawn_serial_read_handler(
     app_handle: tauri::AppHandle,
-    is_connection_active: Arc<Mutex<bool>>,
-    mut read_port: Box<dyn SerialPort>,
+    cancellation_token: CancellationToken,
+    read_port: Arc<SerialPort>,
     read_output_tx: mpsc::Sender<Vec<u8>>,
     port_name: String,
-) -> JoinHandle<()> {
-    thread::spawn(move || loop {
-        // Kill thread if connection not active
-        // We only need this as a flag, don't want to keep lock past check
-        {
-            let guard = is_connection_active
-                .lock()
-                .map_err(|e| e.to_string())
-                .expect("Could not lock reader active mutex");
+) -> async_runtime::JoinHandle<()> {
+    let handle = spawn_serial_read_worker(app_handle, read_port, read_output_tx, port_name);
 
-            if !*guard {
-                break;
+    async_runtime::spawn(async move {
+        tokio::select! {
+            _ = cancellation_token.cancelled() => {
+              debug!("Serial read handler cancelled");
             }
-        }
-
-        let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
-
-        let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
-            Ok(o) => o,
-            Err(ref e) if e.kind() == ErrorKind::TimedOut => continue,
-            Err(ref e)
-                if e.kind() == ErrorKind::BrokenPipe // Linux disconnect
-                    || e.kind() == ErrorKind::PermissionDenied // Windows disconnect
-                    =>
-            {
-                app_handle
-                    .app_handle()
-                    .emit_all("device_disconnect", port_name)
-                    .expect("Could not dispatch disconnection event");
-
-                break;
+            _ = handle => {
+                error!("Serial read handler unexpectedly terminated");
             }
-            Err(err) => {
-                error!("Serial read failed: {:?}", err);
-                continue;
-            }
-        };
-
-        if recv_bytes > 0 {
-            trace!(
-                "Received info from radio: {:?}",
-                incoming_serial_buf[..recv_bytes].to_vec()
-            );
-
-            match read_output_tx.send(incoming_serial_buf[..recv_bytes].to_vec()) {
-                Ok(_) => (),
-                Err(_) => continue,
-            };
         }
     })
 }
 
 pub fn spawn_serial_write_handler(
-    is_connection_active: Arc<Mutex<bool>>,
-    mut port: Box<dyn SerialPort>,
+    cancellation_token: CancellationToken,
+    port: Arc<SerialPort>,
     write_input_rx: mpsc::Receiver<Vec<u8>>,
-) -> JoinHandle<()> {
-    thread::spawn(move || loop {
-        // Kill thread if connection not active
-        // We only need this as a flag, don't want to keep lock past check
-        {
-            let guard = is_connection_active
-                .lock()
-                .map_err(|e| e.to_string())
-                .expect("Could not lock writer active mutex");
+) -> async_runtime::JoinHandle<()> {
+    let handle = spawn_serial_write_worker(port, write_input_rx);
 
-            if !*guard {
-                break;
+    async_runtime::spawn(async move {
+        tokio::select! {
+            _ = cancellation_token.cancelled() => {
+              debug!("Serial write handler cancelled");
             }
-        }
-
-        if let Ok(data) = write_input_rx.recv_timeout(Duration::from_millis(10)) {
-            match SerialConnection::write_to_radio(&mut port, data) {
-                Ok(()) => (),
-                Err(e) => error!("Error writing to radio: {:?}", e.to_string()),
-            };
+            _ = handle => {
+                error!("Serial write handler unexpectedly terminated");
+            }
         }
     })
 }
 
-pub fn spawn_message_processing_handle(
-    is_connection_active: Arc<Mutex<bool>>,
+pub fn spawn_message_processing_handler(
+    cancellation_token: CancellationToken,
     read_output_rx: mpsc::Receiver<Vec<u8>>,
     decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
-) -> JoinHandle<()> {
-    thread::spawn(move || {
+) -> async_runtime::JoinHandle<()> {
+    let handle = spawn_message_processing_worker(read_output_rx, decoded_packet_tx);
+
+    async_runtime::spawn(async move {
+        tokio::select! {
+            _ = cancellation_token.cancelled() => {
+              debug!("Message processing handler cancelled");
+            }
+            _ = handle => {
+              error!("Message processing handler unexpectedly terminated");
+            }
+        }
+    })
+}
+
+// Workers
+
+fn spawn_serial_read_worker(
+    app_handle: tauri::AppHandle,
+    read_port: Arc<SerialPort>,
+    read_output_tx: mpsc::Sender<Vec<u8>>,
+    port_name: String,
+) -> async_runtime::JoinHandle<()> {
+    trace!("Spawned serial read worker");
+
+    async_runtime::spawn(async move {
+        loop {
+            let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
+
+            let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
+                Ok(o) => o,
+                Err(ref e) if e.kind() == ErrorKind::TimedOut => continue,
+                Err(ref e)
+                    if e.kind() == ErrorKind::BrokenPipe // Linux disconnect
+                        || e.kind() == ErrorKind::PermissionDenied // Windows disconnect
+                        =>
+                {
+                    error!("Serial read failed: {:?}", e);
+
+                    app_handle
+                        .app_handle()
+                        .emit_all("device_disconnect", port_name)
+                        .expect("Could not dispatch disconnection event");
+
+                    break;
+                }
+                Err(err) => {
+                    error!("Serial read failed: {:?}", err);
+                    continue;
+                }
+            };
+
+            if recv_bytes > 0 {
+                // trace!(
+                //     "Received info from radio: {:?}",
+                //     incoming_serial_buf[..recv_bytes].to_vec()
+                // );
+
+                match read_output_tx.send(incoming_serial_buf[..recv_bytes].to_vec()) {
+                    Ok(_) => (),
+                    Err(_) => continue,
+                };
+            }
+        }
+    })
+}
+
+fn spawn_serial_write_worker(
+    port: Arc<SerialPort>,
+    write_input_rx: mpsc::Receiver<Vec<u8>>,
+) -> async_runtime::JoinHandle<()> {
+    trace!("Spawned serial write worker");
+
+    async_runtime::spawn(async move {
+        loop {
+            if let Ok(data) = write_input_rx.recv_timeout(Duration::from_millis(10)) {
+                match SerialConnection::write_to_radio(port.as_ref(), data) {
+                    Ok(()) => (),
+                    Err(e) => error!("Error writing to radio: {:?}", e.to_string()),
+                };
+            }
+        }
+    })
+}
+
+fn spawn_message_processing_worker(
+    read_output_rx: mpsc::Receiver<Vec<u8>>,
+    decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
+) -> async_runtime::JoinHandle<()> {
+    trace!("Spawned message processing worker");
+
+    async_runtime::spawn(async move {
         let mut transform_serial_buf: Vec<u8> = vec![];
 
         loop {
-            // Kill thread if connection not active
-            // We only need this as a flag, don't want to keep lock past check
-            {
-                let guard = is_connection_active
-                    .lock()
-                    .map_err(|e| e.to_string())
-                    .expect("Could not lock processing active mutex");
-
-                if !*guard {
-                    break;
-                }
-            }
-
             if let Ok(message) = read_output_rx.recv() {
                 process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
             }
         }
     })
 }
+
+// Helpers
 
 fn process_serial_bytes(
     transform_serial_buf: &mut Vec<u8>,

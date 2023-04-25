@@ -8,6 +8,7 @@ import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 import SerialPortOption from "@components/Onboard/SerialPortOption";
 
 import { selectConnectionStatus } from "@features/connection/connectionSelectors";
+import { connectionSliceActions } from "@features/connection/connectionSlice";
 import {
   requestAutoConnectPort,
   requestAvailablePorts,
@@ -48,6 +49,7 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
         name: requestConnectToDevice.type,
       })
     );
+    dispatch(connectionSliceActions.clearAllConnectionState());
     requestPorts();
   };
 
