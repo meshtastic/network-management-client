@@ -129,7 +129,7 @@ pub async fn initialize_serial_connection_handlers(
     thread::sleep(Duration::from_millis(2000));
 
     device.set_status(SerialDeviceStatus::Configuring);
-    device.connection.configure(device.config_id)?;
+    device.connection.configure(device.config_id).await?;
 
     println!("Starting configuration");
 

@@ -127,7 +127,9 @@ pub async fn send_text(
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device.send_text(text.clone(), PacketDestination::Broadcast, true, channel)?;
+    device
+        .send_text(text.clone(), PacketDestination::Broadcast, true, channel)
+        .await?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 
@@ -148,7 +150,7 @@ pub async fn update_device_config(
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device.update_device_config(config)?;
+    device.update_device_config(config).await?;
 
     Ok(())
 }
@@ -167,7 +169,7 @@ pub async fn update_device_user(
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device.update_device_user(user)?;
+    device.update_device_user(user).await?;
 
     Ok(())
 }
@@ -189,7 +191,9 @@ pub async fn send_waypoint(
         .ok_or("Device not connected")
         .map_err(|e| e.to_string())?;
 
-    device.send_waypoint(waypoint, PacketDestination::Broadcast, true, channel)?;
+    device
+        .send_waypoint(waypoint, PacketDestination::Broadcast, true, channel)
+        .await?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 

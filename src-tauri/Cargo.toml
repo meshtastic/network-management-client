@@ -39,7 +39,7 @@ log = "0.4"
 fern = "0.6"
 humantime = "2.1.0"
 tokio-util = "0.7.7"
-serial2 = "0.1.7"
+serialport = "4.2.0"
 
 [features]
 # by default Tauri runs in production mode

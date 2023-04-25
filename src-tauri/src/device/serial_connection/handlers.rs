@@ -1,12 +1,8 @@
 use app::protobufs;
 use log::{debug, error, info, trace, warn};
 use prost::Message;
-use serial2::SerialPort;
-use std::{
-    io::ErrorKind,
-    sync::{mpsc, Arc},
-    time::Duration,
-};
+use serialport::SerialPort;
+use std::io::ErrorKind;
 use tauri::{async_runtime, Manager};
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
@@ -18,8 +14,8 @@ use super::{MeshConnection, SerialConnection};
 pub fn spawn_serial_read_handler(
     app_handle: tauri::AppHandle,
     cancellation_token: CancellationToken,
-    read_port: Arc<SerialPort>,
-    read_output_tx: mpsc::Sender<Vec<u8>>,
+    read_port: Box<dyn SerialPort>,
+    read_output_tx: async_runtime::Sender<Vec<u8>>,
     port_name: String,
 ) -> async_runtime::JoinHandle<()> {
     let handle = spawn_serial_read_worker(app_handle, read_port, read_output_tx, port_name);
@@ -38,8 +34,8 @@ pub fn spawn_serial_read_handler(
 
 pub fn spawn_serial_write_handler(
     cancellation_token: CancellationToken,
-    port: Arc<SerialPort>,
-    write_input_rx: mpsc::Receiver<Vec<u8>>,
+    port: Box<dyn SerialPort>,
+    write_input_rx: async_runtime::Receiver<Vec<u8>>,
 ) -> async_runtime::JoinHandle<()> {
     let handle = spawn_serial_write_worker(port, write_input_rx);
 
@@ -57,7 +53,7 @@ pub fn spawn_serial_write_handler(
 
 pub fn spawn_message_processing_handler(
     cancellation_token: CancellationToken,
-    read_output_rx: mpsc::Receiver<Vec<u8>>,
+    read_output_rx: async_runtime::Receiver<Vec<u8>>,
     decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
 ) -> async_runtime::JoinHandle<()> {
     let handle = spawn_message_processing_worker(read_output_rx, decoded_packet_tx);
@@ -78,8 +74,8 @@ pub fn spawn_message_processing_handler(
 
 fn spawn_serial_read_worker(
     app_handle: tauri::AppHandle,
-    read_port: Arc<SerialPort>,
-    read_output_tx: mpsc::Sender<Vec<u8>>,
+    mut read_port: Box<dyn SerialPort>,
+    read_output_tx: async_runtime::Sender<Vec<u8>>,
     port_name: String,
 ) -> async_runtime::JoinHandle<()> {
     trace!("Spawned serial read worker");
@@ -117,7 +113,10 @@ fn spawn_serial_read_worker(
                 //     incoming_serial_buf[..recv_bytes].to_vec()
                 // );
 
-                match read_output_tx.send(incoming_serial_buf[..recv_bytes].to_vec()) {
+                match read_output_tx
+                    .send(incoming_serial_buf[..recv_bytes].to_vec())
+                    .await
+                {
                     Ok(_) => (),
                     Err(_) => continue,
                 };
@@ -127,25 +126,26 @@ fn spawn_serial_read_worker(
 }
 
 fn spawn_serial_write_worker(
-    port: Arc<SerialPort>,
-    write_input_rx: mpsc::Receiver<Vec<u8>>,
+    mut port: Box<dyn SerialPort>,
+    mut write_input_rx: async_runtime::Receiver<Vec<u8>>,
 ) -> async_runtime::JoinHandle<()> {
     trace!("Spawned serial write worker");
 
     async_runtime::spawn(async move {
-        loop {
-            if let Ok(data) = write_input_rx.recv_timeout(Duration::from_millis(10)) {
-                match SerialConnection::write_to_radio(port.as_ref(), data) {
-                    Ok(()) => (),
-                    Err(e) => error!("Error writing to radio: {:?}", e.to_string()),
-                };
-            }
+        while let Some(data) = write_input_rx.recv().await {
+            // println!("Data of length {}", data.len());
+            match SerialConnection::write_to_radio(&mut port, data) {
+                Ok(()) => (),
+                Err(e) => error!("Error writing to radio: {:?}", e.to_string()),
+            };
         }
+
+        trace!("Serial write write_input_rx channel closed");
     })
 }
 
 fn spawn_message_processing_worker(
-    read_output_rx: mpsc::Receiver<Vec<u8>>,
+    mut read_output_rx: async_runtime::Receiver<Vec<u8>>,
     decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
 ) -> async_runtime::JoinHandle<()> {
     trace!("Spawned message processing worker");
@@ -153,11 +153,11 @@ fn spawn_message_processing_worker(
     async_runtime::spawn(async move {
         let mut transform_serial_buf: Vec<u8> = vec![];
 
-        loop {
-            if let Ok(message) = read_output_rx.recv() {
-                process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
-            }
+        while let Some(message) = read_output_rx.recv().await {
+            process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
         }
+
+        trace!("Serial processing read_output_rx channel closed");
     })
 }
 

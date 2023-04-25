@@ -7,12 +7,8 @@ use app::protobufs;
 use async_trait::async_trait;
 use log::trace;
 use prost::Message;
-use serial2::SerialPort;
-use std::{
-    sync::{self, Arc},
-    thread,
-    time::Duration,
-};
+use serialport::SerialPort;
+use std::{thread, time::Duration};
 use tauri::async_runtime;
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
@@ -28,7 +24,7 @@ pub enum PacketDestination {
 #[derive(Debug, Default)]
 pub struct SerialConnection {
     pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
-    write_input_tx: Option<sync::mpsc::Sender<Vec<u8>>>,
+    write_input_tx: Option<async_runtime::Sender<Vec<u8>>>,
 
     serial_read_handle: Option<async_runtime::JoinHandle<()>>,
     serial_write_handle: Option<async_runtime::JoinHandle<()>>,
@@ -49,9 +45,9 @@ impl Clone for SerialConnection {
 #[async_trait]
 pub trait MeshConnection {
     fn new() -> Self;
-    fn configure(&mut self, config_id: u32) -> Result<(), String>;
-    fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
-    fn write_to_radio(port: &SerialPort, data: Vec<u8>) -> Result<(), String>;
+    async fn configure(&mut self, config_id: u32) -> Result<(), String>;
+    async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
+    fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), String>;
 }
 
 #[async_trait]
@@ -69,7 +65,7 @@ impl MeshConnection for SerialConnection {
         }
     }
 
-    fn configure(&mut self, config_id: u32) -> Result<(), String> {
+    async fn configure(&mut self, config_id: u32) -> Result<(), String> {
         let to_radio = protobufs::ToRadio {
             payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),
         };
@@ -79,23 +75,23 @@ impl MeshConnection for SerialConnection {
             .encode::<Vec<u8>>(&mut packet_buf)
             .map_err(|e| e.to_string())?;
 
-        self.send_raw(packet_buf)?;
+        self.send_raw(packet_buf).await?;
 
         Ok(())
     }
 
-    fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String> {
+    async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String> {
         let channel = self
             .write_input_tx
             .as_ref()
             .ok_or("Could not send message to write channel")
             .map_err(|e| e.to_string())?;
 
-        channel.send(data).map_err(|e| e.to_string())?;
+        channel.send(data).await.map_err(|e| e.to_string())?;
         Ok(())
     }
 
-    fn write_to_radio(port: &SerialPort, data: Vec<u8>) -> Result<(), String> {
+    fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), String> {
         let binding = helpers::format_serial_packet(data);
         let message_buffer: &[u8] = binding.as_slice();
         port.write(message_buffer).map_err(|e| e.to_string())?;
@@ -106,11 +102,11 @@ impl MeshConnection for SerialConnection {
 
 impl SerialConnection {
     pub fn get_available_ports() -> Result<Vec<String>, String> {
-        let available_ports = SerialPort::available_ports().map_err(|e| e.to_string())?;
+        let available_ports = serialport::available_ports().map_err(|e| e.to_string())?;
 
         let ports: Vec<String> = available_ports
             .iter()
-            .map(|p| p.display().to_string())
+            .map(|p| p.port_name.clone())
             .collect();
 
         Ok(ports)
@@ -122,30 +118,36 @@ impl SerialConnection {
         port_name: String,
         baud_rate: u32,
     ) -> Result<(), String> {
-        println!("Connecting to {:?}", port_name.clone());
+        println!("Connecting to {:?}", port_name);
 
-        let port = match SerialPort::open(port_name.clone(), baud_rate) {
-            Ok(p) => Arc::new(p),
-            Err(e) => {
-                return Err(format!(
+        let port = serialport::new(port_name.clone(), baud_rate)
+            .timeout(Duration::from_millis(10))
+            .open()
+            .map_err(|e| {
+                format!(
                     "Could not open serial port \"{}\": {}",
                     port_name.clone(),
                     e
-                ));
-            }
-        };
+                )
+            })?;
 
         trace!("Spawning device configuration timeout");
         println!("Creating new channels");
 
-        let (write_input_tx, write_input_rx) = sync::mpsc::channel::<Vec<u8>>();
-        let (read_output_tx, read_output_rx) = sync::mpsc::channel::<Vec<u8>>();
+        let (write_input_tx, write_input_rx) = async_runtime::channel::<Vec<u8>>(32);
+        let (read_output_tx, read_output_rx) = async_runtime::channel::<Vec<u8>>(32);
         let (decoded_packet_tx, decoded_packet_rx) = broadcast::channel::<protobufs::FromRadio>(32);
 
         self.write_input_tx = Some(write_input_tx);
         self.on_decoded_packet = Some(decoded_packet_rx);
 
-        let read_port = port.clone();
+        let read_port = port.try_clone().map_err(|e| {
+            format!(
+                "Could not clone serial port \"{}\": {}",
+                port_name.clone(),
+                e
+            )
+        })?;
         let write_port = port;
 
         println!("Creating handers");
