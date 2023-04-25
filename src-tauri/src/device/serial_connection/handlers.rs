@@ -15,7 +15,7 @@ pub fn spawn_serial_read_handler(
     app_handle: tauri::AppHandle,
     cancellation_token: CancellationToken,
     read_port: Box<dyn SerialPort>,
-    read_output_tx: async_runtime::Sender<Vec<u8>>,
+    read_output_tx: tokio::sync::mpsc::UnboundedSender<Vec<u8>>,
     port_name: String,
 ) -> async_runtime::JoinHandle<()> {
     let handle = spawn_serial_read_worker(app_handle, read_port, read_output_tx, port_name);
@@ -35,7 +35,7 @@ pub fn spawn_serial_read_handler(
 pub fn spawn_serial_write_handler(
     cancellation_token: CancellationToken,
     port: Box<dyn SerialPort>,
-    write_input_rx: async_runtime::Receiver<Vec<u8>>,
+    write_input_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
 ) -> async_runtime::JoinHandle<()> {
     let handle = spawn_serial_write_worker(port, write_input_rx);
 
@@ -53,7 +53,7 @@ pub fn spawn_serial_write_handler(
 
 pub fn spawn_message_processing_handler(
     cancellation_token: CancellationToken,
-    read_output_rx: async_runtime::Receiver<Vec<u8>>,
+    read_output_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
     decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
 ) -> async_runtime::JoinHandle<()> {
     let handle = spawn_message_processing_worker(read_output_rx, decoded_packet_tx);
@@ -72,53 +72,102 @@ pub fn spawn_message_processing_handler(
 
 // Workers
 
+#[derive(Clone, Debug)]
+enum SerialReadResult {
+    Success(Vec<u8>),
+    TimedOut,
+    FatalError,
+    NonFatalError,
+}
+
 fn spawn_serial_read_worker(
     app_handle: tauri::AppHandle,
-    mut read_port: Box<dyn SerialPort>,
-    read_output_tx: async_runtime::Sender<Vec<u8>>,
+    read_port: Box<dyn SerialPort>,
+    read_output_tx: tokio::sync::mpsc::UnboundedSender<Vec<u8>>,
     port_name: String,
 ) -> async_runtime::JoinHandle<()> {
-    trace!("Spawned serial read worker");
-
     async_runtime::spawn(async move {
+        trace!("Spawned serial read worker");
+
         loop {
-            let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
+            let (send, recv) = tokio::sync::oneshot::channel::<SerialReadResult>();
 
-            let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
-                Ok(o) => o,
-                Err(ref e) if e.kind() == ErrorKind::TimedOut => continue,
-                Err(ref e)
-                    if e.kind() == ErrorKind::BrokenPipe // Linux disconnect
-                        || e.kind() == ErrorKind::PermissionDenied // Windows disconnect
-                        =>
-                {
-                    error!("Serial read failed: {:?}", e);
-
-                    app_handle
-                        .app_handle()
-                        .emit_all("device_disconnect", port_name)
-                        .expect("Could not dispatch disconnection event");
-
-                    break;
-                }
+            let app_handle = app_handle.clone();
+            let mut read_port = match read_port.try_clone() {
+                Ok(p) => p,
                 Err(err) => {
-                    error!("Serial read failed: {:?}", err);
+                    warn!("Error cloning \"read_port\": {}", err);
+                    continue;
+                }
+            };
+            let port_name = port_name.clone();
+
+            tokio::task::spawn_blocking(move || {
+                let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
+                let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
+                    Ok(o) => o,
+                    Err(ref e) if e.kind() == ErrorKind::TimedOut => {send.send(SerialReadResult::TimedOut).expect("Failed to send read result");return;},
+                    Err(ref e)
+                        if e.kind() == ErrorKind::BrokenPipe // Linux disconnect
+                            || e.kind() == ErrorKind::PermissionDenied // Windows disconnect
+                            =>
+                    {
+                        error!("Serial read failed (fatal): {:?}", e);
+    
+                        app_handle
+                            .app_handle()
+                            .emit_all("device_disconnect", port_name)
+                            .expect("Could not dispatch disconnection event");
+    
+                        send.send(SerialReadResult::FatalError).expect("Failed to send read result");
+                        return;
+                    }
+                    Err(err) => {
+                        error!("Serial read failed: {:?}", err);
+                        send.send(SerialReadResult::NonFatalError).expect("Failed to send read result");
+                        return;
+                    }
+                };
+
+                send.send(SerialReadResult::Success(
+                    incoming_serial_buf[..recv_bytes].to_vec(),
+                ))
+                .expect("Failed to send read result");
+            });
+
+            let read_result = match recv.await {
+                Ok(r) => r,
+                Err(err) => {
+                    warn!("Error receiving serial read: {}", err);
                     continue;
                 }
             };
 
-            if recv_bytes > 0 {
+            let recv_message = match read_result {
+                SerialReadResult::Success(m) => m,
+                SerialReadResult::TimedOut => {
+                    continue;
+                }
+                SerialReadResult::FatalError => {
+                    break;
+                }
+                SerialReadResult::NonFatalError => {
+                    continue;
+                }
+            };
+
+            if !recv_message.is_empty() {
                 // trace!(
                 //     "Received info from radio: {:?}",
-                //     incoming_serial_buf[..recv_bytes].to_vec()
+                //     recv_message
                 // );
 
-                match read_output_tx
-                    .send(incoming_serial_buf[..recv_bytes].to_vec())
-                    .await
-                {
+                match read_output_tx.send(recv_message) {
                     Ok(_) => (),
-                    Err(_) => continue,
+                    Err(err) => {
+                        warn!("Binary read packet transmission failed: {}", err);
+                        continue;
+                    }
                 };
             }
         }
@@ -127,11 +176,11 @@ fn spawn_serial_read_worker(
 
 fn spawn_serial_write_worker(
     mut port: Box<dyn SerialPort>,
-    mut write_input_rx: async_runtime::Receiver<Vec<u8>>,
+    mut write_input_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
 ) -> async_runtime::JoinHandle<()> {
-    trace!("Spawned serial write worker");
-
     async_runtime::spawn(async move {
+        trace!("Spawned serial write worker");
+
         while let Some(data) = write_input_rx.recv().await {
             // println!("Data of length {}", data.len());
             match SerialConnection::write_to_radio(&mut port, data) {
@@ -145,15 +194,16 @@ fn spawn_serial_write_worker(
 }
 
 fn spawn_message_processing_worker(
-    mut read_output_rx: async_runtime::Receiver<Vec<u8>>,
+    mut read_output_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
     decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
 ) -> async_runtime::JoinHandle<()> {
-    trace!("Spawned message processing worker");
-
     async_runtime::spawn(async move {
+        trace!("Spawned message processing worker");
+
         let mut transform_serial_buf: Vec<u8> = vec![];
 
         while let Some(message) = read_output_rx.recv().await {
+            println!("Message: {:?}", message.clone());
             process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
         }
 

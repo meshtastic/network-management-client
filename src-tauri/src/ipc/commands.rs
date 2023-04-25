@@ -102,6 +102,7 @@ pub async fn disconnect_from_all_serial_ports(
         // Disconnect from all serial ports
         for (_port_name, device) in state_devices.iter_mut() {
             device.connection.disconnect().await?;
+            device.set_status(SerialDeviceStatus::Disconnected);
         }
 
         // Clear connections map

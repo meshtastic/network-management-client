@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::thread;
 use std::time::Duration;
 
 use app::protobufs;
@@ -112,7 +111,8 @@ pub async fn initialize_serial_connection_handlers(
     device.set_status(SerialDeviceStatus::Connecting);
     device
         .connection
-        .connect(app_handle.clone(), port_name.clone(), 115_200)?;
+        .connect(app_handle.clone(), port_name.clone(), 115_200)
+        .await?;
 
     println!("Starting connection");
 
@@ -125,8 +125,6 @@ pub async fn initialize_serial_connection_handlers(
         .resubscribe();
 
     println!("Resubscribed to listener");
-
-    thread::sleep(Duration::from_millis(2000));
 
     device.set_status(SerialDeviceStatus::Configuring);
     device.connection.configure(device.config_id).await?;

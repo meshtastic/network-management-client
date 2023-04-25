@@ -8,7 +8,7 @@ use async_trait::async_trait;
 use log::trace;
 use prost::Message;
 use serialport::SerialPort;
-use std::{thread, time::Duration};
+use std::time::Duration;
 use tauri::async_runtime;
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
@@ -24,7 +24,7 @@ pub enum PacketDestination {
 #[derive(Debug, Default)]
 pub struct SerialConnection {
     pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
-    write_input_tx: Option<async_runtime::Sender<Vec<u8>>>,
+    write_input_tx: Option<tokio::sync::mpsc::UnboundedSender<Vec<u8>>>,
 
     serial_read_handle: Option<async_runtime::JoinHandle<()>>,
     serial_write_handle: Option<async_runtime::JoinHandle<()>>,
@@ -87,7 +87,7 @@ impl MeshConnection for SerialConnection {
             .ok_or("Could not send message to write channel")
             .map_err(|e| e.to_string())?;
 
-        channel.send(data).await.map_err(|e| e.to_string())?;
+        channel.send(data).map_err(|e| e.to_string())?;
         Ok(())
     }
 
@@ -112,7 +112,7 @@ impl SerialConnection {
         Ok(ports)
     }
 
-    pub fn connect(
+    pub async fn connect(
         &mut self,
         app_handle: tauri::AppHandle,
         port_name: String,
@@ -131,11 +131,10 @@ impl SerialConnection {
                 )
             })?;
 
-        trace!("Spawning device configuration timeout");
         println!("Creating new channels");
 
-        let (write_input_tx, write_input_rx) = async_runtime::channel::<Vec<u8>>(32);
-        let (read_output_tx, read_output_rx) = async_runtime::channel::<Vec<u8>>(32);
+        let (write_input_tx, write_input_rx) = tokio::sync::mpsc::unbounded_channel::<Vec<u8>>();
+        let (read_output_tx, read_output_rx) = tokio::sync::mpsc::unbounded_channel::<Vec<u8>>();
         let (decoded_packet_tx, decoded_packet_rx) = broadcast::channel::<protobufs::FromRadio>(32);
 
         self.write_input_tx = Some(write_input_tx);
@@ -176,9 +175,9 @@ impl SerialConnection {
 
         self.cancellation_token = Some(cancellation_token);
 
-        println!("Sleeping");
+        println!("Sleeping for stability");
 
-        thread::sleep(Duration::from_millis(200)); // Device stability
+        tokio::time::sleep(Duration::from_millis(200)).await; // Device stability
 
         Ok(())
     }
