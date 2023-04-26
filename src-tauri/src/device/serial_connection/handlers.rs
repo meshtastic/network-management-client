@@ -95,8 +95,6 @@ async fn start_serial_read_worker(
         let read_port = port.clone();
         let port_name = port_name.clone();
 
-        // println!("Spawned blocking read handle");
-
         let handle = tokio::task::spawn_blocking(move || {
             let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
             let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
@@ -150,8 +148,6 @@ async fn start_serial_read_worker(
             }
         };
 
-        // println!("read_result: {:?}", read_result);
-
         let recv_message = match read_result {
             SerialReadResult::Success(m) => m,
             SerialReadResult::TimedOut => {
@@ -177,8 +173,6 @@ async fn start_serial_read_worker(
             };
         }
     }
-
-    println!("Completed");
 }
 
 async fn start_serial_write_worker(
@@ -188,7 +182,6 @@ async fn start_serial_write_worker(
     trace!("Started serial write worker");
 
     while let Some(data) = write_input_rx.recv().await {
-        println!("Data {:?}", data);
         match SerialConnection::write_to_radio(port.clone(), data) {
             Ok(()) => (),
             Err(e) => error!("Error writing to radio: {:?}", e.to_string()),
@@ -207,7 +200,6 @@ async fn start_message_processing_worker(
     let mut transform_serial_buf: Vec<u8> = vec![];
 
     while let Some(message) = read_output_rx.recv().await {
-        println!("Message: {:?}", message.clone());
         process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
     }
 

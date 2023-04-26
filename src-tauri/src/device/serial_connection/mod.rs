@@ -114,7 +114,7 @@ impl SerialConnection {
         port_name: String,
         baud_rate: u32,
     ) -> Result<(), String> {
-        println!("Connecting to {:?}", port_name);
+        // Create serial port connection
 
         let mut port = SerialPort::open(port_name.clone(), baud_rate).map_err(|e| {
             format!(
@@ -130,7 +130,7 @@ impl SerialConnection {
 
         let port = Arc::new(port);
 
-        println!("Creating new channels");
+        // Create message channels
 
         let (write_input_tx, write_input_rx) = tokio::sync::mpsc::unbounded_channel::<Vec<u8>>();
         let (read_output_tx, read_output_rx) = tokio::sync::mpsc::unbounded_channel::<Vec<u8>>();
@@ -142,7 +142,7 @@ impl SerialConnection {
         let read_port = port.clone();
         let write_port = port;
 
-        println!("Creating handers");
+        // Spawn worker threads with kill switch
 
         let cancellation_token = CancellationToken::new();
 
@@ -168,9 +168,8 @@ impl SerialConnection {
 
         self.cancellation_token = Some(cancellation_token);
 
-        println!("Sleeping for stability");
-
-        tokio::time::sleep(Duration::from_millis(200)).await; // Device stability
+        // Sleep for device stability (from web client, not positive we need this)
+        tokio::time::sleep(Duration::from_millis(200)).await;
 
         Ok(())
     }

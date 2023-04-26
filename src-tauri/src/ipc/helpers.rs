@@ -114,8 +114,6 @@ pub async fn initialize_serial_connection_handlers(
         .connect(app_handle.clone(), port_name.clone(), 115_200)
         .await?;
 
-    println!("Starting connection");
-
     // Get copy of decoded_listener by resubscribing
     let decoded_listener = device
         .connection
@@ -124,12 +122,8 @@ pub async fn initialize_serial_connection_handlers(
         .ok_or("Decoded packet listener not open")?
         .resubscribe();
 
-    println!("Resubscribed to listener");
-
     device.set_status(SerialDeviceStatus::Configuring);
     device.connection.configure(device.config_id).await?;
-
-    println!("Starting configuration");
 
     let handle = app_handle.clone();
     let mesh_device_arc = connected_devices.inner.clone();
@@ -180,10 +174,9 @@ fn spawn_connection_timeout_handler(
             }
         };
 
-        println!("Status: {:?}", device.status);
-
         // If the device is not registered as configuring, take no action
         // since this means the device configuration has succeeded
+
         if device.status != SerialDeviceStatus::Configuring {
             return;
         }
