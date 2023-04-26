@@ -141,7 +141,7 @@ pub async fn initialize_serial_connection_handlers(
         devices_guard.insert(port_name.clone(), device);
     }
 
-    // * Needs the device to be loaded into Tauri state before running
+    // * Needs the device struct and port name to be loaded into Tauri state before running
     spawn_connection_timeout_handler(handle.clone(), mesh_device_arc.clone(), port_name.clone());
 
     spawn_decoded_handler(
