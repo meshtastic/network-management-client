@@ -7,8 +7,8 @@ use app::protobufs;
 use async_trait::async_trait;
 use log::trace;
 use prost::Message;
-use serialport::SerialPort;
-use std::time::Duration;
+use serial2::SerialPort;
+use std::{sync::Arc, time::Duration};
 use tauri::async_runtime;
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
@@ -47,7 +47,7 @@ pub trait MeshConnection {
     fn new() -> Self;
     async fn configure(&mut self, config_id: u32) -> Result<(), String>;
     async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
-    fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), String>;
+    fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String>;
 }
 
 #[async_trait]
@@ -70,11 +70,7 @@ impl MeshConnection for SerialConnection {
             payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),
         };
 
-        let mut packet_buf: Vec<u8> = vec![];
-        to_radio
-            .encode::<Vec<u8>>(&mut packet_buf)
-            .map_err(|e| e.to_string())?;
-
+        let packet_buf = to_radio.encode_to_vec();
         self.send_raw(packet_buf).await?;
 
         Ok(())
@@ -91,7 +87,7 @@ impl MeshConnection for SerialConnection {
         Ok(())
     }
 
-    fn write_to_radio(port: &mut Box<dyn SerialPort>, data: Vec<u8>) -> Result<(), String> {
+    fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String> {
         let binding = helpers::format_serial_packet(data);
         let message_buffer: &[u8] = binding.as_slice();
         port.write(message_buffer).map_err(|e| e.to_string())?;
@@ -102,11 +98,11 @@ impl MeshConnection for SerialConnection {
 
 impl SerialConnection {
     pub fn get_available_ports() -> Result<Vec<String>, String> {
-        let available_ports = serialport::available_ports().map_err(|e| e.to_string())?;
+        let available_ports = SerialPort::available_ports().map_err(|e| e.to_string())?;
 
         let ports: Vec<String> = available_ports
             .iter()
-            .map(|p| p.port_name.clone())
+            .map(|p| p.display().to_string())
             .collect();
 
         Ok(ports)
@@ -120,16 +116,19 @@ impl SerialConnection {
     ) -> Result<(), String> {
         println!("Connecting to {:?}", port_name);
 
-        let port = serialport::new(port_name.clone(), baud_rate)
-            .timeout(Duration::from_millis(10))
-            .open()
-            .map_err(|e| {
-                format!(
-                    "Could not open serial port \"{}\": {}",
-                    port_name.clone(),
-                    e
-                )
-            })?;
+        let mut port = SerialPort::open(port_name.clone(), baud_rate).map_err(|e| {
+            format!(
+                "Could not open serial port \"{}\": {}",
+                port_name.clone(),
+                e
+            )
+        })?;
+
+        port.set_dtr(true).map_err(|e| e.to_string())?;
+        port.set_read_timeout(Duration::from_millis(10))
+            .map_err(|e| e.to_string())?;
+
+        let port = Arc::new(port);
 
         println!("Creating new channels");
 
@@ -140,13 +139,7 @@ impl SerialConnection {
         self.write_input_tx = Some(write_input_tx);
         self.on_decoded_packet = Some(decoded_packet_rx);
 
-        let read_port = port.try_clone().map_err(|e| {
-            format!(
-                "Could not clone serial port \"{}\": {}",
-                port_name.clone(),
-                e
-            )
-        })?;
+        let read_port = port.clone();
         let write_port = port;
 
         println!("Creating handers");
@@ -183,15 +176,15 @@ impl SerialConnection {
     }
 
     pub async fn disconnect(&mut self) -> Result<(), String> {
-        // Close channels, which will kill held threads
-
-        self.on_decoded_packet = None;
-        self.write_input_tx = None;
-
         // Tell worker threads to shut down
         if let Some(token) = self.cancellation_token.take() {
             token.cancel();
         }
+
+        // Close channels, which will kill held threads
+
+        self.on_decoded_packet = None;
+        self.write_input_tx = None;
 
         // Wait for threads to close
 

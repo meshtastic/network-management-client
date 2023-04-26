@@ -1,8 +1,8 @@
 use app::protobufs;
 use log::{debug, error, info, trace, warn};
 use prost::Message;
-use serialport::SerialPort;
-use std::io::ErrorKind;
+use serial2::SerialPort;
+use std::{io::ErrorKind, sync::Arc};
 use tauri::{async_runtime, Manager};
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
@@ -14,7 +14,7 @@ use super::{MeshConnection, SerialConnection};
 pub fn spawn_serial_read_handler(
     app_handle: tauri::AppHandle,
     cancellation_token: CancellationToken,
-    read_port: Box<dyn SerialPort>,
+    read_port: Arc<SerialPort>,
     read_output_tx: tokio::sync::mpsc::UnboundedSender<Vec<u8>>,
     port_name: String,
 ) -> async_runtime::JoinHandle<()> {
@@ -34,7 +34,7 @@ pub fn spawn_serial_read_handler(
 
 pub fn spawn_serial_write_handler(
     cancellation_token: CancellationToken,
-    port: Box<dyn SerialPort>,
+    port: Arc<SerialPort>,
     write_input_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
 ) -> async_runtime::JoinHandle<()> {
     let handle = start_serial_write_worker(port, write_input_rx);
@@ -82,7 +82,7 @@ enum SerialReadResult {
 
 async fn start_serial_read_worker(
     app_handle: tauri::AppHandle,
-    read_port: Box<dyn SerialPort>,
+    port: Arc<SerialPort>,
     read_output_tx: tokio::sync::mpsc::UnboundedSender<Vec<u8>>,
     port_name: String,
 ) -> () {
@@ -92,14 +92,10 @@ async fn start_serial_read_worker(
         let (send, recv) = tokio::sync::oneshot::channel::<SerialReadResult>();
 
         let app_handle = app_handle.clone();
-        let mut read_port = match read_port.try_clone() {
-            Ok(p) => p,
-            Err(err) => {
-                warn!("Error cloning \"read_port\": {}", err);
-                continue;
-            }
-        };
+        let read_port = port.clone();
         let port_name = port_name.clone();
+
+        // println!("Spawned blocking read handle");
 
         let handle = tokio::task::spawn_blocking(move || {
             let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
@@ -154,7 +150,7 @@ async fn start_serial_read_worker(
             }
         };
 
-        println!("read_result: {:?}", read_result);
+        // println!("read_result: {:?}", read_result);
 
         let recv_message = match read_result {
             SerialReadResult::Success(m) => m,
@@ -168,8 +164,6 @@ async fn start_serial_read_worker(
                 continue;
             }
         };
-
-        println!("{}", recv_message.len());
 
         if !recv_message.is_empty() {
             trace!("Received info from radio: {:?}", recv_message);
@@ -188,14 +182,14 @@ async fn start_serial_read_worker(
 }
 
 async fn start_serial_write_worker(
-    mut port: Box<dyn SerialPort>,
+    port: Arc<SerialPort>,
     mut write_input_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
 ) -> () {
     trace!("Started serial write worker");
 
     while let Some(data) = write_input_rx.recv().await {
-        // println!("Data of length {}", data.len());
-        match SerialConnection::write_to_radio(&mut port, data) {
+        println!("Data {:?}", data);
+        match SerialConnection::write_to_radio(port.clone(), data) {
             Ok(()) => (),
             Err(e) => error!("Error writing to radio: {:?}", e.to_string()),
         };
