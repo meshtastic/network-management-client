@@ -102,7 +102,7 @@ fn spawn_serial_read_worker(
             };
             let port_name = port_name.clone();
 
-            tokio::task::spawn_blocking(move || {
+            let handle = tokio::task::spawn_blocking(move || {
                 let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
                 let recv_bytes = match read_port.read(incoming_serial_buf.as_mut_slice()) {
                     Ok(o) => o,
@@ -134,6 +134,14 @@ fn spawn_serial_read_worker(
                 ))
                 .expect("Failed to send read result");
             });
+
+            match handle.await {
+              Ok(_)=>(),
+              Err(err) => {
+                error!("Error awaiting read IO handle: {}",err);
+                continue;
+              }
+            };
 
             let read_result = match recv.await {
                 Ok(r) => r,
