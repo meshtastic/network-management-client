@@ -8,7 +8,7 @@ use app::protobufs;
 use prost::Message;
 
 impl MeshDevice {
-    pub fn send_text(
+    pub async fn send_text(
         &mut self,
         text: String,
         destination: PacketDestination,
@@ -27,12 +27,13 @@ impl MeshDevice {
             true,
             None,
             None,
-        )?;
+        )
+        .await?;
 
         Ok(())
     }
 
-    pub fn send_waypoint(
+    pub async fn send_waypoint(
         &mut self,
         waypoint: protobufs::Waypoint,
         destination: PacketDestination,
@@ -57,12 +58,13 @@ impl MeshDevice {
             true,
             None,
             None,
-        )?;
+        )
+        .await?;
 
         Ok(())
     }
 
-    pub fn update_device_config(&mut self, config: protobufs::Config) -> Result<(), String> {
+    pub async fn update_device_config(&mut self, config: protobufs::Config) -> Result<(), String> {
         let config_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetConfig(config)),
         };
@@ -79,12 +81,13 @@ impl MeshDevice {
             false,
             None,
             None,
-        )?;
+        )
+        .await?;
 
         Ok(())
     }
 
-    pub fn update_device_user(&mut self, user: protobufs::User) -> Result<(), String> {
+    pub async fn update_device_user(&mut self, user: protobufs::User) -> Result<(), String> {
         let user_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetOwner(user)),
         };
@@ -101,12 +104,13 @@ impl MeshDevice {
             false,
             None,
             None,
-        )?;
+        )
+        .await?;
 
         Ok(())
     }
 
-    pub fn send_packet(
+    pub async fn send_packet(
         &mut self,
         byte_data: Vec<u8>,
         port_num: protobufs::PortNum,
@@ -168,7 +172,7 @@ impl MeshDevice {
             .encode::<Vec<u8>>(&mut packet_buf)
             .map_err(|e| e.to_string())?;
 
-        self.connection.send_raw(packet_buf)?;
+        self.connection.send_raw(packet_buf).await?;
 
         Ok(())
     }

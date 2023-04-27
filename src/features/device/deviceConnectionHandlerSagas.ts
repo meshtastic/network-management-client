@@ -60,7 +60,7 @@ export const createDeviceDisconnectChannel = (): DeviceDisconnectChannel => {
 };
 
 export function* handleDeviceDisconnectChannel(
-  channel: DeviceDisconnectChannel,
+  channel: DeviceDisconnectChannel
 ) {
   try {
     while (true) {
@@ -120,11 +120,19 @@ export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { successful, portName, message }: {
+      const {
+        successful,
+        portName,
+        message,
+      }: {
         successful: boolean;
         portName: string;
         message: string | null;
       } = yield take(channel);
+
+      if (!successful) {
+        yield put(requestDisconnectFromDevice(portName));
+      }
 
       yield put(
         connectionSliceActions.setConnectionState({
@@ -132,7 +140,7 @@ export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
           status: successful
             ? { status: "SUCCESSFUL" }
             : { status: "FAILED", message: message ?? "" },
-        }),
+        })
       );
     }
   } catch (error) {

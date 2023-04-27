@@ -21,7 +21,7 @@ impl MeshDevice {
     }
 
     pub fn set_status(&mut self, status: SerialDeviceStatus) {
-        debug!("Set status: {:?}", status);
+        debug!("Set device status: {:?}", status);
         self.status = status;
     }
 

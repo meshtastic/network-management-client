@@ -29,7 +29,6 @@ tauri = { version = "1.1.1", features = ["cli", "clipboard-write-text", "http-al
 tokio = { version = "1.21.2", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"
-serialport = "4.2.0"
 prost = "0.11.0"
 bytes = "1.2.1"
 async-trait = "0.1.60"
@@ -39,6 +38,8 @@ geojson = "0.24.0"
 log = "0.4"
 fern = "0.6"
 humantime = "2.1.0"
+tokio-util = "0.7.7"
+serial2 = "0.1.7"
 
 [features]
 # by default Tauri runs in production mode
