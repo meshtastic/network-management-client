@@ -7,7 +7,7 @@ use app::protobufs;
 use async_trait::async_trait;
 use log::trace;
 use prost::Message;
-use serial2::SerialPort;
+use serial2::{FlowControl, SerialPort};
 use std::{sync::Arc, time::Duration};
 use tauri::async_runtime;
 use tokio::sync::broadcast;
@@ -123,6 +123,10 @@ impl SerialConnection {
                 e
             )
         })?;
+
+        let mut config = port.get_configuration().map_err(|e| e.to_string())?;
+        config.set_flow_control(FlowControl::XonXoff);
+        port.set_configuration(&config).map_err(|e| e.to_string())?;
 
         port.set_dtr(true).map_err(|e| e.to_string())?;
         port.set_read_timeout(Duration::from_millis(10))
