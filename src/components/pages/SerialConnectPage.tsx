@@ -35,9 +35,12 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const [selectedPortName, setSelectedPortName] = useState("");
   const [isScreenActive, setScreenActive] = useState(true);
 
-  const activePortState = useSelector(
-    selectConnectionStatus(selectedPortName)
-  ) ?? { status: "IDLE" };
+  // autoConnectPort takes priority over selectedPortName if it exists
+  const activePort = autoConnectPort ?? selectedPortName;
+
+  const activePortState = useSelector(selectConnectionStatus(activePort)) ?? {
+    status: "IDLE",
+  };
 
   const requestPorts = () => {
     dispatch(requestAvailablePorts());
@@ -67,14 +70,6 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(requestAutoConnectPort());
     requestPorts();
   }, []);
-
-  // If a port has been marked for automatic connection,
-  // connect to it as if a user selected it manually
-  useEffect(() => {
-    if (autoConnectPort) {
-      handlePortSelected(autoConnectPort);
-    }
-  }, [autoConnectPort]);
 
   // Wait to allow user to recognize serial connection succeeded
   useEffect(() => {
@@ -148,7 +143,7 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                   key={portName}
                   name={portName}
                   connectionState={
-                    selectedPortName === portName
+                    activePort === portName
                       ? activePortState
                       : { status: "IDLE" }
                   }

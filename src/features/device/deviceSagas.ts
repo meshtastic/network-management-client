@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
-import { all, call, put, takeEvery } from "redux-saga/effects";
+import { all, call, cancel, fork, put, takeEvery } from "redux-saga/effects";
+import type { Task } from "redux-saga";
 
 import { connectionSliceActions } from "@features/connection/connectionSlice";
 import {
@@ -42,6 +43,11 @@ function* getAutoConnectPortWorker(
     )) as string;
 
     yield put(deviceSliceActions.setAutoConnectPort(portName));
+
+    // Automatically connect to port
+    if (portName) {
+      yield put(requestConnectToDevice({ portName, setPrimary: true }));
+    }
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {
@@ -109,6 +115,8 @@ function* getAvailableSerialPortsWorker(
 function* connectToDeviceWorker(
   action: ReturnType<typeof requestConnectToDevice>,
 ) {
+  let subscribeTask: Task | null = null;
+
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
     yield put(
@@ -119,6 +127,11 @@ function* connectToDeviceWorker(
         },
       }),
     );
+
+    // Need to subscribe to events before connecting
+    // * Can't block as these are infinite loops
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    subscribeTask = yield fork(subscribeAll) as unknown as Task;
 
     yield call(invoke, "initialize_graph_state");
 
@@ -134,7 +147,12 @@ function* connectToDeviceWorker(
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
 
-    yield call(subscribeAll);
+    // ! Will eventually need to kill these tasks
+    // ! to avoid memory leaks with many devices connected
+    // if (subscribeTask) {
+    //   yield subscribeTask?.toPromise();
+    // }
+
   } catch (error) {
     yield put(
       requestSliceActions.setRequestFailed({
@@ -142,6 +160,10 @@ function* connectToDeviceWorker(
         message: (error as CommandError).message,
       }),
     );
+
+    if (subscribeTask) {
+      yield cancel(subscribeTask);
+    }
   }
 }
 

@@ -100,7 +100,9 @@ pub async fn disconnect_from_all_serial_ports(
         let mut state_devices = connected_devices.inner.lock().await;
 
         // Disconnect from all serial ports
-        for (_port_name, device) in state_devices.iter_mut() {
+        for (port_name, device) in state_devices.iter_mut() {
+            trace!("Disconnecting from device on port {}", port_name);
+
             device.connection.disconnect().await?;
             device.set_status(SerialDeviceStatus::Disconnected);
         }
