@@ -5,7 +5,7 @@
   "license": "GPL-3.0-only",
   "type": "module",
   "scripts": {
-    "rust:dev": "tauri dev",
+    "rust:dev": "tauri dev -- --no-default-features --",
     "rust:build": "tauri build --",
     "rust:test": "cd src-tauri; cargo test",
     "ui:dev": "vite",
