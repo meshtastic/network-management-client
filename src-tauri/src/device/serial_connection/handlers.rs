@@ -85,7 +85,7 @@ async fn start_serial_read_worker(
     port: Arc<SerialPort>,
     read_output_tx: tokio::sync::mpsc::UnboundedSender<Vec<u8>>,
     port_name: String,
-) -> () {
+) {
     trace!("Started serial read worker");
 
     loop {
@@ -178,7 +178,7 @@ async fn start_serial_read_worker(
 async fn start_serial_write_worker(
     port: Arc<SerialPort>,
     mut write_input_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
-) -> () {
+) {
     trace!("Started serial write worker");
 
     while let Some(data) = write_input_rx.recv().await {
@@ -194,7 +194,7 @@ async fn start_serial_write_worker(
 async fn start_message_processing_worker(
     mut read_output_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
     decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
-) -> () {
+) {
     trace!("Started message processing worker");
 
     let mut transform_serial_buf: Vec<u8> = vec![];
