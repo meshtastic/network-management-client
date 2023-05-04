@@ -7,6 +7,7 @@ mod ipc;
 mod state;
 
 use log::{debug, error, info};
+use specta::ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior};
 use std::time::SystemTime;
 use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
@@ -64,10 +65,18 @@ fn handle_cli_matches(
 }
 
 fn main() {
-    info!("Application starting");
-
     setup_logger().expect("Logging setup failed");
     debug!("Logger initialized");
+
+    info!("Building TS types from Rust");
+
+    let specta_config = ExportConfiguration::default()
+        .bigint(BigIntExportBehavior::String)
+        .modules(ModuleExportBehavior::Enabled);
+
+    specta::export::ts_with_cfg("../src/bindings/index.ts", &specta_config).unwrap();
+
+    info!("Application starting");
 
     let initial_device_state = state::ConnectedDevices {
         inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
