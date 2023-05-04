@@ -2,13 +2,14 @@ import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import type { NodeInfo } from "@bindings/protobufs/NodeInfo";
+import type { app_protobufs_NodeInfo } from "@bindings/index";
+
 import TableLayout from "@components/Table/TableLayout";
 import { selectAllNodes } from "@features/device/deviceSelectors";
 
 const ManageNodePage = () => {
   const nodes = useSelector(selectAllNodes()).map((n) => n.data);
-  const columns = useMemo<ColumnDef<NodeInfo, unknown>[]>(
+  const columns = useMemo<ColumnDef<app_protobufs_NodeInfo, unknown>[]>(
     () => [
       { id: "ID", accessorFn: (n) => n.num?.toString(16) ?? "No user info" },
       {

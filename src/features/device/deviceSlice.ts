@@ -1,17 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { MeshDevice } from "@bindings/MeshDevice";
-import type { MeshNode } from "@bindings/MeshNode";
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
+
+import type {
+  app_device_MeshDevice,
+  app_device_MeshNode,
+  app_protobufs_Waypoint,
+} from "@bindings/index";
 
 export interface IDeviceState {
-  device: MeshDevice | null;
-  activeNode: MeshNode["data"]["num"] | null;
+  device: app_device_MeshDevice | null;
+  activeNode: app_device_MeshNode["data"]["num"] | null;
   availableSerialPorts: string[] | null;
   primarySerialPort: string | null;
-  activeWaypoint: Waypoint["id"] | null;
+  activeWaypoint: app_protobufs_Waypoint["id"] | null;
   allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
   autoConnectPort: string | null; // Port to automatically connect to on startup
-  placeholderWaypoint: Waypoint | null;
+  placeholderWaypoint: app_protobufs_Waypoint | null;
   infoPane: "waypoint" | "waypointEdit" | "algos" | null;
 }
 
@@ -33,7 +36,7 @@ export const deviceSlice = createSlice({
   reducers: {
     setAvailableSerialPorts: (
       state,
-      action: PayloadAction<string[] | null>,
+      action: PayloadAction<string[] | null>
     ) => {
       state.availableSerialPorts = action.payload;
     },
@@ -42,13 +45,13 @@ export const deviceSlice = createSlice({
       state.primarySerialPort = action.payload;
     },
 
-    setDevice: (state, action: PayloadAction<MeshDevice | null>) => {
+    setDevice: (state, action: PayloadAction<app_device_MeshDevice | null>) => {
       state.device = action.payload;
     },
 
     setActiveNode: (
       state,
-      action: PayloadAction<MeshNode["data"]["num"] | null>,
+      action: PayloadAction<app_device_MeshNode["data"]["num"] | null>
     ) => {
       state.activeNode = action.payload;
       if (action.payload) {
@@ -60,7 +63,7 @@ export const deviceSlice = createSlice({
 
     setActiveWaypoint: (
       state,
-      action: PayloadAction<Waypoint["id"] | null>,
+      action: PayloadAction<app_protobufs_Waypoint["id"] | null>
     ) => {
       state.activeWaypoint = action.payload;
       if (action.payload) {
@@ -72,7 +75,7 @@ export const deviceSlice = createSlice({
 
     setInfoPane: (
       state,
-      action: PayloadAction<"waypoint" | "waypointEdit" | "algos" | null>,
+      action: PayloadAction<"waypoint" | "waypointEdit" | "algos" | null>
     ) => {
       state.infoPane = action.payload;
 
@@ -83,7 +86,10 @@ export const deviceSlice = createSlice({
       }
     },
 
-    setPlaceholderWaypoint: (state, action: PayloadAction<Waypoint | null>) => {
+    setPlaceholderWaypoint: (
+      state,
+      action: PayloadAction<app_protobufs_Waypoint | null>
+    ) => {
       state.placeholderWaypoint = action.payload;
     },
 

@@ -19,7 +19,7 @@
     "baseUrl": "./",
     "paths": {
       "@app/*": ["src/*"],
-      "@bindings/*": ["src-tauri/bindings/*"],
+      "@bindings/*": ["src/bindings/*"],
       "@components/*": ["src/components/*"],
       "@features/*": ["src/features/*"],
       "@store/*": ["src/store/*"],

@@ -1,11 +1,11 @@
-import type { MeshNode } from "@bindings/MeshNode";
+import type { app_device_MeshNode } from "@bindings/index";
 
 export const NODE_WARNING_THRESHOLD = 15;
 export const NODE_ERROR_THRESHOLD = 30;
 
 export type NodeState = "nominal" | "selected" | "warning" | "error";
 
-export const getLastHeardTime = (node: MeshNode): number | null => {
+export const getLastHeardTime = (node: app_device_MeshNode): number | null => {
   const lastHeard = Math.max(
     (node.deviceMetrics.at(-1)?.timestamp ?? 0) * 1000, // s to ms
     (node.environmentMetrics.at(-1)?.timestamp ?? 0) * 1000,
@@ -16,7 +16,7 @@ export const getLastHeardTime = (node: MeshNode): number | null => {
   return lastHeard;
 };
 
-export const getMinsSinceLastHeard = (node: MeshNode): number => {
+export const getMinsSinceLastHeard = (node: app_device_MeshNode): number => {
   const lastHeard = getLastHeardTime(node);
   if (!lastHeard) return 0; // 0 means not set
 

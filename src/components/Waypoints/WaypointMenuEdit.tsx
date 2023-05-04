@@ -4,7 +4,7 @@ import { Input } from "@material-tailwind/react";
 
 import { XMarkIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
+import type { app_protobufs_Waypoint } from "@bindings/index";
 
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestNewWaypoint } from "@features/device/deviceActions";
@@ -57,7 +57,7 @@ const WaypointMenuEdit = () => {
 
     // If updating existing waypoint
     if (activeWaypoint) {
-      const updatedWaypoint: Waypoint = {
+      const updatedWaypoint: app_protobufs_Waypoint = {
         ...activeWaypoint,
         name: waypointTitle ? waypointTitle : "",
         description: waypointDescription ? waypointDescription : "",
@@ -71,7 +71,7 @@ const WaypointMenuEdit = () => {
       );
       dispatch(deviceSliceActions.setInfoPane("waypoint"));
     } else if (placeholderWaypoint && activeWaypointID === 0) {
-      const updatedWaypoint: Waypoint = {
+      const updatedWaypoint: app_protobufs_Waypoint = {
         ...placeholderWaypoint,
         name: waypointTitle ? waypointTitle : "",
         description: waypointDescription ? waypointDescription : "",

@@ -2,9 +2,9 @@ import React from "react";
 import { Marker, MapboxEvent } from "react-map-gl";
 import TimeAgo from "timeago-react";
 
-import type { MeshNode } from "@bindings/MeshNode";
-import MapNodeIcon from "@components/Map/MapNodeIcon";
+import type { app_device_MeshNode } from "@bindings/index";
 
+import MapNodeIcon from "@components/Map/MapNodeIcon";
 import { useComponentReload } from "@utils/hooks";
 import {
   getMinsSinceLastHeard,
@@ -15,7 +15,7 @@ import {
 } from "@utils/nodes";
 
 export interface IMapNodeProps {
-  node: MeshNode;
+  node: app_device_MeshNode;
   onClick: (nodeId: number | null) => void;
   size?: "sm" | "med" | "lg";
   isBase?: boolean;

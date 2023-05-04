@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 // import { MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/outline";
 
-import type { MeshChannel } from "@bindings/MeshChannel";
+import type { app_device_MeshChannel } from "@bindings/index";
 
 import ConfigTitlebar from "@app/components/config/ConfigTitlebar";
 // import MapIconButton from "@components/Map/MapIconButton";
@@ -15,7 +15,7 @@ import { selectPrimarySerialPort } from "@features/device/deviceSelectors";
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
 
 export interface IChannelDetailViewProps {
-  channel: MeshChannel;
+  channel: app_device_MeshChannel;
   className?: string;
 }
 

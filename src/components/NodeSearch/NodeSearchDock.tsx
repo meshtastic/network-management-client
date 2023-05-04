@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import type { MeshNode } from "@bindings/MeshNode";
-import type { MeshDevice } from "@bindings/MeshDevice";
+import type {
+  app_device_MeshDevice,
+  app_device_MeshNode,
+} from "@bindings/index";
 
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
@@ -15,8 +17,8 @@ import {
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
 interface _INodeSearchDockProps {
-  filteredNodes: MeshNode[];
-  device: MeshDevice | null;
+  filteredNodes: app_device_MeshNode[];
+  device: app_device_MeshDevice | null;
   activeNodeId: number | null;
   query: string;
   handleNodeSelect: (nodeId: number) => void;
@@ -59,7 +61,7 @@ const _NodeSearchDock = ({
 
 const filterNodes =
   (query: string) =>
-  (node: MeshNode): boolean => {
+  (node: app_device_MeshNode): boolean => {
     // Show all nodes on empty query
     if (!query) {
       return true;

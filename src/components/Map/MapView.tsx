@@ -14,7 +14,9 @@ import {
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
 
-import AnalyticsPane from "./AnalyticsPane";
+import type { app_protobufs_Waypoint } from "@bindings/index";
+
+import AnalyticsPane from "@components/Map/AnalyticsPane";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
@@ -23,8 +25,6 @@ import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 import Waypoints from "@app/components/Waypoints/Waypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
-
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
 
 import {
   selectActiveNodeId,
@@ -54,7 +54,7 @@ export const MapView = () => {
   const handleClick = (e: MapLayerMouseEvent) => {
     // Can only create new waypoint if the state is toggled
     if (newWaypointAllowed) {
-      const createdWaypoint: Waypoint = {
+      const createdWaypoint: app_protobufs_Waypoint = {
         id: 0,
         latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
         longitudeI: Math.round(e.lngLat.lng * 1e7),

@@ -32,15 +32,12 @@ import { requestSliceActions } from "@features/requests/requestReducer";
 import type { CommandError } from "@utils/errors";
 
 function* getAutoConnectPortWorker(
-  action: ReturnType<typeof requestAutoConnectPort>,
+  action: ReturnType<typeof requestAutoConnectPort>
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    const portName = (yield call(
-      invoke,
-      "request_autoconnect_port",
-    )) as string;
+    const portName = (yield call(invoke, "request_autoconnect_port")) as string;
 
     yield put(deviceSliceActions.setAutoConnectPort(portName));
 
@@ -55,7 +52,7 @@ function* getAutoConnectPortWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      }),
+      })
     );
   }
 }
@@ -63,22 +60,22 @@ function* getAutoConnectPortWorker(
 function* subscribeAll() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const deviceUpdateChannel: DeviceUpdateChannel = yield call(
-    createDeviceUpdateChannel,
+    createDeviceUpdateChannel
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const deviceDisconnectChannel: DeviceDisconnectChannel = yield call(
-    createDeviceDisconnectChannel,
+    createDeviceDisconnectChannel
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const graphUpdateChannel: GraphUpdateChannel = yield call(
-    createGraphUpdateChannel,
+    createGraphUpdateChannel
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const configStatusChannel: ConfigStatusChannel = yield call(
-    createConfigStatusChannel,
+    createConfigStatusChannel
   );
 
   yield all([
@@ -90,14 +87,14 @@ function* subscribeAll() {
 }
 
 function* getAvailableSerialPortsWorker(
-  action: ReturnType<typeof requestAvailablePorts>,
+  action: ReturnType<typeof requestAvailablePorts>
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     const serialPorts = (yield call(
       invoke,
-      "get_all_serial_ports",
+      "get_all_serial_ports"
     )) as string[];
 
     yield put(deviceSliceActions.setAvailableSerialPorts(serialPorts));
@@ -107,13 +104,13 @@ function* getAvailableSerialPortsWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      }),
+      })
     );
   }
 }
 
 function* connectToDeviceWorker(
-  action: ReturnType<typeof requestConnectToDevice>,
+  action: ReturnType<typeof requestConnectToDevice>
 ) {
   let subscribeTask: Task | null = null;
 
@@ -125,7 +122,7 @@ function* connectToDeviceWorker(
         status: {
           status: "PENDING",
         },
-      }),
+      })
     );
 
     // Need to subscribe to events before connecting
@@ -141,7 +138,7 @@ function* connectToDeviceWorker(
 
     if (action.payload.setPrimary) {
       yield put(
-        deviceSliceActions.setPrimarySerialPort(action.payload.portName),
+        deviceSliceActions.setPrimarySerialPort(action.payload.portName)
       );
     }
 
@@ -152,13 +149,12 @@ function* connectToDeviceWorker(
     // if (subscribeTask) {
     //   yield subscribeTask?.toPromise();
     // }
-
   } catch (error) {
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      }),
+      })
     );
 
     if (subscribeTask) {
@@ -168,7 +164,7 @@ function* connectToDeviceWorker(
 }
 
 function* disconnectFromDeviceWorker(
-  action: ReturnType<typeof requestDisconnectFromDevice>,
+  action: ReturnType<typeof requestDisconnectFromDevice>
 ) {
   try {
     yield call(invoke, "disconnect_from_serial_port", {
@@ -209,7 +205,7 @@ function* sendTextWorker(action: ReturnType<typeof requestSendMessage>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      }),
+      })
     );
   }
 }
@@ -229,7 +225,7 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      }),
+      })
     );
   }
 }
@@ -249,23 +245,20 @@ function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      }),
+      })
     );
   }
 }
 
 export function* devicesSaga() {
   yield all([
-    takeEvery(
-      requestAutoConnectPort.type,
-      getAutoConnectPortWorker,
-    ),
+    takeEvery(requestAutoConnectPort.type, getAutoConnectPortWorker),
     takeEvery(requestAvailablePorts.type, getAvailableSerialPortsWorker),
     takeEvery(requestConnectToDevice.type, connectToDeviceWorker),
     takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
     takeEvery(
       requestDisconnectFromAllDevices.type,
-      disconnectFromAllDevicesWorker,
+      disconnectFromAllDevicesWorker
     ),
     takeEvery(requestSendMessage.type, sendTextWorker),
     takeEvery(requestUpdateUser.type, updateUserConfig),
