@@ -2,15 +2,19 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 
+import type { app_device_MeshChannel } from "@bindings/index";
+
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
+import ChannelConfigDetail from "@components/config/channel/ChannelConfigDetail";
 
 import { selectDeviceChannels } from "@features/device/deviceSelectors";
 import { getChannelName } from "@utils/messaging";
 
 const ChannelConfigPage = () => {
   const channels = useSelector(selectDeviceChannels());
-  const [activeChannel, setActiveChannel] = useState<number | null>(null);
+  const [activeChannel, setActiveChannel] =
+    useState<app_device_MeshChannel | null>(null);
 
   return (
     <div className="flex-1">
@@ -29,23 +33,23 @@ const ChannelConfigPage = () => {
               key={c.config.index}
               title={getChannelName(c) || `Channel ${c.config.index}`}
               subtitle="0 unsaved changes"
-              isActive={activeChannel === c.config.index}
+              isActive={activeChannel?.config.index === c.config.index}
               onClick={() =>
                 setActiveChannel(
-                  activeChannel !== c.config.index ? c.config.index : null
+                  activeChannel?.config.index !== c.config.index ? c : null
                 )
               }
             />
           ))
         }
       >
-        <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
-          <p className="m-auto text-base font-normal text-gray-700">
-            {activeChannel != null
-              ? `Channel ${activeChannel} selected`
-              : "No channel selected"}
-          </p>
-        </div>
+        {activeChannel ? (
+          <ChannelConfigDetail channel={activeChannel} />
+        ) : (
+          <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
+            <p className="m-auto text-base font-normal text-gray-700"></p>
+          </div>
+        )}
       </ConfigLayout>
     </div>
   );

@@ -4,19 +4,55 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
 
+import AudioConfigPage from "@components/config/module/AudioConfigPage";
+import CannedMessageConfigPage from "@components/config/module/CannedMessageConfigPage";
+import ExternalNotificationConfigPage from "@components/config/module/ExternalNotificationConfigPage";
+import MQTTConfigPage from "@components/config/module/MQTTConfigPage";
+import RangeTestConfigPage from "@components/config/module/RangeTestConfigPage";
+import SerialModuleConfigPage from "@components/config/module/SerialModuleConfigPage";
+import TelemetryConfigPage from "@components/config/module/TelemetryConfigPage";
+import TracerouteConfigPage from "@components/config/module/TracerouteConfigPage";
+
 export const PluginConfigOptions: { name: string; hash: string }[] = [
-  { name: "Audio Configuration", hash: "audio" },
-  { name: "Canned Message Configuration", hash: "canned_message" },
+  { name: "Audio", hash: "audio" },
+  { name: "Canned Message", hash: "canned_message" },
   {
-    name: "External Notification Configuration",
+    name: "External Notification",
     hash: "external_notification",
   },
-  { name: "MQTT Configuration", hash: "mqtt" },
-  { name: "Range Test Configuration", hash: "range_test" },
-  { name: "Serial Module Configuration", hash: "serial_module" },
-  { name: "Telemetry Configuration", hash: "telemetry" },
-  { name: "Traceroute Configuration", hash: "traceroute" },
+  { name: "MQTT", hash: "mqtt" },
+  { name: "Range Test", hash: "range_test" },
+  { name: "Serial Module", hash: "serial_module" },
+  { name: "Telemetry", hash: "telemetry" },
+  { name: "Traceroute", hash: "traceroute" },
 ];
+
+const switchActiveDetailView = (activeOption: string | null) => {
+  switch (activeOption) {
+    case "audio":
+      return <AudioConfigPage />;
+    case "canned_message":
+      return <CannedMessageConfigPage />;
+    case "external_notification":
+      return <ExternalNotificationConfigPage />;
+    case "mqtt":
+      return <MQTTConfigPage />;
+    case "range_test":
+      return <RangeTestConfigPage />;
+    case "serial_module":
+      return <SerialModuleConfigPage />;
+    case "telemetry":
+      return <TelemetryConfigPage />;
+    case "traceroute":
+      return <TracerouteConfigPage />;
+    default:
+      return (
+        <p className="m-auto text-base font-normal text-gray-700">
+          No option selected
+        </p>
+      );
+  }
+};
 
 const PluginConfigPage = () => {
   const [activeOption, setActiveOption] = useState<string | null>(null);
@@ -47,11 +83,7 @@ const PluginConfigPage = () => {
         }
       >
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
-          <p className="m-auto text-base font-normal text-gray-700">
-            {activeOption
-              ? `Option "${activeOption}" selected`
-              : "No option selected"}
-          </p>
+          {switchActiveDetailView(activeOption)}
         </div>
       </ConfigLayout>
     </div>
