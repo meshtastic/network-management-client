@@ -1,34 +1,49 @@
 import type { RootState } from "@app/store";
-import type { MeshDevice } from "@bindings/MeshDevice";
-import type { MeshNode } from "@bindings/MeshNode";
-import type { User } from "@bindings/protobufs/User";
-import type { MeshChannel } from "@bindings/MeshChannel";
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
+
+import type {
+  app_device_MeshDevice,
+  app_device_MeshNode,
+  app_protobufs_User,
+  app_device_MeshChannel,
+  app_protobufs_Waypoint,
+} from "@bindings/index";
 
 export const selectRootState = () => (state: RootState) => state;
 
-export const selectAvailablePorts = () => (state: RootState): string[] | null =>
-  state.devices.availableSerialPorts;
+export const selectAvailablePorts =
+  () =>
+  (state: RootState): string[] | null =>
+    state.devices.availableSerialPorts;
 
 export const selectPrimarySerialPort =
-  () => (state: RootState): string | null => state.devices.primarySerialPort;
+  () =>
+  (state: RootState): string | null =>
+    state.devices.primarySerialPort;
 
-export const selectDevice = () => (state: RootState): MeshDevice | null =>
-  state.devices.device;
+export const selectDevice =
+  () =>
+  (state: RootState): app_device_MeshDevice | null =>
+    state.devices.device;
 
 export const selectConnectedDeviceNodeId =
-  () => (state: RootState): number | null =>
+  () =>
+  (state: RootState): number | null =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
     state.devices.device?.myNodeInfo.myNodeNum ?? null;
 
-export const selectDeviceConnected = () => (state: RootState): boolean =>
-  !!state.devices.device;
+export const selectDeviceConnected =
+  () =>
+  (state: RootState): boolean =>
+    !!state.devices.device;
 
-export const selectAllNodes = () => (state: RootState): MeshNode[] =>
-  Object.values(state.devices.device?.nodes ?? []);
+export const selectAllNodes =
+  () =>
+  (state: RootState): app_device_MeshNode[] =>
+    Object.values(state.devices.device?.nodes ?? []);
 
 export const selectNodeById =
-  (id: number) => (state: RootState): MeshNode | null => {
+  (id: number) =>
+  (state: RootState): app_device_MeshNode | null => {
     for (const node of selectAllNodes()(state)) {
       if (node.data.num === id) return node;
     }
@@ -39,33 +54,42 @@ export const selectNodeById =
 export const selectActiveNodeId = () => (state: RootState) =>
   state.devices.activeNode;
 
-export const selectActiveNode = () => (state: RootState): MeshNode | null => {
-  const activeNodeId = selectActiveNodeId()(state);
-  if (!activeNodeId) return null;
-  return selectNodeById(activeNodeId)(state);
-};
+export const selectActiveNode =
+  () =>
+  (state: RootState): app_device_MeshNode | null => {
+    const activeNodeId = selectActiveNodeId()(state);
+    if (!activeNodeId) return null;
+    return selectNodeById(activeNodeId)(state);
+  };
 
 export const selectAllUsersByNodeIds =
-  () => (state: RootState): Record<number, User | null> =>
+  () =>
+  (state: RootState): Record<number, app_protobufs_User | null> =>
     selectAllNodes()(state).reduce((accum, n) => {
       const user = n.data.user;
       return user ? { ...accum, [n.data.num]: user } : accum;
-    }, [] as User[]);
+    }, [] as app_protobufs_User[]);
 
 export const selectUserByNodeId =
-  (nodeId: number) => (state: RootState): User | null =>
+  (nodeId: number) =>
+  (state: RootState): app_protobufs_User | null =>
     selectNodeById(nodeId)(state)?.data.user ?? null;
 
-export const selectDeviceChannels = () => (state: RootState): MeshChannel[] =>
-  Object.values(selectDevice()(state)?.channels ?? []);
+export const selectDeviceChannels =
+  () =>
+  (state: RootState): app_device_MeshChannel[] =>
+    Object.values(selectDevice()(state)?.channels ?? []);
 
 // Returns list of all waypoints on connected node
-export const selectAllWaypoints = () => (state: RootState): Waypoint[] =>
-  Object.values(state.devices.device?.waypoints ?? []);
+export const selectAllWaypoints =
+  () =>
+  (state: RootState): app_protobufs_Waypoint[] =>
+    Object.values(state.devices.device?.waypoints ?? []);
 
 // Returns single waypoint object given ID
 export const selectWaypointByID =
-  (id: number) => (state: RootState): Waypoint | null => {
+  (id: number) =>
+  (state: RootState): app_protobufs_Waypoint | null => {
     for (const waypoint of selectAllWaypoints()(state)) {
       if (waypoint.id === id) return waypoint;
     }
@@ -78,7 +102,8 @@ export const selectActiveWaypointID = () => (state: RootState) =>
 
 // Get actual Waypoint object
 export const selectActiveWaypoint =
-  () => (state: RootState): Waypoint | null => {
+  () =>
+  (state: RootState): app_protobufs_Waypoint | null => {
     const activeID = selectActiveWaypointID()(state);
     if (activeID) {
       return selectWaypointByID(activeID)(state);
@@ -95,11 +120,11 @@ export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
   state.devices.allowOnMapWaypointCreation;
 
 export const selectWaypointByLocation =
-  (lat: number, long: number) => (state: RootState): Waypoint | null => {
+  (lat: number, long: number) =>
+  (state: RootState): app_protobufs_Waypoint | null => {
     return (
       selectAllWaypoints()(state).find(
-        (waypoint) =>
-          waypoint.latitudeI === lat && waypoint.longitudeI === long,
+        (waypoint) => waypoint.latitudeI === lat && waypoint.longitudeI === long
       ) ?? null
     );
   };

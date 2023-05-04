@@ -14,7 +14,7 @@ pub mod helpers;
 pub mod serial_connection;
 pub mod state;
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub enum SerialDeviceStatus {
     Restarting,   // unused
@@ -32,7 +32,7 @@ impl Default for SerialDeviceStatus {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshChannel {
     pub config: protobufs::Channel,
@@ -40,21 +40,21 @@ pub struct MeshChannel {
     pub messages: Vec<ChannelMessageWithState>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshNodeDeviceMetrics {
     metrics: protobufs::DeviceMetrics,
     timestamp: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshNodeEnvironmentMetrics {
     metrics: protobufs::EnvironmentMetrics,
     timestamp: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshNode {
     pub device_metrics: Vec<MeshNodeDeviceMetrics>,
@@ -62,48 +62,48 @@ pub struct MeshNode {
     pub data: protobufs::NodeInfo,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct TelemetryPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::Telemetry,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UserPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::User,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PositionPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::Position,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct NeighborInfoPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::NeighborInfo,
 }
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct TextPacket {
     pub packet: protobufs::MeshPacket,
     pub data: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct WaypointPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::Waypoint,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum ChannelMessagePayload {
@@ -111,7 +111,7 @@ pub enum ChannelMessagePayload {
     Waypoint(WaypointPacket),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub enum ChannelMessageState {
     Pending,
@@ -119,7 +119,7 @@ pub enum ChannelMessageState {
     Error(String),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ChannelMessageWithState {
     pub payload: ChannelMessagePayload,
@@ -127,10 +127,11 @@ pub struct ChannelMessageWithState {
 }
 
 // TODO can't deserialize `SerialConnection`
-#[derive(Clone, Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Serialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshDevice {
     #[serde(skip_serializing, default)]
+    #[specta(skip)]
     pub connection: SerialConnection, // serial connection to hardware device
     pub config_id: u32, // unique identifier for configuration flow packets
     pub ready: bool,    // is device configured to participate in mesh

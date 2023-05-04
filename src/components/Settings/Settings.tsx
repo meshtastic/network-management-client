@@ -5,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Input } from "@material-tailwind/react";
 
+import type { app_protobufs_User } from "@bindings/index";
+
 import {
   selectActiveNode,
   selectPrimarySerialPort,
 } from "@features/device/deviceSelectors";
-import type { User } from "@bindings/protobufs/User";
 import { requestUpdateUser } from "@features/device/deviceActions";
 
 // Function to convert decimal MAC address to hex
@@ -61,7 +62,7 @@ const Settings = () => {
       return;
     }
 
-    const updatedUser: User = {
+    const updatedUser: app_protobufs_User = {
       ...activeNode.data.user!,
       longName: deviceName,
       shortName: deviceNickname,

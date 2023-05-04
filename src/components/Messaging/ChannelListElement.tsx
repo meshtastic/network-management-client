@@ -1,12 +1,13 @@
 import React from "react";
-import type { MeshChannel } from "@bindings/MeshChannel";
+
+import type { app_device_MeshChannel } from "@bindings/index";
 import {
   getChannelName,
   getLastChannelMessageDisplayText,
 } from "@utils/messaging";
 
 export interface IChannelListElementProps {
-  channel: MeshChannel;
+  channel: app_device_MeshChannel;
   setActiveChannel: (channel: number | null) => void;
   isSelected: boolean;
 }

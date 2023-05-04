@@ -1,8 +1,10 @@
-import type { ChannelMessagePayload } from "@bindings/ChannelMessagePayload";
-import type { ChannelMessageWithState } from "@bindings/ChannelMessageWithState";
-import type { MeshChannel } from "@bindings/MeshChannel";
+import type {
+  app_device_MeshChannel,
+  app_device_ChannelMessageWithState,
+  app_device_ChannelMessagePayload,
+} from "@bindings/index";
 
-export const getChannelName = (channel: MeshChannel): string => {
+export const getChannelName = (channel: app_device_MeshChannel): string => {
   if (channel.config.role === 1) return "Primary";
   return channel.config.settings?.name || "Unnamed Channel";
 };
@@ -32,7 +34,10 @@ export const getNumMessagesText = (numMessages: number): string => {
   return `${numMessages} messages`;
 };
 
-export const getPacketDisplayText = ({ data, type }: ChannelMessagePayload) => {
+export const getPacketDisplayText = ({
+  data,
+  type,
+}: app_device_ChannelMessagePayload) => {
   if (type === "text") return data;
 
   const { name, latitudeI, longitudeI } = data;
@@ -42,7 +47,7 @@ export const getPacketDisplayText = ({ data, type }: ChannelMessagePayload) => {
 };
 
 export const getLastChannelMessageDisplayText = (
-  lastMessage: ChannelMessageWithState | null
+  lastMessage: app_device_ChannelMessageWithState | null
 ) => {
   if (lastMessage?.payload.type) {
     return getPacketDisplayText(lastMessage.payload);

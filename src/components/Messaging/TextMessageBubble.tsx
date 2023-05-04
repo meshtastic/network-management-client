@@ -1,7 +1,8 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import type { ChannelMessageWithState } from "@bindings/ChannelMessageWithState";
+import type { app_device_ChannelMessageWithState } from "@bindings/index";
+
 import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
@@ -13,12 +14,12 @@ import {
 } from "@utils/messaging";
 
 export interface ITextMessageBubbleProps {
-  message: ChannelMessageWithState;
+  message: app_device_ChannelMessageWithState;
   className?: string;
 }
 
 const getAcknowledgementText = (
-  message: ChannelMessageWithState
+  message: app_device_ChannelMessageWithState
 ): { text: string; isError: boolean } => {
   if (message.state === "acknowledged") {
     return { text: "Acknowledged", isError: false };
