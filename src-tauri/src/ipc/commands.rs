@@ -5,6 +5,7 @@ use crate::analytics::state::configuration::AlgorithmConfigFlags;
 use crate::device;
 use crate::device::serial_connection::PacketDestination;
 use crate::device::MeshNode;
+use crate::device::SerialDeviceStatus;
 use crate::state;
 
 use app::protobufs;
@@ -83,7 +84,8 @@ pub async fn disconnect_from_serial_port(
         let mut state_devices = connected_devices.inner.lock().await;
 
         if let Some(device) = state_devices.get_mut(&port_name) {
-            device.connection.disconnect()?;
+            device.connection.disconnect().await?;
+            device.set_status(SerialDeviceStatus::Disconnected);
         }
 
         state_devices.remove(&port_name);
@@ -102,8 +104,11 @@ pub async fn disconnect_from_all_serial_ports(
         let mut state_devices = connected_devices.inner.lock().await;
 
         // Disconnect from all serial ports
-        for (_port_name, device) in state_devices.iter_mut() {
-            device.connection.disconnect()?;
+        for (port_name, device) in state_devices.iter_mut() {
+            trace!("Disconnecting from device on port {}", port_name);
+
+            device.connection.disconnect().await?;
+            device.set_status(SerialDeviceStatus::Disconnected);
         }
 
         // Clear connections map
@@ -129,7 +134,9 @@ pub async fn send_text(
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device.send_text(text.clone(), PacketDestination::Broadcast, true, channel)?;
+    device
+        .send_text(text.clone(), PacketDestination::Broadcast, true, channel)
+        .await?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 
@@ -150,7 +157,7 @@ pub async fn update_device_config(
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device.update_device_config(config)?;
+    device.update_device_config(config).await?;
 
     Ok(())
 }
@@ -169,7 +176,7 @@ pub async fn update_device_user(
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device.update_device_user(user)?;
+    device.update_device_user(user).await?;
 
     Ok(())
 }
@@ -191,7 +198,9 @@ pub async fn send_waypoint(
         .ok_or("Device not connected")
         .map_err(|e| e.to_string())?;
 
-    device.send_waypoint(waypoint, PacketDestination::Broadcast, true, channel)?;
+    device
+        .send_waypoint(waypoint, PacketDestination::Broadcast, true, channel)
+        .await?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 

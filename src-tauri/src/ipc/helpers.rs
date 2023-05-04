@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::time::Duration;
 
 use app::protobufs;
-use log::{debug, error, info, warn};
+use log::{debug, error, trace, warn};
 use tauri::api::notification::Notification;
 use tokio::sync::broadcast;
 
@@ -111,11 +111,10 @@ pub async fn initialize_serial_connection_handlers(
     device.set_status(SerialDeviceStatus::Connecting);
     device
         .connection
-        .connect(app_handle.clone(), port_name.clone(), 115_200)?;
+        .connect(app_handle.clone(), port_name.clone(), 115_200)
+        .await?;
 
-    device.set_status(SerialDeviceStatus::Configuring);
-    device.connection.configure(device.config_id)?;
-
+    // Get copy of decoded_listener by resubscribing
     let decoded_listener = device
         .connection
         .on_decoded_packet
@@ -123,16 +122,20 @@ pub async fn initialize_serial_connection_handlers(
         .ok_or("Decoded packet listener not open")?
         .resubscribe();
 
+    device.set_status(SerialDeviceStatus::Configuring);
+    device.connection.configure(device.config_id).await?;
+
     let handle = app_handle.clone();
     let mesh_device_arc = connected_devices.inner.clone();
     let graph_arc = mesh_graph.inner.clone();
 
-    // Only need to lock to set device in tauri state
+    // Save device into Tauri state
     {
         let mut devices_guard = mesh_device_arc.lock().await;
         devices_guard.insert(port_name.clone(), device);
     }
 
+    // * Needs the device struct and port name to be loaded into Tauri state before running
     spawn_connection_timeout_handler(handle.clone(), mesh_device_arc.clone(), port_name.clone());
 
     spawn_decoded_handler(
@@ -151,9 +154,13 @@ fn spawn_connection_timeout_handler(
     connected_devices_inner: state::ConnectedDevicesInner,
     port_name: String,
 ) {
+    trace!("Spawning device configuration timeout");
+
     tauri::async_runtime::spawn(async move {
-        // Wait 1s for device to configure
+        // Wait for device to configure
         tokio::time::sleep(Duration::from_millis(1500)).await;
+
+        trace!("Device configuration timeout completed");
 
         let mut devices_guard = connected_devices_inner.lock().await;
         let device = match devices_guard
@@ -168,13 +175,16 @@ fn spawn_connection_timeout_handler(
         };
 
         // If the device is not registered as configuring, take no action
-        // as we are handling the `Configuring` -> `Disconnected` transition
+        // since this means the device configuration has succeeded
+
         if device.status != SerialDeviceStatus::Configuring {
             return;
         }
 
         // If device hasn't completed configuration in allotted time,
         // tell the UI layer that the configuration failed
+
+        warn!("Device configuration timed out, telling UI to disconnect device");
 
         dispatch_configuration_status(
             &handle,
@@ -188,8 +198,7 @@ fn spawn_connection_timeout_handler(
         )
         .expect("Failed to dispatch configuration failure message");
 
-        info!("Device configuration timed out, disconnecting device");
-        device.set_status(SerialDeviceStatus::Disconnected);
+        trace!("Told UI to disconnect device");
     });
 }
 

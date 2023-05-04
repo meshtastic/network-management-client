@@ -1,19 +1,21 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
-import moment from "moment";
+import { unix } from "moment";
 
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
+import type { app_protobufs_Waypoint } from "@bindings/index";
+
 import TableLayout from "@components/Table/TableLayout";
 import {
+  selectAllUsersByNodeIds,
   selectAllWaypoints,
-  selectUserByNodeId,
 } from "@features/device/deviceSelectors";
 
 const ManageWaypointPage = () => {
   const waypoints = useSelector(selectAllWaypoints());
+  const users = useSelector(selectAllUsersByNodeIds());
 
-  const columns = useMemo<ColumnDef<Waypoint, unknown>[]>(
+  const columns = useMemo<ColumnDef<app_protobufs_Waypoint, unknown>[]>(
     () => [
       { header: "ID", accessorKey: "id" },
       { id: "Name", accessorFn: (n) => (n.name !== "" ? n.name : "N/A") },
@@ -21,7 +23,7 @@ const ManageWaypointPage = () => {
         id: "Description",
         accessorFn: (n) => (n.description !== "" ? n.description : "N/A"),
       },
-      { id: "Expires", accessorFn: (n) => moment.unix(n.expire) },
+      { id: "Expires", accessorFn: (n) => unix(n.expire) },
       {
         id: "Latitude",
         accessorFn: (n) =>
@@ -41,8 +43,8 @@ const ManageWaypointPage = () => {
         accessorFn: (n) =>
           n.lockedTo == 0
             ? "Public"
-            : useSelector(selectUserByNodeId(n.lockedTo))
-            ? useSelector(selectUserByNodeId(n.lockedTo))?.longName
+            : users[n.lockedTo]
+            ? users[n.lockedTo]?.longName
             : "N/A",
       },
     ],

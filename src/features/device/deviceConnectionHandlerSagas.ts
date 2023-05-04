@@ -2,7 +2,8 @@ import { EventChannel, eventChannel } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
 import { listen } from "@tauri-apps/api/event";
 
-import type { MeshDevice } from "@bindings/MeshDevice";
+import type { app_device_MeshDevice } from "@bindings/index";
+
 import { connectionSliceActions } from "@features/connection/connectionSlice";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestDisconnectFromDevice } from "@features/device/deviceActions";
@@ -13,7 +14,7 @@ export type GraphGeoJSONResult = {
   edges: GeoJSON.FeatureCollection
 };
 
-export type DeviceUpdateChannel = EventChannel<MeshDevice>;
+export type DeviceUpdateChannel = EventChannel<app_device_MeshDevice>;
 export type DeviceDisconnectChannel = EventChannel<string>;
 export type GraphUpdateChannel = EventChannel<GraphGeoJSONResult>;
 export type ConfigStatusChannel = EventChannel<boolean>;
@@ -24,7 +25,7 @@ function* handleSagaError(error: unknown) {
 
 export const createDeviceUpdateChannel = (): DeviceUpdateChannel => {
   return eventChannel((emitter) => {
-    listen<MeshDevice>("device_update", (event) => {
+    listen<app_device_MeshDevice>("device_update", (event) => {
       emitter(event.payload);
     })
       // .then((unlisten) => {
@@ -41,7 +42,7 @@ export function* handleDeviceUpdateChannel(channel: DeviceUpdateChannel) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const meshDevice: MeshDevice = yield take(channel);
+      const meshDevice: app_device_MeshDevice = yield take(channel);
       yield put(deviceSliceActions.setDevice(meshDevice));
     }
   } catch (error) {
@@ -65,7 +66,7 @@ export const createDeviceDisconnectChannel = (): DeviceDisconnectChannel => {
 };
 
 export function* handleDeviceDisconnectChannel(
-  channel: DeviceDisconnectChannel,
+  channel: DeviceDisconnectChannel
 ) {
   try {
     while (true) {
@@ -127,11 +128,19 @@ export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
   try {
     while (true) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { successful, portName, message }: {
+      const {
+        successful,
+        portName,
+        message,
+      }: {
         successful: boolean;
         portName: string;
         message: string | null;
       } = yield take(channel);
+
+      if (!successful) {
+        yield put(requestDisconnectFromDevice(portName));
+      }
 
       yield put(
         connectionSliceActions.setConnectionState({
@@ -139,7 +148,7 @@ export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
           status: successful
             ? { status: "SUCCESSFUL" }
             : { status: "FAILED", message: message ?? "" },
-        }),
+        })
       );
     }
   } catch (error) {

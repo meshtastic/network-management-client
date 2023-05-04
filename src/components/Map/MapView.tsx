@@ -18,7 +18,7 @@ import {
 import { invoke } from "@tauri-apps/api/tauri";
 import { useDebounce } from "react-use";
 
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
+import type { app_protobufs_Waypoint } from "@bindings/index";
 
 import AnalyticsPane from "@components/Map/AnalyticsPane";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
@@ -173,7 +173,7 @@ export const MapView = () => {
   const handleClick = (e: MapLayerMouseEvent) => {
     // Can only create new waypoint if the state is toggled
     if (newWaypointAllowed) {
-      const createdWaypoint: Waypoint = {
+      const createdWaypoint: app_protobufs_Waypoint = {
         id: 0,
         latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
         longitudeI: Math.round(e.lngLat.lng * 1e7),

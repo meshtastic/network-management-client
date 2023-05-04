@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
-import type { Waypoint } from "@bindings/protobufs/Waypoint";
+import type { app_protobufs_Waypoint } from "@bindings/index";
 
 import {
   selectActiveWaypoint,
@@ -47,7 +47,7 @@ const useDeleteWaypoint = () => {
       return;
     }
 
-    const updatedWaypoint: Waypoint = {
+    const updatedWaypoint: app_protobufs_Waypoint = {
       ...activeWaypoint,
       expire: Math.round(moment().valueOf() / 1000) - 1,
     };
@@ -58,7 +58,7 @@ const useDeleteWaypoint = () => {
         portName: primaryPortName,
         waypoint: updatedWaypoint,
         channel: 0,
-      }),
+      })
     );
 
     dispatch(deviceSliceActions.setActiveWaypoint(null));
@@ -73,8 +73,8 @@ const useToggleEditWaypoint = () => {
   return () => {
     dispatch(
       deviceSliceActions.setInfoPane(
-        isWaypointEdit ? "waypoint" : "waypointEdit",
-      ),
+        isWaypointEdit ? "waypoint" : "waypointEdit"
+      )
     );
   };
 };
