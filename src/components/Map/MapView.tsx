@@ -44,7 +44,9 @@ export const MapView = () => {
   const dispatch = useDispatch();
   const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
-  const { edgesFeatureCollection, viewState } = useSelector(selectMapState());
+  const { edgesFeatureCollection, viewState, config } = useSelector(
+    selectMapState()
+  );
   const showInfoPane = useSelector(selectInfoPane());
 
   const waypoints = useSelector(selectAllWaypoints());
@@ -110,7 +112,7 @@ export const MapView = () => {
     <div className="relative w-full h-full z-0">
       <Map
         initialViewState={viewState}
-        mapStyle="https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
+        mapStyle={config.style}
         mapLib={maplibregl}
         attributionControl={false}
         onMoveEnd={handleMoveEnd}

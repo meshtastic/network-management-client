@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
-import { unix } from "moment";
 
 import type { app_protobufs_Waypoint } from "@bindings/index";
 
@@ -23,7 +22,7 @@ const ManageWaypointPage = () => {
         id: "Description",
         accessorFn: (n) => (n.description !== "" ? n.description : "N/A"),
       },
-      { id: "Expires", accessorFn: (n) => unix(n.expire) },
+      { id: "Expires", accessorFn: (n) => new Date(n.expire * 1000) },
       {
         id: "Latitude",
         accessorFn: (n) =>
