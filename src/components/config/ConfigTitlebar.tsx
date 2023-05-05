@@ -1,11 +1,15 @@
-import React from "react";
+import type React from "react";
 import type { ReactNode } from "react";
 
 export interface IConfigTitleProps {
   title: string;
   subtitle: string;
   renderIcon: (classNames: string) => JSX.Element;
-  onIconClick: () => void;
+  onIconClick?: () => void;
+  buttonProps?: React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  >;
   children: ReactNode;
 }
 
@@ -13,7 +17,8 @@ const ConfigTitle = ({
   title,
   subtitle,
   renderIcon,
-  onIconClick,
+  onIconClick = () => null,
+  buttonProps = {},
   children,
 }: IConfigTitleProps) => {
   return (
@@ -24,7 +29,7 @@ const ConfigTitle = ({
           <p className="text-xs font-normal text-gray-400">{subtitle}</p>
         </div>
 
-        <button type="button" onClick={() => onIconClick()}>
+        <button type="button" onClick={() => onIconClick()} {...buttonProps}>
           {renderIcon("w-6 h-6 text-gray-400")}
         </button>
       </div>
