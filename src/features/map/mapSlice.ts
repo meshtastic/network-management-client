@@ -43,6 +43,12 @@ export const mapSlice = createSlice({
     ) => {
       state.edgesFeatureCollection = action.payload;
     },
+    updateConfig: (
+      state,
+      action: PayloadAction<Partial<IMapConfig>>
+    ) => {
+      state.config = { ...state.config, ...action.payload }
+    }
   },
 });
 

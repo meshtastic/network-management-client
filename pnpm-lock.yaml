@@ -20,6 +20,7 @@ specifiers:
   '@types/react-redux': ^7.1.24
   '@types/react-table': ^7.7.14
   '@types/redux-logger': ^3.0.9
+  '@types/uuid': ^9.0.1
   '@types/w3c-web-serial': ^1.0.3
   '@typescript-eslint/eslint-plugin': ^5.40.1
   '@typescript-eslint/parser': ^5.40.1
@@ -39,6 +40,7 @@ specifiers:
   react-chartjs-2: ^5.2.0
   react-charts: 3.0.0-beta.54
   react-dom: ^18.2.0
+  react-hook-form: ^7.43.9
   react-json-view: ^1.21.3
   react-map-gl: ^7.0.19
   react-redux: ^8.0.4
@@ -53,6 +55,7 @@ specifiers:
   tsparticles: ^2.7.1
   tsparticles-engine: ^2.7.1
   typescript: ^4.8.4
+  uuid: ^9.0.0
   vite: ^4.0.4
 
 dependencies:
@@ -76,6 +79,7 @@ dependencies:
   react-chartjs-2: 5.2.0_t5yjg6ab35jnsudnh2qdighszm
   react-charts: 3.0.0-beta.54_biqbaboplfbrettd7655fr4n2y
   react-dom: 18.2.0_react@18.2.0
+  react-hook-form: 7.43.9_react@18.2.0
   react-json-view: 1.21.3_2zx2umvpluuhvlq44va5bta2da
   react-map-gl: 7.0.19_boipu4w7clhllxbftb5pofkimy
   react-redux: 8.0.4_moha6x5fbqoiok2ot63p7hwafm
@@ -87,6 +91,7 @@ dependencies:
   timeago-react: 3.0.5_react@18.2.0
   tsparticles: 2.7.1
   tsparticles-engine: 2.7.1
+  uuid: 9.0.0
 
 devDependencies:
   '@meshtastic/eslint-config': 1.0.8
@@ -98,6 +103,7 @@ devDependencies:
   '@types/react-redux': 7.1.24
   '@types/react-table': 7.7.14
   '@types/redux-logger': 3.0.9
+  '@types/uuid': 9.0.1
   '@types/w3c-web-serial': 1.0.3
   '@typescript-eslint/eslint-plugin': 5.40.1_ukgdydjtebaxmxfqp5v5ulh64y
   '@typescript-eslint/parser': 5.40.1_z4bbprzjrhnsfa24uvmcbu7f5q
@@ -2048,6 +2054,10 @@ packages:
   /@types/use-sync-external-store/0.0.3:
     resolution: {integrity: sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==}
     dev: false
+
+  /@types/uuid/9.0.1:
+    resolution: {integrity: sha512-rFT3ak0/2trgvp4yYZo5iKFEPsET7vKydKF+VRCxlQ9bpheehyAJH89dAkaLEq/j/RZXJIqcgsmPJKUP1Z28HA==}
+    dev: true
 
   /@types/w3c-web-serial/1.0.3:
     resolution: {integrity: sha512-R4J/OjqKAUFQoXVIkaUTfzb/sl6hLh/ZhDTfowJTRMa7LhgEmI/jXV4zsL1u8HpNa853BxwNmDIr0pauizzwSQ==}
@@ -5037,6 +5047,15 @@ packages:
       scheduler: 0.23.0
     dev: false
 
+  /react-hook-form/7.43.9_react@18.2.0:
+    resolution: {integrity: sha512-AUDN3Pz2NSeoxQ7Hs6OhQhDr6gtF9YRuutGDwPQqhSUAHJSgGl2VeY3qN19MG0SucpjgDiuMJ4iC5T5uB+eaNQ==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -6180,6 +6199,11 @@ packages:
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: false
 
   /v8-to-istanbul/9.0.1:
     resolution: {integrity: sha512-74Y4LqY74kLE6IFyIjPtkSTWzUZmj8tdHT9Ii/26dvQ6K9Dl2NbEfj0XgU2sHCtKgt5VupqhlO/5aWuqS+IY1w==}
