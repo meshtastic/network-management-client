@@ -19,7 +19,7 @@ export const initialMapState: IMapState = {
   },
   edgesFeatureCollection: null,
   config: {
-    style: "https://raw.githubusercontent.com/hc-oss/maplibre-gl-styles/master/styles/osm-mapnik/v8/default.json"
+    style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
   }
 };
 
