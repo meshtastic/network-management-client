@@ -5,7 +5,7 @@ import { PencilIcon } from "@heroicons/react/24/outline";
 
 import type { app_device_MeshChannel } from "@bindings/index";
 
-import ConfigTitlebar from "@app/components/config/ConfigTitlebar";
+import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import MapIconButton from "@components/Map/MapIconButton";
 import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
