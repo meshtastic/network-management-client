@@ -30,7 +30,7 @@ const ApplicationSettingsPage = () => {
   return (
     <div className="flex-1">
       <ConfigLayout
-        title="App Settings"
+        title="Settings"
         backtrace={["Application Settings"]}
         renderTitleIcon={(c) => <QuestionMarkCircleIcon className={`${c}`} />}
         onTitleIconClick={() =>
