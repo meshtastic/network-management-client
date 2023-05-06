@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { Upload } from "lucide-react";
 
 import type { app_device_MeshChannel } from "@bindings/index";
 
@@ -21,7 +21,8 @@ const ChannelConfigPage = () => {
       <ConfigLayout
         title="Channel Config"
         backtrace={["Channel Configuration"]}
-        renderTitleIcon={(c) => <QuestionMarkCircleIcon className={`${c}`} />}
+        renderTitleIcon={(c) => <Upload className={`${c}`} />}
+        titleIconTooltip="Upload config to device"
         onTitleIconClick={() =>
           console.warn(
             "Channel configuration title icon onClick not implemented"

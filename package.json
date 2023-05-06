@@ -23,6 +23,7 @@
     "@radix-ui/react-dialog": "^1.0.2",
     "@radix-ui/react-switch": "^1.0.1",
     "@radix-ui/react-toggle": "^1.0.1",
+    "@radix-ui/react-tooltip": "^1.0.5",
     "@reduxjs/toolkit": "^1.8.6",
     "@tanstack/react-table": "8.7.9",
     "@tauri-apps/api": "^1.1.0",

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { Upload } from "lucide-react";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
@@ -65,7 +65,8 @@ const PluginConfigPage = () => {
       <ConfigLayout
         title="Plugin Config"
         backtrace={["Plugin Configuration"]}
-        renderTitleIcon={(c) => <QuestionMarkCircleIcon className={`${c}`} />}
+        renderTitleIcon={(c) => <Upload className={`${c}`} />}
+        titleIconTooltip="Upload config to device"
         onTitleIconClick={() =>
           console.warn(
             "Plugin configuration title icon onClick not implemented"

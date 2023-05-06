@@ -64,6 +64,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
         title={"Display Configuration"}
         subtitle={"Configure device display"}
         renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form

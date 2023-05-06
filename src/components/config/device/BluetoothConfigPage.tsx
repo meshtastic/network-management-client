@@ -74,6 +74,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
         title={"Bluetooth Configuration"}
         subtitle={"Configure device bluetooth connection"}
         renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form

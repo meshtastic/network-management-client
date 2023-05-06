@@ -79,6 +79,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
         title={"LoRa Configuration"}
         subtitle={"Configure device LoRa connection"}
         renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form

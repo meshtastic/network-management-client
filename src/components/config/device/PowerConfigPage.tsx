@@ -67,6 +67,7 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
         title={"Power Configuration"}
         subtitle={"Configure device power settings"}
         renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form

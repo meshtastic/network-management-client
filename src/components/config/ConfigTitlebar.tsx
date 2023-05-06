@@ -1,11 +1,14 @@
 import type React from "react";
 import type { ReactNode } from "react";
 
+import DefaultTooltip from "@components/DefaultTooltip";
+
 export interface IConfigTitleProps {
   title: string;
   subtitle: string;
   renderIcon: (classNames: string) => JSX.Element;
   onIconClick?: () => void;
+  buttonTooltipText: string;
   buttonProps?: React.DetailedHTMLProps<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
@@ -18,6 +21,7 @@ const ConfigTitle = ({
   subtitle,
   renderIcon,
   onIconClick = () => null,
+  buttonTooltipText,
   buttonProps = {},
   children,
 }: IConfigTitleProps) => {
@@ -29,9 +33,11 @@ const ConfigTitle = ({
           <p className="text-xs font-normal text-gray-400">{subtitle}</p>
         </div>
 
-        <button type="button" onClick={() => onIconClick()} {...buttonProps}>
-          {renderIcon("w-6 h-6 text-gray-400")}
-        </button>
+        <DefaultTooltip text={buttonTooltipText}>
+          <button type="button" onClick={() => onIconClick()} {...buttonProps}>
+            {renderIcon("w-6 h-6 text-gray-400")}
+          </button>
+        </DefaultTooltip>
       </div>
 
       <div

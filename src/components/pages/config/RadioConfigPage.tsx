@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { Upload } from "lucide-react";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
@@ -59,7 +59,8 @@ const RadioConfigPage = () => {
       <ConfigLayout
         title="Radio Config"
         backtrace={["Radio Configuration"]}
-        renderTitleIcon={(c) => <QuestionMarkCircleIcon className={`${c}`} />}
+        renderTitleIcon={(c) => <Upload className={`${c}`} />}
+        titleIconTooltip="Upload config to device"
         onTitleIconClick={() =>
           console.warn("Radio configuration title icon onClick not implemented")
         }
@@ -68,7 +69,7 @@ const RadioConfigPage = () => {
             <ConfigOption
               key={hash}
               title={name}
-              subtitle="0 unsaved changes"
+              subtitle="0 pending changes"
               isActive={activeOption === hash}
               onClick={() =>
                 setActiveOption(activeOption !== hash ? hash : null)

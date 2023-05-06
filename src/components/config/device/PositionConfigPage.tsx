@@ -84,6 +84,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
         title={"Position Configuration"}
         subtitle={"Configure device Position settings"}
         renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form

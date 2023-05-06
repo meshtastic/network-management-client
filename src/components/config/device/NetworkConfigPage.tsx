@@ -71,6 +71,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
         title={"Network Configuration"}
         subtitle={"Configure device network connection"}
         renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form

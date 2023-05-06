@@ -5,13 +5,10 @@ import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { Save } from "lucide-react";
 import { v4 } from "uuid";
 
-import type {
-  app_protobufs_config_DisplayConfig,
-  app_protobufs_User,
-} from "@bindings/index";
+import type { app_protobufs_User } from "@bindings/index";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
+// import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
 import {
   selectConnectedDeviceNodeId,
@@ -68,6 +65,7 @@ const UserConfigPage = ({ className = "" }: IUserConfigPageProps) => {
         title={"User Configuration"}
         subtitle={"Configure device user persona"}
         renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form

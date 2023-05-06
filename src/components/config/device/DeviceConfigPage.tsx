@@ -61,6 +61,7 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
         title={"Device Configuration"}
         subtitle={"Configure device"}
         renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form
