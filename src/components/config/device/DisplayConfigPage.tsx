@@ -8,49 +8,13 @@ import { v4 } from "uuid";
 import type { app_protobufs_config_DisplayConfig } from "@bindings/index";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import ConfigLabel from "@components/config/ConfigLabel";
+import ConfigInput from "@components/config/ConfigInput";
 import { selectDevice } from "@features/device/deviceSelectors";
-import ConfigLabel from "../ConfigLabel";
 
 export interface IDisplayConfigPageProps {
   className?: string;
 }
-
-type FormInputType = {
-  enumField: number;
-};
-
-const ReproCase = () => {
-  const { register, handleSubmit } = useForm<FormInputType>();
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const onValidSubmit: SubmitHandler<FormInputType> = (data) => {
-    // If the `select` field has been changed, the `enumField` value will be
-    // a `string` type but the `data` parameter is still cast as `{ enumField: number; }`
-    console.log("data", data);
-  };
-
-  const onInvalidSubmit: SubmitErrorHandler<FormInputType> = (error) => {
-    console.warn("error", error);
-  };
-
-  return (
-    <form onSubmit={handleFormSubmit}>
-      <select {...register("enumField")}>
-        <option value={0}>Option 1</option>
-        <option value={1}>Option 2</option>
-        <option value={2}>Option 3</option>
-      </select>
-
-      <input type="submit" />
-    </form>
-  );
-};
-
-export default ReproCase;
 
 type DisplayConfigInput = app_protobufs_config_DisplayConfig;
 
@@ -61,13 +25,21 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm<DisplayConfigInput>({
     defaultValues: device?.config.display ?? undefined,
   });
 
-  const onValidSubmit: SubmitHandler<DisplayConfigInput> = (data) => {
+  const onValidSubmit: SubmitHandler<DisplayConfigInput> = (d) => {
+    // See https://github.com/react-hook-form/react-hook-form/issues/10378
+    const data: DisplayConfigInput = {
+      ...d,
+      displaymode: parseInt(d.displaymode as unknown as string),
+      gpsFormat: parseInt(d.gpsFormat as unknown as string),
+      oled: parseInt(d.oled as unknown as string),
+      units: parseInt(d.units as unknown as string),
+    };
+
     console.log("data", data);
   };
 
@@ -75,12 +47,8 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
     console.warn("errors", errors);
   };
 
-  console.log("form update", watch());
-
   const handleFormSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-
-    console.log("form submit");
     handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
   };
 
@@ -94,24 +62,24 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
         renderIcon={(c) => <Save className={c} />}
         buttonProps={{ type: "submit", form: formId }}
       >
-        <form id={formId} onSubmit={handleFormSubmit}>
-          <ConfigLabel
-            text="autoScreenCarouselSecs"
+        <form
+          className="flex flex-col gap-6"
+          id={formId}
+          onSubmit={handleFormSubmit}
+        >
+          <ConfigInput
+            type="number"
+            text="Screen Auto Scroll (seconds)"
             error={errors.autoScreenCarouselSecs?.message}
-          >
-            <input
-              type="number"
-              defaultValue={0}
-              {...register("autoScreenCarouselSecs")}
-            />
-          </ConfigLabel>
+            {...register("autoScreenCarouselSecs")}
+          />
 
-          <ConfigLabel
-            text="compassNorthTop"
+          <ConfigInput
+            type="checkbox"
+            text="Force North to Screen Top"
             error={errors.compassNorthTop?.message}
-          >
-            <input type="checkbox" {...register("compassNorthTop")} />
-          </ConfigLabel>
+            {...register("compassNorthTop")}
+          />
 
           <ConfigLabel text="displaymode" error={errors.displaymode?.message}>
             <select {...register("displaymode")}>
@@ -122,9 +90,12 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
             </select>
           </ConfigLabel>
 
-          <ConfigLabel text="flipScreen" error={errors.flipScreen?.message}>
-            <input type="checkbox" {...register("flipScreen")} />
-          </ConfigLabel>
+          <ConfigInput
+            type="checkbox"
+            text="Flip Screen"
+            error={errors.flipScreen?.message}
+            {...register("flipScreen")}
+          />
 
           <ConfigLabel text="gpsFormat" error={errors.gpsFormat?.message}>
             <select {...register("gpsFormat")}>
@@ -137,9 +108,12 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
             </select>
           </ConfigLabel>
 
-          <ConfigLabel text="headingBold" error={errors.headingBold?.message}>
-            <input type="checkbox" {...register("headingBold")} />
-          </ConfigLabel>
+          <ConfigInput
+            type="checkbox"
+            text="Bold Heading"
+            error={errors.headingBold?.message}
+            {...register("headingBold")}
+          />
 
           <ConfigLabel text="oled" error={errors.oled?.message}>
             <select {...register("oled")}>
@@ -150,13 +124,12 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
             </select>
           </ConfigLabel>
 
-          <ConfigLabel text="screenOnSecs" error={errors.screenOnSecs?.message}>
-            <input
-              type="number"
-              defaultValue={0}
-              {...register("screenOnSecs")}
-            />
-          </ConfigLabel>
+          <ConfigInput
+            type="number"
+            text="Screen On Duration (sec)"
+            error={errors.screenOnSecs?.message}
+            {...register("screenOnSecs")}
+          />
 
           <ConfigLabel text="units" error={errors.units?.message}>
             <select {...register("units")}>
@@ -165,12 +138,12 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
             </select>
           </ConfigLabel>
 
-          <ConfigLabel
-            text="wakeOnTapOrMotion"
+          <ConfigInput
+            type="checkbox"
+            text="Wake on Tap or Motion"
             error={errors.wakeOnTapOrMotion?.message}
-          >
-            <input type="checkbox" {...register("wakeOnTapOrMotion")} />
-          </ConfigLabel>
+            {...register("wakeOnTapOrMotion")}
+          />
 
           {/* <input type="submit" /> */}
         </form>
@@ -179,4 +152,4 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
   );
 };
 
-// export default DisplayConfigPage;
+export default DisplayConfigPage;

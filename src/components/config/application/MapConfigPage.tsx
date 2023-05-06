@@ -49,6 +49,7 @@ const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
       >
         <form id={formId} onSubmit={handleFormSubmit}>
           <ConfigInput
+            type="url"
             text="Mapbox Map Style"
             error={errors.style?.message}
             {...register("style")}
