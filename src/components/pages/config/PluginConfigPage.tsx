@@ -14,17 +14,20 @@ import TelemetryConfigPage from "@components/config/module/TelemetryConfigPage";
 import TracerouteConfigPage from "@components/config/module/TracerouteConfigPage";
 
 export const PluginConfigOptions: { name: string; hash: string }[] = [
-  { name: "Audio", hash: "audio" },
-  { name: "Canned Message", hash: "canned_message" },
-  {
-    name: "External Notification",
-    hash: "external_notification",
-  },
+  // { name: "Audio", hash: "audio" },
+  // { name: "Canned Message", hash: "canned_message" },
+  // {
+  //   name: "External Notification",
+  //   hash: "external_notification",
+  // },
   { name: "MQTT", hash: "mqtt" },
   { name: "Range Test", hash: "range_test" },
   { name: "Serial Module", hash: "serial_module" },
+  { name: "Store and Forward", hash: "store_and_forward" },
   { name: "Telemetry", hash: "telemetry" },
-  { name: "Traceroute", hash: "traceroute" },
+
+  // * This wouldn't make sense, no config options
+  // { name: "Traceroute", hash: "traceroute" },
 ];
 
 const switchActiveDetailView = (activeOption: string | null) => {
