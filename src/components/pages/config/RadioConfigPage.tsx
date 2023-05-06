@@ -4,40 +4,44 @@ import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
 
-import UserConfigPage from "@components/config/device/UserConfigPage";
+import BluetoothConfigPage from "@components/config/device/BluetoothConfigPage";
 import DeviceConfigPage from "@components/config/device/DeviceConfigPage";
-import NetworkConfigPage from "@components/config/device/NetworkConfigPage";
-import PowerConfigPage from "@components/config/device/PowerConfigPage";
 import DisplayConfigPage from "@components/config/device/DisplayConfigPage";
 import LoRaConfigPage from "@components/config/device/LoRaConfigPage";
-import BluetoothConfigPage from "@components/config/device/BluetoothConfigPage";
+import NetworkConfigPage from "@components/config/device/NetworkConfigPage";
+import PositionConfigPage from "@components/config/device/PositionConfigPage";
+import PowerConfigPage from "@components/config/device/PowerConfigPage";
+import UserConfigPage from "@components/config/device/UserConfigPage";
 
 export const RadioConfigOptions: { name: string; hash: string }[] = [
-  { name: "User", hash: "user" },
+  { name: "Bluetooth", hash: "bluetooth" },
   { name: "Device", hash: "device" },
-  { name: "Power", hash: "power" },
-  { name: "Network", hash: "network" },
   { name: "Display", hash: "display" },
   { name: "LoRa", hash: "lora" },
-  { name: "Bluetooth", hash: "bluetooth" },
+  { name: "Network", hash: "network" },
+  { name: "Position", hash: "position" },
+  { name: "Power", hash: "power" },
+  { name: "User", hash: "user" },
 ];
 
 const switchActiveDetailView = (activeOption: string | null) => {
   switch (activeOption) {
-    case "user":
-      return <UserConfigPage />;
+    case "bluetooth":
+      return <BluetoothConfigPage />;
     case "device":
       return <DeviceConfigPage />;
-    case "power":
-      return <PowerConfigPage />;
-    case "network":
-      return <NetworkConfigPage />;
     case "display":
       return <DisplayConfigPage />;
     case "lora":
       return <LoRaConfigPage />;
-    case "bluetooth":
-      return <BluetoothConfigPage />;
+    case "network":
+      return <NetworkConfigPage />;
+    case "position":
+      return <PositionConfigPage />;
+    case "power":
+      return <PowerConfigPage />;
+    case "user":
+      return <UserConfigPage />;
     default:
       return (
         <p className="m-auto text-base font-normal text-gray-700">

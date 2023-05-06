@@ -34,6 +34,10 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
     // See https://github.com/react-hook-form/react-hook-form/issues/10378
     const data: DisplayConfigInput = {
       ...d,
+      autoScreenCarouselSecs: parseInt(
+        d.autoScreenCarouselSecs as unknown as string
+      ),
+      screenOnSecs: parseInt(d.screenOnSecs as unknown as string),
       displaymode: parseInt(d.displaymode as unknown as string),
       gpsFormat: parseInt(d.gpsFormat as unknown as string),
       oled: parseInt(d.oled as unknown as string),
