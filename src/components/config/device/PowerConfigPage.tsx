@@ -18,6 +18,22 @@ export interface IPowerConfigPageProps {
 
 type PowerConfigInput = app_protobufs_config_PowerConfig;
 
+// See https://github.com/react-hook-form/react-hook-form/issues/10378
+const parsePowerConfigInput = (d: PowerConfigInput): PowerConfigInput => ({
+  ...d,
+  onBatteryShutdownAfterSecs: parseInt(
+    d.onBatteryShutdownAfterSecs as unknown as string
+  ),
+  adcMultiplierOverride: parseFloat(
+    d.adcMultiplierOverride as unknown as string
+  ),
+  waitBluetoothSecs: parseInt(d.waitBluetoothSecs as unknown as string),
+  meshSdsTimeoutSecs: parseInt(d.meshSdsTimeoutSecs as unknown as string),
+  sdsSecs: parseInt(d.sdsSecs as unknown as string),
+  lsSecs: parseInt(d.lsSecs as unknown as string),
+  minWakeSecs: parseInt(d.minWakeSecs as unknown as string),
+});
+
 const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
   const device = useSelector(selectDevice());
 
@@ -31,22 +47,7 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
   });
 
   const onValidSubmit: SubmitHandler<PowerConfigInput> = (d) => {
-    // See https://github.com/react-hook-form/react-hook-form/issues/10378
-    const data: PowerConfigInput = {
-      ...d,
-      onBatteryShutdownAfterSecs: parseInt(
-        d.onBatteryShutdownAfterSecs as unknown as string
-      ),
-      adcMultiplierOverride: parseFloat(
-        d.adcMultiplierOverride as unknown as string
-      ),
-      waitBluetoothSecs: parseInt(d.waitBluetoothSecs as unknown as string),
-      meshSdsTimeoutSecs: parseInt(d.meshSdsTimeoutSecs as unknown as string),
-      sdsSecs: parseInt(d.sdsSecs as unknown as string),
-      lsSecs: parseInt(d.lsSecs as unknown as string),
-      minWakeSecs: parseInt(d.minWakeSecs as unknown as string),
-    };
-
+    const data = parsePowerConfigInput(d);
     console.log("data", data);
   };
 

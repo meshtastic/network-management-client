@@ -18,6 +18,15 @@ export interface IBluetoothConfigPageProps {
 
 type BluetoothConfigInput = app_protobufs_config_BluetoothConfig;
 
+// See https://github.com/react-hook-form/react-hook-form/issues/10378
+const parseBluetoothConfigInput = (
+  d: BluetoothConfigInput
+): BluetoothConfigInput => ({
+  ...d,
+  fixedPin: parseInt(d.fixedPin as unknown as string),
+  mode: parseInt(d.mode as unknown as string),
+});
+
 const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
   const device = useSelector(selectDevice());
 
@@ -45,13 +54,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
   });
 
   const onValidSubmit: SubmitHandler<BluetoothConfigInput> = (d) => {
-    // See https://github.com/react-hook-form/react-hook-form/issues/10378
-    const data: BluetoothConfigInput = {
-      ...d,
-      fixedPin: parseInt(d.fixedPin as unknown as string),
-      mode: parseInt(d.mode as unknown as string),
-    };
-
+    const data = parseBluetoothConfigInput(d);
     console.log("data", data);
   };
 

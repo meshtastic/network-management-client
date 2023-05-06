@@ -18,6 +18,14 @@ export interface IDeviceConfigPageProps {
 
 type DeviceConfigInput = app_protobufs_config_DeviceConfig;
 
+// See https://github.com/react-hook-form/react-hook-form/issues/10378
+const parseDeviceConfigInput = (d: DeviceConfigInput): DeviceConfigInput => ({
+  ...d,
+  nodeInfoBroadcastSecs: parseInt(d.nodeInfoBroadcastSecs as unknown as string),
+  role: parseInt(d.role as unknown as string),
+  rebroadcastMode: parseInt(d.rebroadcastMode as unknown as string),
+});
+
 const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
   const device = useSelector(selectDevice());
 
@@ -31,16 +39,7 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
   });
 
   const onValidSubmit: SubmitHandler<DeviceConfigInput> = (d) => {
-    // See https://github.com/react-hook-form/react-hook-form/issues/10378
-    const data: DeviceConfigInput = {
-      ...d,
-      nodeInfoBroadcastSecs: parseInt(
-        d.nodeInfoBroadcastSecs as unknown as string
-      ),
-      role: parseInt(d.role as unknown as string),
-      rebroadcastMode: parseInt(d.rebroadcastMode as unknown as string),
-    };
-
+    const data = parseDeviceConfigInput(d);
     console.log("data", data);
   };
 

@@ -18,6 +18,20 @@ export interface ILoRaConfigPageProps {
 
 type LoRaConfigInput = app_protobufs_config_LoRaConfig;
 
+// See https://github.com/react-hook-form/react-hook-form/issues/10378
+const parseLoRaConfigInput = (d: LoRaConfigInput): LoRaConfigInput => ({
+  ...d,
+  region: parseInt(d.region as unknown as string),
+  modemPreset: parseInt(d.modemPreset as unknown as string),
+  bandwidth: parseInt(d.bandwidth as unknown as string),
+  spreadFactor: parseInt(d.spreadFactor as unknown as string),
+  codingRate: parseInt(d.codingRate as unknown as string),
+  frequencyOffset: parseInt(d.frequencyOffset as unknown as string),
+  hopLimit: parseInt(d.hopLimit as unknown as string),
+  txPower: parseInt(d.txPower as unknown as string),
+  channelNum: parseInt(d.channelNum as unknown as string),
+});
+
 const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   const device = useSelector(selectDevice());
 
@@ -45,20 +59,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   });
 
   const onValidSubmit: SubmitHandler<LoRaConfigInput> = (d) => {
-    // See https://github.com/react-hook-form/react-hook-form/issues/10378
-    const data: LoRaConfigInput = {
-      ...d,
-      region: parseInt(d.region as unknown as string),
-      modemPreset: parseInt(d.modemPreset as unknown as string),
-      bandwidth: parseInt(d.bandwidth as unknown as string),
-      spreadFactor: parseInt(d.spreadFactor as unknown as string),
-      codingRate: parseInt(d.codingRate as unknown as string),
-      frequencyOffset: parseInt(d.frequencyOffset as unknown as string),
-      hopLimit: parseInt(d.hopLimit as unknown as string),
-      txPower: parseInt(d.txPower as unknown as string),
-      channelNum: parseInt(d.channelNum as unknown as string),
-    };
-
+    const data = parseLoRaConfigInput(d);
     console.log("data", data);
   };
 

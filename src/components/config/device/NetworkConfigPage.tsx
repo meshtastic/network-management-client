@@ -18,6 +18,14 @@ export interface INetworkConfigPageProps {
 
 type NetworkConfigInput = app_protobufs_config_NetworkConfig;
 
+// See https://github.com/react-hook-form/react-hook-form/issues/10378
+const parseNetworkConfigInput = (
+  d: NetworkConfigInput
+): NetworkConfigInput => ({
+  ...d,
+  addressMode: parseInt(d.addressMode as unknown as string),
+});
+
 const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
   const device = useSelector(selectDevice());
 
@@ -45,12 +53,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
   });
 
   const onValidSubmit: SubmitHandler<NetworkConfigInput> = (d) => {
-    // See https://github.com/react-hook-form/react-hook-form/issues/10378
-    const data: NetworkConfigInput = {
-      ...d,
-      addressMode: parseInt(d.addressMode as unknown as string),
-    };
-
+    const data = parseNetworkConfigInput(d);
     console.log("data", data);
   };
 

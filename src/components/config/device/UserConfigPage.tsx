@@ -24,6 +24,11 @@ type UserConfigInput = Pick<
   "shortName" | "longName" | "isLicensed"
 >;
 
+// See https://github.com/react-hook-form/react-hook-form/issues/10378
+const parseUserConfigInput = (d: UserConfigInput): UserConfigInput => ({
+  ...d,
+});
+
 const UserConfigPage = ({ className = "" }: IUserConfigPageProps) => {
   const device = useSelector(selectDevice());
   const connectedNodeId = useSelector(selectConnectedDeviceNodeId());
@@ -40,11 +45,7 @@ const UserConfigPage = ({ className = "" }: IUserConfigPageProps) => {
   });
 
   const onValidSubmit: SubmitHandler<UserConfigInput> = (d) => {
-    // See https://github.com/react-hook-form/react-hook-form/issues/10378
-    const data: UserConfigInput = {
-      ...d,
-    };
-
+    const data = parseUserConfigInput(d);
     console.log("data", data);
   };
 

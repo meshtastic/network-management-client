@@ -18,6 +18,25 @@ export interface IPositionConfigPageProps {
 
 type PositionConfigInput = app_protobufs_config_PositionConfig;
 
+// See https://github.com/react-hook-form/react-hook-form/issues/10378
+const parsePositionConfigInput = (
+  d: PositionConfigInput
+): PositionConfigInput => ({
+  ...d,
+  positionBroadcastSecs: parseInt(d.positionBroadcastSecs as unknown as string),
+  gpsUpdateInterval: parseInt(d.gpsUpdateInterval as unknown as string),
+  gpsAttemptTime: parseInt(d.gpsAttemptTime as unknown as string),
+  // positionFlags: parseInt(d.positionFlags as unknown as string),
+  rxGpio: parseInt(d.rxGpio as unknown as string),
+  txGpio: parseInt(d.txGpio as unknown as string),
+  broadcastSmartMinimumDistance: parseInt(
+    d.broadcastSmartMinimumDistance as unknown as string
+  ),
+  broadcastSmartMinimumIntervalSecs: parseInt(
+    d.broadcastSmartMinimumIntervalSecs as unknown as string
+  ),
+});
+
 const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
   const device = useSelector(selectDevice());
 
@@ -45,25 +64,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
   });
 
   const onValidSubmit: SubmitHandler<PositionConfigInput> = (d) => {
-    // See https://github.com/react-hook-form/react-hook-form/issues/10378
-    const data: PositionConfigInput = {
-      ...d,
-      positionBroadcastSecs: parseInt(
-        d.positionBroadcastSecs as unknown as string
-      ),
-      gpsUpdateInterval: parseInt(d.gpsUpdateInterval as unknown as string),
-      gpsAttemptTime: parseInt(d.gpsAttemptTime as unknown as string),
-      // positionFlags: parseInt(d.positionFlags as unknown as string),
-      rxGpio: parseInt(d.rxGpio as unknown as string),
-      txGpio: parseInt(d.txGpio as unknown as string),
-      broadcastSmartMinimumDistance: parseInt(
-        d.broadcastSmartMinimumDistance as unknown as string
-      ),
-      broadcastSmartMinimumIntervalSecs: parseInt(
-        d.broadcastSmartMinimumIntervalSecs as unknown as string
-      ),
-    };
-
+    const data = parsePositionConfigInput(d);
     console.log("data", data);
   };
 
