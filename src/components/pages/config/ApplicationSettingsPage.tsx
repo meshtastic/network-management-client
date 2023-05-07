@@ -42,7 +42,7 @@ const ApplicationSettingsPage = () => {
             <ConfigOption
               key={hash}
               title={name}
-              subtitle="0 unsaved changes"
+              subtitle=""
               isActive={activeOption === hash}
               onClick={() =>
                 setActiveOption(activeOption !== hash ? hash : null)

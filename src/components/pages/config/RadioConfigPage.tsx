@@ -117,7 +117,7 @@ const RadioConfigPage = () => {
         backtrace={["Radio Configuration"]}
         renderTitleIcon={(c) => <Upload className={`${c}`} />}
         titleIconTooltip="Upload config to device"
-        onTitleIconClick={() => dispatch(requestCommitConfig())}
+        onTitleIconClick={() => dispatch(requestCommitConfig(["radio"]))}
         renderOptions={() =>
           Object.entries(RadioConfigOptions).map(([k, displayName]) => {
             // * This is a limitation of Object.entries typing
@@ -133,7 +133,7 @@ const RadioConfigPage = () => {
               <ConfigOption
                 key={configKey}
                 title={displayName}
-                subtitle={`${unsavedChanges} unsaved changes`}
+                subtitle={`${unsavedChanges} staged changes`}
                 isActive={activeOption === configKey}
                 onClick={() =>
                   setActiveOption(activeOption !== configKey ? configKey : null)

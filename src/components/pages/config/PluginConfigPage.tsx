@@ -82,7 +82,7 @@ const PluginConfigPage = () => {
               <ConfigOption
                 key={configKey}
                 title={displayName}
-                subtitle="0 unsaved changes"
+                subtitle="0 staged changes"
                 isActive={activeOption === configKey}
                 onClick={() =>
                   setActiveOption(activeOption !== configKey ? configKey : null)

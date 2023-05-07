@@ -88,12 +88,30 @@ export const configSlice = createSlice({
   reducers: {
     updateRadioConfig: (
       state,
-      action: PayloadAction<Partial<IConfigState["radio"]>>
+      action: PayloadAction<Partial<IRadioConfigState>>
     ) => {
       state.radio = {
         ...state.radio,
         ...action.payload,
       };
+    },
+
+    clearRadioConfig: (state) => {
+      state.radio = initialConfigState.radio;
+    },
+
+    updateModuleConfig: (
+      state,
+      action: PayloadAction<Partial<IModuleConfigState>>
+    ) => {
+      state.module = {
+        ...state.module,
+        ...action.payload,
+      };
+    },
+
+    clearModuleConfig: (state) => {
+      state.module = initialConfigState.module;
     },
   },
 });

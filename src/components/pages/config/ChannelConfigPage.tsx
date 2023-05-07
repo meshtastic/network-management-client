@@ -33,7 +33,7 @@ const ChannelConfigPage = () => {
             <ConfigOption
               key={c.config.index}
               title={getChannelName(c) || `Channel ${c.config.index}`}
-              subtitle="0 unsaved changes"
+              subtitle="0 staged changes"
               isActive={activeChannel?.config.index === c.config.index}
               onClick={() =>
                 setActiveChannel(

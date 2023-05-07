@@ -1,6 +1,8 @@
 import { invoke } from "@tauri-apps/api";
 import { all, call, put, select, takeEvery } from "redux-saga/effects";
-import merge from 'lodash.merge';
+
+import merge from "lodash.merge";
+import cloneDeep from "lodash.clonedeep";
 
 import type { app_ipc_DeviceBulkConfig } from "@bindings/index";
 
@@ -11,20 +13,31 @@ import {
   selectEditedModuleConfig,
   selectEditedRadioConfig,
 } from "@features/config/configSelectors";
+import { configSliceActions } from "@features/config/configSlice";
 
+import { selectPrimarySerialPort } from "@features/device/deviceSelectors";
 import { requestSliceActions } from "@features/requests/requestReducer";
 import type { CommandError } from "@utils/errors";
-import { selectPrimarySerialPort } from "../device/deviceSelectors";
 
 function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    const activePort = (yield select(selectPrimarySerialPort())) as string | null;
+    const fieldFlags = action.payload;
+
+    const includeRadioConfig = fieldFlags.includes("radio");
+    const includeModuleConfig = fieldFlags.includes("module");
+    const includeChannelConfig = fieldFlags.includes("channel");
+
+    const activePort = (yield select(selectPrimarySerialPort())) as
+      | string
+      | null;
 
     if (!activePort) {
       throw new Error("No active port");
     }
+
+    // Get current and edited config
 
     const currentRadioConfig = (yield select(
       selectCurrentRadioConfig()
@@ -42,21 +55,56 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
       selectEditedRadioConfig()
     )) as ReturnType<ReturnType<typeof selectEditedModuleConfig>>;
 
-    console.log('currentRadioConfig', currentRadioConfig);
-    console.log('editedRadioConfig', editedRadioConfig);
-    // TODO channel config
-
     if (!currentRadioConfig || !currentModuleConfig) {
       throw new Error("Current radio or module config not defined");
     }
 
     const configPayload: app_ipc_DeviceBulkConfig = {
-      radio: merge(JSON.parse(JSON.stringify(currentRadioConfig)) as typeof currentRadioConfig, editedRadioConfig),
-      module: merge(JSON.parse(JSON.stringify(currentModuleConfig)) as typeof currentModuleConfig, editedModuleConfig),
-      channels: null,
+      radio: null,
+      module: null,
+      channels: includeChannelConfig ? null : null,
     };
 
-    yield call(invoke, "update_device_config_bulk", { portName: activePort, config: configPayload });
+    // Update config payload based on flags
+
+    if (includeRadioConfig) {
+      configPayload.radio = merge(
+        cloneDeep(currentRadioConfig), // Redux object
+        editedRadioConfig
+      );
+    }
+
+    if (includeModuleConfig) {
+      configPayload.module = merge(
+        cloneDeep(currentModuleConfig), // Redux object
+        editedModuleConfig
+      );
+    }
+
+    if (includeChannelConfig) {
+      // TODO set channel config
+    }
+
+    // Dispatch update to backend
+
+    yield call(invoke, "update_device_config_bulk", {
+      portName: activePort,
+      config: configPayload,
+    });
+
+    // Clear temporary config fields
+
+    if (includeRadioConfig) {
+      yield put(configSliceActions.clearRadioConfig());
+    }
+
+    if (includeModuleConfig) {
+      yield put(configSliceActions.clearModuleConfig());
+    }
+
+    if (includeChannelConfig) {
+      // TODO clear channel config
+    }
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {
