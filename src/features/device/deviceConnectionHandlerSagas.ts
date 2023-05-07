@@ -13,6 +13,7 @@ export type DeviceUpdateChannel = EventChannel<app_device_MeshDevice>;
 export type DeviceDisconnectChannel = EventChannel<string>;
 export type GraphUpdateChannel = EventChannel<GeoJSON.FeatureCollection>;
 export type ConfigStatusChannel = EventChannel<boolean>;
+export type RebootChannel = EventChannel<number>;
 
 function* handleSagaError(error: unknown) {
   yield put({ type: "GENERAL_ERROR", payload: error });
@@ -143,6 +144,35 @@ export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
             : { status: "FAILED", message: message ?? "" },
         })
       );
+    }
+  } catch (error) {
+    yield call(handleSagaError, error);
+  }
+}
+
+export const createRebootChannel = (): RebootChannel => {
+  return eventChannel((emitter) => {
+    listen<number>("reboot", (event) => {
+      emitter(event.payload);
+    })
+      // .then((unlisten) => {
+      //   return unlisten;
+      // })
+      .catch(console.error);
+
+    // TODO UNLISTEN
+    return () => null;
+  });
+};
+
+export function* handleRebootChannel(channel: RebootChannel) {
+  try {
+    while (true) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const timestamp_sec: number = yield take(channel);
+      const reboot_time = new Date(timestamp_sec * 1000);
+      console.warn("Rebooting at", reboot_time);
+      window.location.reload();
     }
   } catch (error) {
     yield call(handleSagaError, error);

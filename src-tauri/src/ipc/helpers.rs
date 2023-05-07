@@ -8,7 +8,7 @@ use tokio::sync::broadcast;
 
 use crate::device::serial_connection::MeshConnection;
 use crate::device::SerialDeviceStatus;
-use crate::ipc::events::dispatch_configuration_status;
+use crate::ipc::events::{dispatch_configuration_status, dispatch_rebooting_event};
 use crate::ipc::{events, ConfigurationStatus};
 use crate::{analytics, device};
 use crate::{graph, state};
@@ -301,6 +301,11 @@ fn spawn_decoded_handler(
                         continue;
                     }
                 }
+            }
+
+            if update_result.rebooting {
+                debug!("Device rebooting");
+                dispatch_rebooting_event(&handle).expect("Failed to dispatch rebooting event");
             }
         }
     });

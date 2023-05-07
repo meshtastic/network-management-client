@@ -48,7 +48,7 @@ impl MeshDevice {
                 ));
             }
             protobufs::from_radio::PayloadVariant::Rebooted(_) => {
-                return Err(DeviceUpdateError::RadioMessageNotSupported("reboot".into()));
+                update_result.rebooting = true;
             }
             protobufs::from_radio::PayloadVariant::XmodemPacket(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported("xmodem".into()));
