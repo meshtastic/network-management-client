@@ -301,3 +301,39 @@ pub async fn run_algorithms(
         diffcen_result: diffcen_maps,
     })
 }
+
+#[tauri::command]
+pub async fn start_configuration_transaction(
+    port_name: String,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called start_configuration_transaction command");
+
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device.start_configuration_transaction().await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn commit_configuration_transaction(
+    port_name: String,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called commit_configuration_transaction command");
+
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device.commit_configuration_transaction().await?;
+
+    Ok(())
+}

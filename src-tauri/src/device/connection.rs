@@ -176,4 +176,48 @@ impl MeshDevice {
 
         Ok(())
     }
+
+    pub async fn start_configuration_transaction(&mut self) -> Result<(), String> {
+        if self.config_in_progress {
+            return Err("Configuration already in progress".to_string());
+        }
+
+        let to_radio = protobufs::AdminMessage {
+            payload_variant: Some(protobufs::admin_message::PayloadVariant::BeginEditSettings(
+                true,
+            )),
+        };
+
+        let mut packet_buf: Vec<u8> = vec![];
+        to_radio
+            .encode::<Vec<u8>>(&mut packet_buf)
+            .map_err(|e| e.to_string())?;
+
+        self.connection.send_raw(packet_buf).await?;
+        self.config_in_progress = true;
+
+        Ok(())
+    }
+
+    pub async fn commit_configuration_transaction(&mut self) -> Result<(), String> {
+        if !self.config_in_progress {
+            return Err("No configuration in progress".to_string());
+        }
+
+        let to_radio = protobufs::AdminMessage {
+            payload_variant: Some(
+                protobufs::admin_message::PayloadVariant::CommitEditSettings(true),
+            ),
+        };
+
+        let mut packet_buf: Vec<u8> = vec![];
+        to_radio
+            .encode::<Vec<u8>>(&mut packet_buf)
+            .map_err(|e| e.to_string())?;
+
+        self.connection.send_raw(packet_buf).await?;
+        self.config_in_progress = false;
+
+        Ok(())
+    }
 }
