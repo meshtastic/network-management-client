@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import type { FormEventHandler } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { Save } from "lucide-react";
 
 import type {
   app_device_MeshChannel,
@@ -48,14 +48,6 @@ const ChannelConfigDetail = ({
 
   const channelName = getChannelName(channel);
 
-  const test: ChannelSettingsInputs = {
-    downlinkEnabled: false,
-    name: "test",
-    psk: [],
-    role: 0,
-    uplinkEnabled: false,
-  };
-
   const handleFormSubmit: FormEventHandler = (e) => {
     e.preventDefault();
     handleSubmit(onSubmit, (e) => console.warn("invalid", e))(e).catch(
@@ -68,8 +60,9 @@ const ChannelConfigDetail = ({
       <ConfigTitlebar
         title={"Channel Configuration"}
         subtitle={`Configure channel "${channelName}"`}
-        renderIcon={(c) => <PencilIcon className={c} />}
-        onIconClick={() => alert("incomplete feature")}
+        renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
+        onIconClick={() => alert("This feature is not complete.")}
       >
         <form onSubmit={handleFormSubmit}>
           <input

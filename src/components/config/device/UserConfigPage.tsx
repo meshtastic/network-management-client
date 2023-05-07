@@ -9,9 +9,9 @@ import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
 
-import {
+import type {
   UserConfigInput,
-  configSliceActions,
+  // configSliceActions,
 } from "@features/config/configSlice";
 import {
   selectConnectedDeviceNodeId,
@@ -45,7 +45,8 @@ const UserConfigPage = ({ className = "" }: IUserConfigPageProps) => {
 
   const onValidSubmit: SubmitHandler<UserConfigInput> = (d) => {
     const data = parseUserConfigInput(d);
-    dispatch(configSliceActions.updateRadioConfig({ user: data }));
+    console.warn("data", data);
+    // dispatch(configSliceActions.updateRadioConfig({ user: data }));
   };
 
   const onInvalidSubmit: SubmitErrorHandler<UserConfigInput> = (errors) => {

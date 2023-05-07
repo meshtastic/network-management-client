@@ -52,7 +52,8 @@ const ChannelDetailView = ({
         title={getChannelName(channel)}
         subtitle={getNumMessagesText(channel.messages.length)}
         renderIcon={(c) => <PencilIcon className={`${c}`} />}
-        onIconClick={() => alert("incomplete feature")}
+        buttonTooltipText="Edit channel"
+        onIconClick={() => alert("This feature is not complete.")}
       >
         <div className="flex flex-1 flex-col gap-6 mb-9 overflow-y-auto">
           {channel.messages.map((m) => (

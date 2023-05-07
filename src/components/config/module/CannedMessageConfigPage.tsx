@@ -1,7 +1,7 @@
 import React from "react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { Save } from "lucide-react";
 
 export interface ICannedMessageConfigPageProps {
   className?: string;
@@ -15,8 +15,9 @@ const CannedMessageConfigPage = ({
       <ConfigTitlebar
         title={"CannedMessage Configuration"}
         subtitle={"Configure CannedMessage"}
-        renderIcon={(c) => <PencilIcon className={c} />}
-        onIconClick={() => alert("incomplete feature")}
+        renderIcon={(c) => <Save className={c} />}
+        buttonTooltipText="Stage changes for upload"
+        onIconClick={() => alert("This feature is not complete.")}
       >
         Canned message
       </ConfigTitlebar>
