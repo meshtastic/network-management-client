@@ -11,43 +11,42 @@ import MQTTConfigPage from "@components/config/module/MQTTConfigPage";
 import RangeTestConfigPage from "@components/config/module/RangeTestConfigPage";
 import SerialModuleConfigPage from "@components/config/module/SerialModuleConfigPage";
 import TelemetryConfigPage from "@components/config/module/TelemetryConfigPage";
-import TracerouteConfigPage from "@components/config/module/TracerouteConfigPage";
+// import TracerouteConfigPage from "@components/config/module/TracerouteConfigPage";
 
-export const PluginConfigOptions: { name: string; hash: string }[] = [
-  // { name: "Audio", hash: "audio" },
-  // { name: "Canned Message", hash: "canned_message" },
-  // {
-  //   name: "External Notification",
-  //   hash: "external_notification",
-  // },
-  { name: "MQTT", hash: "mqtt" },
-  { name: "Range Test", hash: "range_test" },
-  { name: "Serial Module", hash: "serial_module" },
-  { name: "Store and Forward", hash: "store_and_forward" },
-  { name: "Telemetry", hash: "telemetry" },
+import type { IModuleConfigState } from "@features/config/configSlice";
 
-  // * This wouldn't make sense, no config options
-  // { name: "Traceroute", hash: "traceroute" },
-];
+export const PluginConfigOptions: Record<keyof IModuleConfigState, string> = {
+  audio: "Audio",
+  cannedMessage: "Canned Message",
+  externalNotification: "External Notification",
+  mqtt: "MQTT",
+  rangeTest: "Range Test",
+  remoteHardware: "Remote Hardware",
+  serial: "Serial Module",
+  storeForward: "Store and Forward",
+  telemetry: "Telemetry",
+};
 
-const switchActiveDetailView = (activeOption: string | null) => {
+const switchActiveDetailView = (
+  activeOption: keyof IModuleConfigState | null
+) => {
   switch (activeOption) {
     case "audio":
       return <AudioConfigPage />;
-    case "canned_message":
+    case "cannedMessage":
       return <CannedMessageConfigPage />;
-    case "external_notification":
+    case "externalNotification":
       return <ExternalNotificationConfigPage />;
     case "mqtt":
       return <MQTTConfigPage />;
-    case "range_test":
+    case "rangeTest":
       return <RangeTestConfigPage />;
-    case "serial_module":
+    case "serial":
       return <SerialModuleConfigPage />;
     case "telemetry":
       return <TelemetryConfigPage />;
-    case "traceroute":
-      return <TracerouteConfigPage />;
+    // case "traceroute":
+    //   return <TracerouteConfigPage />;
     default:
       return (
         <p className="m-auto text-base font-normal text-gray-700">
@@ -58,7 +57,9 @@ const switchActiveDetailView = (activeOption: string | null) => {
 };
 
 const PluginConfigPage = () => {
-  const [activeOption, setActiveOption] = useState<string | null>(null);
+  const [activeOption, setActiveOption] = useState<
+    keyof IModuleConfigState | null
+  >(null);
 
   return (
     <div className="flex-1">
@@ -73,17 +74,22 @@ const PluginConfigPage = () => {
           )
         }
         renderOptions={() =>
-          PluginConfigOptions.map(({ name, hash }) => (
-            <ConfigOption
-              key={hash}
-              title={name}
-              subtitle="0 unsaved changes"
-              isActive={activeOption === hash}
-              onClick={() =>
-                setActiveOption(activeOption !== hash ? hash : null)
-              }
-            />
-          ))
+          Object.entries(PluginConfigOptions).map(([k, displayName]) => {
+            // * This is a limitation of Object.entries typing
+            const configKey = k as keyof IModuleConfigState;
+
+            return (
+              <ConfigOption
+                key={configKey}
+                title={displayName}
+                subtitle="0 unsaved changes"
+                isActive={activeOption === configKey}
+                onClick={() =>
+                  setActiveOption(activeOption !== configKey ? configKey : null)
+                }
+              />
+            );
+          })
         }
       >
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">

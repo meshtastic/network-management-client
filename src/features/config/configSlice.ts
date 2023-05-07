@@ -1,7 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import type {
-  app_protobufs_config_BluetoothConfig, app_protobufs_config_DeviceConfig, app_protobufs_config_DisplayConfig, app_protobufs_config_LoRaConfig, app_protobufs_config_NetworkConfig, app_protobufs_config_PositionConfig, app_protobufs_config_PowerConfig, app_protobufs_User,
+  app_protobufs_config_BluetoothConfig,
+  app_protobufs_config_DeviceConfig,
+  app_protobufs_config_DisplayConfig,
+  app_protobufs_config_LoRaConfig,
+  app_protobufs_config_NetworkConfig,
+  app_protobufs_config_PositionConfig,
+  app_protobufs_config_PowerConfig,
+  app_protobufs_User,
 } from "@bindings/index";
 
 export type BluetoothConfigInput = app_protobufs_config_BluetoothConfig;
@@ -17,19 +24,37 @@ export type UserConfigInput = Pick<
   "shortName" | "longName" | "isLicensed"
 >;
 
+export interface IRadioConfigState {
+  bluetooth: BluetoothConfigInput | null;
+  device: DeviceConfigInput | null;
+  display: DisplayConfigInput | null;
+  lora: LoRaConfigInput | null;
+  network: NetworkConfigInput | null;
+  position: PositionConfigInput | null;
+  power: PowerConfigInput | null;
+  user: UserConfigInput | null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IModuleConfigState {
+  audio: null;
+  cannedMessage: null;
+  externalNotification: null;
+  mqtt: null;
+  rangeTest: null;
+  remoteHardware: null;
+  serial: null;
+  storeForward: null;
+  telemetry: null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IChannelConfigState { }
+
 export interface IConfigState {
-  radio: {
-    bluetooth: BluetoothConfigInput | null,
-    device: DeviceConfigInput | null,
-    display: DisplayConfigInput | null,
-    lora: LoRaConfigInput | null,
-    network: NetworkConfigInput | null,
-    position: PositionConfigInput | null,
-    power: PowerConfigInput | null,
-    user: UserConfigInput | null,
-  },
-  module: null,
-  channel: null,
+  radio: IRadioConfigState;
+  module: IModuleConfigState;
+  channel: IChannelConfigState;
 }
 
 export const initialConfigState: IConfigState = {
@@ -43,15 +68,28 @@ export const initialConfigState: IConfigState = {
     power: null,
     user: null,
   },
-  module: null,
-  channel: null,
+  module: {
+    audio: null,
+    cannedMessage: null,
+    externalNotification: null,
+    mqtt: null,
+    rangeTest: null,
+    remoteHardware: null,
+    serial: null,
+    storeForward: null,
+    telemetry: null,
+  },
+  channel: {},
 };
 
 export const configSlice = createSlice({
   name: "config",
   initialState: initialConfigState,
   reducers: {
-    updateRadioConfig: (state, action: PayloadAction<Partial<IConfigState["radio"]>>) => {
+    updateRadioConfig: (
+      state,
+      action: PayloadAction<Partial<IConfigState["radio"]>>
+    ) => {
       state.radio = {
         ...state.radio,
         ...action.payload,

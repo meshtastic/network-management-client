@@ -32,7 +32,9 @@ export const RadioConfigOptions: Record<keyof IRadioConfigState, string> = {
   user: "User",
 };
 
-const switchActiveDetailView = (activeOption: string | null) => {
+const switchActiveDetailView = (
+  activeOption: keyof IRadioConfigState | null
+) => {
   switch (activeOption) {
     case "bluetooth":
       return <BluetoothConfigPage />;
@@ -88,13 +90,6 @@ const getNumberOfUnsavedChanges = (
         // Need [] === [] to be true
         JSON.stringify(currentFieldValue) !== JSON.stringify(editedFieldValue)
       ) {
-        console.log(
-          "diff at key",
-          configKey,
-          editedConfigKey,
-          currentFieldValue,
-          editedFieldValue
-        );
         return accum + 1;
       }
 
@@ -108,7 +103,9 @@ const RadioConfigPage = () => {
   const currentRadioConfig = useSelector(selectCurrentRadioConfig());
   const editedRadioConfig = useSelector(selectEditedRadioConfig());
 
-  const [activeOption, setActiveOption] = useState<string | null>(null);
+  const [activeOption, setActiveOption] = useState<
+    keyof IRadioConfigState | null
+  >(null);
 
   return (
     <div className="flex-1">
@@ -121,30 +118,28 @@ const RadioConfigPage = () => {
           console.warn("Radio configuration title icon onClick not implemented")
         }
         renderOptions={() =>
-          Object.entries(RadioConfigOptions).map(
-            ([configKey, displayNamed]) => {
-              const unsavedChanges = getNumberOfUnsavedChanges(
-                currentRadioConfig,
-                editedRadioConfig,
-                // * This is a limitation of Object.entries typing
-                configKey as keyof IRadioConfigState
-              );
+          Object.entries(RadioConfigOptions).map(([k, displayName]) => {
+            // * This is a limitation of Object.entries typing
+            const configKey = k as keyof IRadioConfigState;
 
-              return (
-                <ConfigOption
-                  key={configKey}
-                  title={displayNamed}
-                  subtitle={`${unsavedChanges} unsaved changes`}
-                  isActive={activeOption === configKey}
-                  onClick={() =>
-                    setActiveOption(
-                      activeOption !== configKey ? configKey : null
-                    )
-                  }
-                />
-              );
-            }
-          )
+            const unsavedChanges = getNumberOfUnsavedChanges(
+              currentRadioConfig,
+              editedRadioConfig,
+              configKey
+            );
+
+            return (
+              <ConfigOption
+                key={configKey}
+                title={displayName}
+                subtitle={`${unsavedChanges} unsaved changes`}
+                isActive={activeOption === configKey}
+                onClick={() =>
+                  setActiveOption(activeOption !== configKey ? configKey : null)
+                }
+              />
+            );
+          })
         }
       >
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
