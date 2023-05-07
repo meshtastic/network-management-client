@@ -1,4 +1,6 @@
+use app::protobufs;
 use serde::{Deserialize, Serialize};
+use specta::Type;
 use std::collections::HashMap;
 
 pub mod commands;
@@ -31,7 +33,7 @@ impl From<&str> for CommandError {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct APMincutStringResults {
     ap_result: Vec<u32>,
@@ -39,10 +41,17 @@ pub struct APMincutStringResults {
     diffcen_result: HashMap<u32, HashMap<u32, HashMap<u32, f64>>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ConfigurationStatus {
     pub port_name: String,
     pub successful: bool,
     pub message: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+pub struct DeviceBulkConfig {
+    radio: Option<protobufs::LocalConfig>,
+    module: Option<protobufs::LocalModuleConfig>,
+    channels: Option<()>,
 }

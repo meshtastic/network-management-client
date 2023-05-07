@@ -32,7 +32,7 @@ export interface IRadioConfigState {
   network: NetworkConfigInput | null;
   position: PositionConfigInput | null;
   power: PowerConfigInput | null;
-  user: UserConfigInput | null;
+  // user: UserConfigInput | null;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -66,7 +66,7 @@ export const initialConfigState: IConfigState = {
     network: null,
     position: null,
     power: null,
-    user: null,
+    // user: null,
   },
   module: {
     audio: null,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Upload } from "lucide-react";
 
 import ConfigLayout from "@components/config/ConfigLayout";
@@ -12,12 +12,13 @@ import LoRaConfigPage from "@components/config/device/LoRaConfigPage";
 import NetworkConfigPage from "@components/config/device/NetworkConfigPage";
 import PositionConfigPage from "@components/config/device/PositionConfigPage";
 import PowerConfigPage from "@components/config/device/PowerConfigPage";
-import UserConfigPage from "@components/config/device/UserConfigPage";
+// import UserConfigPage from "@components/config/device/UserConfigPage";
 
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/configSelectors";
+import { requestCommitConfig } from "@features/config/configActions";
 import type { IRadioConfigState } from "@features/config/configSlice";
 import type { app_protobufs_LocalConfig } from "@app/bindings";
 
@@ -29,7 +30,7 @@ export const RadioConfigOptions: Record<keyof IRadioConfigState, string> = {
   network: "Network",
   position: "Position",
   power: "Power",
-  user: "User",
+  // user: "User",
 };
 
 const switchActiveDetailView = (
@@ -50,8 +51,8 @@ const switchActiveDetailView = (
       return <PositionConfigPage />;
     case "power":
       return <PowerConfigPage />;
-    case "user":
-      return <UserConfigPage />;
+    // case "user":
+    //   return <UserConfigPage />;
     default:
       return (
         <p className="m-auto text-base font-normal text-gray-700">
@@ -100,6 +101,8 @@ const getNumberOfUnsavedChanges = (
 };
 
 const RadioConfigPage = () => {
+  const dispatch = useDispatch();
+
   const currentRadioConfig = useSelector(selectCurrentRadioConfig());
   const editedRadioConfig = useSelector(selectEditedRadioConfig());
 
@@ -114,9 +117,7 @@ const RadioConfigPage = () => {
         backtrace={["Radio Configuration"]}
         renderTitleIcon={(c) => <Upload className={`${c}`} />}
         titleIconTooltip="Upload config to device"
-        onTitleIconClick={() =>
-          console.warn("Radio configuration title icon onClick not implemented")
-        }
+        onTitleIconClick={() => dispatch(requestCommitConfig())}
         renderOptions={() =>
           Object.entries(RadioConfigOptions).map(([k, displayName]) => {
             // * This is a limitation of Object.entries typing

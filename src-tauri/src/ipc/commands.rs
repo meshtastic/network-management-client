@@ -13,6 +13,7 @@ use std::collections::HashMap;
 
 use super::helpers;
 use super::CommandError;
+use super::DeviceBulkConfig;
 use super::{events, APMincutStringResults};
 
 #[tauri::command]
@@ -302,6 +303,7 @@ pub async fn run_algorithms(
     })
 }
 
+// UNUSED
 #[tauri::command]
 pub async fn start_configuration_transaction(
     port_name: String,
@@ -320,6 +322,7 @@ pub async fn start_configuration_transaction(
     Ok(())
 }
 
+// UNUSED
 #[tauri::command]
 pub async fn commit_configuration_transaction(
     port_name: String,
@@ -332,6 +335,88 @@ pub async fn commit_configuration_transaction(
         .get_mut(&port_name)
         .ok_or("Device not connected")
         .map_err(|e| e.to_string())?;
+
+    device.commit_configuration_transaction().await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn update_device_config_bulk(
+    port_name: String,
+    config: DeviceBulkConfig,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called commit_configuration_transaction command");
+
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device.start_configuration_transaction().await?;
+
+    if let Some(radio) = config.radio {
+        if let Some(c) = radio.bluetooth {
+            device
+                .update_device_config(protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Bluetooth(c)),
+                })
+                .await?;
+        }
+
+        if let Some(c) = radio.device {
+            device
+                .update_device_config(protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Device(c)),
+                })
+                .await?;
+        }
+
+        if let Some(c) = radio.display {
+            device
+                .update_device_config(protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Display(c)),
+                })
+                .await?;
+        }
+
+        if let Some(c) = radio.lora {
+            device
+                .update_device_config(protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Lora(c)),
+                })
+                .await?;
+        }
+
+        if let Some(c) = radio.network {
+            device
+                .update_device_config(protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Network(c)),
+                })
+                .await?;
+        }
+
+        if let Some(c) = radio.position {
+            device
+                .update_device_config(protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Position(c)),
+                })
+                .await?;
+        }
+
+        if let Some(c) = radio.power {
+            device
+                .update_device_config(protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Power(c)),
+                })
+                .await?;
+        }
+    }
+
+    if let Some(_c) = config.module {} // TODO
+    if let Some(_c) = config.channels {} // TODO
 
     device.commit_configuration_transaction().await?;
 
