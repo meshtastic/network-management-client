@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Upload } from "lucide-react";
 
 import ConfigLayout from "@components/config/ConfigLayout";
@@ -13,16 +14,23 @@ import PositionConfigPage from "@components/config/device/PositionConfigPage";
 import PowerConfigPage from "@components/config/device/PowerConfigPage";
 import UserConfigPage from "@components/config/device/UserConfigPage";
 
-export const RadioConfigOptions: { name: string; hash: string }[] = [
-  { name: "Bluetooth", hash: "bluetooth" },
-  { name: "Device", hash: "device" },
-  { name: "Display", hash: "display" },
-  { name: "LoRa", hash: "lora" },
-  { name: "Network", hash: "network" },
-  { name: "Position", hash: "position" },
-  { name: "Power", hash: "power" },
-  { name: "User", hash: "user" },
-];
+import {
+  selectCurrentRadioConfig,
+  selectEditedRadioConfig,
+} from "@features/config/configSelectors";
+import type { IRadioConfigState } from "@features/config/configSlice";
+import type { app_protobufs_LocalConfig } from "@app/bindings";
+
+export const RadioConfigOptions: Record<keyof IRadioConfigState, string> = {
+  bluetooth: "Bluetooth",
+  device: "Device",
+  display: "Display",
+  lora: "LoRa",
+  network: "Network",
+  position: "Position",
+  power: "Power",
+  user: "User",
+};
 
 const switchActiveDetailView = (activeOption: string | null) => {
   switch (activeOption) {
@@ -51,7 +59,55 @@ const switchActiveDetailView = (activeOption: string | null) => {
   }
 };
 
+const getNumberOfUnsavedChanges = (
+  currentRadioConfig: app_protobufs_LocalConfig | null,
+  editedRadioConfig: IRadioConfigState,
+  configKey: keyof IRadioConfigState
+): number => {
+  if (!currentRadioConfig) return -1;
+
+  return Object.entries(editedRadioConfig?.[configKey] ?? {}).reduce(
+    (accum, [editedConfigKey, editedConfigValue]) => {
+      if (!editedConfigValue) return accum;
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const currentFieldValue =
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+        (currentRadioConfig as Record<string, any>)?.[configKey]?.[
+          editedConfigKey
+        ] ?? null;
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const editedFieldValue =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (editedRadioConfig?.[configKey] as Record<string, any>)?.[
+          editedConfigKey
+        ] ?? null;
+
+      if (
+        // Need [] === [] to be true
+        JSON.stringify(currentFieldValue) !== JSON.stringify(editedFieldValue)
+      ) {
+        console.log(
+          "diff at key",
+          configKey,
+          editedConfigKey,
+          currentFieldValue,
+          editedFieldValue
+        );
+        return accum + 1;
+      }
+
+      return accum;
+    },
+    0
+  );
+};
+
 const RadioConfigPage = () => {
+  const currentRadioConfig = useSelector(selectCurrentRadioConfig());
+  const editedRadioConfig = useSelector(selectEditedRadioConfig());
+
   const [activeOption, setActiveOption] = useState<string | null>(null);
 
   return (
@@ -65,17 +121,30 @@ const RadioConfigPage = () => {
           console.warn("Radio configuration title icon onClick not implemented")
         }
         renderOptions={() =>
-          RadioConfigOptions.map(({ name, hash }) => (
-            <ConfigOption
-              key={hash}
-              title={name}
-              subtitle="0 unsaved changes"
-              isActive={activeOption === hash}
-              onClick={() =>
-                setActiveOption(activeOption !== hash ? hash : null)
-              }
-            />
-          ))
+          Object.entries(RadioConfigOptions).map(
+            ([configKey, displayNamed]) => {
+              const unsavedChanges = getNumberOfUnsavedChanges(
+                currentRadioConfig,
+                editedRadioConfig,
+                // * This is a limitation of Object.entries typing
+                configKey as keyof IRadioConfigState
+              );
+
+              return (
+                <ConfigOption
+                  key={configKey}
+                  title={displayNamed}
+                  subtitle={`${unsavedChanges} unsaved changes`}
+                  isActive={activeOption === configKey}
+                  onClick={() =>
+                    setActiveOption(
+                      activeOption !== configKey ? configKey : null
+                    )
+                  }
+                />
+              );
+            }
+          )
         }
       >
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
