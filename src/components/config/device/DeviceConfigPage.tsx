@@ -1,22 +1,23 @@
 import React, { useMemo } from "react";
 import type { FormEventHandler } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { Save } from "lucide-react";
 import { v4 } from "uuid";
 
-import type { app_protobufs_config_DeviceConfig } from "@bindings/index";
-
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+
+import {
+  DeviceConfigInput,
+  configSliceActions,
+} from "@features/config/configSlice";
 import { selectDevice } from "@features/device/deviceSelectors";
 
 export interface IDeviceConfigPageProps {
   className?: string;
 }
-
-type DeviceConfigInput = app_protobufs_config_DeviceConfig;
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseDeviceConfigInput = (d: DeviceConfigInput): DeviceConfigInput => ({
@@ -27,6 +28,7 @@ const parseDeviceConfigInput = (d: DeviceConfigInput): DeviceConfigInput => ({
 });
 
 const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
+  const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
   const {
@@ -40,7 +42,7 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
 
   const onValidSubmit: SubmitHandler<DeviceConfigInput> = (d) => {
     const data = parseDeviceConfigInput(d);
-    console.log("data", data);
+    dispatch(configSliceActions.updateRadioConfig({ device: data }));
   };
 
   const onInvalidSubmit: SubmitErrorHandler<DeviceConfigInput> = (errors) => {

@@ -1,22 +1,23 @@
 import React, { useMemo } from "react";
 import type { FormEventHandler } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { Save } from "lucide-react";
 import { v4 } from "uuid";
 
-import type { app_protobufs_config_DisplayConfig } from "@bindings/index";
-
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+
+import {
+  DisplayConfigInput,
+  configSliceActions,
+} from "@features/config/configSlice";
 import { selectDevice } from "@features/device/deviceSelectors";
 
 export interface IDisplayConfigPageProps {
   className?: string;
 }
-
-type DisplayConfigInput = app_protobufs_config_DisplayConfig;
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseDisplayConfigInput = (
@@ -34,6 +35,7 @@ const parseDisplayConfigInput = (
 });
 
 const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
+  const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
   const {
@@ -47,7 +49,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
 
   const onValidSubmit: SubmitHandler<DisplayConfigInput> = (d) => {
     const data = parseDisplayConfigInput(d);
-    console.log("data", data);
+    dispatch(configSliceActions.updateRadioConfig({ display: data }));
   };
 
   const onInvalidSubmit: SubmitErrorHandler<DisplayConfigInput> = (errors) => {

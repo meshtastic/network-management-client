@@ -1,22 +1,23 @@
 import React, { useMemo, useState } from "react";
 import type { FormEventHandler } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { Save } from "lucide-react";
 import { v4 } from "uuid";
 
-import type { app_protobufs_config_PositionConfig } from "@bindings/index";
-
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+
+import {
+  PositionConfigInput,
+  configSliceActions,
+} from "@features/config/configSlice";
 import { selectDevice } from "@features/device/deviceSelectors";
 
 export interface IPositionConfigPageProps {
   className?: string;
 }
-
-type PositionConfigInput = app_protobufs_config_PositionConfig;
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parsePositionConfigInput = (
@@ -38,6 +39,7 @@ const parsePositionConfigInput = (
 });
 
 const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
+  const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
   const [gpsDisabled, setGpsDisabled] = useState(
@@ -65,7 +67,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
 
   const onValidSubmit: SubmitHandler<PositionConfigInput> = (d) => {
     const data = parsePositionConfigInput(d);
-    console.log("data", data);
+    dispatch(configSliceActions.updateRadioConfig({ position: data }));
   };
 
   const onInvalidSubmit: SubmitErrorHandler<PositionConfigInput> = (errors) => {

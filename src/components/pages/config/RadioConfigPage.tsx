@@ -69,7 +69,7 @@ const RadioConfigPage = () => {
             <ConfigOption
               key={hash}
               title={name}
-              subtitle="0 pending changes"
+              subtitle="0 unsaved changes"
               isActive={activeOption === hash}
               onClick={() =>
                 setActiveOption(activeOption !== hash ? hash : null)

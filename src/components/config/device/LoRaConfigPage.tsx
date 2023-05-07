@@ -1,22 +1,23 @@
 import React, { useMemo, useState } from "react";
 import type { FormEventHandler } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { Save } from "lucide-react";
 import { v4 } from "uuid";
 
-import type { app_protobufs_config_LoRaConfig } from "@bindings/index";
-
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+
+import {
+  LoRaConfigInput,
+  configSliceActions,
+} from "@features/config/configSlice";
 import { selectDevice } from "@features/device/deviceSelectors";
 
 export interface ILoRaConfigPageProps {
   className?: string;
 }
-
-type LoRaConfigInput = app_protobufs_config_LoRaConfig;
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseLoRaConfigInput = (d: LoRaConfigInput): LoRaConfigInput => ({
@@ -33,6 +34,7 @@ const parseLoRaConfigInput = (d: LoRaConfigInput): LoRaConfigInput => ({
 });
 
 const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
+  const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
   const [useModemPreset, setUseModemPreset] = useState(
@@ -60,7 +62,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
 
   const onValidSubmit: SubmitHandler<LoRaConfigInput> = (d) => {
     const data = parseLoRaConfigInput(d);
-    console.log("data", data);
+    dispatch(configSliceActions.updateRadioConfig({ lora: data }));
   };
 
   const onInvalidSubmit: SubmitErrorHandler<LoRaConfigInput> = (errors) => {

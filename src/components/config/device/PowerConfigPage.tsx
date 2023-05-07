@@ -1,22 +1,23 @@
 import React, { useMemo } from "react";
 import type { FormEventHandler } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
 import { Save } from "lucide-react";
 import { v4 } from "uuid";
 
-import type { app_protobufs_config_PowerConfig } from "@bindings/index";
-
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+
+import {
+  PowerConfigInput,
+  configSliceActions,
+} from "@features/config/configSlice";
 import { selectDevice } from "@features/device/deviceSelectors";
 
 export interface IPowerConfigPageProps {
   className?: string;
 }
-
-type PowerConfigInput = app_protobufs_config_PowerConfig;
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parsePowerConfigInput = (d: PowerConfigInput): PowerConfigInput => ({
@@ -35,6 +36,7 @@ const parsePowerConfigInput = (d: PowerConfigInput): PowerConfigInput => ({
 });
 
 const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
+  const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
   const {
@@ -49,6 +51,7 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
   const onValidSubmit: SubmitHandler<PowerConfigInput> = (d) => {
     const data = parsePowerConfigInput(d);
     console.log("data", data);
+    dispatch(configSliceActions.updateRadioConfig({ power: data }));
   };
 
   const onInvalidSubmit: SubmitErrorHandler<PowerConfigInput> = (errors) => {
