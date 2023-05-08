@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
-import type { FormEventHandler } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,7 +11,13 @@ import {
   DisplayConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentRadioConfig,
+  selectEditedRadioConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IDisplayConfigPageProps {
   className?: string;
@@ -21,8 +25,8 @@ export interface IDisplayConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseDisplayConfigInput = (
-  d: DisplayConfigInput
-): DisplayConfigInput => ({
+  d: DeepPartial<DisplayConfigInput>
+): DeepPartial<DisplayConfigInput> => ({
   ...d,
   autoScreenCarouselSecs: parseInt(
     d.autoScreenCarouselSecs as unknown as string
@@ -38,45 +42,48 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentRadioConfig());
+  const editedConfig = useSelector(selectEditedRadioConfig());
+
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.config.display ?? undefined,
+        editedConfig.display ?? undefined
+      ),
+    []
+  );
+
   const {
     register,
-    handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<DisplayConfigInput>({
-    defaultValues: device?.config.display ?? undefined,
+    defaultValues,
   });
 
-  const onValidSubmit: SubmitHandler<DisplayConfigInput> = (d) => {
+  watch((d) => {
     const data = parseDisplayConfigInput(d);
     dispatch(configSliceActions.updateRadioConfig({ display: data }));
-  };
+  });
 
-  const onInvalidSubmit: SubmitErrorHandler<DisplayConfigInput> = (errors) => {
-    console.warn("errors", errors);
+  const handleFormReset = () => {
+    if (!currentConfig?.display) return;
+    reset(currentConfig.display);
+    dispatch(configSliceActions.updateRadioConfig({ display: null }));
   };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Display Configuration"}
         subtitle={"Configure device display"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="number"
             text="Screen Auto Scroll (seconds)"
@@ -156,7 +163,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           />
 
           {/* <input type="submit" /> */}
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

@@ -1,4 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import merge from "lodash.merge";
+import cloneDeep from 'lodash.clonedeep'
+import type { DeepPartial } from "react-hook-form";
 
 import type {
   app_protobufs_config_BluetoothConfig,
@@ -108,12 +111,9 @@ export const configSlice = createSlice({
   reducers: {
     updateRadioConfig: (
       state,
-      action: PayloadAction<Partial<IRadioConfigState>>
+      action: PayloadAction<DeepPartial<IRadioConfigState>>
     ) => {
-      state.radio = {
-        ...state.radio,
-        ...action.payload,
-      };
+      state.radio = merge(cloneDeep(state.radio), action.payload);
     },
 
     clearRadioConfig: (state) => {

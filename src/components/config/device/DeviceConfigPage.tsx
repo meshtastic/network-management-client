@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
-import type { FormEventHandler } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,14 +11,22 @@ import {
   DeviceConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentRadioConfig,
+  selectEditedRadioConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IDeviceConfigPageProps {
   className?: string;
 }
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
-const parseDeviceConfigInput = (d: DeviceConfigInput): DeviceConfigInput => ({
+const parseDeviceConfigInput = (
+  d: DeepPartial<DeviceConfigInput>
+): DeepPartial<DeviceConfigInput> => ({
   ...d,
   nodeInfoBroadcastSecs: parseInt(d.nodeInfoBroadcastSecs as unknown as string),
   role: parseInt(d.role as unknown as string),
@@ -31,45 +37,48 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentRadioConfig());
+  const editedConfig = useSelector(selectEditedRadioConfig());
+
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.config.device ?? undefined,
+        editedConfig.device ?? undefined
+      ),
+    []
+  );
+
   const {
     register,
-    handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<DeviceConfigInput>({
-    defaultValues: device?.config.device ?? undefined,
+    defaultValues,
   });
 
-  const onValidSubmit: SubmitHandler<DeviceConfigInput> = (d) => {
+  watch((d) => {
     const data = parseDeviceConfigInput(d);
     dispatch(configSliceActions.updateRadioConfig({ device: data }));
-  };
+  });
 
-  const onInvalidSubmit: SubmitErrorHandler<DeviceConfigInput> = (errors) => {
-    console.warn("errors", errors);
+  const handleFormReset = () => {
+    if (!currentConfig?.device) return;
+    reset(currentConfig.device);
+    dispatch(configSliceActions.updateRadioConfig({ device: null }));
   };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Device Configuration"}
         subtitle={"Configure device"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigLabel text="Device Role" error={errors.role?.message}>
             <select {...register("role")}>
               <option value="0">Client</option>
@@ -123,7 +132,7 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
             error={errors.doubleTapAsButtonPress?.message}
             {...register("doubleTapAsButtonPress")}
           />
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

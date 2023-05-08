@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from "react";
-import type { FormEventHandler } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,7 +11,13 @@ import {
   NetworkConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentRadioConfig,
+  selectEditedRadioConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface INetworkConfigPageProps {
   className?: string;
@@ -21,8 +25,8 @@ export interface INetworkConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseNetworkConfigInput = (
-  d: NetworkConfigInput
-): NetworkConfigInput => ({
+  d: DeepPartial<NetworkConfigInput>
+): DeepPartial<NetworkConfigInput> => ({
   ...d,
   addressMode: parseInt(d.addressMode as unknown as string),
 });
@@ -30,6 +34,9 @@ const parseNetworkConfigInput = (
 const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
+
+  const currentConfig = useSelector(selectCurrentRadioConfig());
+  const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [wifiDisabled, setWifiDisabled] = useState(
     !device?.config.network?.wifiEnabled ?? true
@@ -39,51 +46,56 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
     !device?.config.network?.ethEnabled ?? true
   );
 
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.config.network ?? undefined,
+        editedConfig.network ?? undefined
+      ),
+    []
+  );
+
+  const updateStateFlags = (d: DeepPartial<NetworkConfigInput>) => {
+    setWifiDisabled(!d.wifiEnabled);
+    setEthDisabled(!d.ethEnabled);
+  };
+
+  useEffect(() => {
+    if (!defaultValues) return;
+    updateStateFlags(defaultValues);
+  }, [defaultValues]);
+
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     formState: { errors },
   } = useForm<NetworkConfigInput>({
-    defaultValues: device?.config.network ?? undefined,
+    defaultValues,
   });
 
   watch((d) => {
-    setWifiDisabled(!d.wifiEnabled);
-    setEthDisabled(!d.ethEnabled);
+    const data = parseNetworkConfigInput(d);
+    updateStateFlags(data);
+    dispatch(configSliceActions.updateRadioConfig({ network: data }));
   });
 
-  const onValidSubmit: SubmitHandler<NetworkConfigInput> = (d) => {
-    const data = parseNetworkConfigInput(d);
-    dispatch(configSliceActions.updateRadioConfig({ network: data }));
+  const handleFormReset = () => {
+    if (!currentConfig?.network) return;
+    reset(currentConfig.network);
+    dispatch(configSliceActions.updateRadioConfig({ network: null }));
   };
-
-  const onInvalidSubmit: SubmitErrorHandler<NetworkConfigInput> = (errors) => {
-    console.warn("errors", errors);
-  };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Network Configuration"}
         subtitle={"Configure device network connection"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
             text="WiFi Enabled"
@@ -133,7 +145,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
 
           {/* TODO IPv4 Config */}
           {/* TODO Log Server Config */}
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

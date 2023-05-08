@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from "react";
-import type { FormEventHandler } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,7 +11,13 @@ import {
   BluetoothConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentRadioConfig,
+  selectEditedRadioConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IBluetoothConfigPageProps {
   className?: string;
@@ -21,16 +25,19 @@ export interface IBluetoothConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseBluetoothConfigInput = (
-  d: BluetoothConfigInput
-): BluetoothConfigInput => ({
+  d: DeepPartial<BluetoothConfigInput>
+): DeepPartial<BluetoothConfigInput> => ({
   ...d,
-  fixedPin: parseInt(d.fixedPin as unknown as string),
-  mode: parseInt(d.mode as unknown as string),
+  fixedPin: d.fixedPin ? parseInt(d.fixedPin as unknown as string) : undefined,
+  mode: d.mode ? parseInt(d.mode as unknown as string) : undefined,
 });
 
 const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
+
+  const currentConfig = useSelector(selectCurrentRadioConfig());
+  const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [bluetoothDisabled, setBluetoothDisabled] = useState(
     !device?.config.bluetooth?.enabled ?? true
@@ -40,53 +47,56 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
     device?.config.bluetooth?.mode != 1 ?? true
   );
 
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.config.bluetooth ?? undefined,
+        editedConfig.bluetooth ?? undefined
+      ),
+    []
+  );
+
+  const updateStateFlags = (d: DeepPartial<BluetoothConfigInput>) => {
+    setBluetoothDisabled(!d.enabled);
+    setFixedPinDisabled(d.mode != 1);
+  };
+
+  useEffect(() => {
+    if (!defaultValues) return;
+    updateStateFlags(defaultValues);
+  }, [defaultValues]);
+
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     formState: { errors },
   } = useForm<BluetoothConfigInput>({
-    defaultValues: device?.config.bluetooth ?? undefined,
+    defaultValues,
   });
 
   watch((d) => {
-    setBluetoothDisabled(!d.enabled);
-    setFixedPinDisabled(d.mode != 1);
+    const data = parseBluetoothConfigInput(d);
+    updateStateFlags(data);
+    dispatch(configSliceActions.updateRadioConfig({ bluetooth: data }));
   });
 
-  const onValidSubmit: SubmitHandler<BluetoothConfigInput> = (d) => {
-    const data = parseBluetoothConfigInput(d);
-    dispatch(configSliceActions.updateRadioConfig({ bluetooth: data }));
+  const handleFormReset = () => {
+    if (!currentConfig?.bluetooth) return;
+    reset(currentConfig.bluetooth);
+    dispatch(configSliceActions.updateRadioConfig({ bluetooth: null }));
   };
-
-  const onInvalidSubmit: SubmitErrorHandler<BluetoothConfigInput> = (
-    errors
-  ) => {
-    console.warn("errors", errors);
-  };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Bluetooth Configuration"}
         subtitle={"Configure device bluetooth connection"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
             text="Bluetooth Enabled"
@@ -109,7 +119,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
             error={errors.fixedPin?.message}
             {...register("fixedPin")}
           />
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

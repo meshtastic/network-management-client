@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from "react";
-import type { FormEventHandler } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,7 +11,13 @@ import {
   PositionConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentRadioConfig,
+  selectEditedRadioConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IPositionConfigPageProps {
   className?: string;
@@ -21,8 +25,8 @@ export interface IPositionConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parsePositionConfigInput = (
-  d: PositionConfigInput
-): PositionConfigInput => ({
+  d: DeepPartial<PositionConfigInput>
+): DeepPartial<PositionConfigInput> => ({
   ...d,
   positionBroadcastSecs: parseInt(d.positionBroadcastSecs as unknown as string),
   gpsUpdateInterval: parseInt(d.gpsUpdateInterval as unknown as string),
@@ -42,6 +46,9 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentRadioConfig());
+  const editedConfig = useSelector(selectEditedRadioConfig());
+
   const [gpsDisabled, setGpsDisabled] = useState(
     !device?.config.position?.gpsEnabled ?? true
   );
@@ -50,51 +57,56 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
     !device?.config.position?.fixedPosition ?? true
   );
 
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.config.position ?? undefined,
+        editedConfig.position ?? undefined
+      ),
+    []
+  );
+
+  const updateStateFlags = (d: DeepPartial<PositionConfigInput>) => {
+    setGpsDisabled(!d.gpsEnabled);
+    setFixedPositionDisabled(!d.fixedPosition);
+  };
+
+  useEffect(() => {
+    if (!defaultValues) return;
+    updateStateFlags(defaultValues);
+  }, [defaultValues]);
+
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     formState: { errors },
   } = useForm<PositionConfigInput>({
-    defaultValues: device?.config.position ?? undefined,
+    defaultValues,
   });
 
   watch((d) => {
-    setGpsDisabled(!d.gpsEnabled);
-    setFixedPositionDisabled(!d.fixedPosition);
+    const data = parsePositionConfigInput(d);
+    updateStateFlags(data);
+    dispatch(configSliceActions.updateRadioConfig({ position: data }));
   });
 
-  const onValidSubmit: SubmitHandler<PositionConfigInput> = (d) => {
-    const data = parsePositionConfigInput(d);
-    dispatch(configSliceActions.updateRadioConfig({ position: data }));
+  const handleFormReset = () => {
+    if (!currentConfig?.position) return;
+    reset(currentConfig.position);
+    dispatch(configSliceActions.updateRadioConfig({ position: null }));
   };
-
-  const onInvalidSubmit: SubmitErrorHandler<PositionConfigInput> = (errors) => {
-    console.warn("errors", errors);
-  };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Position Configuration"}
         subtitle={"Configure device Position settings"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
             text="GPS Enabled"
@@ -149,7 +161,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
 
           {/* TODO SMART MIN DISTANCE */}
           {/* TODO SMART MIN INTERVAL */}
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

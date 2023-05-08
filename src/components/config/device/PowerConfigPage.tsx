@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
-import type { FormEventHandler } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,14 +11,22 @@ import {
   PowerConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentRadioConfig,
+  selectEditedRadioConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IPowerConfigPageProps {
   className?: string;
 }
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
-const parsePowerConfigInput = (d: PowerConfigInput): PowerConfigInput => ({
+const parsePowerConfigInput = (
+  d: DeepPartial<PowerConfigInput>
+): DeepPartial<PowerConfigInput> => ({
   ...d,
   onBatteryShutdownAfterSecs: parseInt(
     d.onBatteryShutdownAfterSecs as unknown as string
@@ -39,46 +45,48 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentRadioConfig());
+  const editedConfig = useSelector(selectEditedRadioConfig());
+
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.config.power ?? undefined,
+        editedConfig.power ?? undefined
+      ),
+    []
+  );
+
   const {
     register,
-    handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<PowerConfigInput>({
-    defaultValues: device?.config.power ?? undefined,
+    defaultValues,
   });
 
-  const onValidSubmit: SubmitHandler<PowerConfigInput> = (d) => {
+  watch((d) => {
     const data = parsePowerConfigInput(d);
-    console.log("data", data);
     dispatch(configSliceActions.updateRadioConfig({ power: data }));
-  };
+  });
 
-  const onInvalidSubmit: SubmitErrorHandler<PowerConfigInput> = (errors) => {
-    console.warn("errors", errors);
+  const handleFormReset = () => {
+    if (!currentConfig?.power) return;
+    reset(currentConfig.power);
+    dispatch(configSliceActions.updateRadioConfig({ power: null }));
   };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Power Configuration"}
         subtitle={"Configure device power settings"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
             text="Enable Power Saving"
@@ -134,7 +142,7 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
             error={errors.lsSecs?.message}
             {...register("lsSecs")}
           />
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from "react";
-import type { FormEventHandler } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,14 +11,22 @@ import {
   LoRaConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentRadioConfig,
+  selectEditedRadioConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface ILoRaConfigPageProps {
   className?: string;
 }
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
-const parseLoRaConfigInput = (d: LoRaConfigInput): LoRaConfigInput => ({
+const parseLoRaConfigInput = (
+  d: DeepPartial<LoRaConfigInput>
+): DeepPartial<LoRaConfigInput> => ({
   ...d,
   region: parseInt(d.region as unknown as string),
   modemPreset: parseInt(d.modemPreset as unknown as string),
@@ -37,6 +43,9 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentRadioConfig());
+  const editedConfig = useSelector(selectEditedRadioConfig());
+
   const [useModemPreset, setUseModemPreset] = useState(
     !device?.config.lora?.modemPreset ?? false
   );
@@ -45,51 +54,56 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
     device?.config.lora?.txEnabled ?? true
   );
 
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.config.lora ?? undefined,
+        editedConfig.lora ?? undefined
+      ),
+    []
+  );
+
+  const updateStateFlags = (d: DeepPartial<LoRaConfigInput>) => {
+    setUseModemPreset(!!d.usePreset);
+    setTxEnabled(!!d.txEnabled);
+  };
+
+  useEffect(() => {
+    if (!defaultValues) return;
+    updateStateFlags(defaultValues);
+  }, [defaultValues]);
+
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     formState: { errors },
   } = useForm<LoRaConfigInput>({
-    defaultValues: device?.config.lora ?? undefined,
+    defaultValues,
   });
 
   watch((d) => {
-    setUseModemPreset(!!d.usePreset);
-    setTxEnabled(!!d.txEnabled);
+    const data = parseLoRaConfigInput(d);
+    updateStateFlags(data);
+    dispatch(configSliceActions.updateRadioConfig({ lora: data }));
   });
 
-  const onValidSubmit: SubmitHandler<LoRaConfigInput> = (d) => {
-    const data = parseLoRaConfigInput(d);
-    dispatch(configSliceActions.updateRadioConfig({ lora: data }));
+  const handleFormReset = () => {
+    if (!currentConfig?.lora) return;
+    reset(currentConfig.lora);
+    dispatch(configSliceActions.updateRadioConfig({ lora: null }));
   };
-
-  const onInvalidSubmit: SubmitErrorHandler<LoRaConfigInput> = (errors) => {
-    console.warn("errors", errors);
-  };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"LoRa Configuration"}
         subtitle={"Configure device LoRa connection"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigLabel text="Region" error={errors.region?.message}>
             <select {...register("region")}>
               <option value="0">UNSET</option>
@@ -198,7 +212,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           />
 
           {/* TODO OVERRIDE FREQUENCY */}
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );
