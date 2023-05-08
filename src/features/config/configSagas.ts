@@ -52,7 +52,7 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
     )) as ReturnType<ReturnType<typeof selectCurrentModuleConfig>>;
 
     const editedModuleConfig = (yield select(
-      selectEditedRadioConfig()
+      selectEditedModuleConfig()
     )) as ReturnType<ReturnType<typeof selectEditedModuleConfig>>;
 
     if (!currentRadioConfig || !currentModuleConfig) {

@@ -357,65 +357,14 @@ pub async fn update_device_config_bulk(
 
     device.start_configuration_transaction().await?;
 
-    if let Some(radio) = config.radio {
-        if let Some(c) = radio.bluetooth {
-            device
-                .update_device_config(protobufs::Config {
-                    payload_variant: Some(protobufs::config::PayloadVariant::Bluetooth(c)),
-                })
-                .await?;
-        }
-
-        if let Some(c) = radio.device {
-            device
-                .update_device_config(protobufs::Config {
-                    payload_variant: Some(protobufs::config::PayloadVariant::Device(c)),
-                })
-                .await?;
-        }
-
-        if let Some(c) = radio.display {
-            device
-                .update_device_config(protobufs::Config {
-                    payload_variant: Some(protobufs::config::PayloadVariant::Display(c)),
-                })
-                .await?;
-        }
-
-        if let Some(c) = radio.lora {
-            device
-                .update_device_config(protobufs::Config {
-                    payload_variant: Some(protobufs::config::PayloadVariant::Lora(c)),
-                })
-                .await?;
-        }
-
-        if let Some(c) = radio.network {
-            device
-                .update_device_config(protobufs::Config {
-                    payload_variant: Some(protobufs::config::PayloadVariant::Network(c)),
-                })
-                .await?;
-        }
-
-        if let Some(c) = radio.position {
-            device
-                .update_device_config(protobufs::Config {
-                    payload_variant: Some(protobufs::config::PayloadVariant::Position(c)),
-                })
-                .await?;
-        }
-
-        if let Some(c) = radio.power {
-            device
-                .update_device_config(protobufs::Config {
-                    payload_variant: Some(protobufs::config::PayloadVariant::Power(c)),
-                })
-                .await?;
-        }
+    if let Some(radio_config) = config.radio {
+        device.set_local_config(radio_config).await?;
     }
 
-    if let Some(_c) = config.module {} // TODO
+    if let Some(module_config) = config.module {
+        device.set_local_module_config(module_config).await?;
+    }
+
     if let Some(_c) = config.channels {} // TODO
 
     device.commit_configuration_transaction().await?;

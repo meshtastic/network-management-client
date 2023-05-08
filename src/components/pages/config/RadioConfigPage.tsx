@@ -62,7 +62,7 @@ const switchActiveDetailView = (
   }
 };
 
-const getNumberOfUnsavedChanges = (
+const getNumberOfStagedChanges = (
   currentRadioConfig: app_protobufs_LocalConfig | null,
   editedRadioConfig: IRadioConfigState,
   configKey: keyof IRadioConfigState
@@ -123,7 +123,7 @@ const RadioConfigPage = () => {
             // * This is a limitation of Object.entries typing
             const configKey = k as keyof IRadioConfigState;
 
-            const unsavedChanges = getNumberOfUnsavedChanges(
+            const stagedChanges = getNumberOfStagedChanges(
               currentRadioConfig,
               editedRadioConfig,
               configKey
@@ -133,7 +133,7 @@ const RadioConfigPage = () => {
               <ConfigOption
                 key={configKey}
                 title={displayName}
-                subtitle={`${unsavedChanges} staged changes`}
+                subtitle={`${stagedChanges} staged changes`}
                 isActive={activeOption === configKey}
                 onClick={() =>
                   setActiveOption(activeOption !== configKey ? configKey : null)

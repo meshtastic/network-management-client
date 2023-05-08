@@ -10,29 +10,33 @@ import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
 
 import {
-  RangeTestModuleConfigInput,
+  StoreForwardModuleConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
 import { selectDevice } from "@features/device/deviceSelectors";
 
-export interface IRangeTestConfigPageProps {
+export interface IStoreAndForwardConfigPageProps {
   className?: string;
 }
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
-const parseRangeTestModuleConfigInput = (
-  d: RangeTestModuleConfigInput
-): RangeTestModuleConfigInput => ({
+const parseStoreAndForwardModuleConfigInput = (
+  d: StoreForwardModuleConfigInput
+): StoreForwardModuleConfigInput => ({
   ...d,
-  sender: parseInt(d.sender as unknown as string),
+  records: parseInt(d.records as unknown as string),
+  historyReturnMax: parseInt(d.historyReturnMax as unknown as string),
+  historyReturnWindow: parseInt(d.historyReturnWindow as unknown as string),
 });
 
-const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
+const StoreAndForwardConfigPage = ({
+  className = "",
+}: IStoreAndForwardConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.rangeTest?.enabled ?? true
+    !device?.moduleConfig.serial?.enabled ?? true
   );
 
   const {
@@ -41,20 +45,20 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
     reset,
     watch,
     formState: { errors },
-  } = useForm<RangeTestModuleConfigInput>({
-    defaultValues: device?.moduleConfig.rangeTest ?? undefined,
+  } = useForm<StoreForwardModuleConfigInput>({
+    defaultValues: device?.moduleConfig.storeForward ?? undefined,
   });
 
   watch((d) => {
     setModuleDisabled(!d.enabled);
   });
 
-  const onValidSubmit: SubmitHandler<RangeTestModuleConfigInput> = (d) => {
-    const data = parseRangeTestModuleConfigInput(d);
-    dispatch(configSliceActions.updateModuleConfig({ rangeTest: data }));
+  const onValidSubmit: SubmitHandler<StoreForwardModuleConfigInput> = (d) => {
+    const data = parseStoreAndForwardModuleConfigInput(d);
+    dispatch(configSliceActions.updateModuleConfig({ storeForward: data }));
   };
 
-  const onInvalidSubmit: SubmitErrorHandler<RangeTestModuleConfigInput> = (
+  const onInvalidSubmit: SubmitErrorHandler<StoreForwardModuleConfigInput> = (
     errors
   ) => {
     console.warn("errors", errors);
@@ -70,8 +74,8 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"RangeTest Configuration"}
-        subtitle={"Configure RangeTest"}
+        title={"Store and Forward Configuration (UNSTABLE)"}
+        subtitle={"Configure packet storage and forwarding"}
         renderIcon={(c) => <Save className={c} />}
         buttonTooltipText="Stage changes for upload"
         buttonProps={{ type: "submit", form: formId }}
@@ -83,25 +87,41 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
         >
           <ConfigInput
             type="checkbox"
-            text="Range Test Enabled"
+            text="Store and Forward Enabled"
             error={errors.enabled?.message}
             {...register("enabled")}
           />
 
           <ConfigInput
-            type="number"
-            text="Sender Transmit Interval (sec, 0 = disabled)"
+            type="checkbox"
+            text="Heartbeat Broadcast Enabled"
             disabled={moduleDisabled}
-            error={errors.sender?.message}
-            {...register("sender")}
+            error={errors.heartbeat?.message}
+            {...register("heartbeat")}
           />
 
           <ConfigInput
-            type="checkbox"
-            text="Save to File System (ESP32 Only)"
+            type="number"
+            text="Stored Records"
             disabled={moduleDisabled}
-            error={errors.save?.message}
-            {...register("save")}
+            error={errors.records?.message}
+            {...register("records")}
+          />
+
+          <ConfigInput
+            type="number"
+            text="Max Records to Return"
+            disabled={moduleDisabled}
+            error={errors.historyReturnMax?.message}
+            {...register("historyReturnMax")}
+          />
+
+          <ConfigInput
+            type="number"
+            text="History Return Window (sec)"
+            disabled={moduleDisabled}
+            error={errors.historyReturnWindow?.message}
+            {...register("historyReturnWindow")}
           />
         </form>
       </ConfigTitlebar>
@@ -109,4 +129,4 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
   );
 };
 
-export default RangeTestConfigPage;
+export default StoreAndForwardConfigPage;

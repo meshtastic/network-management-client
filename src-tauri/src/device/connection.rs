@@ -87,6 +87,34 @@ impl MeshDevice {
         Ok(())
     }
 
+    pub async fn update_device_module_config(
+        &mut self,
+        module_config: protobufs::ModuleConfig,
+    ) -> Result<(), String> {
+        let module_config_packet = protobufs::AdminMessage {
+            payload_variant: Some(protobufs::admin_message::PayloadVariant::SetModuleConfig(
+                module_config,
+            )),
+        };
+
+        let byte_data = module_config_packet.encode_to_vec();
+
+        self.send_packet(
+            byte_data,
+            protobufs::PortNum::AdminApp,
+            PacketDestination::Local,
+            0,
+            true,
+            true,
+            false,
+            None,
+            None,
+        )
+        .await?;
+
+        Ok(())
+    }
+
     pub async fn update_device_user(&mut self, user: protobufs::User) -> Result<(), String> {
         let user_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetOwner(user)),
@@ -217,6 +245,131 @@ impl MeshDevice {
 
         self.connection.send_raw(packet_buf).await?;
         self.config_in_progress = false;
+
+        Ok(())
+    }
+
+    pub async fn set_local_config(&mut self, config: protobufs::LocalConfig) -> Result<(), String> {
+        if let Some(c) = config.bluetooth {
+            self.update_device_config(protobufs::Config {
+                payload_variant: Some(protobufs::config::PayloadVariant::Bluetooth(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = config.device {
+            self.update_device_config(protobufs::Config {
+                payload_variant: Some(protobufs::config::PayloadVariant::Device(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = config.display {
+            self.update_device_config(protobufs::Config {
+                payload_variant: Some(protobufs::config::PayloadVariant::Display(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = config.lora {
+            self.update_device_config(protobufs::Config {
+                payload_variant: Some(protobufs::config::PayloadVariant::Lora(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = config.network {
+            self.update_device_config(protobufs::Config {
+                payload_variant: Some(protobufs::config::PayloadVariant::Network(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = config.position {
+            self.update_device_config(protobufs::Config {
+                payload_variant: Some(protobufs::config::PayloadVariant::Position(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = config.power {
+            self.update_device_config(protobufs::Config {
+                payload_variant: Some(protobufs::config::PayloadVariant::Power(c)),
+            })
+            .await?;
+        }
+
+        Ok(())
+    }
+
+    pub async fn set_local_module_config(
+        &mut self,
+        module_config: protobufs::LocalModuleConfig,
+    ) -> Result<(), String> {
+        if let Some(c) = module_config.audio {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(protobufs::module_config::PayloadVariant::Audio(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = module_config.canned_message {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(protobufs::module_config::PayloadVariant::CannedMessage(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = module_config.external_notification {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(
+                    protobufs::module_config::PayloadVariant::ExternalNotification(c),
+                ),
+            })
+            .await?;
+        }
+
+        if let Some(c) = module_config.mqtt {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(protobufs::module_config::PayloadVariant::Mqtt(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = module_config.range_test {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(protobufs::module_config::PayloadVariant::RangeTest(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = module_config.remote_hardware {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(protobufs::module_config::PayloadVariant::RemoteHardware(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = module_config.serial {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(protobufs::module_config::PayloadVariant::Serial(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = module_config.store_forward {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(protobufs::module_config::PayloadVariant::StoreForward(c)),
+            })
+            .await?;
+        }
+
+        if let Some(c) = module_config.telemetry {
+            self.update_device_module_config(protobufs::ModuleConfig {
+                payload_variant: Some(protobufs::module_config::PayloadVariant::Telemetry(c)),
+            })
+            .await?;
+        }
 
         Ok(())
     }
