@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from "react";
-import type { FormEventHandler } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,7 +11,13 @@ import {
   RangeTestModuleConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentModuleConfig,
+  selectEditedModuleConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IRangeTestConfigPageProps {
   className?: string;
@@ -21,8 +25,8 @@ export interface IRangeTestConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseRangeTestModuleConfigInput = (
-  d: RangeTestModuleConfigInput
-): RangeTestModuleConfigInput => ({
+  d: DeepPartial<RangeTestModuleConfigInput>
+): DeepPartial<RangeTestModuleConfigInput> => ({
   ...d,
   sender: parseInt(d.sender as unknown as string),
 });
@@ -31,13 +35,33 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentModuleConfig());
+  const editedConfig = useSelector(selectEditedModuleConfig());
+
   const [moduleDisabled, setModuleDisabled] = useState(
     !device?.moduleConfig.rangeTest?.enabled ?? true
   );
 
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.moduleConfig.rangeTest ?? undefined,
+        editedConfig.rangeTest ?? undefined
+      ),
+    []
+  );
+
+  const updateStateFlags = (d: DeepPartial<RangeTestModuleConfigInput>) => {
+    setModuleDisabled(!d.enabled);
+  };
+
+  useEffect(() => {
+    if (!defaultValues) return;
+    updateStateFlags(defaultValues);
+  }, [defaultValues]);
+
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     formState: { errors },
@@ -46,41 +70,27 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
   });
 
   watch((d) => {
-    setModuleDisabled(!d.enabled);
+    const data = parseRangeTestModuleConfigInput(d);
+    updateStateFlags(data);
+    dispatch(configSliceActions.updateModuleConfig({ rangeTest: data }));
   });
 
-  const onValidSubmit: SubmitHandler<RangeTestModuleConfigInput> = (d) => {
-    const data = parseRangeTestModuleConfigInput(d);
-    dispatch(configSliceActions.updateModuleConfig({ rangeTest: data }));
+  const handleFormReset = () => {
+    if (!currentConfig?.rangeTest) return;
+    reset(currentConfig.rangeTest);
+    dispatch(configSliceActions.updateModuleConfig({ rangeTest: null }));
   };
-
-  const onInvalidSubmit: SubmitErrorHandler<RangeTestModuleConfigInput> = (
-    errors
-  ) => {
-    console.warn("errors", errors);
-  };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"RangeTest Configuration"}
         subtitle={"Configure RangeTest"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
             text="Range Test Enabled"
@@ -103,7 +113,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
             error={errors.save?.message}
             {...register("save")}
           />
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

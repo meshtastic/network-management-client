@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from "react";
-import type { FormEventHandler } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,7 +11,13 @@ import {
   MQTTModuleConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentModuleConfig,
+  selectEditedModuleConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IMQTTConfigPageProps {
   className?: string;
@@ -21,8 +25,8 @@ export interface IMQTTConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseMQTTModuleConfigInput = (
-  d: MQTTModuleConfigInput
-): MQTTModuleConfigInput => ({
+  d: DeepPartial<MQTTModuleConfigInput>
+): DeepPartial<MQTTModuleConfigInput> => ({
   ...d,
 });
 
@@ -30,13 +34,33 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentModuleConfig());
+  const editedConfig = useSelector(selectEditedModuleConfig());
+
   const [moduleDisabled, setModuleDisabled] = useState(
     !device?.moduleConfig.mqtt?.enabled ?? true
   );
 
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.moduleConfig.mqtt ?? undefined,
+        editedConfig.mqtt ?? undefined
+      ),
+    []
+  );
+
+  const updateStateFlags = (d: DeepPartial<MQTTModuleConfigInput>) => {
+    setModuleDisabled(!d.enabled);
+  };
+
+  useEffect(() => {
+    if (!defaultValues) return;
+    updateStateFlags(defaultValues);
+  }, [defaultValues]);
+
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     formState: { errors },
@@ -45,41 +69,27 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   });
 
   watch((d) => {
-    setModuleDisabled(!d.enabled);
+    const data = parseMQTTModuleConfigInput(d);
+    updateStateFlags(data);
+    dispatch(configSliceActions.updateModuleConfig({ mqtt: data }));
   });
 
-  const onValidSubmit: SubmitHandler<MQTTModuleConfigInput> = (d) => {
-    const data = parseMQTTModuleConfigInput(d);
-    dispatch(configSliceActions.updateModuleConfig({ mqtt: data }));
+  const handleFormReset = () => {
+    if (!currentConfig?.mqtt) return;
+    reset(currentConfig.mqtt);
+    dispatch(configSliceActions.updateModuleConfig({ mqtt: null }));
   };
-
-  const onInvalidSubmit: SubmitErrorHandler<MQTTModuleConfigInput> = (
-    errors
-  ) => {
-    console.warn("errors", errors);
-  };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"MQTT Configuration"}
         subtitle={"Configure MQTT"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
             text="MQTT Enabled"
@@ -134,7 +144,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             error={errors.tlsEnabled?.message}
             {...register("tlsEnabled")}
           />
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from "react";
-import type { FormEventHandler } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,7 +11,13 @@ import {
   ExternalNotificationModuleConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentModuleConfig,
+  selectEditedModuleConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IExternalNotificationConfigPageProps {
   className?: string;
@@ -21,8 +25,8 @@ export interface IExternalNotificationConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseExternalNotificationModuleConfigInput = (
-  d: ExternalNotificationModuleConfigInput
-): ExternalNotificationModuleConfigInput => ({
+  d: DeepPartial<ExternalNotificationModuleConfigInput>
+): DeepPartial<ExternalNotificationModuleConfigInput> => ({
   ...d,
   outputMs: parseInt(d.outputMs as unknown as string),
   output: parseInt(d.output as unknown as string),
@@ -37,6 +41,9 @@ const ExternalNotificationConfigPage = ({
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentModuleConfig());
+  const editedConfig = useSelector(selectEditedModuleConfig());
+
   const [moduleDisabled, setModuleDisabled] = useState(
     !device?.moduleConfig.externalNotification?.enabled ?? true
   );
@@ -46,12 +53,33 @@ const ExternalNotificationConfigPage = ({
   );
 
   const [messageAlertsDisabled, setMessageAlertsDisabled] = useState(
-    !device?.moduleConfig.externalNotification?.alertBell ?? true
+    !device?.moduleConfig.externalNotification?.alertMessage ?? true
   );
+
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.moduleConfig.externalNotification ?? undefined,
+        editedConfig.externalNotification ?? undefined
+      ),
+    []
+  );
+
+  const updateStateFlags = (
+    d: DeepPartial<ExternalNotificationModuleConfigInput>
+  ) => {
+    setModuleDisabled(!d.enabled);
+    setBellAlertsDisabled(!d.alertBell);
+    setMessageAlertsDisabled(!d.alertMessage);
+  };
+
+  useEffect(() => {
+    if (!defaultValues) return;
+    updateStateFlags(defaultValues);
+  }, [defaultValues]);
 
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     formState: { errors },
@@ -60,47 +88,31 @@ const ExternalNotificationConfigPage = ({
   });
 
   watch((d) => {
-    setModuleDisabled(!d.enabled);
-    setBellAlertsDisabled(!d.alertBell);
-    setMessageAlertsDisabled(!d.alertMessage);
-  });
-
-  const onValidSubmit: SubmitHandler<ExternalNotificationModuleConfigInput> = (
-    d
-  ) => {
     const data = parseExternalNotificationModuleConfigInput(d);
+    updateStateFlags(data);
     dispatch(
       configSliceActions.updateModuleConfig({ externalNotification: data })
     );
-  };
+  });
 
-  const onInvalidSubmit: SubmitErrorHandler<
-    ExternalNotificationModuleConfigInput
-  > = (errors) => {
-    console.warn("errors", errors);
+  const handleFormReset = () => {
+    if (!currentConfig?.externalNotification) return;
+    reset(currentConfig.externalNotification);
+    dispatch(
+      configSliceActions.updateModuleConfig({ externalNotification: null })
+    );
   };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"ExternalNotification Configuration"}
         subtitle={"Configure ExternalNotification"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
             text="External Notification Enabled"
@@ -211,7 +223,7 @@ const ExternalNotificationConfigPage = ({
             error={errors.nagTimeout?.message}
             {...register("nagTimeout")}
           />
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );

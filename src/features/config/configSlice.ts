@@ -122,12 +122,9 @@ export const configSlice = createSlice({
 
     updateModuleConfig: (
       state,
-      action: PayloadAction<Partial<IModuleConfigState>>
+      action: PayloadAction<DeepPartial<IModuleConfigState>>
     ) => {
-      state.module = {
-        ...state.module,
-        ...action.payload,
-      };
+      state.module = merge(cloneDeep(state.module), action.payload);
     },
 
     clearModuleConfig: (state) => {

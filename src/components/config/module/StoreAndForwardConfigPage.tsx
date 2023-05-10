@@ -1,9 +1,7 @@
-import React, { useMemo, useState } from "react";
-import type { FormEventHandler } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
-import { Save } from "lucide-react";
-import { v4 } from "uuid";
+import { useForm, DeepPartial } from "react-hook-form";
+import { RotateCcw } from "lucide-react";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
@@ -13,7 +11,13 @@ import {
   StoreForwardModuleConfigInput,
   configSliceActions,
 } from "@features/config/configSlice";
+import {
+  selectCurrentModuleConfig,
+  selectEditedModuleConfig,
+} from "@features/config/configSelectors";
+
 import { selectDevice } from "@features/device/deviceSelectors";
+import { getDefaultConfigInput } from "@utils/form";
 
 export interface IStoreAndForwardConfigPageProps {
   className?: string;
@@ -21,8 +25,8 @@ export interface IStoreAndForwardConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseStoreAndForwardModuleConfigInput = (
-  d: StoreForwardModuleConfigInput
-): StoreForwardModuleConfigInput => ({
+  d: DeepPartial<StoreForwardModuleConfigInput>
+): DeepPartial<StoreForwardModuleConfigInput> => ({
   ...d,
   records: parseInt(d.records as unknown as string),
   historyReturnMax: parseInt(d.historyReturnMax as unknown as string),
@@ -35,13 +39,33 @@ const StoreAndForwardConfigPage = ({
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
+  const currentConfig = useSelector(selectCurrentModuleConfig());
+  const editedConfig = useSelector(selectEditedModuleConfig());
+
   const [moduleDisabled, setModuleDisabled] = useState(
     !device?.moduleConfig.serial?.enabled ?? true
   );
 
+  const defaultValues = useMemo(
+    () =>
+      getDefaultConfigInput(
+        device?.moduleConfig.storeForward ?? undefined,
+        editedConfig.storeForward ?? undefined
+      ),
+    []
+  );
+
+  const updateStateFlags = (d: DeepPartial<StoreForwardModuleConfigInput>) => {
+    setModuleDisabled(!d.enabled);
+  };
+
+  useEffect(() => {
+    if (!defaultValues) return;
+    updateStateFlags(defaultValues);
+  }, [defaultValues]);
+
   const {
     register,
-    handleSubmit,
     reset,
     watch,
     formState: { errors },
@@ -50,41 +74,27 @@ const StoreAndForwardConfigPage = ({
   });
 
   watch((d) => {
-    setModuleDisabled(!d.enabled);
+    const data = parseStoreAndForwardModuleConfigInput(d);
+    updateStateFlags(data);
+    dispatch(configSliceActions.updateModuleConfig({ storeForward: data }));
   });
 
-  const onValidSubmit: SubmitHandler<StoreForwardModuleConfigInput> = (d) => {
-    const data = parseStoreAndForwardModuleConfigInput(d);
-    dispatch(configSliceActions.updateModuleConfig({ storeForward: data }));
+  const handleFormReset = () => {
+    if (!currentConfig?.storeForward) return;
+    reset(currentConfig.storeForward);
+    dispatch(configSliceActions.updateModuleConfig({ storeForward: null }));
   };
-
-  const onInvalidSubmit: SubmitErrorHandler<StoreForwardModuleConfigInput> = (
-    errors
-  ) => {
-    console.warn("errors", errors);
-  };
-
-  const handleFormSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
-    handleSubmit(onValidSubmit, onInvalidSubmit)(e).catch(console.error);
-  };
-
-  const formId = useMemo(() => v4(), []);
 
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Store and Forward Configuration (UNSTABLE)"}
         subtitle={"Configure packet storage and forwarding"}
-        renderIcon={(c) => <Save className={c} />}
-        buttonTooltipText="Stage changes for upload"
-        buttonProps={{ type: "submit", form: formId }}
+        renderIcon={(c) => <RotateCcw className={c} />}
+        buttonTooltipText="Discard pending changes"
+        onIconClick={handleFormReset}
       >
-        <form
-          className="flex flex-col gap-6"
-          id={formId}
-          onSubmit={handleFormSubmit}
-        >
+        <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
             text="Store and Forward Enabled"
@@ -123,7 +133,7 @@ const StoreAndForwardConfigPage = ({
             error={errors.historyReturnWindow?.message}
             {...register("historyReturnWindow")}
           />
-        </form>
+        </div>
       </ConfigTitlebar>
     </div>
   );
