@@ -81,6 +81,7 @@ This project is still in early stages of development, but here's a rough roadmap
 - [ ] :globe_with_meridians: Web client parity (UI)
   - [x] Map node view
   - [x] Text messaging
+  - [ ] Channel import/export via QR code
   - [ ] Configuration
     - [ ] Device configuration
     - [ ] Module configuration
