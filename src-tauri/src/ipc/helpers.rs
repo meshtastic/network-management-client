@@ -6,7 +6,7 @@ use log::{debug, error, trace, warn};
 use tauri::api::notification::Notification;
 use tokio::sync::broadcast;
 
-use crate::device::serial_connection::MeshConnection;
+use crate::device::serial_connection::{ConnectionError, MeshConnection};
 use crate::device::SerialDeviceStatus;
 use crate::ipc::events::{dispatch_configuration_status, dispatch_rebooting_event};
 use crate::ipc::{events, ConfigurationStatus};
@@ -109,10 +109,24 @@ pub async fn initialize_serial_connection_handlers(
     let mut device = device::MeshDevice::new();
 
     device.set_status(SerialDeviceStatus::Connecting);
-    device
+
+    match device
         .connection
         .connect(app_handle.clone(), port_name.clone(), 115_200)
-        .await?;
+        .await
+    {
+        Ok(_) => (),
+        Err(e) => match e {
+            ConnectionError::PortOpenError => {
+                return Err(
+                    "Failed to open serial port. Is this port in use by another program?".into(),
+                );
+            }
+            ConnectionError::ConfigurationError => {
+                return Err("Failed to configure serial connection. If you encounter this issue repeatedly, please file a bug report.".into());
+            }
+        },
+    };
 
     // Get copy of decoded_listener by resubscribing
     let decoded_listener = device
@@ -136,7 +150,7 @@ pub async fn initialize_serial_connection_handlers(
     }
 
     // * Needs the device struct and port name to be loaded into Tauri state before running
-    spawn_connection_timeout_handler(handle.clone(), mesh_device_arc.clone(), port_name.clone());
+    spawn_configuration_timeout_handler(handle.clone(), mesh_device_arc.clone(), port_name.clone());
 
     spawn_decoded_handler(
         handle,
@@ -149,7 +163,7 @@ pub async fn initialize_serial_connection_handlers(
     Ok(())
 }
 
-fn spawn_connection_timeout_handler(
+fn spawn_configuration_timeout_handler(
     handle: tauri::AppHandle,
     connected_devices_inner: state::ConnectedDevicesInner,
     port_name: String,

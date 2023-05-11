@@ -166,6 +166,16 @@ function* connectToDeviceWorker(
       })
     );
 
+    yield put(
+      connectionSliceActions.setConnectionState({
+        portName: action.payload.portName,
+        status: {
+          status: "FAILED",
+          message: (error as CommandError).message,
+        },
+      })
+    );
+
     if (subscribeTask) {
       yield cancel(subscribeTask);
     }
