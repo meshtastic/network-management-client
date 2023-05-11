@@ -411,7 +411,7 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub async fn set_local_channel_config(
+    pub async fn set_channel_config(
         &mut self,
         channel_config: Vec<protobufs::Channel>,
     ) -> Result<(), String> {

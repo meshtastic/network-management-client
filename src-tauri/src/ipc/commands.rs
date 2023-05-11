@@ -367,7 +367,7 @@ pub async fn update_device_config_bulk(
     }
 
     if let Some(channel_config) = config.channels {
-        device.set_local_channel_config(channel_config).await?;
+        device.set_channel_config(channel_config).await?;
     }
 
     device.commit_configuration_transaction().await?;

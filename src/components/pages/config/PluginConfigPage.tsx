@@ -7,7 +7,7 @@ import type { app_protobufs_LocalModuleConfig } from "@app/bindings";
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
 
-import AudioConfigPage from "@components/config/module/AudioConfigPage";
+// import AudioConfigPage from "@components/config/module/AudioConfigPage";
 import CannedMessageConfigPage from "@components/config/module/CannedMessageConfigPage";
 import ExternalNotificationConfigPage from "@components/config/module/ExternalNotificationConfigPage";
 import MQTTConfigPage from "@components/config/module/MQTTConfigPage";
@@ -40,8 +40,9 @@ const switchActiveDetailView = (
   activeOption: keyof IModuleConfigState | null
 ) => {
   switch (activeOption) {
-    case "audio":
-      return <AudioConfigPage />;
+    // ! https://github.com/ajmcquilkin/meshtastic-network-management-client/issues/382
+    // case "audio":
+    //   return <AudioConfigPage />;
     case "cannedMessage":
       return <CannedMessageConfigPage />;
     case "externalNotification":
