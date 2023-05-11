@@ -1,11 +1,15 @@
 import { invoke } from "@tauri-apps/api";
 import { all, call, put, select, takeEvery } from "redux-saga/effects";
-import type { DeepPartial } from "react-hook-form";
 
 import merge from "lodash.merge";
+import mergeWith from "lodash.mergewith";
+import isArray from "lodash.isarray";
 import cloneDeep from "lodash.clonedeep";
 
-import type { app_device_MeshChannel, app_ipc_DeviceBulkConfig } from "@bindings/index";
+import type {
+  app_device_MeshChannel,
+  app_ipc_DeviceBulkConfig,
+} from "@bindings/index";
 
 import { requestCommitConfig } from "@features/config/configActions";
 import {
@@ -99,22 +103,27 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
         throw new Error("Current channel config not defined");
       }
 
-      const channelConfig: Record<number, DeepPartial<app_device_MeshChannel>> = {};
+      const mergedConfig: Record<number, app_device_MeshChannel> = {};
 
-      for (const [idx, config] of Object.entries(
-        editedChannelConfig
-      )) {
+      for (const [idx, config] of Object.entries(editedChannelConfig)) {
         if (!config) continue;
         const channelNum = parseInt(idx);
-        channelConfig[channelNum] = getMeshChannelFromCurrentConfig(config);
+        const meshChannel = getMeshChannelFromCurrentConfig(config);
+
+        mergedConfig[channelNum] = mergeWith(
+          cloneDeep(currentChannelConfig[channelNum]),
+          meshChannel,
+          // * Need to override array values instead of merging
+          (objVal, srcVal) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            if (isArray(objVal)) return srcVal;
+          }
+        );
       }
 
-      const mergedConfig = merge(
-        cloneDeep(currentChannelConfig), // Redux object
-        channelConfig
-      ) as Record<number, app_device_MeshChannel>;
-
-      configPayload.channels = Object.values(mergedConfig).map(mc => mc.config);
+      configPayload.channels = Object.values(mergedConfig).map(
+        (mc) => mc.config
+      );
     }
 
     // Dispatch update to backend
@@ -135,7 +144,7 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
     }
 
     if (includeChannelConfig) {
-      // TODO clear channel config
+      yield put(configSliceActions.clearChannelConfig());
     }
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));

@@ -32,7 +32,7 @@ impl Default for SerialDeviceStatus {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshChannel {
     pub config: protobufs::Channel,

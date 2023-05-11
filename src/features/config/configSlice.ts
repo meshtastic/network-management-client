@@ -48,8 +48,8 @@ export type TelemetryModuleConfigInput = app_protobufs_module_config_TelemetryCo
 
 export type ChannelConfigInput = Omit<
   app_protobufs_ChannelSettings,
-  "id" | "channelNum"
-> &
+  "id" | "channelNum" | "psk"
+> & { psk: string } &
   Pick<app_protobufs_Channel, "role">;
 
 export type UserConfigInput = Pick<
@@ -155,7 +155,11 @@ export const configSlice = createSlice({
 
 
       state.channel = merge(cloneDeep(state.channel), updatedPartialConfig);
-    }
+    },
+
+    clearChannelConfig: (state) => {
+      state.channel = initialConfigState.channel;
+    },
   },
 });
 

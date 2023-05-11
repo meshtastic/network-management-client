@@ -3,11 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
 
-import type {
-  app_device_MeshChannel,
-  app_protobufs_Channel,
-  app_protobufs_ChannelSettings,
-} from "@bindings/index";
+import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
@@ -77,7 +73,7 @@ const ChannelConfigDetail = ({
   );
 
   const updateStateFlags = (d: DeepPartial<ChannelConfigInput>) => {
-    setChannelDisabled(d.role === 0);
+    setChannelDisabled(d.role === 0); // DISABLED
   };
 
   useEffect(() => {
@@ -94,13 +90,29 @@ const ChannelConfigDetail = ({
     defaultValues,
   });
 
-  watch((d) => {
-    const data = parseChannelConfigInput(d);
-    updateStateFlags(data);
-    dispatch(
-      configSliceActions.updateChannelConfig([{ channelNum, config: data }])
-    );
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<ChannelConfigInput>) => {
+          const data = parseChannelConfigInput(d);
+          updateStateFlags(data);
+          dispatch(
+            configSliceActions.updateChannelConfig([
+              { channelNum, config: data },
+            ])
+          );
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentMeshChannel) return;
@@ -137,7 +149,7 @@ const ChannelConfigDetail = ({
           />
 
           <ConfigInput
-            type="number"
+            type="text"
             text="PSK"
             disabled={channelDisabled}
             error={errors.psk?.message}

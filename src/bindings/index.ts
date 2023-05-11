@@ -14,8 +14,6 @@ export type app_device_TelemetryPacket = { packet: app_protobufs_MeshPacket; dat
  */
 export type app_protobufs_config_display_config_DisplayUnits = "metric" | "imperial"
 
-export type app_device_MeshChannel = { config: app_protobufs_Channel; lastInteraction: number; messages: app_device_ChannelMessageWithState[] }
-
 /**
  * 
  * Standard predefined channel settings
@@ -479,7 +477,7 @@ export type app_protobufs_PortNum = "unknownApp" | "textMessageApp" | "remoteHar
  */
 export type app_protobufs_Compressed = { portnum: number; data: number[] }
 
-export type app_ipc_DeviceBulkConfig = { radio: app_protobufs_LocalConfig | null; module: app_protobufs_LocalModuleConfig | null; channels: null | null }
+export type app_ipc_DeviceBulkConfig = { radio: app_protobufs_LocalConfig | null; module: app_protobufs_LocalModuleConfig | null; channels: app_protobufs_Channel[] | null }
 
 /**
  * 
@@ -752,4 +750,6 @@ export type app_protobufs_config_LoRaConfig = { usePreset: boolean; modemPreset:
  * Defines the device's role on the Mesh network
  */
 export type app_protobufs_config_device_config_Role = "client" | "clientMute" | "router" | "routerClient" | "repeater" | "tracker" | "sensor"
+
+export type app_device_MeshChannel = { config: app_protobufs_Channel; lastInteraction: number; messages: app_device_ChannelMessageWithState[] }
 

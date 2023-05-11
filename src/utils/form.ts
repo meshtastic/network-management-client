@@ -1,3 +1,4 @@
+import { fromByteArray, toByteArray } from "base64-js";
 import merge from "lodash.merge";
 import cloneDeep from "lodash.clonedeep";
 
@@ -14,24 +15,28 @@ export const getDefaultConfigInput = <C, E>(
 
 export const getCurrentConfigFromMeshChannel = (
   channel: app_device_MeshChannel
-): ChannelConfigInput => ({
-  role: channel.config.role,
-  downlinkEnabled: channel.config.settings?.downlinkEnabled ?? false,
-  name: channel.config.settings?.name ?? "",
-  psk: channel.config.settings?.psk ?? [],
-  uplinkEnabled: channel.config.settings?.uplinkEnabled ?? false,
-})
+): ChannelConfigInput => {
+  return {
+    role: channel.config.role,
+    downlinkEnabled: channel.config.settings?.downlinkEnabled ?? false,
+    name: channel.config.settings?.name ?? "",
+    psk: fromByteArray(new Uint8Array(channel.config.settings?.psk ?? [])),
+    uplinkEnabled: channel.config.settings?.uplinkEnabled ?? false,
+  };
+};
 
 export const getMeshChannelFromCurrentConfig = (
   config: ChannelConfigInput
-): DeepPartial<app_device_MeshChannel> => ({
-  config: {
-    role: config.role,
-    settings: {
-      downlinkEnabled: config.downlinkEnabled,
-      name: config.name,
-      psk: config.psk,
-      uplinkEnabled: config.uplinkEnabled,
-    }
-  }
-});
+): DeepPartial<app_device_MeshChannel> => {
+  return {
+    config: {
+      role: config.role,
+      settings: {
+        downlinkEnabled: config.downlinkEnabled,
+        name: config.name,
+        psk: Array.from(toByteArray(config.psk)),
+        uplinkEnabled: config.uplinkEnabled,
+      },
+    },
+  };
+};

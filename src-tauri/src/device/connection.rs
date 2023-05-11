@@ -119,6 +119,15 @@ impl MeshDevice {
         &mut self,
         channel: protobufs::Channel,
     ) -> Result<(), String> {
+        // Update local DB with channel changes, since channel changes won't restart device
+
+        self.add_channel(super::MeshChannel {
+            config: channel.clone(),
+            ..Default::default()
+        });
+
+        // Tell device to update channels
+
         let channel_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetChannel(
                 channel,

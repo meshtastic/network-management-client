@@ -344,6 +344,7 @@ pub async fn commit_configuration_transaction(
 #[tauri::command]
 pub async fn update_device_config_bulk(
     port_name: String,
+    app_handle: tauri::AppHandle,
     config: DeviceBulkConfig,
     mesh_device: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<(), CommandError> {
@@ -370,6 +371,8 @@ pub async fn update_device_config_bulk(
     }
 
     device.commit_configuration_transaction().await?;
+
+    events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 
     Ok(())
 }
