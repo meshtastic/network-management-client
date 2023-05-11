@@ -124,6 +124,9 @@ fn main() {
             ipc::commands::get_node_edges,
             ipc::commands::run_algorithms,
             ipc::commands::initialize_graph_state,
+            ipc::commands::start_configuration_transaction,
+            ipc::commands::commit_configuration_transaction,
+            ipc::commands::update_device_config_bulk,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -17,6 +17,7 @@ use std::collections::HashMap;
 
 use super::helpers;
 use super::CommandError;
+use super::DeviceBulkConfig;
 use super::{events, APMincutStringResults};
 
 #[tauri::command]
@@ -409,4 +410,78 @@ pub async fn run_algorithms(
         mincut_result: mincut_vec,
         diffcen_result: diffcen_maps,
     })
+}
+
+// UNUSED
+#[tauri::command]
+pub async fn start_configuration_transaction(
+    port_name: String,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called start_configuration_transaction command");
+
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device.start_configuration_transaction().await?;
+
+    Ok(())
+}
+
+// UNUSED
+#[tauri::command]
+pub async fn commit_configuration_transaction(
+    port_name: String,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called commit_configuration_transaction command");
+
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device.commit_configuration_transaction().await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn update_device_config_bulk(
+    port_name: String,
+    app_handle: tauri::AppHandle,
+    config: DeviceBulkConfig,
+    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called commit_configuration_transaction command");
+
+    let mut devices_guard = mesh_device.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&port_name)
+        .ok_or("Device not connected")
+        .map_err(|e| e.to_string())?;
+
+    device.start_configuration_transaction().await?;
+
+    if let Some(radio_config) = config.radio {
+        device.set_local_config(radio_config).await?;
+    }
+
+    if let Some(module_config) = config.module {
+        device.set_local_module_config(module_config).await?;
+    }
+
+    if let Some(channel_config) = config.channels {
+        device.set_channel_config(channel_config).await?;
+    }
+
+    device.commit_configuration_transaction().await?;
+
+    events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
+
+    Ok(())
 }

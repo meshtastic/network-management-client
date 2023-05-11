@@ -14,8 +14,6 @@ export type app_device_TelemetryPacket = { packet: app_protobufs_MeshPacket; dat
  */
 export type app_protobufs_config_display_config_DisplayUnits = "metric" | "imperial"
 
-export type app_device_MeshChannel = { config: app_protobufs_Channel; lastInteraction: number; messages: app_device_ChannelMessageWithState[] }
-
 /**
  * 
  * Standard predefined channel settings
@@ -271,6 +269,8 @@ export type app_protobufs_Neighbor = { nodeId: number; snr: number }
  */
 export type app_protobufs_config_display_config_GpsCoordinateFormat = "dec" | "dms" | "utm" | "mgrs" | "olc" | "osgr"
 
+export type app_ipc_APMincutStringResults = { apResult: number[]; mincutResult: ([number, number])[]; diffcenResult: { [key: number]: { [key: number]: { [key: number]: number } } } }
+
 /**
  * 
  * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
@@ -339,6 +339,8 @@ export type app_protobufs_LogRecord = { message: string; time: number; source: s
  * To match the old style filenames, _ is converted to -, p is converted to .
  */
 export type app_protobufs_HardwareModel = "unset" | "tloraV2" | "tloraV1" | "tloraV211P6" | "tbeam" | "heltecV20" | "tbeamV0P7" | "techo" | "tloraV11P3" | "rak4631" | "heltecV21" | "heltecV1" | "lilygoTbeamS3Core" | "rak11200" | "nanoG1" | "tloraV211P8" | "tloraT3S3" | "nanoG1Explorer" | "stationG1" | "loraRelayV1" | "nrf52840Dk" | "ppr" | "genieblocks" | "nrf52Unknown" | "portduino" | "androidSim" | "diyV1" | "nrf52840Pca10059" | "drDev" | "m5Stack" | "heltecV3" | "heltecWslV3" | "betafpv2400Tx" | "betafpv900NanoTx" | "privateHw"
+
+export type app_ipc_ConfigurationStatus = { portName: string; successful: boolean; message: string | null }
 
 /**
  * 
@@ -475,6 +477,8 @@ export type app_protobufs_PortNum = "unknownApp" | "textMessageApp" | "remoteHar
  */
 export type app_protobufs_Compressed = { portnum: number; data: number[] }
 
+export type app_ipc_DeviceBulkConfig = { radio: app_protobufs_LocalConfig | null; module: app_protobufs_LocalModuleConfig | null; channels: app_protobufs_Channel[] | null }
+
 /**
  * 
  * Defines the device's behavior for how messages are rebroadcast
@@ -530,7 +534,7 @@ export type app_protobufs_store_and_forward_Statistics = { messagesTotal: number
  */
 export type app_protobufs_DeviceProfile = { longName: string | null; shortName: string | null; channelUrl: string | null; config: app_protobufs_LocalConfig | null; moduleConfig: app_protobufs_LocalModuleConfig | null }
 
-export type app_device_MeshDevice = { configId: number; ready: boolean; status: app_device_SerialDeviceStatus; channels: { [key: number]: app_device_MeshChannel }; config: app_protobufs_LocalConfig; moduleConfig: app_protobufs_LocalModuleConfig; myNodeInfo: app_protobufs_MyNodeInfo; nodes: { [key: number]: app_device_MeshNode }; regionUnset: boolean; deviceMetrics: app_protobufs_DeviceMetrics; waypoints: { [key: number]: app_protobufs_Waypoint }; neighbors: { [key: number]: app_device_NeighborInfoPacket } }
+export type app_device_MeshDevice = { configId: number; ready: boolean; status: app_device_SerialDeviceStatus; channels: { [key: number]: app_device_MeshChannel }; config: app_protobufs_LocalConfig; moduleConfig: app_protobufs_LocalModuleConfig; myNodeInfo: app_protobufs_MyNodeInfo; nodes: { [key: number]: app_device_MeshNode }; regionUnset: boolean; deviceMetrics: app_protobufs_DeviceMetrics; waypoints: { [key: number]: app_protobufs_Waypoint }; neighbors: { [key: number]: app_device_NeighborInfoPacket }; configInProgress: boolean }
 
 export type app_device_TextPacket = { packet: app_protobufs_MeshPacket; data: string }
 
@@ -746,4 +750,6 @@ export type app_protobufs_config_LoRaConfig = { usePreset: boolean; modemPreset:
  * Defines the device's role on the Mesh network
  */
 export type app_protobufs_config_device_config_Role = "client" | "clientMute" | "router" | "routerClient" | "repeater" | "tracker" | "sensor"
+
+export type app_device_MeshChannel = { config: app_protobufs_Channel; lastInteraction: number; messages: app_device_ChannelMessageWithState[] }
 

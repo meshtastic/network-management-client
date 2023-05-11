@@ -60,7 +60,7 @@ This project is still in early stages of development, but here's a rough roadmap
   - [x] MVP protobuf changes ([link](https://github.com/uhuruhashimoto/protobufs))
   - [x] MVP firmware changes ([link](https://github.com/uhuruhashimoto/firmware))
   - [x] Community protobuf review ([link](https://github.com/meshtastic/protobufs/pull/341))
-  - [ ] Community firmware review
+  - [ ] Community firmware review (in progress, [link](https://github.com/meshtastic/firmware/issues/2479))
 - [ ] :nerd_face: Algorithmic analysis
   - [x] Infrastructure
     - [x] Network packet collation
@@ -81,10 +81,11 @@ This project is still in early stages of development, but here's a rough roadmap
 - [ ] :globe_with_meridians: Web client parity (UI)
   - [x] Map node view
   - [x] Text messaging
-  - [ ] Configuration
-    - [ ] Device configuration
-    - [ ] Module configuration
-    - [ ] Channel configuration
+  - [ ] Channel import/export via QR code
+  - [x] Configuration
+    - [x] Device configuration
+    - [x] Module configuration
+    - [x] Channel configuration
 - [ ] :mount_fuji: Offline map view
   - [ ] Offline map storage
   - [ ] Region-based downloading

@@ -1,6 +1,7 @@
 import React from "react";
 import type { ReactNode } from "react";
 
+import DefaultTooltip from "@components/DefaultTooltip";
 import NavigationBacktrace from "@components/NavigationBacktrace";
 
 export interface IConfigLayoutProps {
@@ -8,6 +9,7 @@ export interface IConfigLayoutProps {
   backtrace: string[];
   renderTitleIcon: (classNames: string) => JSX.Element;
   onTitleIconClick: () => void;
+  titleIconTooltip: string;
   renderOptions: () => JSX.Element[];
   children: ReactNode;
 }
@@ -17,6 +19,7 @@ const ConfigLayout = ({
   backtrace,
   renderTitleIcon,
   onTitleIconClick,
+  titleIconTooltip,
   renderOptions,
   children,
 }: IConfigLayoutProps) => {
@@ -32,13 +35,16 @@ const ConfigLayout = ({
             <h1 className="text-4xl leading-10 font-semibold text-gray-700">
               {title}
             </h1>
-            <button
-              type="button"
-              className="cursor-pointer"
-              onClick={() => onTitleIconClick()}
-            >
-              {renderTitleIcon("w-6 h-6 text-gray-400 my-auto")}
-            </button>
+
+            <DefaultTooltip text={titleIconTooltip}>
+              <button
+                type="button"
+                className="cursor-pointer"
+                onClick={() => onTitleIconClick()}
+              >
+                {renderTitleIcon("w-6 h-6 text-gray-400 my-auto")}
+              </button>
+            </DefaultTooltip>
           </div>
 
           <div className="flex flex-col flex-1 gap-3">{renderOptions()}</div>

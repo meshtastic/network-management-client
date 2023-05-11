@@ -73,8 +73,6 @@ const SerialPortOption = ({
               </h1>
             </div>
             <h1 className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 mt-0.5">
-              Failed to connect with error:
-              <br />
               <i>{connectionState.message}</i>
             </h1>
           </div>

@@ -1,10 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { ViewState } from "react-map-gl";
 
+export interface IMapConfig {
+  style: string;
+}
+
 export interface IMapState {
   viewState: Partial<ViewState>;
   nodesFeatureCollection: GeoJSON.FeatureCollection | null;
   edgesFeatureCollection: GeoJSON.FeatureCollection | null;
+  config: IMapConfig
 }
 
 export const initialMapState: IMapState = {
@@ -15,6 +20,9 @@ export const initialMapState: IMapState = {
   },
   nodesFeatureCollection: null,
   edgesFeatureCollection: null,
+  config: {
+    style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+  }
 };
 
 export const mapSlice = createSlice({
@@ -46,6 +54,12 @@ export const mapSlice = createSlice({
     ) => {
       state.edgesFeatureCollection = action.payload;
     },
+    updateConfig: (
+      state,
+      action: PayloadAction<Partial<IMapConfig>>
+    ) => {
+      state.config = { ...state.config, ...action.payload }
+    }
   },
 });
 

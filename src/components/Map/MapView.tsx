@@ -61,7 +61,7 @@ const DeckGLOverlay = (props: IDeckGLOverlayProps) => {
 export const MapView = () => {
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId());
-  const { nodesFeatureCollection, edgesFeatureCollection, viewState } =
+  const { nodesFeatureCollection, edgesFeatureCollection, viewState, config } =
     useSelector(selectMapState());
   const showInfoPane = useSelector(selectInfoPane());
 
@@ -212,7 +212,7 @@ export const MapView = () => {
 
       <Map
         reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
-        mapStyle={BASEMAP.POSITRON}
+        mapStyle={config.style}
         mapLib={maplibregl}
         onDragEnd={handleUpdateViewState}
         onZoomEnd={handleUpdateViewState}

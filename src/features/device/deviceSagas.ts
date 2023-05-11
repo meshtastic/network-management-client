@@ -9,6 +9,7 @@ import {
   createDeviceDisconnectChannel,
   createDeviceUpdateChannel,
   createGraphUpdateChannel,
+  createRebootChannel,
   DeviceDisconnectChannel,
   DeviceUpdateChannel,
   GraphUpdateChannel,
@@ -16,6 +17,8 @@ import {
   handleDeviceDisconnectChannel,
   handleDeviceUpdateChannel,
   handleGraphUpdateChannel,
+  handleRebootChannel,
+  RebootChannel,
 } from "@features/device/deviceConnectionHandlerSagas";
 import {
   requestAutoConnectPort,
@@ -79,11 +82,17 @@ function* subscribeAll() {
     createConfigStatusChannel
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const rebootChannel: RebootChannel = yield call(
+    createRebootChannel
+  );
+
   yield all([
     call(handleDeviceUpdateChannel, deviceUpdateChannel),
     call(handleDeviceDisconnectChannel, deviceDisconnectChannel),
     call(handleGraphUpdateChannel, graphUpdateChannel),
     call(handleConfigStatusChannel, configStatusChannel),
+    call(handleRebootChannel, rebootChannel)
   ]);
 }
 
@@ -171,6 +180,16 @@ function* connectToDeviceWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
+      })
+    );
+
+    yield put(
+      connectionSliceActions.setConnectionState({
+        portName: action.payload.portName,
+        status: {
+          status: "FAILED",
+          message: (error as CommandError).message,
+        },
       })
     );
 

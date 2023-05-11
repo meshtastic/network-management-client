@@ -8,13 +8,13 @@ import MapPage from "@components/pages/MapPage";
 import FallbackPage from "@components/pages/FallbackPage";
 import SerialConnectPage from "@components/pages/SerialConnectPage";
 import MessagingPage from "@components/pages/MessagingPage";
-import Settings from "@components/Settings/Settings";
 import ManageWaypointPage from "@components/pages/ManageWaypointPage";
 import ManageNodePage from "@components/pages/ManageNodePage";
 import RadioConfigPage from "@components/pages/config/RadioConfigPage";
 import PluginConfigPage from "@components/pages/config/PluginConfigPage";
 import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
 import ApplicationStatePage from "@components/pages/ApplicationStatePage";
+import ApplicationSettingsPage from "@components/pages/config/ApplicationSettingsPage";
 
 import { AppRoutes } from "@utils/routing";
 
@@ -60,15 +60,15 @@ const App = () => {
           <Route path={AppRoutes.MANAGE_NODES} element={<ManageNodePage />} />
 
           <Route
-            path={AppRoutes.CONFIGURE_RADIO}
+            path={`${AppRoutes.CONFIGURE_RADIO}/:configKey?`}
             element={<RadioConfigPage />}
           />
           <Route
-            path={AppRoutes.CONFIGURE_PLUGINS}
+            path={`${AppRoutes.CONFIGURE_PLUGINS}/:configKey?`}
             element={<PluginConfigPage />}
           />
           <Route
-            path={AppRoutes.CONFIGURE_CHANNELS}
+            path={`${AppRoutes.CONFIGURE_CHANNELS}/:channelId?`}
             element={<ChannelConfigPage />}
           />
           <Route
@@ -76,7 +76,10 @@ const App = () => {
             element={<ApplicationStatePage />}
           />
 
-          <Route path={AppRoutes.APPLICATION_SETTINGS} element={<Settings />} />
+          <Route
+            path={AppRoutes.APPLICATION_SETTINGS}
+            element={<ApplicationSettingsPage />}
+          />
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>
