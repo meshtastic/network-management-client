@@ -74,7 +74,7 @@ const getNumberOfPendingChanges = (
 
   return Object.entries(editedModuleConfig?.[configKey] ?? {}).reduce(
     (accum, [editedConfigKey, editedConfigValue]) => {
-      if (!editedConfigValue) return accum;
+      if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const currentFieldValue =
