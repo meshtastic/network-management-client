@@ -115,6 +115,34 @@ impl MeshDevice {
         Ok(())
     }
 
+    pub async fn update_device_channel(
+        &mut self,
+        channel: protobufs::Channel,
+    ) -> Result<(), String> {
+        let channel_packet = protobufs::AdminMessage {
+            payload_variant: Some(protobufs::admin_message::PayloadVariant::SetChannel(
+                channel,
+            )),
+        };
+
+        let byte_data = channel_packet.encode_to_vec();
+
+        self.send_packet(
+            byte_data,
+            protobufs::PortNum::AdminApp,
+            PacketDestination::Local,
+            0,
+            true,
+            true,
+            false,
+            None,
+            None,
+        )
+        .await?;
+
+        Ok(())
+    }
+
     pub async fn update_device_user(&mut self, user: protobufs::User) -> Result<(), String> {
         let user_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetOwner(user)),
@@ -369,6 +397,17 @@ impl MeshDevice {
                 payload_variant: Some(protobufs::module_config::PayloadVariant::Telemetry(c)),
             })
             .await?;
+        }
+
+        Ok(())
+    }
+
+    pub async fn set_local_channel_config(
+        &mut self,
+        channel_config: Vec<protobufs::Channel>,
+    ) -> Result<(), String> {
+        for channel in channel_config {
+            self.update_device_channel(channel).await?;
         }
 
         Ok(())

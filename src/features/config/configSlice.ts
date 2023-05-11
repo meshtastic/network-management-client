@@ -22,6 +22,9 @@ import type {
   app_protobufs_module_config_StoreForwardConfig,
   app_protobufs_module_config_TelemetryConfig,
 
+  app_protobufs_Channel,
+  app_protobufs_ChannelSettings,
+
   app_protobufs_User,
 } from "@bindings/index";
 
@@ -42,6 +45,12 @@ export type RemoteHardwareModuleConfigInput = app_protobufs_module_config_Remote
 export type SerialModuleConfigInput = app_protobufs_module_config_SerialConfig;
 export type StoreForwardModuleConfigInput = app_protobufs_module_config_StoreForwardConfig;
 export type TelemetryModuleConfigInput = app_protobufs_module_config_TelemetryConfig;
+
+export type ChannelConfigInput = Omit<
+  app_protobufs_ChannelSettings,
+  "id" | "channelNum"
+> &
+  Pick<app_protobufs_Channel, "role">;
 
 export type UserConfigInput = Pick<
   app_protobufs_User,
@@ -72,7 +81,9 @@ export interface IModuleConfigState {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IChannelConfigState { }
+export interface IChannelConfigState {
+  [key: number]: ChannelConfigInput | null;
+}
 
 export interface IConfigState {
   radio: IRadioConfigState;
@@ -130,6 +141,21 @@ export const configSlice = createSlice({
     clearModuleConfig: (state) => {
       state.module = initialConfigState.module;
     },
+
+    updateChannelConfig: (state, action: PayloadAction<{ channelNum: number, config: DeepPartial<ChannelConfigInput> | null }[]>) => {
+      const updatedPartialConfig: Record<number, DeepPartial<ChannelConfigInput> | null> = {};
+
+      for (const entry of action.payload) {
+        const { channelNum, config } = entry;
+
+        // We know this parseInt won't fail bc `channelNum` is typed as a number
+        // This is a limitation of Object.entries
+        updatedPartialConfig[channelNum] = config;
+      }
+
+
+      state.channel = merge(cloneDeep(state.channel), updatedPartialConfig);
+    }
   },
 });
 

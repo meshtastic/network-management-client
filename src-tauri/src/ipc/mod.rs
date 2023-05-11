@@ -53,5 +53,5 @@ pub struct ConfigurationStatus {
 pub struct DeviceBulkConfig {
     radio: Option<protobufs::LocalConfig>,
     module: Option<protobufs::LocalModuleConfig>,
-    channels: Option<()>,
+    channels: Option<Vec<protobufs::Channel>>,
 }

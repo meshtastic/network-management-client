@@ -1,15 +1,18 @@
 import { invoke } from "@tauri-apps/api";
 import { all, call, put, select, takeEvery } from "redux-saga/effects";
+import type { DeepPartial } from "react-hook-form";
 
 import merge from "lodash.merge";
 import cloneDeep from "lodash.clonedeep";
 
-import type { app_ipc_DeviceBulkConfig } from "@bindings/index";
+import type { app_device_MeshChannel, app_ipc_DeviceBulkConfig } from "@bindings/index";
 
 import { requestCommitConfig } from "@features/config/configActions";
 import {
+  selectCurrentAllChannelConfig,
   selectCurrentModuleConfig,
   selectCurrentRadioConfig,
+  selectEditedAllChannelConfig,
   selectEditedModuleConfig,
   selectEditedRadioConfig,
 } from "@features/config/configSelectors";
@@ -17,7 +20,9 @@ import { configSliceActions } from "@features/config/configSlice";
 
 import { selectPrimarySerialPort } from "@features/device/deviceSelectors";
 import { requestSliceActions } from "@features/requests/requestReducer";
+
 import type { CommandError } from "@utils/errors";
+import { getMeshChannelFromCurrentConfig } from "@utils/form";
 
 function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
   try {
@@ -55,6 +60,14 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
       selectEditedModuleConfig()
     )) as ReturnType<ReturnType<typeof selectEditedModuleConfig>>;
 
+    const currentChannelConfig = (yield select(
+      selectCurrentAllChannelConfig()
+    )) as ReturnType<ReturnType<typeof selectCurrentAllChannelConfig>>;
+
+    const editedChannelConfig = (yield select(
+      selectEditedAllChannelConfig()
+    )) as ReturnType<ReturnType<typeof selectEditedAllChannelConfig>>;
+
     if (!currentRadioConfig || !currentModuleConfig) {
       throw new Error("Current radio or module config not defined");
     }
@@ -62,7 +75,7 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
     const configPayload: app_ipc_DeviceBulkConfig = {
       radio: null,
       module: null,
-      channels: includeChannelConfig ? null : null,
+      channels: null,
     };
 
     // Update config payload based on flags
@@ -82,7 +95,26 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
     }
 
     if (includeChannelConfig) {
-      // TODO set channel config
+      if (!currentChannelConfig) {
+        throw new Error("Current channel config not defined");
+      }
+
+      const channelConfig: Record<number, DeepPartial<app_device_MeshChannel>> = {};
+
+      for (const [idx, config] of Object.entries(
+        editedChannelConfig
+      )) {
+        if (!config) continue;
+        const channelNum = parseInt(idx);
+        channelConfig[channelNum] = getMeshChannelFromCurrentConfig(config);
+      }
+
+      const mergedConfig = merge(
+        cloneDeep(currentChannelConfig), // Redux object
+        channelConfig
+      ) as Record<number, app_device_MeshChannel>;
+
+      configPayload.channels = Object.values(mergedConfig).map(mc => mc.config);
     }
 
     // Dispatch update to backend
