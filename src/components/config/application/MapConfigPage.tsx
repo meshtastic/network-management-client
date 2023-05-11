@@ -45,10 +45,12 @@ const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
         title="Map Settings"
         subtitle="Edit application map settings"
         renderIcon={(c) => <Save className={`${c}`} />}
+        buttonTooltipText="Save changes"
         buttonProps={{ type: "submit", form: formId }}
       >
         <form id={formId} onSubmit={handleFormSubmit}>
           <ConfigInput
+            type="url"
             text="Mapbox Map Style"
             error={errors.style?.message}
             {...register("style")}

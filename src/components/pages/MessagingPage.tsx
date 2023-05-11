@@ -22,6 +22,7 @@ const MessagingPage = () => {
         title="Messaging"
         backtrace={["Messaging"]}
         renderTitleIcon={(c) => <Cog6ToothIcon className={`${c}`} />}
+        titleIconTooltip="Configure Channels"
         onTitleIconClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}
         renderOptions={() =>
           channels

@@ -23,6 +23,7 @@ pub struct DeviceUpdateMetadata {
     pub regenerate_graph: bool,
     pub configuration_success: bool,
     pub notification_config: Option<NotificationConfig>,
+    pub rebooting: bool,
 }
 
 impl DeviceUpdateMetadata {

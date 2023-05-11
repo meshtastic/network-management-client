@@ -5,8 +5,18 @@ import type {
 } from "@bindings/index";
 
 export const getChannelName = (channel: app_device_MeshChannel): string => {
-  if (channel.config.role === 1) return "Primary";
-  return channel.config.settings?.name || "Unnamed Channel";
+  let nameString = "";
+  if (channel.config.role === 1) {
+    nameString += "*";
+  }
+
+  if (!channel.config.settings?.name) {
+    nameString += "Unnamed Channel";
+    return nameString;
+  }
+
+  nameString += channel.config.settings.name;
+  return nameString;
 };
 
 export const formatMessageUsername = (
@@ -41,9 +51,8 @@ export const getPacketDisplayText = ({
   if (type === "text") return data;
 
   const { name, latitudeI, longitudeI } = data;
-  return `Received waypoint "${name}" at ${latitudeI / 1e7}, ${
-    longitudeI / 1e7
-  }`;
+  return `Received waypoint "${name}" at ${latitudeI / 1e7}, ${longitudeI / 1e7
+    }`;
 };
 
 export const getLastChannelMessageDisplayText = (

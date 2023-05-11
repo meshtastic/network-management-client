@@ -92,7 +92,7 @@ const Sidebar = () => {
             </SidebarIcon>
 
             <SidebarIcon
-              name="Configure Plugins"
+              name="Configure Modules"
               isActive={location.pathname === AppRoutes.CONFIGURE_PLUGINS}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.CONFIGURE_PLUGINS)}

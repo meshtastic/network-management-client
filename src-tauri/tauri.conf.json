@@ -17,6 +17,14 @@
         "readText": false,
         "writeText": true
       },
+      "dialog": {
+        "all": false,
+        "ask": false,
+        "confirm": false,
+        "message": true,
+        "open": false,
+        "save": false
+      },
       "http": {
         "all": true,
         "request": true,

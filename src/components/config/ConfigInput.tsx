@@ -22,7 +22,9 @@ const ConfigInput = forwardRef<
   return (
     <ConfigLabel text={text} error={error}>
       <input
-        className="w-full px-3 py-1 rounded-lg text-base font-normal text-gray-700 border border-gray-200"
+        className={`${
+          rest.type === "checkbox" ? "mr-auto" : "w-full"
+        } px-3 py-1 rounded-lg text-base font-normal text-gray-700 border border-gray-200`}
         type="url"
         {...rest}
         ref={ref}

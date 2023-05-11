@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { Construction } from "lucide-react";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
@@ -32,7 +32,8 @@ const ApplicationSettingsPage = () => {
       <ConfigLayout
         title="Settings"
         backtrace={["Application Settings"]}
-        renderTitleIcon={(c) => <QuestionMarkCircleIcon className={`${c}`} />}
+        renderTitleIcon={(c) => <Construction className={`${c}`} />}
+        titleIconTooltip="Unimplemented, work in progress"
         onTitleIconClick={() =>
           console.warn("Radio configuration title icon onClick not implemented")
         }
@@ -41,7 +42,7 @@ const ApplicationSettingsPage = () => {
             <ConfigOption
               key={hash}
               title={name}
-              subtitle="0 unsaved changes"
+              subtitle=""
               isActive={activeOption === hash}
               onClick={() =>
                 setActiveOption(activeOption !== hash ? hash : null)
