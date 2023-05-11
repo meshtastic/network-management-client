@@ -12,7 +12,9 @@ import { AppRoutes } from "@utils/routing";
 
 const MessagingPage = () => {
   const channels = useSelector(selectDeviceChannels());
-  const [activeChannelIdx, setActiveChannelIdx] = useState<number | null>(null);
+  const [activeChannelIdx, setActiveChannelIdx] = useState<number | null>(
+    channels[0]?.config.index ?? null
+  );
 
   const navigateTo = useNavigate();
 

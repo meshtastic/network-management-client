@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { Upload } from "lucide-react";
 
 import ConfigLayout from "@components/config/ConfigLayout";
@@ -104,8 +105,15 @@ const RadioConfigPage = () => {
   const currentRadioConfig = useSelector(selectCurrentRadioConfig());
   const editedRadioConfig = useSelector(selectEditedRadioConfig());
 
+  const { configKey } = useParams();
+
   const [activeOption, setActiveOption] =
     useState<keyof IRadioConfigState>("bluetooth");
+
+  useLayoutEffect(() => {
+    if (!configKey) return;
+    setActiveOption(configKey as keyof IRadioConfigState);
+  }, [configKey]);
 
   return (
     <div className="flex-1">

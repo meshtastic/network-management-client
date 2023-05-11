@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useLayoutEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { Upload } from "lucide-react";
 
 import ConfigLayout from "@components/config/ConfigLayout";
@@ -53,6 +54,8 @@ const ChannelConfigPage = () => {
   const dispatch = useDispatch();
   const meshChannels = useSelector(selectDeviceChannels());
 
+  const { channelId } = useParams();
+
   const currentChannelConfig = useMemo(
     () => meshChannels.map((c) => getCurrentConfigFromMeshChannel(c)),
     [meshChannels]
@@ -62,6 +65,14 @@ const ChannelConfigPage = () => {
   const [activeChannelIndex, setActiveChannelIndex] = useState<number | null>(
     parseInt(Object.entries(currentChannelConfig)[0]?.[0]) ?? null
   );
+
+  useLayoutEffect(() => {
+    if (!channelId) return;
+    const parsedChannelId = parseInt(channelId);
+
+    if (isNaN(parsedChannelId)) return;
+    setActiveChannelIndex(parsedChannelId);
+  }, [channelId]);
 
   return (
     <div className="flex-1">

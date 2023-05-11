@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 // import { MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
 import { PencilIcon } from "@heroicons/react/24/outline";
 
@@ -12,7 +13,9 @@ import MessagingInput from "@components/Messaging/MessagingInput";
 
 import { requestSendMessage } from "@features/device/deviceActions";
 import { selectPrimarySerialPort } from "@features/device/deviceSelectors";
+
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
+import { AppRoutes } from "@utils/routing";
 
 export interface IChannelDetailViewProps {
   channel: app_device_MeshChannel;
@@ -25,6 +28,8 @@ const ChannelDetailView = ({
 }: IChannelDetailViewProps) => {
   const dispatch = useDispatch();
   const primaryPortName = useSelector(selectPrimarySerialPort());
+
+  const navigateTo = useNavigate();
 
   const handleMessageSubmit = (message: string) => {
     if (!message) {
@@ -53,7 +58,9 @@ const ChannelDetailView = ({
         subtitle={getNumMessagesText(channel.messages.length)}
         renderIcon={(c) => <PencilIcon className={`${c}`} />}
         buttonTooltipText="Edit channel"
-        onIconClick={() => alert("This feature is not complete.")}
+        onIconClick={() =>
+          navigateTo(`${AppRoutes.CONFIGURE_CHANNELS}/${channel.config.index}`)
+        }
       >
         <div className="flex flex-1 flex-col gap-6 mb-9 overflow-y-auto">
           {channel.messages.map((m) => (

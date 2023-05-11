@@ -60,15 +60,15 @@ const App = () => {
           <Route path={AppRoutes.MANAGE_NODES} element={<ManageNodePage />} />
 
           <Route
-            path={AppRoutes.CONFIGURE_RADIO}
+            path={`${AppRoutes.CONFIGURE_RADIO}/:configKey?`}
             element={<RadioConfigPage />}
           />
           <Route
-            path={AppRoutes.CONFIGURE_PLUGINS}
+            path={`${AppRoutes.CONFIGURE_PLUGINS}/:configKey?`}
             element={<PluginConfigPage />}
           />
           <Route
-            path={AppRoutes.CONFIGURE_CHANNELS}
+            path={`${AppRoutes.CONFIGURE_CHANNELS}/:channelId?`}
             element={<ChannelConfigPage />}
           />
           <Route

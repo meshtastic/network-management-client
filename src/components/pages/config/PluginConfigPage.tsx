@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { Upload } from "lucide-react";
 
 import type { app_protobufs_LocalModuleConfig } from "@app/bindings";
@@ -109,8 +110,15 @@ const PluginConfigPage = () => {
   const currentModuleConfig = useSelector(selectCurrentModuleConfig());
   const editedModuleConfig = useSelector(selectEditedModuleConfig());
 
+  const { configKey } = useParams();
+
   const [activeOption, setActiveOption] =
     useState<keyof IModuleConfigState>("cannedMessage");
+
+  useLayoutEffect(() => {
+    if (!configKey) return;
+    setActiveOption(configKey as keyof IModuleConfigState);
+  }, [configKey]);
 
   return (
     <div className="flex-1">
