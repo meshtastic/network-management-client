@@ -96,6 +96,11 @@ impl MeshConnection for SerialConnection {
     }
 }
 
+pub enum ConnectionError {
+    PortOpenError,
+    ConfigurationError,
+}
+
 impl SerialConnection {
     pub fn get_available_ports() -> Result<Vec<String>, String> {
         let available_ports = SerialPort::available_ports().map_err(|e| e.to_string())?;
@@ -113,24 +118,26 @@ impl SerialConnection {
         app_handle: tauri::AppHandle,
         port_name: String,
         baud_rate: u32,
-    ) -> Result<(), String> {
+    ) -> Result<(), ConnectionError> {
         // Create serial port connection
 
-        let mut port = SerialPort::open(port_name.clone(), baud_rate).map_err(|e| {
-            format!(
-                "Could not open serial port \"{}\": {}",
-                port_name.clone(),
-                e
-            )
-        })?;
+        let mut port = SerialPort::open(port_name.clone(), baud_rate)
+            .map_err(|_e| ConnectionError::PortOpenError)?;
 
-        let mut config = port.get_configuration().map_err(|e| e.to_string())?;
+        let mut config = port
+            .get_configuration()
+            .map_err(|_e| ConnectionError::ConfigurationError)?;
+
         config.set_flow_control(FlowControl::XonXoff);
-        port.set_configuration(&config).map_err(|e| e.to_string())?;
 
-        port.set_dtr(true).map_err(|e| e.to_string())?;
+        port.set_configuration(&config)
+            .map_err(|_e| ConnectionError::ConfigurationError)?;
+
+        port.set_dtr(true)
+            .map_err(|_e| ConnectionError::ConfigurationError)?;
+
         port.set_read_timeout(Duration::from_millis(10))
-            .map_err(|e| e.to_string())?;
+            .map_err(|_e| ConnectionError::ConfigurationError)?;
 
         let port = Arc::new(port);
 
