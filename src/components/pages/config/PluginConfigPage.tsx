@@ -67,7 +67,7 @@ const switchActiveDetailView = (
   }
 };
 
-const getNumberOfStagedChanges = (
+const getNumberOfPendingChanges = (
   currentModuleConfig: app_protobufs_LocalModuleConfig | null,
   editedModuleConfig: IModuleConfigState,
   configKey: keyof IModuleConfigState
@@ -128,7 +128,7 @@ const PluginConfigPage = () => {
             // * This is a limitation of Object.entries typing
             const configKey = k as keyof IModuleConfigState;
 
-            const stagedChanges = getNumberOfStagedChanges(
+            const pendingChanges = getNumberOfPendingChanges(
               currentModuleConfig,
               editedModuleConfig,
               configKey
@@ -138,7 +138,7 @@ const PluginConfigPage = () => {
               <ConfigOption
                 key={configKey}
                 title={displayName}
-                subtitle={`${stagedChanges} staged changes`}
+                subtitle={`${pendingChanges} pending changes`}
                 isActive={activeOption === configKey}
                 onClick={() =>
                   setActiveOption(activeOption !== configKey ? configKey : null)
