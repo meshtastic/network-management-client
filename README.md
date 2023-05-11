@@ -82,10 +82,10 @@ This project is still in early stages of development, but here's a rough roadmap
   - [x] Map node view
   - [x] Text messaging
   - [ ] Channel import/export via QR code
-  - [ ] Configuration
-    - [ ] Device configuration
-    - [ ] Module configuration
-    - [ ] Channel configuration
+  - [x] Configuration
+    - [x] Device configuration
+    - [x] Module configuration
+    - [x] Channel configuration
 - [ ] :mount_fuji: Offline map view
   - [ ] Offline map storage
   - [ ] Region-based downloading
