@@ -60,7 +60,7 @@ This project is still in early stages of development, but here's a rough roadmap
   - [x] MVP protobuf changes ([link](https://github.com/uhuruhashimoto/protobufs))
   - [x] MVP firmware changes ([link](https://github.com/uhuruhashimoto/firmware))
   - [x] Community protobuf review ([link](https://github.com/meshtastic/protobufs/pull/341))
-  - [ ] Community firmware review
+  - [ ] Community firmware review (in progress, [link](https://github.com/meshtastic/firmware/issues/2479))
 - [ ] :nerd_face: Algorithmic analysis
   - [x] Infrastructure
     - [x] Network packet collation
