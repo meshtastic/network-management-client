@@ -9,10 +9,11 @@ import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
 
-import {
-  AudioModuleConfigInput,
-  configSliceActions,
-} from "@features/config/configSlice";
+import type { AudioModuleConfigInput } from "@features/config/configSlice";
+// import {
+//   AudioModuleConfigInput,
+//   configSliceActions,
+// } from "@features/config/configSlice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
@@ -53,7 +54,9 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.audio ?? undefined,
-        editedConfig.audio ?? undefined
+        // ! https://github.com/ajmcquilkin/meshtastic-network-management-client/issues/382
+        undefined
+        // editedConfig.audio ?? undefined
       ),
     []
   );
@@ -82,7 +85,8 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
         (d: DeepPartial<AudioModuleConfigInput>) => {
           const data = parseAudioModuleConfigInput(d);
           updateStateFlags(data);
-          dispatch(configSliceActions.updateModuleConfig({ audio: data }));
+          // ! https://github.com/ajmcquilkin/meshtastic-network-management-client/issues/382
+          // dispatch(configSliceActions.updateModuleConfig({ audio: data }));
         },
         500,
         { leading: true }
@@ -99,7 +103,8 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
   const handleFormReset = () => {
     if (!currentConfig?.audio) return;
     reset(currentConfig.audio);
-    dispatch(configSliceActions.updateModuleConfig({ audio: null }));
+    // ! https://github.com/ajmcquilkin/meshtastic-network-management-client/issues/382
+    // dispatch(configSliceActions.updateModuleConfig({ audio: null }));
   };
 
   return (

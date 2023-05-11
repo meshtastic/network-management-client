@@ -69,7 +69,8 @@ export interface IRadioConfigState {
 }
 
 export interface IModuleConfigState {
-  audio: AudioModuleConfigInput | null;
+  // ! https://github.com/ajmcquilkin/meshtastic-network-management-client/issues/382
+  // audio: AudioModuleConfigInput | null;
   cannedMessage: CannedMessageModuleConfigInput | null;
   externalNotification: ExternalNotificationModuleConfigInput | null;
   mqtt: MQTTModuleConfigInput | null;
@@ -103,7 +104,7 @@ export const initialConfigState: IConfigState = {
     // user: null,
   },
   module: {
-    audio: null,
+    // audio: null,
     cannedMessage: null,
     externalNotification: null,
     mqtt: null,

@@ -25,7 +25,7 @@ import {
 } from "@features/config/configSelectors";
 
 export const PluginConfigOptions: Record<keyof IModuleConfigState, string> = {
-  audio: "Audio",
+  // audio: "Audio",
   cannedMessage: "Canned Message",
   externalNotification: "External Notification",
   mqtt: "MQTT",
@@ -40,7 +40,6 @@ const switchActiveDetailView = (
   activeOption: keyof IModuleConfigState | null
 ) => {
   switch (activeOption) {
-    // ! https://github.com/ajmcquilkin/meshtastic-network-management-client/issues/382
     // case "audio":
     //   return <AudioConfigPage />;
     case "cannedMessage":
