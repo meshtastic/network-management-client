@@ -1,7 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
+
+import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
@@ -66,10 +68,24 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
     defaultValues,
   });
 
-  watch((d) => {
-    const data = parsePowerConfigInput(d);
-    dispatch(configSliceActions.updateRadioConfig({ power: data }));
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<PowerConfigInput>) => {
+          const data = parsePowerConfigInput(d);
+          dispatch(configSliceActions.updateRadioConfig({ power: data }));
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentConfig?.power) return;
@@ -117,16 +133,16 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
 
           <ConfigInput
             type="number"
-            text="Enable Super Deep Sleep (seconds, 0 = 2hrs)"
+            text="Mesh Super Deep Sleep Timeout (seconds, 0 = 2hrs, MAX_UINT = disabled)"
             error={errors.meshSdsTimeoutSecs?.message}
             {...register("meshSdsTimeoutSecs")}
           />
 
           <ConfigInput
             type="number"
-            text="Enable Super Deep Sleep (seconds, 0 = 2hrs)"
-            error={errors.meshSdsTimeoutSecs?.message}
-            {...register("meshSdsTimeoutSecs")}
+            text="Super Deep Sleep Interval (seconds, 0 = 1yr, MAX_UINT = disabled)"
+            error={errors.sdsSecs?.message}
+            {...register("sdsSecs")}
           />
 
           <ConfigInput
@@ -138,9 +154,9 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
 
           <ConfigInput
             type="number"
-            text="Light Sleep Wake Interval (seconds, 0 = 10s)"
-            error={errors.lsSecs?.message}
-            {...register("lsSecs")}
+            text="Minimum Wake Interval (seconds, 0 = 10s)"
+            error={errors.minWakeSecs?.message}
+            {...register("minWakeSecs")}
           />
         </div>
       </ConfigTitlebar>

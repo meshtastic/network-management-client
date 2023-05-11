@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
 
+import debounce from "lodash.debounce";
+
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
@@ -68,11 +70,25 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
     defaultValues: device?.moduleConfig.mqtt ?? undefined,
   });
 
-  watch((d) => {
-    const data = parseMQTTModuleConfigInput(d);
-    updateStateFlags(data);
-    dispatch(configSliceActions.updateModuleConfig({ mqtt: data }));
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<MQTTModuleConfigInput>) => {
+          const data = parseMQTTModuleConfigInput(d);
+          updateStateFlags(data);
+          dispatch(configSliceActions.updateModuleConfig({ mqtt: data }));
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentConfig?.mqtt) return;

@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
 
+import debounce from "lodash.debounce";
+
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
@@ -82,11 +84,25 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
     defaultValues,
   });
 
-  watch((d) => {
-    const data = parseLoRaConfigInput(d);
-    updateStateFlags(data);
-    dispatch(configSliceActions.updateRadioConfig({ lora: data }));
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<LoRaConfigInput>) => {
+          const data = parseLoRaConfigInput(d);
+          updateStateFlags(data);
+          dispatch(configSliceActions.updateRadioConfig({ lora: data }));
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentConfig?.lora) return;

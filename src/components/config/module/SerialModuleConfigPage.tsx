@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
 
+import debounce from "lodash.debounce";
+
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
@@ -75,11 +77,25 @@ const SerialModuleConfigPage = ({
     defaultValues: device?.moduleConfig.serial ?? undefined,
   });
 
-  watch((d) => {
-    const data = parseSerialModuleConfigInput(d);
-    updateStateFlags(data);
-    dispatch(configSliceActions.updateModuleConfig({ serial: data }));
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<SerialModuleConfigInput>) => {
+          const data = parseSerialModuleConfigInput(d);
+          updateStateFlags(data);
+          dispatch(configSliceActions.updateModuleConfig({ serial: data }));
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentConfig?.serial) return;

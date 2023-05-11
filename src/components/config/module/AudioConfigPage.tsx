@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
 
+import debounce from "lodash.debounce";
+
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
@@ -74,11 +76,25 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
     defaultValues: device?.moduleConfig.audio ?? undefined,
   });
 
-  watch((d) => {
-    const data = parseAudioModuleConfigInput(d);
-    updateStateFlags(data);
-    dispatch(configSliceActions.updateModuleConfig({ audio: data }));
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<AudioModuleConfigInput>) => {
+          const data = parseAudioModuleConfigInput(d);
+          updateStateFlags(data);
+          dispatch(configSliceActions.updateModuleConfig({ audio: data }));
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentConfig?.audio) return;

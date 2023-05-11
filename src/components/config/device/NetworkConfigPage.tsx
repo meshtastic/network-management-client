@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
 
+import debounce from "lodash.debounce";
+
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
@@ -74,11 +76,25 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
     defaultValues,
   });
 
-  watch((d) => {
-    const data = parseNetworkConfigInput(d);
-    updateStateFlags(data);
-    dispatch(configSliceActions.updateRadioConfig({ network: data }));
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<NetworkConfigInput>) => {
+          const data = parseNetworkConfigInput(d);
+          updateStateFlags(data);
+          dispatch(configSliceActions.updateRadioConfig({ network: data }));
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentConfig?.network) return;
@@ -114,9 +130,9 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
           <ConfigInput
             disabled={wifiDisabled}
             type="text"
-            text="WiFi SSID"
-            error={errors.wifiSsid?.message}
-            {...register("wifiSsid")}
+            text="WiFi PSK"
+            error={errors.wifiPsk?.message}
+            {...register("wifiPsk")}
           />
 
           <ConfigInput

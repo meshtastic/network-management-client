@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
 
+import debounce from "lodash.debounce";
+
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
@@ -76,11 +78,27 @@ const CannedMessageConfigPage = ({
     defaultValues: device?.moduleConfig.cannedMessage ?? undefined,
   });
 
-  watch((d) => {
-    const data = parseCannedMessageModuleConfigInput(d);
-    updateStateFlags(data);
-    dispatch(configSliceActions.updateModuleConfig({ cannedMessage: data }));
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<CannedMessageModuleConfigInput>) => {
+          const data = parseCannedMessageModuleConfigInput(d);
+          updateStateFlags(data);
+          dispatch(
+            configSliceActions.updateModuleConfig({ cannedMessage: data })
+          );
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentConfig?.cannedMessage) return;

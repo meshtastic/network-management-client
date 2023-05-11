@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
 
+import debounce from "lodash.debounce";
+
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
@@ -73,11 +75,27 @@ const StoreAndForwardConfigPage = ({
     defaultValues: device?.moduleConfig.storeForward ?? undefined,
   });
 
-  watch((d) => {
-    const data = parseStoreAndForwardModuleConfigInput(d);
-    updateStateFlags(data);
-    dispatch(configSliceActions.updateModuleConfig({ storeForward: data }));
-  });
+  const updateConfigHander = useMemo(
+    () =>
+      debounce(
+        (d: DeepPartial<StoreForwardModuleConfigInput>) => {
+          const data = parseStoreAndForwardModuleConfigInput(d);
+          updateStateFlags(data);
+          dispatch(
+            configSliceActions.updateModuleConfig({ storeForward: data })
+          );
+        },
+        500,
+        { leading: true }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    return () => updateConfigHander.cancel();
+  }, []);
+
+  watch(updateConfigHander);
 
   const handleFormReset = () => {
     if (!currentConfig?.storeForward) return;
