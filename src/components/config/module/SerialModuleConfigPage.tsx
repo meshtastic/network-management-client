@@ -107,7 +107,7 @@ const SerialModuleConfigPage = ({
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"SerialModule Configuration"}
-        subtitle={"Configure SerialModule"}
+        subtitle={"Configure serial module"}
         renderIcon={(c) => <RotateCcw className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}

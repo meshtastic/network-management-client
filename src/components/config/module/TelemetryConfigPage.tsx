@@ -110,7 +110,7 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Telemetry Configuration"}
-        subtitle={"Configure Telemetry"}
+        subtitle={"Configure device telemetry"}
         renderIcon={(c) => <RotateCcw className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}

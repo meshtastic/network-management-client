@@ -101,7 +101,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"RangeTest Configuration"}
-        subtitle={"Configure RangeTest"}
+        subtitle={"Configure range test module"}
         renderIcon={(c) => <RotateCcw className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}

@@ -111,7 +111,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Audio Configuration"}
-        subtitle={"Configure Audio"}
+        subtitle={"Configure networked audio"}
         renderIcon={(c) => <RotateCcw className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}

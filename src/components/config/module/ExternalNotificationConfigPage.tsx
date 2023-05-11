@@ -125,7 +125,7 @@ const ExternalNotificationConfigPage = ({
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"ExternalNotification Configuration"}
-        subtitle={"Configure ExternalNotification"}
+        subtitle={"Configure external notifications"}
         renderIcon={(c) => <RotateCcw className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}

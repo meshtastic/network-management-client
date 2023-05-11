@@ -89,7 +89,7 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"Device Configuration"}
-        subtitle={"Configure device"}
+        subtitle={"Configure hardware device"}
         renderIcon={(c) => <RotateCcw className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}

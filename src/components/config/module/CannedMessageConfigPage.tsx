@@ -110,7 +110,7 @@ const CannedMessageConfigPage = ({
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
         title={"CannedMessage Configuration"}
-        subtitle={"Configure CannedMessage"}
+        subtitle={"Configure canned messages"}
         renderIcon={(c) => <RotateCcw className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}

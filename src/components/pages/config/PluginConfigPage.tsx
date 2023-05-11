@@ -118,8 +118,8 @@ const PluginConfigPage = () => {
   return (
     <div className="flex-1">
       <ConfigLayout
-        title="Plugin Config"
-        backtrace={["Plugin Configuration"]}
+        title="Module Config"
+        backtrace={["Module Configuration"]}
         renderTitleIcon={(c) => <Upload className={`${c}`} />}
         titleIconTooltip="Upload config to device"
         onTitleIconClick={() => dispatch(requestCommitConfig(["module"]))}
