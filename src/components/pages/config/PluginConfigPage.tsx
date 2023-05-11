@@ -36,9 +36,7 @@ export const PluginConfigOptions: Record<keyof IModuleConfigState, string> = {
   telemetry: "Telemetry",
 };
 
-const switchActiveDetailView = (
-  activeOption: keyof IModuleConfigState | null
-) => {
+const switchActiveDetailView = (activeOption: keyof IModuleConfigState) => {
   switch (activeOption) {
     // case "audio":
     //   return <AudioConfigPage />;
@@ -61,7 +59,7 @@ const switchActiveDetailView = (
     default:
       return (
         <p className="m-auto text-base font-normal text-gray-700">
-          No option selected
+          Unknown option selected
         </p>
       );
   }
@@ -111,9 +109,8 @@ const PluginConfigPage = () => {
   const currentModuleConfig = useSelector(selectCurrentModuleConfig());
   const editedModuleConfig = useSelector(selectEditedModuleConfig());
 
-  const [activeOption, setActiveOption] = useState<
-    keyof IModuleConfigState | null
-  >(null);
+  const [activeOption, setActiveOption] =
+    useState<keyof IModuleConfigState>("cannedMessage");
 
   return (
     <div className="flex-1">
@@ -140,9 +137,7 @@ const PluginConfigPage = () => {
                 title={displayName}
                 subtitle={`${pendingChanges} pending changes`}
                 isActive={activeOption === configKey}
-                onClick={() =>
-                  setActiveOption(activeOption !== configKey ? configKey : null)
-                }
+                onClick={() => setActiveOption(configKey)}
               />
             );
           })

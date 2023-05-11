@@ -60,7 +60,7 @@ const ChannelConfigPage = () => {
   const editedChannelConfig = useSelector(selectEditedAllChannelConfig());
 
   const [activeChannelIndex, setActiveChannelIndex] = useState<number | null>(
-    null
+    parseInt(Object.entries(currentChannelConfig)[0]?.[0]) ?? null
   );
 
   return (
@@ -86,13 +86,7 @@ const ChannelConfigPage = () => {
                 title={displayName || `Channel ${c.config.index}`}
                 subtitle={`${pendingChanges} pending changes`}
                 isActive={activeChannelIndex === c.config.index}
-                onClick={() =>
-                  setActiveChannelIndex(
-                    activeChannelIndex !== c.config.index
-                      ? c.config.index
-                      : null
-                  )
-                }
+                onClick={() => setActiveChannelIndex(c.config.index)}
               />
             );
           })
@@ -105,7 +99,9 @@ const ChannelConfigPage = () => {
           />
         ) : (
           <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
-            <p className="m-auto text-base font-normal text-gray-700"></p>
+            <p className="m-auto text-base font-normal text-gray-700">
+              Unknown channel selected
+            </p>
           </div>
         )}
       </ConfigLayout>

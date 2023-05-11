@@ -33,9 +33,7 @@ export const RadioConfigOptions: Record<keyof IRadioConfigState, string> = {
   // user: "User",
 };
 
-const switchActiveDetailView = (
-  activeOption: keyof IRadioConfigState | null
-) => {
+const switchActiveDetailView = (activeOption: keyof IRadioConfigState) => {
   switch (activeOption) {
     case "bluetooth":
       return <BluetoothConfigPage />;
@@ -56,7 +54,7 @@ const switchActiveDetailView = (
     default:
       return (
         <p className="m-auto text-base font-normal text-gray-700">
-          No option selected
+          Unknown option
         </p>
       );
   }
@@ -106,9 +104,8 @@ const RadioConfigPage = () => {
   const currentRadioConfig = useSelector(selectCurrentRadioConfig());
   const editedRadioConfig = useSelector(selectEditedRadioConfig());
 
-  const [activeOption, setActiveOption] = useState<
-    keyof IRadioConfigState | null
-  >(null);
+  const [activeOption, setActiveOption] =
+    useState<keyof IRadioConfigState>("bluetooth");
 
   return (
     <div className="flex-1">
@@ -135,9 +132,7 @@ const RadioConfigPage = () => {
                 title={displayName}
                 subtitle={`${pendingChanges} pending changes`}
                 isActive={activeOption === configKey}
-                onClick={() =>
-                  setActiveOption(activeOption !== configKey ? configKey : null)
-                }
+                onClick={() => setActiveOption(configKey)}
               />
             );
           })
