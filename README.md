@@ -32,6 +32,10 @@
   <a href="https://opencollective.com/meshtastic">
     <img alt="Open Collective backers" src="https://img.shields.io/opencollective/backers/meshtastic?label=support%20meshtastic">
   </a>
+  
+  <a href="https://u24.gov.ua/">
+    <img alt="Stand with Ukraine" src="https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg">
+  </a>
 </p>
 
 ## :wave: Introduction
