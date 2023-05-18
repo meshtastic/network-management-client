@@ -1,11 +1,6 @@
 import React from "react";
 import TimeAgo from "timeago-react";
-import {
-  ShieldExclamationIcon,
-  SignalIcon,
-  SignalSlashIcon,
-  ViewfinderCircleIcon,
-} from "@heroicons/react/24/outline";
+import { Locate, LocateFixed } from "lucide-react";
 
 import type { app_device_MeshNode } from "@bindings/index";
 
@@ -15,7 +10,6 @@ import {
   getLastHeardTime,
   getNodeState,
   getMinsSinceLastHeard,
-  NodeState,
 } from "@utils/nodes";
 
 export interface INodeSearchResultProps {
@@ -23,30 +17,6 @@ export interface INodeSearchResultProps {
   isActive: boolean;
   selectNode: (nodeId: number) => void;
 }
-
-interface _INodeSearchResultIconProps {
-  nodeState: NodeState;
-}
-
-const _NodeSearchResultIcon = ({ nodeState }: _INodeSearchResultIconProps) => {
-  switch (nodeState) {
-    case "selected":
-      return <SignalIcon className="w-6 h-6 mx-0 my-auto text-blue-500" />;
-
-    case "warning":
-      return (
-        <SignalSlashIcon className="w-6 h-6 mx-0 my-auto text-orange-500" />
-      );
-
-    case "error":
-      return (
-        <ShieldExclamationIcon className="w-6 h-6 mx-0 my-auto text-red-500" />
-      );
-
-    default:
-      return <SignalIcon className="w-6 h-6 mx-0 my-auto text-gray-500" />;
-  }
-};
 
 const NodeSearchResult = ({
   node,
@@ -61,12 +31,10 @@ const NodeSearchResult = ({
 
   return (
     <div className="flex flex-row gap-4">
-      <_NodeSearchResultIcon nodeState={nodeState} />
-
       <div className={`flex-grow ${colorClasses.text}`}>
         <p className="text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
           {node.data.user?.longName ?? node.data.num}
-          <span className="text-sm font-normal pl-2">
+          <span className="pl-2 text-xs font-normal">
             {lastPacketTime ? (
               <TimeAgo datetime={lastPacketTime} locale="en-us" live />
             ) : (
@@ -76,17 +44,26 @@ const NodeSearchResult = ({
         </p>
         <p className="text-sm font-light">
           {!!node.data.position?.latitudeI && !!node.data.position?.longitudeI
-            ? `${node.data.position.latitudeI / 1e7}, ${
+            ? `${node.data.position.latitudeI / 1e7}°, ${
                 node.data.position.longitudeI / 1e7
-              }`
+              }°`
             : "No GPS lock, hidden from map"}
         </p>
       </div>
 
-      <ViewfinderCircleIcon
-        className={`w-6 h-6 mx-0 my-auto ${colorClasses.text} hover:cursor-pointer`}
-        onClick={() => selectNode(node.data.num)}
-      />
+      {isActive ? (
+        <LocateFixed
+          className={`w-6 h-6 mx-0 my-auto ${colorClasses.text} hover:cursor-pointer`}
+          onClick={() => selectNode(node.data.num)}
+          strokeWidth={1.5}
+        />
+      ) : (
+        <Locate
+          className={`w-6 h-6 mx-0 my-auto ${colorClasses.text} hover:cursor-pointer`}
+          onClick={() => selectNode(node.data.num)}
+          strokeWidth={1.5}
+        />
+      )}
     </div>
   );
 };

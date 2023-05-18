@@ -33,7 +33,7 @@ const SidebarIcon = ({
         </div>
 
         <p
-          className={`sidebar-opacity-transition px-2 text-xs font-medium self-center whitespace-nowrap 
+          className={`sidebar-opacity-transition px-3 text-xs font-medium self-center whitespace-nowrap 
             ${isActive ? "text-gray-100" : "text-gray-700"}
             `}
           style={isSidebarExpanded ? { opacity: 1 } : { opacity: 0 }}

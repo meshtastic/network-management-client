@@ -28,7 +28,7 @@ const MapNodeTooltip = ({ hoverInfo }: IMapNodeTooltip) => {
 
   return (
     <div
-      className="pointer-events-none absolute z-10 bg-white border border-gray-100 rounded-lg px-2 py-1 text-sm text-gray-700 shadow-md"
+      className="pointer-events-none absolute z-10 text-center whitespace-nowrap px-2 py-1 default-overlay text-xs text-gray-500"
       style={{ left: x, top: y }}
     >
       <p>Name: {nodeInfo.data.user?.longName ?? "UNK"}</p>

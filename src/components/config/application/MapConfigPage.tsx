@@ -44,7 +44,7 @@ const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
       <ConfigTitlebar
         title="Map Settings"
         subtitle="Edit application map settings"
-        renderIcon={(c) => <Save className={`${c}`} />}
+        renderIcon={(c) => <Save strokeWidth={1.5} className={`${c}`} />}
         buttonTooltipText="Save changes"
         buttonProps={{ type: "submit", form: formId }}
       >

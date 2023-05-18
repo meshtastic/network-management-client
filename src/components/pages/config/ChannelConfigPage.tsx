@@ -79,7 +79,7 @@ const ChannelConfigPage = () => {
       <ConfigLayout
         title="Channel Config"
         backtrace={["Channel Configuration"]}
-        renderTitleIcon={(c) => <Upload className={`${c}`} />}
+        renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
         titleIconTooltip="Upload config to device"
         onTitleIconClick={() => dispatch(requestCommitConfig(["channel"]))}
         renderOptions={() =>

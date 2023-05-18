@@ -1,14 +1,14 @@
 import React from "react";
 
 import { useSelector, useDispatch } from "react-redux";
+import { Lightbulb, MapPin } from "lucide-react";
+
+import { MapIconButton } from "@components/Map/MapIconButton";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import {
   selectAllowOnMapWaypointCreation,
   selectInfoPane,
 } from "@features/device/deviceSelectors";
-
-import { MapIconButton } from "@components/Map/MapIconButton";
-import { MapPinIcon, Square3Stack3DIcon } from "@heroicons/react/24/outline";
 
 const MapInteractionPane = () => {
   const dispatch = useDispatch();
@@ -29,7 +29,8 @@ const MapInteractionPane = () => {
     <div className="absolute top-9 right-9 flex gap-4">
       {/* Toggles newWaypoint state */}
       <MapIconButton selected={newWaypoint} onClick={handleClickMapPin}>
-        <MapPinIcon
+        <MapPin
+          strokeWidth={1.5}
           className={`w-6 h-6 text-gray-400 ${
             newWaypoint ? "text-gray-200" : "text-gray-500"
           }`}
@@ -37,7 +38,8 @@ const MapInteractionPane = () => {
       </MapIconButton>
 
       <MapIconButton selected={accordionShown} onClick={handleClickStacks}>
-        <Square3Stack3DIcon
+        <Lightbulb
+          strokeWidth={1.5}
           className={`w-6 h-6 ${
             accordionShown ? "text-gray-200" : "text-gray-500"
           }`}

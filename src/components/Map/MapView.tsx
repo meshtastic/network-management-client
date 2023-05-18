@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GeoJsonLayer, PickingInfo } from "deck.gl/typed";
-import { PathStyleExtension } from "@deck.gl/extensions/typed";
-import { BASEMAP } from "@deck.gl/carto/typed";
+import {
+  CollisionFilterExtension,
+  PathStyleExtension,
+} from "@deck.gl/extensions/typed";
 import maplibregl from "maplibre-gl";
 import moment from "moment";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
@@ -91,17 +93,21 @@ export const MapView = () => {
   );
 
   useEffect(() => {
-    invoke("get_node_edges")
-      .then((c) => {
-        const { nodes, edges } = c as {
-          nodes: GeoJSON.FeatureCollection;
-          edges: GeoJSON.FeatureCollection;
-        };
+    const timeout = setInterval(() => {
+      invoke("get_node_edges")
+        .then((c) => {
+          const { nodes, edges } = c as {
+            nodes: GeoJSON.FeatureCollection;
+            edges: GeoJSON.FeatureCollection;
+          };
 
-        dispatch(mapSliceActions.setNodesFeatureCollection(nodes));
-        dispatch(mapSliceActions.setEdgesFeatureCollection(edges));
-      })
-      .catch(() => dispatch(mapSliceActions.setEdgesFeatureCollection(null)));
+          dispatch(mapSliceActions.setNodesFeatureCollection(nodes));
+          dispatch(mapSliceActions.setEdgesFeatureCollection(edges));
+        })
+        .catch(() => dispatch(mapSliceActions.setEdgesFeatureCollection(null)));
+    }, 5000); // 5s
+
+    return () => clearInterval(timeout);
   }, []);
 
   const layers = useMemo(
@@ -126,6 +132,7 @@ export const MapView = () => {
       }),
       new GeoJsonLayer({
         id: "nodes",
+        pointType: "circle",
         data: nodesFeatureCollection || {},
 
         pickable: true,
@@ -144,10 +151,12 @@ export const MapView = () => {
 
         getFillColor: (info) => {
           if (activeNodeId && info.properties?.num === activeNodeId) {
-            return [185, 28, 28];
+            return [59, 130, 246];
           }
           return [55, 65, 81];
         },
+
+        extensions: [new CollisionFilterExtension()],
 
         updateTriggers: {
           getFillColor: { activeNodeId },
@@ -175,8 +184,8 @@ export const MapView = () => {
     if (newWaypointAllowed) {
       const createdWaypoint: app_protobufs_Waypoint = {
         id: 0,
-        latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
-        longitudeI: Math.round(e.lngLat.lng * 1e7),
+        latitudeI: e.lngLat.lat * 1e7, // Location clicked
+        longitudeI: e.lngLat.lng * 1e7,
         expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
         lockedTo: 0, // Public
         name: "New Waypoint",

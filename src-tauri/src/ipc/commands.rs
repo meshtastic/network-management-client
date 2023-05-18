@@ -4,7 +4,6 @@ use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
 use crate::device;
 use crate::device::serial_connection::PacketDestination;
-use crate::device::MeshNode;
 use crate::device::SerialDeviceStatus;
 use crate::state;
 
@@ -214,23 +213,6 @@ pub struct GraphGeoJSONResult {
     pub edges: geojson::FeatureCollection,
 }
 
-pub fn generate_node_feature(node: MeshNode) -> Option<geojson::Feature> {
-    let position = node.data.position?;
-    let num = node.data.num;
-
-    let properties = generate_node_properties(num);
-
-    Some(geojson::Feature {
-        id: Some(geojson::feature::Id::String(format!("{}", num))),
-        geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
-            (position.longitude_i as f64) / 1e7,
-            (position.latitude_i as f64) / 1e7,
-        ]))),
-        properties: Some(properties),
-        ..Default::default()
-    })
-}
-
 pub fn generate_node_properties(num: u32) -> serde_json::Map<String, serde_json::Value> {
     let mut properties = serde_json::Map::new();
     properties.insert("num".into(), json!(num));
@@ -246,82 +228,78 @@ pub fn generate_edge_properties(snr: f64) -> serde_json::Map<String, serde_json:
 #[tauri::command]
 pub async fn get_node_edges(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
+    connected_devices: tauri::State<'_, state::ConnectedDevices>,
 ) -> Result<GraphGeoJSONResult, CommandError> {
     debug!("Called get_node_edges command");
 
-    let mut guard = mesh_graph.inner.lock().await;
-    let graph = guard.as_mut().ok_or("Graph edges not initialized")?;
+    let mut graph_guard = mesh_graph.inner.lock().await;
+    let _graph = graph_guard.as_mut().ok_or("Graph edges not initialized")?;
 
-    let properties_node_map_1 = generate_node_properties(1);
-    let properties_node_map_2 = generate_node_properties(2);
-    let properties_node_map_3 = generate_node_properties(3);
+    // Generate nodes and edges from connected devices
+    // * Note: this makes the false assumption that all nodes are fully connected
+
+    let devices_guard = connected_devices.inner.lock().await;
+    let device_edge_info = devices_guard.values().fold(vec![], |accum, d| {
+        let filtered_nodes = d
+            .nodes
+            .iter()
+            .filter_map(|(num, node)| {
+                node.data.clone().position.map(|position| {
+                    (
+                        *num,
+                        vec![
+                            (position.longitude_i as f64) / 1e7,
+                            (position.latitude_i as f64) / 1e7,
+                        ],
+                    )
+                })
+            })
+            .collect::<Vec<(u32, geojson::Position)>>();
+
+        let mut result = vec![];
+        result.extend(accum);
+        result.extend(filtered_nodes);
+        result
+    });
+
+    let mut node_features = vec![];
+    let mut edge_features = vec![];
+
+    for (index, (num, position)) in device_edge_info.iter().enumerate() {
+        node_features.push(geojson::Feature {
+            id: Some(geojson::feature::Id::String(num.to_string())),
+            geometry: Some(geojson::Geometry::new(geojson::Value::Point(
+                position.clone(),
+            ))),
+            properties: Some(generate_node_properties(num.to_owned())),
+            ..Default::default()
+        });
+
+        for (idx, (_n, pos)) in device_edge_info.iter().enumerate() {
+            edge_features.push(geojson::Feature {
+                id: Some(geojson::feature::Id::String(
+                    (index * device_edge_info.len() + idx).to_string(),
+                )),
+                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
+                    position.clone(),
+                    pos.clone(),
+                ]))),
+                properties: Some(generate_edge_properties(1.)),
+                ..Default::default()
+            });
+        }
+    }
 
     let nodes = geojson::FeatureCollection {
         bbox: None,
         foreign_members: None,
-        features: vec![
-            geojson::Feature {
-                id: Some(geojson::feature::Id::String("1".into())),
-                geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![5., 10.]))),
-                properties: Some(properties_node_map_1),
-                ..Default::default()
-            },
-            geojson::Feature {
-                id: Some(geojson::feature::Id::String("2".into())),
-                geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
-                    -15., 17.,
-                ]))),
-                properties: Some(properties_node_map_2),
-                ..Default::default()
-            },
-            geojson::Feature {
-                id: Some(geojson::feature::Id::String("3".into())),
-                geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
-                    -18., 35.,
-                ]))),
-                properties: Some(properties_node_map_3),
-                ..Default::default()
-            },
-        ],
+        features: node_features,
     };
 
-    let properties_edge_map_1 = generate_edge_properties(1.);
-    let properties_edge_map_2 = generate_edge_properties(2.);
-    let properties_edge_map_3 = generate_edge_properties(3.);
-
-    // let edges = helpers::generate_graph_edges_geojson(graph);
     let edges = geojson::FeatureCollection {
         bbox: None,
         foreign_members: None,
-        features: vec![
-            geojson::Feature {
-                id: Some(geojson::feature::Id::String("1".into())),
-                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
-                    vec![5., 10.],
-                    vec![-15., 17.],
-                ]))),
-                properties: Some(properties_edge_map_1),
-                ..Default::default()
-            },
-            geojson::Feature {
-                id: Some(geojson::feature::Id::String("2".into())),
-                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
-                    vec![-15., 17.],
-                    vec![-18., 35.],
-                ]))),
-                properties: Some(properties_edge_map_2),
-                ..Default::default()
-            },
-            geojson::Feature {
-                id: Some(geojson::feature::Id::String("3".into())),
-                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
-                    vec![-18., 35.],
-                    vec![5., 10.],
-                ]))),
-                properties: Some(properties_edge_map_3),
-                ..Default::default()
-            },
-        ],
+        features: edge_features,
     };
 
     trace!("Found edges {:?}", edges);

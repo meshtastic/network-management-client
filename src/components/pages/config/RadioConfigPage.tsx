@@ -55,7 +55,7 @@ const switchActiveDetailView = (activeOption: keyof IRadioConfigState) => {
     default:
       return (
         <p className="m-auto text-base font-normal text-gray-700">
-          Unknown option
+          Unknown option selected
         </p>
       );
   }
@@ -120,7 +120,7 @@ const RadioConfigPage = () => {
       <ConfigLayout
         title="Radio Config"
         backtrace={["Radio Configuration"]}
-        renderTitleIcon={(c) => <Upload className={`${c}`} />}
+        renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
         titleIconTooltip="Upload config to device"
         onTitleIconClick={() => dispatch(requestCommitConfig(["radio"]))}
         renderOptions={() =>

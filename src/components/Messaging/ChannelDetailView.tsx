@@ -1,13 +1,11 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-// import { MapPinIcon, PencilIcon } from "@heroicons/react/24/outline";
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { Edit3 } from "lucide-react";
 
 import type { app_device_MeshChannel } from "@bindings/index";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-// import MapIconButton from "@components/Map/MapIconButton";
 import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
 
@@ -56,7 +54,7 @@ const ChannelDetailView = ({
       <ConfigTitlebar
         title={getChannelName(channel)}
         subtitle={getNumMessagesText(channel.messages.length)}
-        renderIcon={(c) => <PencilIcon className={`${c}`} />}
+        renderIcon={(c) => <Edit3 strokeWidth={1.5} className={`${c}`} />}
         buttonTooltipText="Edit channel"
         onIconClick={() =>
           navigateTo(`${AppRoutes.CONFIGURE_CHANNELS}/${channel.config.index}`)
@@ -78,12 +76,6 @@ const ChannelDetailView = ({
             onSubmit={handleMessageSubmit}
             className="w-full flex-1"
           />
-          {/* <MapIconButton
-            className="w-12 h-12 no-shadow"
-            onClick={() => console.log('Clicked "send waypoint" button')}
-          >
-            <MapPinIcon className="m-auto w-6 h-6 text-gray-400" />
-          </MapIconButton> */}
         </div>
       </ConfigTitlebar>
     </div>
