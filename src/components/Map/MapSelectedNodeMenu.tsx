@@ -58,19 +58,19 @@ const MapSelectedNodeMenu = () => {
   const activeNode = useSelector(selectActiveNode());
   useComponentReload(1000);
 
-  const lastPacketTime = activeNode ? getLastHeardTime(activeNode) : 0;
+  if (!activeNode) return <></>;
 
-  const deviceName = activeNode?.data.user?.longName ?? "N/A";
-  const deviceLtCoord = (activeNode?.data.position?.latitudeI ?? 0) / 1e7;
-  const deviceLgCoord = (activeNode?.data.position?.longitudeI ?? 0) / 1e7;
+  const lastPacketTime = getLastHeardTime(activeNode);
+
+  const deviceName = activeNode.data.user?.longName ?? "N/A";
+  const deviceLtCoord = (activeNode.data.position?.latitudeI ?? 0) / 1e7;
+  const deviceLgCoord = (activeNode.data.position?.longitudeI ?? 0) / 1e7;
   const batteryLevel =
-    activeNode?.deviceMetrics[-1]?.metrics.batteryLevel ?? null;
+    activeNode.deviceMetrics.at(-1)?.metrics.batteryLevel ?? null;
 
   const clearActiveNode = () => {
     dispatch(deviceSliceActions.setActiveNode(null));
   };
-
-  if (!activeNode) return <></>;
 
   return (
     <div className="absolute top-24 right-9 bg-white p-5 pl-4 rounded-lg drop-shadow-lg w-80">
@@ -86,7 +86,7 @@ const MapSelectedNodeMenu = () => {
       <p className="text-gray-500 text-sm leading-5 font-normal pt-1">
         Last heard from{" "}
         {lastPacketTime ? (
-          <TimeAgo datetime={lastPacketTime} locale="en_us" />
+          <TimeAgo datetime={lastPacketTime * 1000} locale="en_us" />
         ) : (
           "Unknown"
         )}

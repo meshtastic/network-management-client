@@ -36,7 +36,7 @@ const NodeSearchResult = ({
           {node.data.user?.longName ?? node.data.num}
           <span className="pl-2 text-xs font-normal">
             {lastPacketTime ? (
-              <TimeAgo datetime={lastPacketTime} locale="en-us" live />
+              <TimeAgo datetime={lastPacketTime * 1000} locale="en-us" live />
             ) : (
               "UNK"
             )}
