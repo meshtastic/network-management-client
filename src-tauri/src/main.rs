@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 mod analytics;
 mod constructors;
 mod data_conversion;
@@ -64,17 +66,23 @@ fn handle_cli_matches(
     }
 }
 
+fn export_specta_types(file_path: &str) -> Result<(), specta::ts::TsExportError> {
+    let specta_config = ExportConfiguration::default()
+        .bigint(BigIntExportBehavior::String)
+        .modules(ModuleExportBehavior::Enabled);
+
+    specta::export::ts_with_cfg(file_path, &specta_config)
+}
+
 fn main() {
+    #[cfg(debug_assertions)]
     setup_logger().expect("Logging setup failed");
     debug!("Logger initialized");
 
     info!("Building TS types from Rust");
 
-    let specta_config = ExportConfiguration::default()
-        .bigint(BigIntExportBehavior::String)
-        .modules(ModuleExportBehavior::Enabled);
-
-    specta::export::ts_with_cfg("../src/bindings/index.ts", &specta_config).unwrap();
+    #[cfg(debug_assertions)]
+    export_specta_types("../src/bindings/index.ts").unwrap();
 
     info!("Application starting");
 
