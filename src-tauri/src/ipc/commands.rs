@@ -299,7 +299,8 @@ pub async fn get_node_edges(
     let edges = geojson::FeatureCollection {
         bbox: None,
         foreign_members: None,
-        features: edge_features,
+        // features: edge_features, // * enable to see fully-connected network
+        features: vec![],
     };
 
     trace!("Found edges {:?}", edges);
