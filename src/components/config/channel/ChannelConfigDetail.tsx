@@ -127,7 +127,7 @@ const ChannelConfigDetail = ({
       <ConfigTitlebar
         title={"Channel Configuration"}
         subtitle={`Configure channel "${channelName}"`}
-        renderIcon={(c) => <RotateCcw className={c} />}
+        renderIcon={(c) => <RotateCcw strokeWidth={1.5} className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}
       >

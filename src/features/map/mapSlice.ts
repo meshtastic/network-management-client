@@ -7,6 +7,7 @@ export interface IMapConfig {
 
 export interface IMapState {
   viewState: Partial<ViewState>;
+  nodesFeatureCollection: GeoJSON.FeatureCollection | null;
   edgesFeatureCollection: GeoJSON.FeatureCollection | null;
   config: IMapConfig
 }
@@ -17,6 +18,7 @@ export const initialMapState: IMapState = {
     longitude: 0.0,
     zoom: 0.0,
   },
+  nodesFeatureCollection: null,
   edgesFeatureCollection: null,
   config: {
     style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
@@ -27,9 +29,12 @@ export const mapSlice = createSlice({
   name: "map",
   initialState: initialMapState,
   reducers: {
+    setViewState: (state, action: PayloadAction<IMapState["viewState"]>) => {
+      state.viewState = action.payload;
+    },
     setPosition: (
       state,
-      action: PayloadAction<{ latitude: number; longitude: number }>
+      action: PayloadAction<{ latitude: number; longitude: number }>,
     ) => {
       state.viewState.latitude = action.payload.latitude;
       state.viewState.longitude = action.payload.longitude;
@@ -37,9 +42,15 @@ export const mapSlice = createSlice({
     setZoom: (state, action: PayloadAction<number>) => {
       state.viewState.zoom = action.payload;
     },
+    setNodesFeatureCollection: (
+      state,
+      action: PayloadAction<GeoJSON.FeatureCollection | null>,
+    ) => {
+      state.nodesFeatureCollection = action.payload;
+    },
     setEdgesFeatureCollection: (
       state,
-      action: PayloadAction<GeoJSON.FeatureCollection | null>
+      action: PayloadAction<GeoJSON.FeatureCollection | null>,
     ) => {
       state.edgesFeatureCollection = action.payload;
     },

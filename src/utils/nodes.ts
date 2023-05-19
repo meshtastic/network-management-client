@@ -5,14 +5,27 @@ export const NODE_ERROR_THRESHOLD = 30;
 
 export type NodeState = "nominal" | "selected" | "warning" | "error";
 
+/**
+ * Get the last heard time of a node in seconds
+ * @param node Node to get last heard time from
+ * @returns Last heard time in seconds
+ */
 export const getLastHeardTime = (node: app_device_MeshNode): number | null => {
+  const lastDeviceMetricTimestamp = node.deviceMetrics.at(-1)?.timestamp; // s
+
+  const lastEnvironmentMetricTimestamp =
+    node.environmentMetrics.at(-1)?.timestamp; // s
+
+  const lastDataTimestamp = node.data.lastHeard; // s
+
   const lastHeard = Math.max(
-    (node.deviceMetrics.at(-1)?.timestamp ?? 0) * 1000, // s to ms
-    (node.environmentMetrics.at(-1)?.timestamp ?? 0) * 1000,
-    node.data.lastHeard * 1000
+    lastDeviceMetricTimestamp ?? 0,
+    lastEnvironmentMetricTimestamp ?? 0,
+    lastDataTimestamp,
   );
 
-  if (!lastHeard) return null;
+
+  if (lastHeard === 0) return null;
   return lastHeard;
 };
 
@@ -21,7 +34,7 @@ export const getMinsSinceLastHeard = (node: app_device_MeshNode): number => {
   if (!lastHeard) return 0; // 0 means not set
 
   const now = Date.now(); // ms
-  const timeSinceLastMessage = Math.abs(now - lastHeard) / 1000 / 60; // ms to min
+  const timeSinceLastMessage = Math.abs(now / 1000 - lastHeard) / 60; // s to min
 
   return timeSinceLastMessage;
 };

@@ -36,7 +36,8 @@ const Waypoints = ({ currWaypoint }: IWaypoints) => {
     }
   };
 
-  if (!currWaypoint) return <></>;
+  if (!currWaypoint) return null;
+
   return (
     <div className="">
       <Marker

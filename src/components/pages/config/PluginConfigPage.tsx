@@ -125,7 +125,7 @@ const PluginConfigPage = () => {
       <ConfigLayout
         title="Module Config"
         backtrace={["Module Configuration"]}
-        renderTitleIcon={(c) => <Upload className={`${c}`} />}
+        renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
         titleIconTooltip="Upload config to device"
         onTitleIconClick={() => dispatch(requestCommitConfig(["module"]))}
         renderOptions={() =>

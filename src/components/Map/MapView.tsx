@@ -1,34 +1,40 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { GeoJsonLayer, PickingInfo } from "deck.gl/typed";
+import {
+  CollisionFilterExtension,
+  PathStyleExtension,
+} from "@deck.gl/extensions/typed";
 import maplibregl from "maplibre-gl";
 import moment from "moment";
-
+import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import {
-  Layer,
   Map,
   NavigationControl,
   ScaleControl,
-  Source,
   ViewStateChangeEvent,
   MapLayerMouseEvent,
+  ViewState,
+  useControl,
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
+import { useDebounce } from "react-use";
 
 import type { app_protobufs_Waypoint } from "@bindings/index";
 
 import AnalyticsPane from "@components/Map/AnalyticsPane";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
-import MapNode from "@components/Map/MapNode";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
 import Waypoints from "@app/components/Waypoints/Waypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
+import MapNodeTooltip from "@components/Map/MapNodeTooltip";
+import MapEdgeTooltip from "@components/Map/MapEdgeTooltip";
 
 import {
   selectActiveNodeId,
-  selectAllNodes,
   selectAllWaypoints,
   selectAllowOnMapWaypointCreation,
   selectInfoPane,
@@ -40,26 +46,146 @@ import { mapSliceActions } from "@features/map/mapSlice";
 
 import "@components/Map/MapView.css";
 
+export interface IDeckGLOverlayProps extends MapboxOverlayProps {
+  interleaved?: boolean;
+}
+
+const DeckGLOverlay = (props: IDeckGLOverlayProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+  overlay.setProps(props);
+
+  return null;
+};
+
 export const MapView = () => {
   const dispatch = useDispatch();
-  const nodes = useSelector(selectAllNodes());
   const activeNodeId = useSelector(selectActiveNodeId());
-  const { edgesFeatureCollection, viewState, config } = useSelector(
-    selectMapState()
-  );
+  const { nodesFeatureCollection, edgesFeatureCollection, viewState, config } =
+    useSelector(selectMapState());
   const showInfoPane = useSelector(selectInfoPane());
 
   const waypoints = useSelector(selectAllWaypoints());
   const newWaypointAllowed = useSelector(selectAllowOnMapWaypointCreation());
   const tempWaypoint = useSelector(selectPlaceholderWaypoint());
 
+  const [nodeHoverInfo, setNodeHoverInfo] = useState<PickingInfo | null>(null);
+  const [edgeHoverInfo, setEdgeHoverInfo] = useState<PickingInfo | null>(null);
+
+  const [localViewState, setLocalViewState] =
+    useState<Partial<ViewState>>(viewState);
+
+  const handleNodeClick = useCallback(
+    (info: PickingInfo) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const nodeId: number | null = info.object?.properties?.num ?? null;
+
+      if (nodeId === activeNodeId) {
+        dispatch(deviceSliceActions.setActiveNode(null));
+        return;
+      }
+
+      dispatch(deviceSliceActions.setActiveNode(nodeId));
+    },
+    [activeNodeId, dispatch]
+  );
+
+  useEffect(() => {
+    const timeout = setInterval(() => {
+      invoke("get_node_edges")
+        .then((c) => {
+          const { nodes, edges } = c as {
+            nodes: GeoJSON.FeatureCollection;
+            edges: GeoJSON.FeatureCollection;
+          };
+
+          dispatch(mapSliceActions.setNodesFeatureCollection(nodes));
+          dispatch(mapSliceActions.setEdgesFeatureCollection(edges));
+        })
+        .catch(() => dispatch(mapSliceActions.setEdgesFeatureCollection(null)));
+    }, 5000); // 5s
+
+    return () => clearInterval(timeout);
+  }, []);
+
+  const layers = useMemo(
+    () => [
+      new GeoJsonLayer({
+        id: "edges",
+        data: edgesFeatureCollection || {},
+        pointType: "circle",
+        extensions: [new PathStyleExtension({ dash: true })],
+        getDashArray: [4, 4],
+        pickable: true,
+        dashJustified: true,
+        dashGapPickable: true,
+        filled: false,
+        lineWidthMinPixels: 2,
+
+        onHover: setEdgeHoverInfo,
+
+        getLineColor: () => {
+          return [55, 65, 81];
+        },
+      }),
+      new GeoJsonLayer({
+        id: "nodes",
+        pointType: "circle",
+        data: nodesFeatureCollection || {},
+
+        pickable: true,
+        stroked: false,
+
+        onClick: handleNodeClick,
+        onHover: setNodeHoverInfo,
+
+        pointRadiusUnits: "pixels",
+        getPointRadius: (info) => {
+          if (activeNodeId && info.properties?.num === activeNodeId) {
+            return 6;
+          }
+          return 4;
+        },
+
+        getFillColor: (info) => {
+          if (activeNodeId && info.properties?.num === activeNodeId) {
+            return [59, 130, 246];
+          }
+          return [55, 65, 81];
+        },
+
+        extensions: [new CollisionFilterExtension()],
+
+        updateTriggers: {
+          getFillColor: { activeNodeId },
+          getPointRadius: { activeNodeId },
+        },
+
+        transitions: {
+          getFillColor: 40,
+          getPointRadius: 40,
+        },
+      }),
+    ],
+    [
+      nodesFeatureCollection,
+      edgesFeatureCollection,
+      setNodeHoverInfo,
+      setEdgeHoverInfo,
+      handleNodeClick,
+      activeNodeId,
+    ]
+  );
+
   const handleClick = (e: MapLayerMouseEvent) => {
     // Can only create new waypoint if the state is toggled
     if (newWaypointAllowed) {
       const createdWaypoint: app_protobufs_Waypoint = {
         id: 0,
-        latitudeI: Math.round(e.lngLat.lat * 1e7), // Location clicked
-        longitudeI: Math.round(e.lngLat.lng * 1e7),
+        latitudeI: e.lngLat.lat * 1e7, // Location clicked
+        longitudeI: e.lngLat.lng * 1e7,
         expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
         lockedTo: 0, // Public
         name: "New Waypoint",
@@ -75,110 +201,63 @@ export const MapView = () => {
     }
   };
 
-  const updateActiveNode = (nodeId: number | null) => {
-    if (nodeId === activeNodeId) {
-      return dispatch(deviceSliceActions.setActiveNode(null));
-    }
+  useDebounce(
+    () => dispatch(mapSliceActions.setViewState(localViewState)),
+    500,
+    [localViewState]
+  );
 
-    dispatch(deviceSliceActions.setActiveNode(nodeId));
+  const handleUpdateViewState = (e: ViewStateChangeEvent) => {
+    setLocalViewState((prevState) => ({ ...prevState, ...e.viewState }));
   };
-
-  const handleMoveEnd = (e: ViewStateChangeEvent) => {
-    dispatch(
-      mapSliceActions.setPosition({
-        latitude: e.viewState.latitude,
-        longitude: e.viewState.longitude,
-      })
-    );
-  };
-
-  const handleZoomEnd = (e: ViewStateChangeEvent) => {
-    dispatch(mapSliceActions.setZoom(e.viewState.zoom));
-  };
-
-  useEffect(() => {
-    invoke("get_node_edges")
-      .then((c) =>
-        dispatch(
-          mapSliceActions.setEdgesFeatureCollection(
-            c as GeoJSON.FeatureCollection
-          )
-        )
-      )
-      .catch(() => dispatch(mapSliceActions.setEdgesFeatureCollection(null)));
-  }, []);
 
   return (
-    <div className="relative w-full h-full z-0">
+    <div
+      className="relative w-full h-full z-0"
+      onContextMenu={(e) => e.preventDefault()}
+    >
+      {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
+      {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
+
       <Map
-        initialViewState={viewState}
+        reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
         mapStyle={config.style}
         mapLib={maplibregl}
-        attributionControl={false}
-        onMoveEnd={handleMoveEnd}
-        onZoomEnd={handleZoomEnd}
+        onDragEnd={handleUpdateViewState}
+        onZoomEnd={handleUpdateViewState}
+        initialViewState={viewState}
         onClick={handleClick}
       >
+        <DeckGLOverlay pickingRadius={12} layers={layers} />
+
         {/* Controls at bottom right */}
         <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
         <NavigationControl position="bottom-right" showCompass={false} />
 
-        {/* Algorithm Visualization */}
-        {edgesFeatureCollection && (
-          <Source type="geojson" data={edgesFeatureCollection}>
-            <Layer
-              id="lineLayer"
-              type="line"
-              source="line-data"
-              paint={{
-                "line-color": "#6F7986",
-                "line-dasharray": [2, 1],
-                "line-width": 4,
-              }}
-            />
-          </Source>
-        )}
-
-        {/* Visualize all nodes */}
-        {nodes
-          .filter(
-            (n) => !!n.data.position?.latitudeI && !!n.data.position?.longitudeI
-          )
-          .map((node) => (
-            <MapNode
-              key={node.data.num}
-              onClick={updateActiveNode}
-              node={node}
-              isBase={false}
-              isActive={activeNodeId === node.data.num}
-            />
-          ))}
-
         {/* Visualize all waypoints */}
         {waypoints
-          .filter(
-            (n) => !!n.latitudeI && !!n.longitudeI // Shows pins with valid latitudes
-          )
-          .map((eachWaypoint) => (
-            <Waypoints key={eachWaypoint.id} currWaypoint={eachWaypoint} />
+          // Filter invalid locations (falsy lat or long, includes 0,0)
+          .filter((n) => !!n.latitudeI && !!n.longitudeI)
+          .map((waypoint) => (
+            <Waypoints key={waypoint.id} currWaypoint={waypoint} />
           ))}
 
-        <Waypoints currWaypoint={tempWaypoint}></Waypoints>
-
-        {/* Popups */}
-        {showInfoPane == "waypoint" ? (
-          <WaypointMenu />
-        ) : showInfoPane == "waypointEdit" ? (
-          <WaypointMenuEdit />
-        ) : showInfoPane == "algos" ? (
-          <AnalyticsPane />
-        ) : null}
-
-        <MapSelectedNodeMenu />
-
-        <NodeSearchDock />
-        <MapInteractionPane />
+        <Waypoints currWaypoint={tempWaypoint} />
       </Map>
+
+      {/* Popups */}
+      {showInfoPane == "waypoint" ? (
+        <WaypointMenu />
+      ) : showInfoPane == "waypointEdit" ? (
+        <WaypointMenuEdit />
+      ) : showInfoPane == "algos" ? (
+        <AnalyticsPane />
+      ) : null}
+
+      <MapSelectedNodeMenu />
+
+      <NodeSearchDock />
+      <MapInteractionPane />
     </div>
   );
 };

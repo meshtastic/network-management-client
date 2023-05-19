@@ -2,22 +2,23 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
-  MapIcon,
-  ChatBubbleBottomCenterTextIcon,
-  CircleStackIcon,
-  MapPinIcon,
-  RadioIcon,
-  CubeIcon,
-  EnvelopeIcon,
-  Cog8ToothIcon,
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  DocumentTextIcon,
-} from "@heroicons/react/24/outline";
+  ChevronsLeft,
+  ChevronsRight,
+  Component,
+  FileDigit,
+  Mails,
+  Map,
+  MapPin,
+  MessagesSquare,
+  RadioTower,
+  Router,
+  Settings,
+} from "lucide-react";
 
 import SidebarIcon from "@components/Sidebar/SidebarIcon";
 import SidebarLogo from "@components/Sidebar/SidebarLogo";
 import SidebarTab from "@components/Sidebar/SidebarTab";
+
 import { AppRoutes } from "@utils/routing";
 
 import "@components/Sidebar/Sidebar.css";
@@ -45,7 +46,7 @@ const Sidebar = () => {
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MAP)}
             >
-              <MapIcon className="w-6 h-6" />
+              <Map strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
 
             <SidebarIcon
@@ -54,7 +55,7 @@ const Sidebar = () => {
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MESSAGING)}
             >
-              <ChatBubbleBottomCenterTextIcon className="w-6 h-6" />
+              <MessagesSquare strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
           </SidebarTab>
 
@@ -65,7 +66,7 @@ const Sidebar = () => {
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MANAGE_NODES)}
             >
-              <CircleStackIcon className="w-6 h-6" />
+              <RadioTower strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
 
             <SidebarIcon
@@ -74,7 +75,7 @@ const Sidebar = () => {
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MANAGE_WAYPOINTS)}
             >
-              <MapPinIcon className="w-6 h-6" />
+              <MapPin strokeWidth={1.5} className="w-6 h-6 stroke-3/2" />
             </SidebarIcon>
           </SidebarTab>
 
@@ -84,29 +85,31 @@ const Sidebar = () => {
           >
             <SidebarIcon
               name="Configure Radio"
-              isActive={location.pathname === AppRoutes.CONFIGURE_RADIO}
+              isActive={location.pathname.includes(AppRoutes.CONFIGURE_RADIO)}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.CONFIGURE_RADIO)}
             >
-              <RadioIcon className="w-6 h-6" />
+              <Router strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
 
             <SidebarIcon
               name="Configure Modules"
-              isActive={location.pathname === AppRoutes.CONFIGURE_PLUGINS}
+              isActive={location.pathname.includes(AppRoutes.CONFIGURE_PLUGINS)}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.CONFIGURE_PLUGINS)}
             >
-              <CubeIcon className="w-6 h-6" />
+              <Component strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
 
             <SidebarIcon
               name="Configure Channels"
-              isActive={location.pathname === AppRoutes.CONFIGURE_CHANNELS}
+              isActive={location.pathname.includes(
+                AppRoutes.CONFIGURE_CHANNELS
+              )}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}
             >
-              <EnvelopeIcon className="w-6 h-6" />
+              <Mails strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
           </SidebarTab>
         </div>
@@ -119,7 +122,7 @@ const Sidebar = () => {
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.APPLICATION_STATE)}
             >
-              <DocumentTextIcon className="w-6 h-6" />
+              <FileDigit strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
 
             <SidebarIcon
@@ -128,7 +131,7 @@ const Sidebar = () => {
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.APPLICATION_SETTINGS)}
             >
-              <Cog8ToothIcon className="w-6 h-6" />
+              <Settings strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
           </SidebarTab>
 
@@ -141,9 +144,9 @@ const Sidebar = () => {
             onClick={() => setSidebarExpanded(!isSidebarExpanded)}
           >
             {isSidebarExpanded ? (
-              <ChevronDoubleLeftIcon className="w-6 h-6" />
+              <ChevronsLeft strokeWidth={1.5} className="w-6 h-6" />
             ) : (
-              <ChevronDoubleRightIcon className="w-6 h-6" />
+              <ChevronsRight strokeWidth={1.5} className="w-6 h-6" />
             )}
           </SidebarIcon>
         </div>
