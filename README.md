@@ -6,14 +6,6 @@
 </div>
 
 <p align="center">
-  <!-- [![status](https://img.shields.io/badge/status-stable-blue.svg)](https://github.com/tauri-apps/tauri/tree/dev)
-  [![License](https://img.shields.io/github/license/ajmcquilkin/meshtastic-network-management-client)](https://opencollective.com/tauri)
-  ![GitHub issues](https://img.shields.io/github/issues/ajmcquilkin/meshtastic-network-management-client)
-  [![website](https://img.shields.io/badge/website-meshtastic.org-green.svg)]([https://meshtastic.org](https://meshtastic.org/))
-  [![support meshtastic](https://img.shields.io/badge/sponsor-Open%20Collective-blue.svg)](https://opencollective.com/meshtastic) -->
-  
-  <!--   <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/ajmcquilkin/meshtastic-network-management-client/main"> -->
-  <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client/commits/main">
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ajmcquilkin/meshtastic-network-management-client">
   </a>
   
@@ -95,27 +87,11 @@ This project is still in early stages of development, but here's a rough roadmap
   - [ ] Region-based downloading
 - [ ] :page_facing_up: Network data export
 
-<!-- - [ ] :earth_americas: Node in-map viewing
-  - [x] Mapping service integration
-  - [x] Node positioning on map
-  - [ ] Offline map usage
-- [x] :electric_plug: Rust serial management of base node
-  - [x] Rust serialport integration
-  - [x] Rust protobuf decoding/encoding
-  - [x] Tauri event management
-  - [x] Redux saga event integration
-- [ ] :satellite: Messaging and channel management
-  - [x] Redux store + saga setup
-  - [ ] Channel management flows + UI
-  - [x] Messaging UI
-  - [ ] Local message backup
-- [ ] :memo: Network onboarding and configuration flow
-- [ ] :computer: Algorithmic network management
-  - [x] Tauri command infrastructure
-  - [ ] Graph initialization and management
-  - [x] Algorithm implementations
-  - [ ] Insight utility UI
-- [ ] :floppy_disk: Management summary and export flow -->
+## Hardware Requirements
+
+This project is built on the Meshtastic hardware ecosystem, and as such this client requires that you have access to a Meshtastic radio. This may change in the future, but for the time being a physical radio is required to use this client.
+
+I've written up some personal hardware recommendations [here](./HARDWARE.MD).
 
 ## :computer: Development
 
