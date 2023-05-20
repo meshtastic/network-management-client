@@ -87,7 +87,7 @@ This project is still in early stages of development, but here's a rough roadmap
   - [ ] Region-based downloading
 - [ ] :page_facing_up: Network data export
 
-## Hardware Requirements
+## 📻 Hardware Requirements
 
 This project is built on the Meshtastic hardware ecosystem, and as such this client requires that you have access to a Meshtastic radio. This may change in the future, but for the time being a physical radio is required to use this client.
 
