@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://rakwireless.kckb.st/ab922280">
-    <img alt="RAK Wireless Discount" src="https://img.shields.io/badge/Support%20Me-3%25%20RAK%20Discount-blue" />
+    <img alt="RAK Wireless Discount" src="https://img.shields.io/badge/Support%20Me-IOM8KP-blue" />
   </a>
 </p>
 
