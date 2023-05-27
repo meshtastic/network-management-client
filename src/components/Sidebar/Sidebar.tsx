@@ -22,6 +22,7 @@ import SidebarTab from "@components/Sidebar/SidebarTab";
 import { AppRoutes } from "@utils/routing";
 
 import "@components/Sidebar/Sidebar.css";
+import DefaultTooltip from "@components/DefaultTooltip";
 
 const Sidebar = () => {
   const [isSidebarExpanded, setSidebarExpanded] = useState(true);
@@ -40,115 +41,124 @@ const Sidebar = () => {
       <div className="flex flex-col flex-1 justify-between px-4 pt-4 pb-1">
         <div className="flex flex-col gap-6 mb-6">
           <SidebarTab title="Overview" isSidebarExpanded={isSidebarExpanded}>
-            <SidebarIcon
-              name="View Map"
-              isActive={location.pathname === AppRoutes.MAP}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.MAP)}
-            >
-              <Map strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
-
-            <SidebarIcon
-              name="Messaging"
-              isActive={location.pathname === AppRoutes.MESSAGING}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.MESSAGING)}
-            >
-              <MessagesSquare strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
+            <DefaultTooltip text="Messaging">
+              <SidebarIcon
+                name="Messaging"
+                isActive={location.pathname === AppRoutes.MESSAGING}
+                isSidebarExpanded={isSidebarExpanded}
+                onClick={() => navigateTo(AppRoutes.MESSAGING)}
+              >
+                <MessagesSquare strokeWidth={1.5} className="w-6 h-6" />
+              </SidebarIcon>
+            </DefaultTooltip>
           </SidebarTab>
 
           <SidebarTab title="Network" isSidebarExpanded={isSidebarExpanded}>
-            <SidebarIcon
-              name="Manage Nodes"
-              isActive={location.pathname === AppRoutes.MANAGE_NODES}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.MANAGE_NODES)}
-            >
-              <RadioTower strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
-
-            <SidebarIcon
-              name="Manage Waypoints"
-              isActive={location.pathname === AppRoutes.MANAGE_WAYPOINTS}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.MANAGE_WAYPOINTS)}
-            >
-              <MapPin strokeWidth={1.5} className="w-6 h-6 stroke-3/2" />
-            </SidebarIcon>
+            <DefaultTooltip text="Manage Nodes">
+              <SidebarIcon
+                name="Manage Nodes"
+                isActive={location.pathname === AppRoutes.MANAGE_NODES}
+                isSidebarExpanded={isSidebarExpanded}
+                onClick={() => navigateTo(AppRoutes.MANAGE_NODES)}
+              >
+                <RadioTower strokeWidth={1.5} className="w-6 h-6" />
+              </SidebarIcon>
+            </DefaultTooltip>
+            <DefaultTooltip text="Manage Waypoints">
+              <SidebarIcon
+                name="Manage Waypoints"
+                isActive={location.pathname === AppRoutes.MANAGE_WAYPOINTS}
+                isSidebarExpanded={isSidebarExpanded}
+                onClick={() => navigateTo(AppRoutes.MANAGE_WAYPOINTS)}
+              >
+                <MapPin strokeWidth={1.5} className="w-6 h-6 stroke-3/2" />
+              </SidebarIcon>
+            </DefaultTooltip>
           </SidebarTab>
 
           <SidebarTab
             title="Configuration"
             isSidebarExpanded={isSidebarExpanded}
           >
-            <SidebarIcon
-              name="Configure Radio"
-              isActive={location.pathname.includes(AppRoutes.CONFIGURE_RADIO)}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.CONFIGURE_RADIO)}
-            >
-              <Router strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
+            <DefaultTooltip text="Configure Radio">
+              <SidebarIcon
+                name="Configure Radio"
+                isActive={location.pathname.includes(AppRoutes.CONFIGURE_RADIO)}
+                isSidebarExpanded={isSidebarExpanded}
+                onClick={() => navigateTo(AppRoutes.CONFIGURE_RADIO)}
+              >
+                <Router strokeWidth={1.5} className="w-6 h-6" />
+              </SidebarIcon>
+            </DefaultTooltip>
 
-            <SidebarIcon
-              name="Configure Modules"
-              isActive={location.pathname.includes(AppRoutes.CONFIGURE_PLUGINS)}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.CONFIGURE_PLUGINS)}
-            >
-              <Component strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
+            <DefaultTooltip text="Configure Modules">
+              <SidebarIcon
+                name="Configure Modules"
+                isActive={location.pathname.includes(
+                  AppRoutes.CONFIGURE_PLUGINS
+                )}
+                isSidebarExpanded={isSidebarExpanded}
+                onClick={() => navigateTo(AppRoutes.CONFIGURE_PLUGINS)}
+              >
+                <Component strokeWidth={1.5} className="w-6 h-6" />
+              </SidebarIcon>
+            </DefaultTooltip>
 
-            <SidebarIcon
-              name="Configure Channels"
-              isActive={location.pathname.includes(
-                AppRoutes.CONFIGURE_CHANNELS
-              )}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}
-            >
-              <Mails strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
+            <DefaultTooltip text="Configure Channels">
+              <SidebarIcon
+                name="Configure Channels"
+                isActive={location.pathname.includes(
+                  AppRoutes.CONFIGURE_CHANNELS
+                )}
+                isSidebarExpanded={isSidebarExpanded}
+                onClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}
+              >
+                <Mails strokeWidth={1.5} className="w-6 h-6" />
+              </SidebarIcon>
+            </DefaultTooltip>
           </SidebarTab>
         </div>
 
         <div className="">
           <SidebarTab title="Settings" isSidebarExpanded={isSidebarExpanded}>
-            <SidebarIcon
-              name="Application State"
-              isActive={location.pathname === AppRoutes.APPLICATION_STATE}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.APPLICATION_STATE)}
-            >
-              <FileDigit strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
+            <DefaultTooltip text="Application State">
+              <SidebarIcon
+                name="Application State"
+                isActive={location.pathname === AppRoutes.APPLICATION_STATE}
+                isSidebarExpanded={isSidebarExpanded}
+                onClick={() => navigateTo(AppRoutes.APPLICATION_STATE)}
+              >
+                <FileDigit strokeWidth={1.5} className="w-6 h-6" />
+              </SidebarIcon>
+            </DefaultTooltip>
 
-            <SidebarIcon
-              name="Application Settings"
-              isActive={location.pathname === AppRoutes.APPLICATION_SETTINGS}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.APPLICATION_SETTINGS)}
-            >
-              <Settings strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
+            <DefaultTooltip text="Application Settings">
+              <SidebarIcon
+                name="Application Settings"
+                isActive={location.pathname === AppRoutes.APPLICATION_SETTINGS}
+                isSidebarExpanded={isSidebarExpanded}
+                onClick={() => navigateTo(AppRoutes.APPLICATION_SETTINGS)}
+              >
+                <Settings strokeWidth={1.5} className="w-6 h-6" />
+              </SidebarIcon>
+            </DefaultTooltip>
           </SidebarTab>
 
           <hr className="border-gray-100" />
-
-          <SidebarIcon
-            name="Collapse Sidebar"
-            isActive={false}
-            isSidebarExpanded={isSidebarExpanded}
-            onClick={() => setSidebarExpanded(!isSidebarExpanded)}
-          >
-            {isSidebarExpanded ? (
-              <ChevronsLeft strokeWidth={1.5} className="w-6 h-6" />
-            ) : (
-              <ChevronsRight strokeWidth={1.5} className="w-6 h-6" />
-            )}
-          </SidebarIcon>
+          <DefaultTooltip text="Collapse Sidebar">
+            <SidebarIcon
+              name="Collapse Sidebar"
+              isActive={false}
+              isSidebarExpanded={isSidebarExpanded}
+              onClick={() => setSidebarExpanded(!isSidebarExpanded)}
+            >
+              {isSidebarExpanded ? (
+                <ChevronsLeft strokeWidth={1.5} className="w-6 h-6" />
+              ) : (
+                <ChevronsRight strokeWidth={1.5} className="w-6 h-6" />
+              )}
+            </SidebarIcon>
+          </DefaultTooltip>
         </div>
       </div>
     </div>
