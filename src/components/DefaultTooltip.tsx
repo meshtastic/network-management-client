@@ -5,16 +5,19 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 export interface IDefaultTooltipProps {
   text: string;
   children: ReactNode;
-  deactivated: boolean;
+  deactivated?: boolean;
 }
 
-const DefaultTooltip = ({ text, children, deactivated }: IDefaultTooltipProps) => {
-  if(deactivated)  return <>{children}</>; 
+const DefaultTooltip = ({
+  text,
+  children,
+  deactivated,
+}: IDefaultTooltipProps) => {
+  if (deactivated) return <>{children}</>;
   return (
     <Tooltip.Provider>
-      <Tooltip.Root
-       delayDuration={300}>
-        <Tooltip.Trigger  asChild>{children}</Tooltip.Trigger>
+      <Tooltip.Root delayDuration={300}>
+        <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
             className="px-3 py-1.5 shadow-lg rounded-lg bg-white border border-gray-200 text-xs font-normal text-gray-400"
