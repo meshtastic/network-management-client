@@ -351,7 +351,7 @@ mod tests {
     use prost::Message;
     use tokio::sync::broadcast;
 
-    use crate::device::serial_connection;
+    use crate::device::connections;
 
     use super::*;
 
@@ -378,7 +378,7 @@ mod tests {
             });
 
         let (packet, packet_data) = mock_encoded_from_radio_packet(1, payload_variant);
-        let encoded_packet = serial_connection::helpers::format_serial_packet(packet_data);
+        let encoded_packet = connections::serial::helpers::format_serial_packet(packet_data);
 
         let mut mock_serial_buf: Vec<u8> = vec![];
         let (mock_tx, mut mock_rx) = broadcast::channel::<protobufs::FromRadio>(32);
@@ -410,8 +410,8 @@ mod tests {
         let (packet1, packet_data1) = mock_encoded_from_radio_packet(1, payload_variant1);
         let (packet2, packet_data2) = mock_encoded_from_radio_packet(2, payload_variant2);
 
-        let mut encoded_packet1 = serial_connection::helpers::format_serial_packet(packet_data1);
-        let encoded_packet2 = serial_connection::helpers::format_serial_packet(packet_data2);
+        let mut encoded_packet1 = connections::serial::helpers::format_serial_packet(packet_data1);
+        let encoded_packet2 = connections::serial::helpers::format_serial_packet(packet_data2);
 
         let mut mock_serial_buf: Vec<u8> = vec![];
         mock_serial_buf.append(&mut encoded_packet1);

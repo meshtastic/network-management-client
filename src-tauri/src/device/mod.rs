@@ -4,14 +4,14 @@ use std::collections::HashMap;
 
 use self::{
     helpers::generate_rand_id,
-    serial_connection::{MeshConnection, SerialConnection},
+    connections::serial::{MeshConnection, SerialConnection},
 };
 use crate::graph::graph_ds::Graph;
 
-pub mod connection;
+pub mod senders;
 pub mod handlers;
 pub mod helpers;
-pub mod serial_connection;
+pub mod connections;
 pub mod state;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, specta::Type)]

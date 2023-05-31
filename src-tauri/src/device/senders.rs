@@ -1,6 +1,6 @@
 #![allow(clippy::too_many_arguments)]
 
-use crate::device::serial_connection::{MeshConnection, PacketDestination};
+use crate::device::connections::serial::{MeshConnection, PacketDestination};
 
 use super::helpers::{generate_rand_id, get_current_time_u32};
 use super::MeshDevice;

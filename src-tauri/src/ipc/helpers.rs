@@ -6,7 +6,7 @@ use log::{debug, error, trace, warn};
 use tauri::api::notification::Notification;
 use tokio::sync::broadcast;
 
-use crate::device::serial_connection::{ConnectionError, MeshConnection};
+use crate::device::connections::serial::{ConnectionError, MeshConnection};
 use crate::device::SerialDeviceStatus;
 use crate::ipc::events::{dispatch_configuration_status, dispatch_rebooting_event};
 use crate::ipc::{events, ConfigurationStatus};

@@ -2,9 +2,9 @@ use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
-use crate::device;
-use crate::device::serial_connection::PacketDestination;
+use crate::device::connections::serial::PacketDestination;
 use crate::device::SerialDeviceStatus;
+use crate::device::connections::serial::SerialConnection;
 use crate::state;
 
 use app::protobufs;
@@ -48,7 +48,7 @@ pub async fn initialize_graph_state(
 #[tauri::command]
 pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
     debug!("Called get_all_serial_ports command");
-    let ports = device::serial_connection::SerialConnection::get_available_ports()?;
+    let ports =SerialConnection::get_available_ports()?;
     Ok(ports)
 }
 
@@ -299,8 +299,8 @@ pub async fn get_node_edges(
     let edges = geojson::FeatureCollection {
         bbox: None,
         foreign_members: None,
-        // features: edge_features, // * enable to see fully-connected network
-        features: vec![],
+        // features: vec![],
+        features: edge_features, // * enable to see fully-connected network
     };
 
     trace!("Found edges {:?}", edges);
