@@ -55,6 +55,46 @@ impl MeshConnection for SerialConnection {
         }
     }
 
+    async fn ping_radio(&mut self) -> Result<(), String> {
+        Ok(())
+    }
+
+    async fn disconnect(&mut self) -> Result<(), String> {
+        // Tell worker threads to shut down
+        if let Some(token) = self.cancellation_token.take() {
+            token.cancel();
+        }
+
+        // Close channels, which will kill held threads
+
+        self.on_decoded_packet = None;
+        self.write_input_tx = None;
+
+        // Wait for threads to close
+
+        if let Some(serial_read_handle) = self.serial_read_handle.take() {
+            serial_read_handle
+                .await
+                .map_err(|_e| "Error joining serial_read_handle".to_string())?;
+        }
+
+        if let Some(serial_write_handle) = self.serial_write_handle.take() {
+            serial_write_handle
+                .await
+                .map_err(|_e| "Error joining serial_write_handle".to_string())?;
+        }
+
+        if let Some(message_processing_handle) = self.message_processing_handle.take() {
+            message_processing_handle
+                .await
+                .map_err(|_e| "Error joining message_processing_handle".to_string())?;
+        }
+
+        trace!("Serial handlers fully disconnected");
+
+        Ok(())
+    }
+
     async fn configure(&mut self, config_id: u32) -> Result<(), String> {
         let to_radio = protobufs::ToRadio {
             payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),

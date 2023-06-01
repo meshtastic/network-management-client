@@ -10,10 +10,6 @@ use super::{
 
 pub mod serial;
 
-pub enum ConnectionParams {
-    Serial(serial::SerialConnectionParams),
-}
-
 #[derive(Clone, Copy, Debug, Default)]
 pub enum PacketDestination {
     Local,
@@ -28,14 +24,8 @@ pub trait MeshConnection {
     where
         Self: Sized;
 
-    // async fn connect(
-    //     &mut self,
-    //     app_handle: tauri::AppHandle,
-    //     params: ConnectionParams,
-    // ) -> Result<(), String>;
-
-    // async fn disconnect(&mut self) -> Result<(), String>;
-    // async fn ping_radio(&mut self) -> Result<(), String>;
+    async fn ping_radio(&mut self) -> Result<(), String>;
+    async fn disconnect(&mut self) -> Result<(), String>;
 
     async fn configure(&mut self, config_id: u32) -> Result<(), String>;
     async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
