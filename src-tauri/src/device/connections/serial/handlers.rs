@@ -7,7 +7,7 @@ use tauri::{async_runtime, Manager};
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
 
-use super::{MeshConnection, SerialConnection};
+use super::SerialConnection;
 
 // Handlers
 

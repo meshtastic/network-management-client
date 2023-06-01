@@ -1,12 +1,22 @@
-use crate::{analytics, device};
+use crate::{
+    analytics,
+    device::{self, connections::MeshConnection},
+};
 use std::{collections::HashMap, sync::Arc};
 use tauri::async_runtime;
 
-pub type ConnectedDevicesInner = Arc<async_runtime::Mutex<HashMap<String, device::MeshDevice>>>;
+pub type MeshDevicesInner = Arc<async_runtime::Mutex<HashMap<String, device::MeshDevice>>>;
 
 #[derive(Debug)]
-pub struct ConnectedDevices {
-    pub inner: ConnectedDevicesInner,
+pub struct MeshDevices {
+    pub inner: MeshDevicesInner,
+}
+
+pub type RadioConnectionsInner =
+    Arc<async_runtime::Mutex<HashMap<String, Box<dyn MeshConnection + Send + Sync>>>>;
+
+pub struct RadioConnections {
+    pub inner: RadioConnectionsInner,
 }
 
 pub type NetworkGraphInner = Arc<async_runtime::Mutex<Option<device::MeshGraph>>>;

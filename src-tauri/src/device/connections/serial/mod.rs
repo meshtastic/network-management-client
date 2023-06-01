@@ -13,17 +13,15 @@ use tauri::async_runtime;
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
 
-#[derive(Clone, Copy, Debug, Default)]
-pub enum PacketDestination {
-    Local,
-    #[default]
-    Broadcast,
-    Node(u32),
+use super::MeshConnection;
+
+pub struct SerialConnectionParams {
+    port_name: String,
 }
 
 #[derive(Debug, Default)]
 pub struct SerialConnection {
-    pub on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
+    on_decoded_packet: Option<broadcast::Receiver<protobufs::FromRadio>>,
     write_input_tx: Option<tokio::sync::mpsc::UnboundedSender<Vec<u8>>>,
 
     serial_read_handle: Option<async_runtime::JoinHandle<()>>,
@@ -40,14 +38,6 @@ impl Clone for SerialConnection {
     fn clone(&self) -> Self {
         Self::new()
     }
-}
-
-#[async_trait]
-pub trait MeshConnection {
-    fn new() -> Self;
-    async fn configure(&mut self, config_id: u32) -> Result<(), String>;
-    async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
-    fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String>;
 }
 
 #[async_trait]
@@ -87,12 +77,8 @@ impl MeshConnection for SerialConnection {
         Ok(())
     }
 
-    fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String> {
-        let binding = helpers::format_serial_packet(data);
-        let message_buffer: &[u8] = binding.as_slice();
-        port.write(message_buffer).map_err(|e| e.to_string())?;
-
-        Ok(())
+    fn get_on_decoded_packet(&self) -> Option<&broadcast::Receiver<protobufs::FromRadio>> {
+        self.on_decoded_packet.as_ref()
     }
 }
 
@@ -102,6 +88,14 @@ pub enum ConnectionError {
 }
 
 impl SerialConnection {
+    fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String> {
+        let binding = helpers::format_serial_packet(data);
+        let message_buffer: &[u8] = binding.as_slice();
+        port.write(message_buffer).map_err(|e| e.to_string())?;
+
+        Ok(())
+    }
+
     pub fn get_available_ports() -> Result<Vec<String>, String> {
         let available_ports = SerialPort::available_ports().map_err(|e| e.to_string())?;
 

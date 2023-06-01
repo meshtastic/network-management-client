@@ -2,9 +2,9 @@ use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
-use crate::device::connections::serial::PacketDestination;
-use crate::device::SerialDeviceStatus;
 use crate::device::connections::serial::SerialConnection;
+use crate::device::connections::PacketDestination;
+use crate::device::SerialDeviceStatus;
 use crate::state;
 
 use app::protobufs;
@@ -48,7 +48,7 @@ pub async fn initialize_graph_state(
 #[tauri::command]
 pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
     debug!("Called get_all_serial_ports command");
-    let ports =SerialConnection::get_available_ports()?;
+    let ports = SerialConnection::get_available_ports()?;
     Ok(ports)
 }
 
@@ -56,7 +56,8 @@ pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
 pub async fn connect_to_serial_port(
     port_name: String,
     app_handle: tauri::AppHandle,
-    connected_devices: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     debug!(
@@ -67,7 +68,8 @@ pub async fn connect_to_serial_port(
     helpers::initialize_serial_connection_handlers(
         port_name,
         app_handle,
-        connected_devices,
+        mesh_devices,
+        radio_connections,
         mesh_graph,
     )
     .await
@@ -76,15 +78,18 @@ pub async fn connect_to_serial_port(
 #[tauri::command]
 pub async fn disconnect_from_serial_port(
     port_name: String,
-    connected_devices: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called disconnect_from_serial_port command");
 
     {
-        let mut state_devices = connected_devices.inner.lock().await;
+        let mut state_devices = mesh_devices.inner.lock().await;
+        let mut connections_guard = radio_connections.inner.lock().await;
+
+        connections_guard.remove(&port_name);
 
         if let Some(device) = state_devices.get_mut(&port_name) {
-            device.connection.disconnect().await?;
             device.set_status(SerialDeviceStatus::Disconnected);
         }
 
@@ -96,18 +101,19 @@ pub async fn disconnect_from_serial_port(
 
 #[tauri::command]
 pub async fn disconnect_from_all_serial_ports(
-    connected_devices: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called disconnect_from_all_serial_ports command");
 
     {
-        let mut state_devices = connected_devices.inner.lock().await;
+        let mut connections_guard = radio_connections.inner.lock().await;
+        connections_guard.clear();
+
+        let mut state_devices = mesh_devices.inner.lock().await;
 
         // Disconnect from all serial ports
-        for (port_name, device) in state_devices.iter_mut() {
-            trace!("Disconnecting from device on port {}", port_name);
-
-            device.connection.disconnect().await?;
+        for (_port_name, device) in state_devices.iter_mut() {
             device.set_status(SerialDeviceStatus::Disconnected);
         }
 
@@ -124,18 +130,30 @@ pub async fn send_text(
     text: String,
     channel: u32,
     app_handle: tauri::AppHandle,
-    connected_devices: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called send_text command",);
     trace!("Called with text {} on channel {}", text, channel);
 
-    let mut devices_guard = connected_devices.inner.lock().await;
+    let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device
-        .send_text(text.clone(), PacketDestination::Broadcast, true, channel)
+    let mut connections_guard = radio_connections.inner.lock().await;
+    let connection = connections_guard
+        .get_mut(&port_name)
+        .ok_or("Radio connection not initialized")?;
+
+    connection
+        .send_text(
+            device,
+            text.clone(),
+            PacketDestination::Broadcast,
+            true,
+            channel,
+        )
         .await?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
@@ -147,17 +165,23 @@ pub async fn send_text(
 pub async fn update_device_config(
     port_name: String,
     config: protobufs::Config,
-    connected_devices: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called update_device_config command");
     trace!("Called with config {:?}", config);
 
-    let mut devices_guard = connected_devices.inner.lock().await;
+    let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device.update_device_config(config).await?;
+    let mut connections_guard = radio_connections.inner.lock().await;
+    let connection = connections_guard
+        .get_mut(&port_name)
+        .ok_or("Radio connection not initialized")?;
+
+    connection.update_device_config(device, config).await?;
 
     Ok(())
 }
@@ -166,17 +190,23 @@ pub async fn update_device_config(
 pub async fn update_device_user(
     port_name: String,
     user: protobufs::User,
-    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called update_device_user command");
     trace!("Called with user {:?}", user);
 
-    let mut devices_guard = mesh_device.inner.lock().await;
+    let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
         .get_mut(&port_name)
         .ok_or("Device not connected")?;
 
-    device.update_device_user(user).await?;
+    let mut connections_guard = radio_connections.inner.lock().await;
+    let connection = connections_guard
+        .get_mut(&port_name)
+        .ok_or("Radio connection not initialized")?;
+
+    connection.update_device_user(device, user).await?;
 
     Ok(())
 }
@@ -187,19 +217,30 @@ pub async fn send_waypoint(
     waypoint: protobufs::Waypoint,
     channel: u32,
     app_handle: tauri::AppHandle,
-    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called send_waypoint command");
     trace!("Called on channel {} with waypoint {:?}", channel, waypoint);
 
-    let mut devices_guard = mesh_device.inner.lock().await;
+    let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
         .get_mut(&port_name)
-        .ok_or("Device not connected")
-        .map_err(|e| e.to_string())?;
+        .ok_or("Device not connected")?;
 
-    device
-        .send_waypoint(waypoint, PacketDestination::Broadcast, true, channel)
+    let mut connections_guard = radio_connections.inner.lock().await;
+    let connection = connections_guard
+        .get_mut(&port_name)
+        .ok_or("Radio connection not initialized")?;
+
+    connection
+        .send_waypoint(
+            device,
+            waypoint,
+            PacketDestination::Broadcast,
+            true,
+            channel,
+        )
         .await?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
@@ -228,7 +269,7 @@ pub fn generate_edge_properties(snr: f64) -> serde_json::Map<String, serde_json:
 #[tauri::command]
 pub async fn get_node_edges(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
-    connected_devices: tauri::State<'_, state::ConnectedDevices>,
+    connected_devices: tauri::State<'_, state::MeshDevices>,
 ) -> Result<GraphGeoJSONResult, CommandError> {
     debug!("Called get_node_edges command");
 
@@ -395,17 +436,22 @@ pub async fn run_algorithms(
 #[tauri::command]
 pub async fn start_configuration_transaction(
     port_name: String,
-    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called start_configuration_transaction command");
 
-    let mut devices_guard = mesh_device.inner.lock().await;
+    let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
         .get_mut(&port_name)
-        .ok_or("Device not connected")
-        .map_err(|e| e.to_string())?;
+        .ok_or("Device not connected")?;
 
-    device.start_configuration_transaction().await?;
+    let mut connections_guard = radio_connections.inner.lock().await;
+    let connection = connections_guard
+        .get_mut(&port_name)
+        .ok_or("Radio connection not initialized")?;
+
+    connection.start_configuration_transaction(device).await?;
 
     Ok(())
 }
@@ -414,17 +460,22 @@ pub async fn start_configuration_transaction(
 #[tauri::command]
 pub async fn commit_configuration_transaction(
     port_name: String,
-    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called commit_configuration_transaction command");
 
-    let mut devices_guard = mesh_device.inner.lock().await;
+    let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
         .get_mut(&port_name)
-        .ok_or("Device not connected")
-        .map_err(|e| e.to_string())?;
+        .ok_or("Device not connected")?;
 
-    device.commit_configuration_transaction().await?;
+    let mut connections_guard = radio_connections.inner.lock().await;
+    let connection = connections_guard
+        .get_mut(&port_name)
+        .ok_or("Radio connection not initialized")?;
+
+    connection.commit_configuration_transaction(device).await?;
 
     Ok(())
 }
@@ -434,31 +485,40 @@ pub async fn update_device_config_bulk(
     port_name: String,
     app_handle: tauri::AppHandle,
     config: DeviceBulkConfig,
-    mesh_device: tauri::State<'_, state::ConnectedDevices>,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
     debug!("Called commit_configuration_transaction command");
 
-    let mut devices_guard = mesh_device.inner.lock().await;
+    let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
         .get_mut(&port_name)
-        .ok_or("Device not connected")
-        .map_err(|e| e.to_string())?;
+        .ok_or("Device not connected")?;
 
-    device.start_configuration_transaction().await?;
+    let mut connections_guard = radio_connections.inner.lock().await;
+    let connection = connections_guard
+        .get_mut(&port_name)
+        .ok_or("Radio connection not initialized")?;
+
+    connection.start_configuration_transaction(device).await?;
 
     if let Some(radio_config) = config.radio {
-        device.set_local_config(radio_config).await?;
+        connection.set_local_config(device, radio_config).await?;
     }
 
     if let Some(module_config) = config.module {
-        device.set_local_module_config(module_config).await?;
+        connection
+            .set_local_module_config(device, module_config)
+            .await?;
     }
 
     if let Some(channel_config) = config.channels {
-        device.set_channel_config(channel_config).await?;
+        connection
+            .set_channel_config(device, channel_config)
+            .await?;
     }
 
-    device.commit_configuration_transaction().await?;
+    connection.commit_configuration_transaction(device).await?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 

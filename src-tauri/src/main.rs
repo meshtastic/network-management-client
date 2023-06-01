@@ -86,7 +86,11 @@ fn main() {
 
     info!("Application starting");
 
-    let initial_device_state = state::ConnectedDevices {
+    let initial_mesh_devices_state = state::MeshDevices {
+        inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
+    };
+
+    let initial_radio_connections_state = state::RadioConnections {
         inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
     };
 
@@ -110,9 +114,10 @@ fn main() {
             }
 
             // Manage application state
-            app.app_handle().manage(initial_analytics_state);
+            app.app_handle().manage(initial_mesh_devices_state);
+            app.app_handle().manage(initial_radio_connections_state);
             app.app_handle().manage(initial_graph_state);
-            app.app_handle().manage(initial_device_state);
+            app.app_handle().manage(initial_analytics_state);
 
             // Autoconnect port state needs to be set after being mutated by CLI parser
             app.app_handle().manage(inital_autoconnect_state);
