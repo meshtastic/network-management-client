@@ -1,14 +1,15 @@
 use app::protobufs;
 use async_trait::async_trait;
 use prost::Message;
-use tokio::sync::broadcast;
 
 use super::{
     helpers::{generate_rand_id, get_current_time_u32},
     MeshDevice,
 };
 
+pub mod helpers;
 pub mod serial;
+pub mod tcp;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub enum PacketDestination {
@@ -20,22 +21,25 @@ pub enum PacketDestination {
 
 #[async_trait]
 pub trait MeshConnection {
-    fn new() -> Self
-    where
-        Self: Sized;
-
     async fn ping_radio(&mut self) -> Result<(), String>;
     async fn disconnect(&mut self) -> Result<(), String>;
 
-    async fn configure(&mut self, config_id: u32) -> Result<(), String>;
+    // async fn configure(&mut self, config_id: u32) -> Result<(), String>;
     async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
-    // fn write_to_radio(&mut self, data: Vec<u8>) -> Result<(), String>;
-
-    // Getters and setters
-
-    fn get_on_decoded_packet(&self) -> Option<&broadcast::Receiver<protobufs::FromRadio>>;
+    // fn write_to_radio(&mut self, data: Vec<u8>) -> Result<(), String>; // ! Serial connection doesn't save port
 
     // Default implementations
+
+    async fn configure(&mut self, config_id: u32) -> Result<(), String> {
+        let to_radio = protobufs::ToRadio {
+            payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),
+        };
+
+        let packet_buf = to_radio.encode_to_vec();
+        self.send_raw(packet_buf).await?;
+
+        Ok(())
+    }
 
     async fn send_text(
         &mut self,

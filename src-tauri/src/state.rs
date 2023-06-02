@@ -5,7 +5,9 @@ use crate::{
 use std::{collections::HashMap, sync::Arc};
 use tauri::async_runtime;
 
-pub type MeshDevicesInner = Arc<async_runtime::Mutex<HashMap<String, device::MeshDevice>>>;
+pub type DeviceKey = String;
+
+pub type MeshDevicesInner = Arc<async_runtime::Mutex<HashMap<DeviceKey, device::MeshDevice>>>;
 
 #[derive(Debug)]
 pub struct MeshDevices {
@@ -13,7 +15,7 @@ pub struct MeshDevices {
 }
 
 pub type RadioConnectionsInner =
-    Arc<async_runtime::Mutex<HashMap<String, Box<dyn MeshConnection + Send + Sync>>>>;
+    Arc<async_runtime::Mutex<HashMap<DeviceKey, Box<dyn MeshConnection + Send + Sync>>>>;
 
 pub struct RadioConnections {
     pub inner: RadioConnectionsInner,
@@ -32,7 +34,7 @@ pub struct AnalyticsState {
     pub inner: AnalyticsStateInner,
 }
 
-pub type AutoConnectStateInner = Arc<async_runtime::Mutex<Option<String>>>;
+pub type AutoConnectStateInner = Arc<async_runtime::Mutex<Option<DeviceKey>>>;
 
 #[derive(Debug)]
 pub struct AutoConnectState {

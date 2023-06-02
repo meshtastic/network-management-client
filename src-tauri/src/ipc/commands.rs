@@ -2,9 +2,14 @@ use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
+use crate::device;
+use crate::device::connections;
 use crate::device::connections::serial::SerialConnection;
+use crate::device::connections::MeshConnection;
 use crate::device::connections::PacketDestination;
 use crate::device::SerialDeviceStatus;
+use crate::ipc::helpers::spawn_configuration_timeout_handler;
+use crate::ipc::helpers::spawn_decoded_handler;
 use crate::state;
 
 use app::protobufs;
@@ -76,12 +81,73 @@ pub async fn connect_to_serial_port(
 }
 
 #[tauri::command]
-pub async fn disconnect_from_serial_port(
+pub async fn connect_to_tcp_port(
+    address: String,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
+) -> Result<(), CommandError> {
+    debug!(
+        "Called connect_to_tcp_port command with address \"{}\"",
+        address
+    );
+
+    let mut connection = connections::tcp::TcpConnection::new();
+    let mut device = device::MeshDevice::new();
+
+    device.set_status(SerialDeviceStatus::Connecting);
+
+    connection.connect(address.clone()).await?;
+
+    // Get copy of decoded_listener by resubscribing
+    let decoded_listener = connection
+        .on_decoded_packet
+        .as_ref()
+        .ok_or("Decoded packet listener not open")?
+        .resubscribe();
+
+    device.set_status(SerialDeviceStatus::Configuring);
+    connection.configure(device.config_id).await?;
+
+    let handle = app_handle.clone();
+    let mesh_devices_arc = mesh_devices.inner.clone();
+    let radio_connections_arc = radio_connections.inner.clone();
+    let graph_arc = mesh_graph.inner.clone();
+
+    // Save device into Tauri state
+    {
+        let mut devices_guard = mesh_devices_arc.lock().await;
+        devices_guard.insert(address.clone(), device);
+    }
+
+    // Save connection into Tauri state
+    {
+        let mut connections_guard = radio_connections_arc.lock().await;
+        connections_guard.insert(address.clone(), Box::new(connection));
+    }
+
+    // // * Needs the device struct and port name to be loaded into Tauri state before running
+    spawn_configuration_timeout_handler(handle.clone(), mesh_devices_arc.clone(), address.clone());
+
+    spawn_decoded_handler(
+        handle,
+        decoded_listener,
+        mesh_devices_arc,
+        graph_arc,
+        address,
+    );
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn drop_device_connection(
     port_name: String,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
-    debug!("Called disconnect_from_serial_port command");
+    debug!("Called drop_device_connection command");
 
     {
         let mut state_devices = mesh_devices.inner.lock().await;
@@ -100,11 +166,11 @@ pub async fn disconnect_from_serial_port(
 }
 
 #[tauri::command]
-pub async fn disconnect_from_all_serial_ports(
+pub async fn drop_all_device_connections(
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
-    debug!("Called disconnect_from_all_serial_ports command");
+    debug!("Called drop_all_device_connections command");
 
     {
         let mut connections_guard = radio_connections.inner.lock().await;
