@@ -6,7 +6,7 @@ import Sidebar from "@components/Sidebar/Sidebar";
 
 import MapPage from "@components/pages/MapPage";
 import FallbackPage from "@components/pages/FallbackPage";
-import SerialConnectPage from "@components/pages/SerialConnectPage";
+import ConnectPage from "@components/pages/ConnectPage";
 import MessagingPage from "@components/pages/MessagingPage";
 import ManageWaypointPage from "@components/pages/ManageWaypointPage";
 import ManageNodePage from "@components/pages/ManageNodePage";
@@ -36,7 +36,7 @@ const App = () => {
     setSplashMounted(false);
   };
 
-  const handleSerialConnectUnmount = () => {
+  const handleOnboardUnmount = () => {
     setOnboardMounted(false);
   };
 
@@ -45,7 +45,7 @@ const App = () => {
       {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
 
       {isOnboardMounted && (
-        <SerialConnectPage unmountSelf={handleSerialConnectUnmount} />
+        <ConnectPage unmountSelf={handleOnboardUnmount} />
       )}
 
       <Routes>

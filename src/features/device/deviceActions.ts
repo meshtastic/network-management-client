@@ -12,7 +12,8 @@ export const requestAvailablePorts = createAction(
 export const requestInitializeApplication = createAction("@device/request-initialize-application");
 
 export const requestConnectToDevice = createAction<{
-  portName: string;
+  portName?: string;
+  socketAddress?: string;
   setPrimary: boolean;
 }>("@device/request-connect");
 

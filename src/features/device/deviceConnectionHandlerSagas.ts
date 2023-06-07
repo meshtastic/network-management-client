@@ -8,6 +8,7 @@ import { connectionSliceActions } from "@features/connection/connectionSlice";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestDisconnectFromDevice } from "@features/device/deviceActions";
 import { mapSliceActions } from "@features/map/mapSlice";
+import { error } from "@utils/errors";
 
 export type GraphGeoJSONResult = {
   nodes: GeoJSON.FeatureCollection,
@@ -132,20 +133,23 @@ export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
       const {
         successful,
         portName,
+        socketAddress,
         message,
       }: {
         successful: boolean;
-        portName: string;
+        portName?: string;
+        socketAddress?: string;
         message: string | null;
       } = yield take(channel);
 
+      const target = portName ?? socketAddress ?? error("Neither portName nor socketAddress are configured");
       if (!successful) {
-        yield put(requestDisconnectFromDevice(portName));
+        yield put(requestDisconnectFromDevice(target));
       }
 
       yield put(
         connectionSliceActions.setConnectionState({
-          portName,
+          identifier: target,
           status: successful
             ? { status: "SUCCESSFUL" }
             : { status: "FAILED", message: message ?? "" },

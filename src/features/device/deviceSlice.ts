@@ -11,6 +11,7 @@ export interface IDeviceState {
   activeNode: app_device_MeshNode["data"]["num"] | null;
   availableSerialPorts: string[] | null;
   primarySerialPort: string | null;
+  primarySocketAddress: string | null;
   activeWaypoint: app_protobufs_Waypoint["id"] | null;
   allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
   autoConnectPort: string | null; // Port to automatically connect to on startup
@@ -23,6 +24,7 @@ export const initialDeviceState: IDeviceState = {
   activeNode: null,
   availableSerialPorts: null,
   primarySerialPort: null,
+  primarySocketAddress: null,
   activeWaypoint: null,
   allowOnMapWaypointCreation: false,
   autoConnectPort: null,
@@ -43,6 +45,10 @@ export const deviceSlice = createSlice({
 
     setPrimarySerialPort: (state, action: PayloadAction<string | null>) => {
       state.primarySerialPort = action.payload;
+    },
+
+    setPrimarySocketAddress: (state, action: PayloadAction<string | null>) => {
+      state.primarySocketAddress = action.payload;
     },
 
     setDevice: (state, action: PayloadAction<app_device_MeshDevice | null>) => {

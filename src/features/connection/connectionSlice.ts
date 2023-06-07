@@ -15,9 +15,9 @@ export const connectionSlice = createSlice({
   reducers: {
     setConnectionState: (
       state,
-      action: PayloadAction<{ portName: string; status: RequestStatus }>
+      action: PayloadAction<{ identifier: string; status: RequestStatus }>
     ) => {
-      state.connections[action.payload.portName] = action.payload.status;
+      state.connections[action.payload.identifier] = action.payload.status;
     },
     clearAllConnectionState: (state) => {
       state.connections = {};

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { open } from "@tauri-apps/api/shell";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, LinkIcon } from "@heroicons/react/24/outline";
 
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
@@ -22,17 +22,19 @@ import {
 import { requestSliceActions } from "@features/requests/requestReducer";
 
 import "@components/SplashScreen/SplashScreen.css";
+import {Input} from "@material-tailwind/react";
 
 export interface IOnboardPageProps {
   unmountSelf: () => void;
 }
 
-const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
+const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const autoConnectPort = useSelector(selectAutoConnectPort());
 
   const [selectedPortName, setSelectedPortName] = useState("");
+  const [enteredSocketAddress, setEnteredSocketAddress] = useState("");
   const [isScreenActive, setScreenActive] = useState(true);
 
   // autoConnectPort takes priority over selectedPortName if it exists
@@ -44,6 +46,12 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   const requestPorts = () => {
     dispatch(requestAvailablePorts());
+  };
+
+  const handleSocketConnect = () => {
+    setEnteredSocketAddress(enteredSocketAddress)
+    const address = enteredSocketAddress.includes(":") ? enteredSocketAddress : enteredSocketAddress + ":4403";
+    dispatch(requestConnectToDevice({ socketAddress: address, setPrimary: true }));
   };
 
   const refreshPorts = () => {
@@ -58,7 +66,7 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   const handlePortSelected = (portName: string) => {
     setSelectedPortName(portName);
-    dispatch(requestConnectToDevice({ portName, setPrimary: true }));
+    dispatch(requestConnectToDevice({ portName: portName, setPrimary: true }));
   };
 
   const openExternalLink = (url: string) => () => {
@@ -166,6 +174,31 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
           <ArrowPathIcon className="text-gray-400 w-6 h-6 hover:cursor-pointer" />
           <p className="my-auto text-gray-500">Refresh ports</p>
         </button>
+
+        <div className="flex py-5 px-5 justify-center">
+          <div className="max-w-2xl w-full flex items-center">
+            <div className="flex-grow border-t border-gray-400"/>
+            <span className="flex-shrink mx-4 text-gray-400">Or</span>
+            <div className="flex-grow border-t border-gray-400"/>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <div className="flex flex-row bg-white rounded-lg border max-w-lg w-full border-gray-400 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg">
+            <input
+                className="flex-1 px-8 py-6 text-gray-600 placeholder:text-gray-400 h-full bg-transparent focus:outline-none"
+                type="text"
+                enterKeyHint="go"
+                placeholder="IP address or host name"
+                value={enteredSocketAddress}
+                onChange={(event) => setEnteredSocketAddress(event.target.value)}
+            />
+            <div className="my-5 w-[1px] bg-gray-400" />
+            <button type="submit" className="px-5" onClick={handleSocketConnect}>
+              <LinkIcon className="w-6 h-6 text-gray-400" />
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="flex-1 relative">
@@ -197,4 +230,4 @@ const SerialConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     </div>
   );
 };
-export default SerialConnectPage;
+export default ConnectPage;
