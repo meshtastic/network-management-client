@@ -2,6 +2,7 @@ use app::protobufs;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::collections::HashMap;
+use crate::state::DeviceKey;
 
 pub mod commands;
 pub mod events;
@@ -44,7 +45,7 @@ pub struct APMincutStringResults {
 #[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ConfigurationStatus {
-    pub port_name: String,
+    pub device_key: DeviceKey,
     pub successful: bool,
     pub message: Option<String>,
 }

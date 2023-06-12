@@ -5,6 +5,8 @@ import type {
   app_protobufs_Waypoint,
 } from "@bindings/index";
 
+import type { DeviceKey } from "@features/device/deviceSagas";
+
 export const requestAvailablePorts = createAction(
   "@device/request-available-ports"
 );
@@ -17,7 +19,7 @@ export const requestConnectToDevice = createAction<{
   setPrimary: boolean;
 }>("@device/request-connect");
 
-export const requestDisconnectFromDevice = createAction<string>(
+export const requestDisconnectFromDevice = createAction<DeviceKey>(
   "@device/request-disconnect"
 );
 

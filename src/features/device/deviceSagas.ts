@@ -36,6 +36,9 @@ import { requestSliceActions } from "@features/requests/requestReducer";
 import type { CommandError } from "@utils/errors";
 import { error } from "@utils/errors";
 
+// TODO what's a good place for this?
+export type DeviceKey = string;
+
 function* getAutoConnectPortWorker(
   action: ReturnType<typeof requestAutoConnectPort>
 ) {
@@ -145,7 +148,7 @@ function* connectToDeviceWorker(
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
     yield put(
       connectionSliceActions.setConnectionState({
-        identifier: action.payload.portName ?? action.payload.socketAddress ?? error("Neither portName nor socketAddress were set"),
+        deviceKey: action.payload.portName ?? action.payload.socketAddress ?? error("Neither portName nor socketAddress were set"),
         status: {
           status: "PENDING",
         },
@@ -200,7 +203,7 @@ function* connectToDeviceWorker(
 
     yield put(
       connectionSliceActions.setConnectionState({
-        identifier: action.payload.portName ?? action.payload.socketAddress ?? error("Neither portName nor socketAddress were set"),
+        deviceKey: action.payload.portName ?? action.payload.socketAddress ?? error("Neither portName nor socketAddress were set"),
         status: {
           status: "FAILED",
           message: (e as CommandError).message,
@@ -219,6 +222,7 @@ function* disconnectFromDeviceWorker(
 ) {
   try {
     // FIXME disconnect from socket as well
+    // FIXME disconnect_from_serial_port does not exist
     yield call(invoke, "disconnect_from_serial_port", {
       portName: action.payload,
     });
@@ -233,6 +237,7 @@ function* disconnectFromDeviceWorker(
 function* disconnectFromAllDevicesWorker() {
   try {
     // FIXME disconnect from socket as well
+    // FIXME disconnect_from_all_serial_ports does not exist
     yield call(invoke, "disconnect_from_all_serial_ports");
     yield put(deviceSliceActions.setPrimarySerialPort(null));
     yield put(deviceSliceActions.setActiveNode(null));

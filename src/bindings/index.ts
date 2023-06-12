@@ -20,15 +20,11 @@ export type app_protobufs_config_lo_ra_config_ModemPreset = "longFast" | "longSl
  */
 export type app_protobufs_module_config_PayloadVariant = { mqtt: app_protobufs_module_config_MqttConfig } | { serial: app_protobufs_module_config_SerialConfig } | { externalNotification: app_protobufs_module_config_ExternalNotificationConfig } | { storeForward: app_protobufs_module_config_StoreForwardConfig } | { rangeTest: app_protobufs_module_config_RangeTestConfig } | { telemetry: app_protobufs_module_config_TelemetryConfig } | { cannedMessage: app_protobufs_module_config_CannedMessageConfig } | { audio: app_protobufs_module_config_AudioConfig } | { remoteHardware: app_protobufs_module_config_RemoteHardwareConfig }
 
-export type app_ipc_ConfigurationStatus = { portName: string; successful: boolean; message: string | null }
-
 /**
  * 
  * Log levels, chosen to match python logging conventions.
  */
 export type app_protobufs_from_radio_PayloadVariant = { packet: app_protobufs_MeshPacket } | { myInfo: app_protobufs_MyNodeInfo } | { nodeInfo: app_protobufs_NodeInfo } | { config: app_protobufs_Config } | { logRecord: app_protobufs_LogRecord } | { configCompleteId: number } | { rebooted: boolean } | { moduleConfig: app_protobufs_ModuleConfig } | { channel: app_protobufs_Channel } | { queueStatus: app_protobufs_QueueStatus } | { xmodemPacket: app_protobufs_XModem } | { metadata: app_protobufs_DeviceMetadata }
-
-export type app_ipc_DeviceBulkConfig = { radio: app_protobufs_LocalConfig | null; module: app_protobufs_LocalModuleConfig | null; channels: app_protobufs_Channel[] | null }
 
 /**
  * 
@@ -195,7 +191,7 @@ export type app_protobufs_ChannelSettings = { channelNum: number; psk: number[];
  * 
  * Ethernet or WiFi connection status
  */
-export type app_protobufs_NetworkConnectionStatus = { socketAddress: number; isConnected: boolean; isMqttConnected: boolean; isSyslogConnected: boolean }
+export type app_protobufs_NetworkConnectionStatus = { ipAddress: number; isConnected: boolean; isMqttConnected: boolean; isSyslogConnected: boolean }
 
 /**
  * 
@@ -403,8 +399,6 @@ export type app_protobufs_HardwareMessage = { type: number; gpioMask: string; gp
  */
 export type app_protobufs_config_DeviceConfig = { role: number; serialEnabled: boolean; debugLogEnabled: boolean; buttonGpio: number; buzzerGpio: number; rebroadcastMode: number; nodeInfoBroadcastSecs: number; doubleTapAsButtonPress: boolean }
 
-export type app_ipc_APMincutStringResults = { apResult: number[]; mincutResult: ([number, number])[]; diffcenResult: { [key: number]: { [key: number]: { [key: number]: number } } } }
-
 /**
  * 
  * For any new 'apps' that run on the device or via sister apps on phones/PCs they should pick and use a
@@ -478,6 +472,8 @@ export type app_protobufs_Constants = "zero" | "dataPayloadLen"
  * A message used in our Dynamic Source Routing protocol (RFC 4728 based)
  */
 export type app_protobufs_RouteDiscovery = { route: number[] }
+
+export type app_ipc_DeviceBulkConfig = { radio: app_protobufs_LocalConfig | null; module: app_protobufs_LocalModuleConfig | null; channels: app_protobufs_Channel[] | null }
 
 /**
  * 
@@ -651,6 +647,8 @@ export type app_protobufs_EthernetConnectionStatus = { status: app_protobufs_Net
  */
 export type app_protobufs_Position = { latitudeI: number; longitudeI: number; altitude: number; time: number; locationSource: number; altitudeSource: number; timestamp: number; timestampMillisAdjust: number; altitudeHae: number; altitudeGeoidalSeparation: number; pdop: number; hdop: number; vdop: number; gpsAccuracy: number; groundSpeed: number; groundTrack: number; fixQuality: number; fixType: number; satsInView: number; sensorId: number; nextUpdate: number; seqNumber: number }
 
+export type app_ipc_ConfigurationStatus = { deviceKey: string; successful: boolean; message: string | null }
+
 /**
  * 
  * Packets/commands to the radio will be written (reliably) to the toRadio characteristic.
@@ -697,6 +695,8 @@ export type app_protobufs_routing_Error = "none" | "noRoute" | "gotNak" | "timeo
  * The on-disk saved channels
  */
 export type app_protobufs_ChannelFile = { channels: app_protobufs_Channel[]; version: number }
+
+export type app_ipc_APMincutStringResults = { apResult: number[]; mincutResult: ([number, number])[]; diffcenResult: { [key: number]: { [key: number]: { [key: number]: number } } } }
 
 export type app_device_TelemetryPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_Telemetry }
 

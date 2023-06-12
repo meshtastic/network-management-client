@@ -9,6 +9,7 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestDisconnectFromDevice } from "@features/device/deviceActions";
 import { mapSliceActions } from "@features/map/mapSlice";
 import { error } from "@utils/errors";
+import type { DeviceKey } from "@features/device/deviceSagas";
 
 export type GraphGeoJSONResult = {
   nodes: GeoJSON.FeatureCollection,
@@ -132,24 +133,21 @@ export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const {
         successful,
-        portName,
-        socketAddress,
+        deviceKey,
         message,
       }: {
         successful: boolean;
-        portName?: string;
-        socketAddress?: string;
+        deviceKey: DeviceKey;
         message: string | null;
       } = yield take(channel);
 
-      const target = portName ?? socketAddress ?? error("Neither portName nor socketAddress are configured");
       if (!successful) {
-        yield put(requestDisconnectFromDevice(target));
+        yield put(requestDisconnectFromDevice(deviceKey));
       }
 
       yield put(
         connectionSliceActions.setConnectionState({
-          identifier: target,
+          deviceKey: deviceKey,
           status: successful
             ? { status: "SUCCESSFUL" }
             : { status: "FAILED", message: message ?? "" },
