@@ -5,9 +5,15 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 export interface IDefaultTooltipProps {
   text: string;
   children: ReactNode;
+  deactivated?: boolean;
 }
 
-const DefaultTooltip = ({ text, children }: IDefaultTooltipProps) => {
+const DefaultTooltip = ({
+  text,
+  children,
+  deactivated,
+}: IDefaultTooltipProps) => {
+  if (deactivated) return <>{children}</>;
   return (
     <Tooltip.Provider>
       <Tooltip.Root delayDuration={300}>

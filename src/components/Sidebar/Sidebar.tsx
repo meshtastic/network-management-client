@@ -22,6 +22,7 @@ import SidebarTab from "@components/Sidebar/SidebarTab";
 import { AppRoutes } from "@utils/routing";
 
 import "@components/Sidebar/Sidebar.css";
+import DefaultTooltip from "@components/DefaultTooltip";
 
 const Sidebar = () => {
   const [isSidebarExpanded, setSidebarExpanded] = useState(true);
@@ -40,15 +41,6 @@ const Sidebar = () => {
       <div className="flex flex-col flex-1 justify-between px-4 pt-4 pb-1">
         <div className="flex flex-col gap-6 mb-6">
           <SidebarTab title="Overview" isSidebarExpanded={isSidebarExpanded}>
-            <SidebarIcon
-              name="View Map"
-              isActive={location.pathname === AppRoutes.MAP}
-              isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.MAP)}
-            >
-              <Map strokeWidth={1.5} className="w-6 h-6" />
-            </SidebarIcon>
-
             <SidebarIcon
               name="Messaging"
               isActive={location.pathname === AppRoutes.MESSAGING}
