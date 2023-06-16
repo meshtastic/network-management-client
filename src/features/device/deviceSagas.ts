@@ -87,16 +87,14 @@ function* subscribeAll() {
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const rebootChannel: RebootChannel = yield call(
-    createRebootChannel
-  );
+  const rebootChannel: RebootChannel = yield call(createRebootChannel);
 
   yield all([
     call(handleDeviceUpdateChannel, deviceUpdateChannel),
     call(handleDeviceDisconnectChannel, deviceDisconnectChannel),
     call(handleGraphUpdateChannel, graphUpdateChannel),
     call(handleConfigStatusChannel, configStatusChannel),
-    call(handleRebootChannel, rebootChannel)
+    call(handleRebootChannel, rebootChannel),
   ]);
 }
 
@@ -124,7 +122,7 @@ function* getAvailableSerialPortsWorker(
 }
 
 function* initializeApplicationWorker(
-  action: ReturnType<typeof requestInitializeApplication>,
+  action: ReturnType<typeof requestInitializeApplication>
 ) {
   try {
     yield call(invoke, "initialize_graph_state");
@@ -134,7 +132,7 @@ function* initializeApplicationWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      }),
+      })
     );
   }
 }
@@ -148,7 +146,10 @@ function* connectToDeviceWorker(
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
     yield put(
       connectionSliceActions.setConnectionState({
-        deviceKey: action.payload.portName ?? action.payload.socketAddress ?? error("Neither portName nor socketAddress were set"),
+        deviceKey:
+          action.payload.portName ??
+          action.payload.socketAddress ??
+          error("Neither portName nor socketAddress were set"),
         status: {
           status: "PENDING",
         },
@@ -179,7 +180,9 @@ function* connectToDeviceWorker(
         );
       } else if (action.payload.socketAddress) {
         yield put(
-          deviceSliceActions.setPrimarySocketAddress(action.payload.socketAddress)
+          deviceSliceActions.setPrimarySocketAddress(
+            action.payload.socketAddress
+          )
         );
       } else {
         error("Neither portName nor socketAddress were specified");
@@ -203,7 +206,10 @@ function* connectToDeviceWorker(
 
     yield put(
       connectionSliceActions.setConnectionState({
-        deviceKey: action.payload.portName ?? action.payload.socketAddress ?? error("Neither portName nor socketAddress were set"),
+        deviceKey:
+          action.payload.portName ??
+          action.payload.socketAddress ??
+          error("Neither portName nor socketAddress were set"),
         status: {
           status: "FAILED",
           message: (e as CommandError).message,
@@ -222,8 +228,7 @@ function* disconnectFromDeviceWorker(
 ) {
   try {
     // FIXME disconnect from socket as well
-    // FIXME disconnect_from_serial_port does not exist
-    yield call(invoke, "disconnect_from_serial_port", {
+    yield call(invoke, "drop_device_connection", {
       portName: action.payload,
     });
     yield put(deviceSliceActions.setPrimarySerialPort(null));
@@ -237,8 +242,7 @@ function* disconnectFromDeviceWorker(
 function* disconnectFromAllDevicesWorker() {
   try {
     // FIXME disconnect from socket as well
-    // FIXME disconnect_from_all_serial_ports does not exist
-    yield call(invoke, "disconnect_from_all_serial_ports");
+    yield call(invoke, "drop_all_device_connections");
     yield put(deviceSliceActions.setPrimarySerialPort(null));
     yield put(deviceSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));

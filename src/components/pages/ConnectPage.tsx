@@ -22,7 +22,6 @@ import {
 import { requestSliceActions } from "@features/requests/requestReducer";
 
 import "@components/SplashScreen/SplashScreen.css";
-import {Input} from "@material-tailwind/react";
 
 export interface IOnboardPageProps {
   unmountSelf: () => void;
@@ -49,9 +48,13 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   };
 
   const handleSocketConnect = () => {
-    setEnteredSocketAddress(enteredSocketAddress)
-    const address = enteredSocketAddress.includes(":") ? enteredSocketAddress : enteredSocketAddress + ":4403";
-    dispatch(requestConnectToDevice({ socketAddress: address, setPrimary: true }));
+    setEnteredSocketAddress(enteredSocketAddress);
+    const address = enteredSocketAddress.includes(":")
+      ? enteredSocketAddress
+      : enteredSocketAddress + ":4403";
+    dispatch(
+      requestConnectToDevice({ socketAddress: address, setPrimary: true })
+    );
   };
 
   const refreshPorts = () => {
@@ -177,24 +180,28 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
         <div className="flex py-5 px-5 justify-center">
           <div className="max-w-2xl w-full flex items-center">
-            <div className="flex-grow border-t border-gray-400"/>
+            <div className="flex-grow border-t border-gray-400" />
             <span className="flex-shrink mx-4 text-gray-400">Or</span>
-            <div className="flex-grow border-t border-gray-400"/>
+            <div className="flex-grow border-t border-gray-400" />
           </div>
         </div>
 
         <div className="flex justify-center">
           <div className="flex flex-row bg-white rounded-lg border max-w-lg w-full border-gray-400 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg">
             <input
-                className="flex-1 px-8 py-6 text-gray-600 placeholder:text-gray-400 h-full bg-transparent focus:outline-none"
-                type="text"
-                enterKeyHint="go"
-                placeholder="IP address or host name"
-                value={enteredSocketAddress}
-                onChange={(event) => setEnteredSocketAddress(event.target.value)}
+              className="flex-1 px-8 py-6 text-gray-600 placeholder:text-gray-400 h-full bg-transparent focus:outline-none"
+              type="text"
+              enterKeyHint="go"
+              placeholder="IP address or host name"
+              value={enteredSocketAddress}
+              onChange={(event) => setEnteredSocketAddress(event.target.value)}
             />
             <div className="my-5 w-[1px] bg-gray-400" />
-            <button type="submit" className="px-5" onClick={handleSocketConnect}>
+            <button
+              type="submit"
+              className="px-5"
+              onClick={handleSocketConnect}
+            >
               <LinkIcon className="w-6 h-6 text-gray-400" />
             </button>
           </div>

@@ -11,8 +11,11 @@ export const requestAvailablePorts = createAction(
   "@device/request-available-ports"
 );
 
-export const requestInitializeApplication = createAction("@device/request-initialize-application");
+export const requestInitializeApplication = createAction(
+  "@device/request-initialize-application"
+);
 
+// TODO this type shouldn't expose both portName and socketAddress at the same time
 export const requestConnectToDevice = createAction<{
   portName?: string;
   socketAddress?: string;

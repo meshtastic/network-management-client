@@ -127,7 +127,7 @@ pub async fn connect_to_tcp_port(
         connections_guard.insert(address.clone(), Box::new(connection));
     }
 
-    // // * Needs the device struct and port name to be loaded into Tauri state before running
+    // * Needs the device struct and port name to be loaded into Tauri state before running
     spawn_configuration_timeout_handler(handle.clone(), mesh_devices_arc.clone(), address.clone());
 
     spawn_decoded_handler(
@@ -337,7 +337,7 @@ pub async fn get_node_edges(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
     connected_devices: tauri::State<'_, state::MeshDevices>,
 ) -> Result<GraphGeoJSONResult, CommandError> {
-    debug!("Called get_node_edges command");
+    trace!("Called get_node_edges command");
 
     let mut graph_guard = mesh_graph.inner.lock().await;
     let _graph = graph_guard.as_mut().ok_or("Graph edges not initialized")?;
