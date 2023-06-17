@@ -1,15 +1,49 @@
-#![allow(clippy::too_many_arguments)]
-
-use crate::device::serial_connection::{MeshConnection, PacketDestination};
-
-use super::helpers::{generate_rand_id, get_current_time_u32};
-use super::MeshDevice;
 use app::protobufs;
+use async_trait::async_trait;
 use prost::Message;
 
-impl MeshDevice {
-    pub async fn send_text(
+use super::{
+    helpers::{generate_rand_id, get_current_time_u32},
+    MeshDevice,
+};
+
+pub mod helpers;
+pub mod serial;
+pub mod tcp;
+
+#[derive(Clone, Copy, Debug, Default)]
+pub enum PacketDestination {
+    Local,
+    #[default]
+    Broadcast,
+    Node(u32),
+}
+
+#[async_trait]
+pub trait MeshConnection {
+    async fn ping_radio(&mut self) -> Result<(), String>;
+    async fn disconnect(&mut self) -> Result<(), String>;
+
+    // async fn configure(&mut self, config_id: u32) -> Result<(), String>;
+    async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
+    // fn write_to_radio(&mut self, data: Vec<u8>) -> Result<(), String>; // ! Serial connection doesn't save port
+
+    // Default implementations
+
+    async fn configure(&mut self, config_id: u32) -> Result<(), String> {
+        let to_radio = protobufs::ToRadio {
+            payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),
+        };
+
+        let packet_buf = to_radio.encode_to_vec();
+        self.send_raw(packet_buf).await?;
+
+        Ok(())
+    }
+
+    async fn send_text(
         &mut self,
+        device: &mut MeshDevice,
         text: String,
         destination: PacketDestination,
         want_ack: bool,
@@ -18,6 +52,7 @@ impl MeshDevice {
         let byte_data = text.into_bytes();
 
         self.send_packet(
+            device,
             byte_data,
             protobufs::PortNum::TextMessageApp,
             destination,
@@ -33,8 +68,9 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub async fn send_waypoint(
+    async fn send_waypoint(
         &mut self,
+        device: &mut MeshDevice,
         waypoint: protobufs::Waypoint,
         destination: PacketDestination,
         want_ack: bool,
@@ -49,6 +85,7 @@ impl MeshDevice {
         let byte_data = new_waypoint.encode_to_vec();
 
         self.send_packet(
+            device,
             byte_data,
             protobufs::PortNum::WaypointApp,
             destination,
@@ -64,7 +101,11 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub async fn update_device_config(&mut self, config: protobufs::Config) -> Result<(), String> {
+    async fn update_device_config(
+        &mut self,
+        device: &mut MeshDevice,
+        config: protobufs::Config,
+    ) -> Result<(), String> {
         let config_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetConfig(config)),
         };
@@ -72,6 +113,7 @@ impl MeshDevice {
         let byte_data = config_packet.encode_to_vec();
 
         self.send_packet(
+            device,
             byte_data,
             protobufs::PortNum::AdminApp,
             PacketDestination::Local,
@@ -87,8 +129,9 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub async fn update_device_module_config(
+    async fn update_device_module_config(
         &mut self,
+        device: &mut MeshDevice,
         module_config: protobufs::ModuleConfig,
     ) -> Result<(), String> {
         let module_config_packet = protobufs::AdminMessage {
@@ -100,6 +143,7 @@ impl MeshDevice {
         let byte_data = module_config_packet.encode_to_vec();
 
         self.send_packet(
+            device,
             byte_data,
             protobufs::PortNum::AdminApp,
             PacketDestination::Local,
@@ -115,13 +159,14 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub async fn update_device_channel(
+    async fn update_device_channel(
         &mut self,
+        device: &mut MeshDevice,
         channel: protobufs::Channel,
     ) -> Result<(), String> {
         // Update local DB with channel changes, since channel changes won't restart device
 
-        self.add_channel(super::MeshChannel {
+        device.add_channel(super::MeshChannel {
             config: channel.clone(),
             ..Default::default()
         });
@@ -137,6 +182,7 @@ impl MeshDevice {
         let byte_data = channel_packet.encode_to_vec();
 
         self.send_packet(
+            device,
             byte_data,
             protobufs::PortNum::AdminApp,
             PacketDestination::Local,
@@ -152,7 +198,11 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub async fn update_device_user(&mut self, user: protobufs::User) -> Result<(), String> {
+    async fn update_device_user(
+        &mut self,
+        device: &mut MeshDevice,
+        user: protobufs::User,
+    ) -> Result<(), String> {
         let user_packet = protobufs::AdminMessage {
             payload_variant: Some(protobufs::admin_message::PayloadVariant::SetOwner(user)),
         };
@@ -160,6 +210,7 @@ impl MeshDevice {
         let byte_data = user_packet.encode_to_vec();
 
         self.send_packet(
+            device,
             byte_data,
             protobufs::PortNum::AdminApp,
             PacketDestination::Local,
@@ -175,8 +226,9 @@ impl MeshDevice {
         Ok(())
     }
 
-    pub async fn send_packet(
+    async fn send_packet(
         &mut self,
+        device: &mut MeshDevice,
         byte_data: Vec<u8>,
         port_num: protobufs::PortNum,
         destination: PacketDestination,
@@ -188,7 +240,7 @@ impl MeshDevice {
         emoji: Option<u32>,
     ) -> Result<(), String> {
         // let own_node_id: u32 = self.my_node_info.as_ref().unwrap().my_node_num;
-        let own_node_id: u32 = self.my_node_info.my_node_num;
+        let own_node_id: u32 = device.my_node_info.my_node_num;
 
         let packet_destination: u32 = match destination {
             PacketDestination::Local => own_node_id,
@@ -224,7 +276,8 @@ impl MeshDevice {
 
         if echo_response {
             packet.rx_time = get_current_time_u32();
-            self.handle_mesh_packet(packet.clone())
+            device
+                .handle_mesh_packet(packet.clone())
                 .map_err(|e| e.to_string())?;
         }
 
@@ -237,13 +290,16 @@ impl MeshDevice {
             .encode::<Vec<u8>>(&mut packet_buf)
             .map_err(|e| e.to_string())?;
 
-        self.connection.send_raw(packet_buf).await?;
+        self.send_raw(packet_buf).await?;
 
         Ok(())
     }
 
-    pub async fn start_configuration_transaction(&mut self) -> Result<(), String> {
-        if self.config_in_progress {
+    async fn start_configuration_transaction(
+        &mut self,
+        device: &mut MeshDevice,
+    ) -> Result<(), String> {
+        if device.config_in_progress {
             return Err("Configuration already in progress".to_string());
         }
 
@@ -258,14 +314,17 @@ impl MeshDevice {
             .encode::<Vec<u8>>(&mut packet_buf)
             .map_err(|e| e.to_string())?;
 
-        self.connection.send_raw(packet_buf).await?;
-        self.config_in_progress = true;
+        self.send_raw(packet_buf).await?;
+        device.config_in_progress = true;
 
         Ok(())
     }
 
-    pub async fn commit_configuration_transaction(&mut self) -> Result<(), String> {
-        if !self.config_in_progress {
+    async fn commit_configuration_transaction(
+        &mut self,
+        device: &mut MeshDevice,
+    ) -> Result<(), String> {
+        if !device.config_in_progress {
             return Err("No configuration in progress".to_string());
         }
 
@@ -280,143 +339,203 @@ impl MeshDevice {
             .encode::<Vec<u8>>(&mut packet_buf)
             .map_err(|e| e.to_string())?;
 
-        self.connection.send_raw(packet_buf).await?;
-        self.config_in_progress = false;
+        self.send_raw(packet_buf).await?;
+        device.config_in_progress = false;
 
         Ok(())
     }
 
-    pub async fn set_local_config(&mut self, config: protobufs::LocalConfig) -> Result<(), String> {
+    async fn set_local_config(
+        &mut self,
+        device: &mut MeshDevice,
+        config: protobufs::LocalConfig,
+    ) -> Result<(), String> {
         if let Some(c) = config.bluetooth {
-            self.update_device_config(protobufs::Config {
-                payload_variant: Some(protobufs::config::PayloadVariant::Bluetooth(c)),
-            })
+            self.update_device_config(
+                device,
+                protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Bluetooth(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = config.device {
-            self.update_device_config(protobufs::Config {
-                payload_variant: Some(protobufs::config::PayloadVariant::Device(c)),
-            })
+            self.update_device_config(
+                device,
+                protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Device(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = config.display {
-            self.update_device_config(protobufs::Config {
-                payload_variant: Some(protobufs::config::PayloadVariant::Display(c)),
-            })
+            self.update_device_config(
+                device,
+                protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Display(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = config.lora {
-            self.update_device_config(protobufs::Config {
-                payload_variant: Some(protobufs::config::PayloadVariant::Lora(c)),
-            })
+            self.update_device_config(
+                device,
+                protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Lora(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = config.network {
-            self.update_device_config(protobufs::Config {
-                payload_variant: Some(protobufs::config::PayloadVariant::Network(c)),
-            })
+            self.update_device_config(
+                device,
+                protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Network(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = config.position {
-            self.update_device_config(protobufs::Config {
-                payload_variant: Some(protobufs::config::PayloadVariant::Position(c)),
-            })
+            self.update_device_config(
+                device,
+                protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Position(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = config.power {
-            self.update_device_config(protobufs::Config {
-                payload_variant: Some(protobufs::config::PayloadVariant::Power(c)),
-            })
+            self.update_device_config(
+                device,
+                protobufs::Config {
+                    payload_variant: Some(protobufs::config::PayloadVariant::Power(c)),
+                },
+            )
             .await?;
         }
 
         Ok(())
     }
 
-    pub async fn set_local_module_config(
+    async fn set_local_module_config(
         &mut self,
+        device: &mut MeshDevice,
         module_config: protobufs::LocalModuleConfig,
     ) -> Result<(), String> {
         if let Some(c) = module_config.audio {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(protobufs::module_config::PayloadVariant::Audio(c)),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(protobufs::module_config::PayloadVariant::Audio(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = module_config.canned_message {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(protobufs::module_config::PayloadVariant::CannedMessage(c)),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(protobufs::module_config::PayloadVariant::CannedMessage(
+                        c,
+                    )),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = module_config.external_notification {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(
-                    protobufs::module_config::PayloadVariant::ExternalNotification(c),
-                ),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(
+                        protobufs::module_config::PayloadVariant::ExternalNotification(c),
+                    ),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = module_config.mqtt {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(protobufs::module_config::PayloadVariant::Mqtt(c)),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(protobufs::module_config::PayloadVariant::Mqtt(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = module_config.range_test {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(protobufs::module_config::PayloadVariant::RangeTest(c)),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(protobufs::module_config::PayloadVariant::RangeTest(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = module_config.remote_hardware {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(protobufs::module_config::PayloadVariant::RemoteHardware(c)),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(
+                        protobufs::module_config::PayloadVariant::RemoteHardware(c),
+                    ),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = module_config.serial {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(protobufs::module_config::PayloadVariant::Serial(c)),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(protobufs::module_config::PayloadVariant::Serial(c)),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = module_config.store_forward {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(protobufs::module_config::PayloadVariant::StoreForward(c)),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(protobufs::module_config::PayloadVariant::StoreForward(
+                        c,
+                    )),
+                },
+            )
             .await?;
         }
 
         if let Some(c) = module_config.telemetry {
-            self.update_device_module_config(protobufs::ModuleConfig {
-                payload_variant: Some(protobufs::module_config::PayloadVariant::Telemetry(c)),
-            })
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(protobufs::module_config::PayloadVariant::Telemetry(c)),
+                },
+            )
             .await?;
         }
 
         Ok(())
     }
 
-    pub async fn set_channel_config(
+    async fn set_channel_config(
         &mut self,
+        device: &mut MeshDevice,
         channel_config: Vec<protobufs::Channel>,
     ) -> Result<(), String> {
         for channel in channel_config {
-            self.update_device_channel(channel).await?;
+            self.update_device_channel(device, channel).await?;
         }
 
         Ok(())

@@ -1,25 +1,17 @@
 #![allow(dead_code)]
 
 mod handlers;
-pub mod helpers;
 
 use app::protobufs;
 use async_trait::async_trait;
 use log::trace;
-use prost::Message;
 use serial2::{FlowControl, SerialPort};
 use std::{sync::Arc, time::Duration};
 use tauri::async_runtime;
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
 
-#[derive(Clone, Copy, Debug, Default)]
-pub enum PacketDestination {
-    Local,
-    #[default]
-    Broadcast,
-    Node(u32),
-}
+use super::{helpers::format_data_packet, MeshConnection};
 
 #[derive(Debug, Default)]
 pub struct SerialConnection {
@@ -43,35 +35,43 @@ impl Clone for SerialConnection {
 }
 
 #[async_trait]
-pub trait MeshConnection {
-    fn new() -> Self;
-    async fn configure(&mut self, config_id: u32) -> Result<(), String>;
-    async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
-    fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String>;
-}
-
-#[async_trait]
 impl MeshConnection for SerialConnection {
-    fn new() -> Self {
-        SerialConnection {
-            write_input_tx: None,
-            on_decoded_packet: None,
-
-            serial_read_handle: None,
-            serial_write_handle: None,
-            message_processing_handle: None,
-
-            cancellation_token: None,
-        }
+    async fn ping_radio(&mut self) -> Result<(), String> {
+        Ok(())
     }
 
-    async fn configure(&mut self, config_id: u32) -> Result<(), String> {
-        let to_radio = protobufs::ToRadio {
-            payload_variant: Some(protobufs::to_radio::PayloadVariant::WantConfigId(config_id)),
-        };
+    async fn disconnect(&mut self) -> Result<(), String> {
+        // Tell worker threads to shut down
+        if let Some(token) = self.cancellation_token.take() {
+            token.cancel();
+        }
 
-        let packet_buf = to_radio.encode_to_vec();
-        self.send_raw(packet_buf).await?;
+        // Close channels, which will kill held threads
+
+        self.on_decoded_packet = None;
+        self.write_input_tx = None;
+
+        // Wait for threads to close
+
+        if let Some(serial_read_handle) = self.serial_read_handle.take() {
+            serial_read_handle
+                .await
+                .map_err(|_e| "Error joining serial_read_handle".to_string())?;
+        }
+
+        if let Some(serial_write_handle) = self.serial_write_handle.take() {
+            serial_write_handle
+                .await
+                .map_err(|_e| "Error joining serial_write_handle".to_string())?;
+        }
+
+        if let Some(message_processing_handle) = self.message_processing_handle.take() {
+            message_processing_handle
+                .await
+                .map_err(|_e| "Error joining message_processing_handle".to_string())?;
+        }
+
+        trace!("Serial handlers fully disconnected");
 
         Ok(())
     }
@@ -86,22 +86,26 @@ impl MeshConnection for SerialConnection {
         channel.send(data).map_err(|e| e.to_string())?;
         Ok(())
     }
-
-    fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String> {
-        let binding = helpers::format_serial_packet(data);
-        let message_buffer: &[u8] = binding.as_slice();
-        port.write(message_buffer).map_err(|e| e.to_string())?;
-
-        Ok(())
-    }
 }
 
-pub enum ConnectionError {
+pub enum SerialConnectionError {
     PortOpenError,
     ConfigurationError,
 }
 
 impl SerialConnection {
+    pub fn new() -> Self {
+        SerialConnection::default()
+    }
+
+    fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String> {
+        let data_with_header = format_data_packet(data);
+        let message_buffer: &[u8] = data_with_header.as_slice();
+        port.write(message_buffer).map_err(|e| e.to_string())?;
+
+        Ok(())
+    }
+
     pub fn get_available_ports() -> Result<Vec<String>, String> {
         let available_ports = SerialPort::available_ports().map_err(|e| e.to_string())?;
 
@@ -118,26 +122,26 @@ impl SerialConnection {
         app_handle: tauri::AppHandle,
         port_name: String,
         baud_rate: u32,
-    ) -> Result<(), ConnectionError> {
+    ) -> Result<(), SerialConnectionError> {
         // Create serial port connection
 
         let mut port = SerialPort::open(port_name.clone(), baud_rate)
-            .map_err(|_e| ConnectionError::PortOpenError)?;
+            .map_err(|_e| SerialConnectionError::PortOpenError)?;
 
         let mut config = port
             .get_configuration()
-            .map_err(|_e| ConnectionError::ConfigurationError)?;
+            .map_err(|_e| SerialConnectionError::ConfigurationError)?;
 
         config.set_flow_control(FlowControl::XonXoff);
 
         port.set_configuration(&config)
-            .map_err(|_e| ConnectionError::ConfigurationError)?;
+            .map_err(|_e| SerialConnectionError::ConfigurationError)?;
 
         port.set_dtr(true)
-            .map_err(|_e| ConnectionError::ConfigurationError)?;
+            .map_err(|_e| SerialConnectionError::ConfigurationError)?;
 
         port.set_read_timeout(Duration::from_millis(10))
-            .map_err(|_e| ConnectionError::ConfigurationError)?;
+            .map_err(|_e| SerialConnectionError::ConfigurationError)?;
 
         let port = Arc::new(port);
 
@@ -171,7 +175,7 @@ impl SerialConnection {
             write_input_rx,
         ));
 
-        self.message_processing_handle = Some(handlers::spawn_message_processing_handler(
+        self.message_processing_handle = Some(handlers::spawn_serial_message_processing_handler(
             cancellation_token.clone(),
             read_output_rx,
             decoded_packet_tx,
@@ -181,42 +185,6 @@ impl SerialConnection {
 
         // Sleep for device stability (from web client, not positive we need this)
         tokio::time::sleep(Duration::from_millis(200)).await;
-
-        Ok(())
-    }
-
-    pub async fn disconnect(&mut self) -> Result<(), String> {
-        // Tell worker threads to shut down
-        if let Some(token) = self.cancellation_token.take() {
-            token.cancel();
-        }
-
-        // Close channels, which will kill held threads
-
-        self.on_decoded_packet = None;
-        self.write_input_tx = None;
-
-        // Wait for threads to close
-
-        if let Some(serial_read_handle) = self.serial_read_handle.take() {
-            serial_read_handle
-                .await
-                .map_err(|_e| "Error joining serial_read_handle".to_string())?;
-        }
-
-        if let Some(serial_write_handle) = self.serial_write_handle.take() {
-            serial_write_handle
-                .await
-                .map_err(|_e| "Error joining serial_write_handle".to_string())?;
-        }
-
-        if let Some(message_processing_handle) = self.message_processing_handle.take() {
-            message_processing_handle
-                .await
-                .map_err(|_e| "Error joining message_processing_handle".to_string())?;
-        }
-
-        trace!("Serial handlers fully disconnected");
 
         Ok(())
     }

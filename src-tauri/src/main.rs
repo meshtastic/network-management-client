@@ -1,4 +1,7 @@
-#![windows_subsystem = "windows"]
+#![cfg_attr(
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
+)]
 
 mod analytics;
 mod constructors;
@@ -86,7 +89,11 @@ fn main() {
 
     info!("Application starting");
 
-    let initial_device_state = state::ConnectedDevices {
+    let initial_mesh_devices_state = state::MeshDevices {
+        inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
+    };
+
+    let initial_radio_connections_state = state::RadioConnections {
         inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
     };
 
@@ -110,9 +117,10 @@ fn main() {
             }
 
             // Manage application state
-            app.app_handle().manage(initial_analytics_state);
+            app.app_handle().manage(initial_mesh_devices_state);
+            app.app_handle().manage(initial_radio_connections_state);
             app.app_handle().manage(initial_graph_state);
-            app.app_handle().manage(initial_device_state);
+            app.app_handle().manage(initial_analytics_state);
 
             // Autoconnect port state needs to be set after being mutated by CLI parser
             app.app_handle().manage(inital_autoconnect_state);
@@ -123,8 +131,9 @@ fn main() {
             ipc::commands::request_autoconnect_port,
             ipc::commands::get_all_serial_ports,
             ipc::commands::connect_to_serial_port,
-            ipc::commands::disconnect_from_serial_port,
-            ipc::commands::disconnect_from_all_serial_ports,
+            ipc::commands::connect_to_tcp_port,
+            ipc::commands::drop_device_connection,
+            ipc::commands::drop_all_device_connections,
             ipc::commands::send_text,
             ipc::commands::update_device_config,
             ipc::commands::update_device_user,
