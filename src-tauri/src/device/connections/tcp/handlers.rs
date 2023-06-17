@@ -129,7 +129,7 @@ async fn start_tcp_write_worker(
         };
     }
 
-    trace!("Serial write write_input_rx channel closed");
+    debug!("Serial write write_input_rx channel closed");
 }
 
 async fn start_tcp_message_processing_worker(
@@ -144,5 +144,5 @@ async fn start_tcp_message_processing_worker(
         process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
     }
 
-    trace!("Serial processing read_output_rx channel closed");
+    debug!("Serial processing read_output_rx channel closed");
 }

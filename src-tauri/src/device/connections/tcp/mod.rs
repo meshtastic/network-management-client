@@ -3,10 +3,11 @@ mod handlers;
 use app::protobufs;
 use async_trait::async_trait;
 use log::{error, trace};
-use std::time::Duration;
 use tauri::async_runtime;
 use tokio::{io::AsyncWriteExt, sync::broadcast};
 use tokio_util::sync::CancellationToken;
+
+use crate::device::connections::helpers::format_data_packet;
 
 use super::MeshConnection;
 
@@ -86,7 +87,10 @@ impl TcpConnection {
         write_stream: &mut tokio::net::tcp::OwnedWriteHalf,
         data: Vec<u8>,
     ) -> Result<(), String> {
-        write_stream.write(&data).await.map_err(|e| {
+        let data_with_header = format_data_packet(data);
+        let message_buffer: &[u8] = data_with_header.as_slice();
+
+        write_stream.write(&message_buffer).await.map_err(|e| {
             error!("Error writing to radio: {:?}", e.to_string());
             e.to_string()
         })?;
@@ -136,14 +140,6 @@ impl TcpConnection {
 
         self.cancellation_token = Some(cancellation_token);
 
-        // Sleep for device stability (from web client, not positive we need this)
-        tokio::time::sleep(Duration::from_millis(200)).await;
-
         Ok(())
     }
 }
-
-// pub enum TcpConnectionError {
-//     PortOpenError,
-//     ConfigurationError,
-// }

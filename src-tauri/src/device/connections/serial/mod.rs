@@ -99,8 +99,8 @@ impl SerialConnection {
     }
 
     fn write_to_radio(port: Arc<SerialPort>, data: Vec<u8>) -> Result<(), String> {
-        let binding = format_data_packet(data);
-        let message_buffer: &[u8] = binding.as_slice();
+        let data_with_header = format_data_packet(data);
+        let message_buffer: &[u8] = data_with_header.as_slice();
         port.write(message_buffer).map_err(|e| e.to_string())?;
 
         Ok(())
