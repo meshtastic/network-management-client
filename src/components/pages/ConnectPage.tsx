@@ -43,15 +43,22 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     status: "IDLE",
   };
 
+  const activeSocketState = useSelector(
+    selectConnectionStatus(enteredSocketAddress)
+  ) ?? {
+    status: "IDLE",
+  };
+
   const requestPorts = () => {
     dispatch(requestAvailablePorts());
   };
 
   const handleSocketConnect = () => {
-    setEnteredSocketAddress(enteredSocketAddress);
     const address = enteredSocketAddress.includes(":")
       ? enteredSocketAddress
       : enteredSocketAddress + ":4403";
+    setEnteredSocketAddress(address);
+
     dispatch(
       requestConnectToDevice({ socketAddress: address, setPrimary: true })
     );
@@ -84,7 +91,11 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   // Wait to allow user to recognize serial connection succeeded
   useEffect(() => {
-    if (activePortState.status !== "SUCCESSFUL") return;
+    if (
+      activePortState.status !== "SUCCESSFUL" &&
+      activeSocketState.status !== "SUCCESSFUL"
+    )
+      return;
 
     const delayHandle = setTimeout(() => {
       setScreenActive(false);
@@ -93,7 +104,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     return () => {
       clearTimeout(delayHandle);
     };
-  }, [activePortState]);
+  }, [activePortState, activeSocketState]);
 
   // Move to main page upon successful port connection (need to trigger when port is succesfully connected)
   useEffect(() => {
