@@ -165,6 +165,7 @@ pub async fn initialize_serial_connection_handlers(
         handle.clone(),
         mesh_devices_arc.clone(),
         device_key.clone(),
+        Duration::from_millis(1500),
     );
 
     spawn_decoded_handler(
@@ -182,12 +183,13 @@ pub fn spawn_configuration_timeout_handler(
     handle: tauri::AppHandle,
     connected_devices_inner: state::MeshDevicesInner,
     device_key: DeviceKey,
+    timeout: Duration,
 ) {
     trace!("Spawning device configuration timeout");
 
     tauri::async_runtime::spawn(async move {
         // Wait for device to configure
-        tokio::time::sleep(Duration::from_millis(1500)).await;
+        tokio::time::sleep(timeout).await;
 
         trace!("Device configuration timeout completed");
 

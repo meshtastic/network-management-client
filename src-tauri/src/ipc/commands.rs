@@ -18,6 +18,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use serde_json::json;
 use std::collections::HashMap;
+use std::time::Duration;
 
 use super::helpers;
 use super::CommandError;
@@ -128,7 +129,12 @@ pub async fn connect_to_tcp_port(
     }
 
     // * Needs the device struct and port name to be loaded into Tauri state before running
-    spawn_configuration_timeout_handler(handle.clone(), mesh_devices_arc.clone(), address.clone());
+    spawn_configuration_timeout_handler(
+        handle.clone(),
+        mesh_devices_arc.clone(),
+        address.clone(),
+        Duration::from_millis(3000),
+    );
 
     spawn_decoded_handler(
         handle,
