@@ -231,7 +231,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                 onSubmit={handleSocketConnect}
               >
                 <input
-                  className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-not-allowed"
+                  className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-wait"
                   type="text"
                   enterKeyHint="go"
                   placeholder="IP address or host name"
@@ -241,7 +241,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                 />
 
                 <input
-                  className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-not-allowed"
+                  className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-wait"
                   type="text"
                   placeholder="Port"
                   value={socketPort}
@@ -250,7 +250,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                 />
 
                 <button
-                  className="flex flex-row flex-1 justify-center gap-3 border rounded-lg border-gray-400 mx-auto px-5 py-4 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg disabled:cursor-not-allowed"
+                  className="flex flex-row flex-1 justify-center gap-3 border rounded-lg border-gray-400 mx-auto px-5 py-4 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg disabled:cursor-wait"
                   disabled={activeSocketState.status === "PENDING"}
                   type="submit"
                 >
