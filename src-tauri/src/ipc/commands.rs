@@ -99,7 +99,14 @@ pub async fn connect_to_tcp_port(
 
     device.set_status(SerialDeviceStatus::Connecting);
 
-    connection.connect(address.clone()).await?;
+    // Ensure TCP connection is established
+    match connection.connect(address.clone()).await {
+        Ok(_) => (),
+        Err(e) => {
+            device.set_status(SerialDeviceStatus::Disconnected);
+            return Err(e.into());
+        }
+    };
 
     // Get copy of decoded_listener by resubscribing
     let decoded_listener = connection

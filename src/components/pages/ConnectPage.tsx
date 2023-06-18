@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { FormEventHandler, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { open } from "@tauri-apps/api/shell";
-import { ArrowPathIcon, LinkIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowPathIcon,
+  EllipsisHorizontalCircleIcon,
+  LinkIcon,
+} from "@heroicons/react/24/outline";
+import * as Tabs from "@radix-ui/react-tabs";
 
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
+
+import ConnectTab from "@components/connection/ConnectTab";
 import SerialPortOption from "@components/Onboard/SerialPortOption";
 
 import { selectConnectionStatus } from "@features/connection/connectionSelectors";
@@ -23,6 +30,14 @@ import { requestSliceActions } from "@features/requests/requestReducer";
 
 import "@components/SplashScreen/SplashScreen.css";
 
+export enum ConnectionType {
+  SERIAL = "SERIAL",
+  TCP = "TCP",
+}
+
+const getFullSocketAddress = (address: string, port: string) =>
+  `${address}:${port}`;
+
 export interface IOnboardPageProps {
   unmountSelf: () => void;
 }
@@ -33,7 +48,8 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const autoConnectPort = useSelector(selectAutoConnectPort());
 
   const [selectedPortName, setSelectedPortName] = useState("");
-  const [enteredSocketAddress, setEnteredSocketAddress] = useState("");
+  const [socketAddress, setSocketAddress] = useState("");
+  const [socketPort, setSocketPort] = useState("4403");
   const [isScreenActive, setScreenActive] = useState(true);
 
   // autoConnectPort takes priority over selectedPortName if it exists
@@ -44,7 +60,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   };
 
   const activeSocketState = useSelector(
-    selectConnectionStatus(enteredSocketAddress)
+    selectConnectionStatus(getFullSocketAddress(socketAddress, socketPort))
   ) ?? {
     status: "IDLE",
   };
@@ -53,14 +69,14 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(requestAvailablePorts());
   };
 
-  const handleSocketConnect = () => {
-    const address = enteredSocketAddress.includes(":")
-      ? enteredSocketAddress
-      : enteredSocketAddress + ":4403";
-    setEnteredSocketAddress(address);
+  const handleSocketConnect: FormEventHandler = (e) => {
+    e.preventDefault();
 
     dispatch(
-      requestConnectToDevice({ socketAddress: address, setPrimary: true })
+      requestConnectToDevice({
+        socketAddress: getFullSocketAddress(socketAddress, socketPort),
+        setPrimary: true,
+      })
     );
   };
 
@@ -124,11 +140,11 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       className="landing-screen-opacity-transition absolute flex flex-row h-screen w-screen z-40 bg-white"
       style={{ opacity: isScreenActive ? 1 : 0 }}
     >
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 py-24 overflow-auto no-gutter">
         <div className="flex justify-center">
           <div className="h-1/8">
             <img
-              className="w-11/12 h-11/12 mt-44 text-gray-800"
+              className="w-11/12 h-11/12 text-gray-800"
               src={Meshtastic_Logo}
             ></img>
           </div>
@@ -141,7 +157,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
         </div>
 
         <div className="flex justify-center mt-5">
-          <h1 className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
+          <h2 className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
             Connect a supported Meshtastic radio to your computer via USB
             Serial. For more detailed instructions,{" "}
             <button
@@ -154,74 +170,119 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
               click here
             </button>
             .
-          </h1>
+          </h2>
         </div>
 
-        <div className="mt-10 flex flex-col">
-          <div className="flex flex-col gap-4">
-            {availableSerialPorts?.length ? (
-              availableSerialPorts.map((portName) => (
-                <SerialPortOption
-                  key={portName}
-                  name={portName}
-                  connectionState={
-                    activePort === portName
-                      ? activePortState
-                      : { status: "IDLE" }
-                  }
-                  onClick={handlePortSelected}
-                />
-              ))
-            ) : (
-              <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
-                No ports detected.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="flex flex-row justify-center align-middle gap-4 mt-5"
-          onClick={() => refreshPorts()}
-        >
-          <ArrowPathIcon className="text-gray-400 w-6 h-6 hover:cursor-pointer" />
-          <p className="my-auto text-gray-500">Refresh ports</p>
-        </button>
-
-        <div className="flex py-5 px-5 justify-center">
-          <div className="max-w-2xl w-full flex items-center">
-            <div className="flex-grow border-t border-gray-400" />
-            <span className="flex-shrink mx-4 text-gray-400">Or</span>
-            <div className="flex-grow border-t border-gray-400" />
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <div className="flex flex-row bg-white rounded-lg border max-w-lg w-full border-gray-400 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg">
-            <input
-              className="flex-1 px-8 py-6 text-gray-600 placeholder:text-gray-400 h-full bg-transparent focus:outline-none"
-              type="text"
-              enterKeyHint="go"
-              placeholder="IP address or host name"
-              value={enteredSocketAddress}
-              onChange={(event) => setEnteredSocketAddress(event.target.value)}
-            />
-            <div className="my-5 w-[1px] bg-gray-400" />
-            <button
-              type="submit"
-              className="px-5"
-              onClick={handleSocketConnect}
+        <div className="flex justify-center mt-5">
+          <Tabs.Root className="w-3/5" defaultValue={ConnectionType.SERIAL}>
+            <Tabs.List
+              className="flex flex-row"
+              aria-label="Choose a connection type"
             >
-              <LinkIcon className="w-6 h-6 text-gray-400" />
-            </button>
-          </div>
+              <ConnectTab
+                label="Serial"
+                tooltip="Connect to your radio via a USB Serial cable"
+                value={ConnectionType.SERIAL}
+              />
+              <ConnectTab
+                label="TCP"
+                tooltip="Connect to your radio via ethernet or WiFi"
+                value={ConnectionType.TCP}
+              />
+            </Tabs.List>
+
+            <Tabs.Content value={ConnectionType.SERIAL}>
+              <div className="flex flex-col mt-4">
+                <div className="flex flex-col gap-4">
+                  {availableSerialPorts?.length ? (
+                    availableSerialPorts.map((portName) => (
+                      <SerialPortOption
+                        key={portName}
+                        name={portName}
+                        connectionState={
+                          activePort === portName
+                            ? activePortState
+                            : { status: "IDLE" }
+                        }
+                        onClick={handlePortSelected}
+                      />
+                    ))
+                  ) : (
+                    <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
+                      No ports detected.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="flex flex-row justify-center align-middle mx-auto gap-4 mt-5"
+                onClick={() => refreshPorts()}
+              >
+                <ArrowPathIcon className="text-gray-400 w-6 h-6 hover:cursor-pointer" />
+                <p className="my-auto text-gray-500">Refresh ports</p>
+              </button>
+            </Tabs.Content>
+
+            <Tabs.Content value={ConnectionType.TCP}>
+              <form
+                className="flex flex-col gap-4 mt-4"
+                onSubmit={handleSocketConnect}
+              >
+                <input
+                  className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-not-allowed"
+                  type="text"
+                  enterKeyHint="go"
+                  placeholder="IP address or host name"
+                  value={socketAddress}
+                  onChange={(e) => setSocketAddress(e.target.value)}
+                  disabled={activeSocketState.status === "PENDING"}
+                />
+
+                <input
+                  className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-not-allowed"
+                  type="text"
+                  placeholder="Port"
+                  value={socketPort}
+                  onChange={(e) => setSocketPort(e.target.value)}
+                  disabled={activeSocketState.status === "PENDING"}
+                />
+
+                <button
+                  className="flex flex-row flex-1 justify-center gap-3 border rounded-lg border-gray-400 mx-auto px-5 py-4 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg disabled:cursor-not-allowed"
+                  disabled={activeSocketState.status === "PENDING"}
+                  type="submit"
+                >
+                  {activeSocketState.status === "PENDING" ? (
+                    <>
+                      <EllipsisHorizontalCircleIcon className="w-6 h-6 text-gray-500" />
+                      <p className="text-gray-700">Connecting...</p>
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon className="w-6 h-6 text-gray-500" />
+                      <p className="text-gray-700">Connect</p>
+                    </>
+                  )}
+                </button>
+
+                {activeSocketState.status === "FAILED" && (
+                  <div>
+                    <p className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 my-1">
+                      {activeSocketState.message}
+                    </p>
+                  </div>
+                )}
+              </form>
+            </Tabs.Content>
+          </Tabs.Root>
         </div>
       </div>
 
       <div className="flex-1 relative">
         <img
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-center bg-gray-700"
           src={Hero_Image}
         />
         <p className="landing-screen-opacity-transition absolute bottom-3 right-3 text-right text-sm text-gray-600">
