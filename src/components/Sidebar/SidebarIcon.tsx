@@ -21,7 +21,7 @@ const SidebarIcon = ({
 }: ISidebarIconProps) => {
   return (
     <>
-      <DefaultTooltip text={name} deactivated={isSidebarExpanded}>
+      <DefaultTooltip text={name} deactivated={isSidebarExpanded} side="right">
         <button
           type="button"
           onClick={() => onClick()}
