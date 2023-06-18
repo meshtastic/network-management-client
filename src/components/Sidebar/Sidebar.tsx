@@ -31,13 +31,13 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`shrink-0 sidebar-width-transition flex flex-col h-screen box-content shadow-lg overflow-y-auto hide-scrollbar border-r border-gray-100 overflow-x-hidden ${
+      className={`shrink-0 sidebar-width-transition flex flex-col h-screen box-content shadow-lg border-r border-gray-100 overflow-x-hidden ${
         isSidebarExpanded ? "w-[300px] text-gray-500" : "w-20 text-white"
       }`}
     >
       <SidebarLogo isSidebarExpanded={isSidebarExpanded} />
 
-      <div className="flex flex-col flex-1 justify-between px-4 pt-4 pb-1">
+      <div className="flex flex-col flex-1 justify-between px-4 pt-4 pb-1 overflow-y-auto hide-scrollbar">
         <div className="flex flex-col gap-6 mb-6">
           <SidebarTab title="Overview" isSidebarExpanded={isSidebarExpanded}>
             <SidebarIcon
@@ -134,22 +134,24 @@ const Sidebar = () => {
               <Settings strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
           </SidebarTab>
-
-          <hr className="border-gray-100" />
-
-          <SidebarIcon
-            name="Collapse Sidebar"
-            isActive={false}
-            isSidebarExpanded={isSidebarExpanded}
-            onClick={() => setSidebarExpanded(!isSidebarExpanded)}
-          >
-            {isSidebarExpanded ? (
-              <ChevronsLeft strokeWidth={1.5} className="w-6 h-6" />
-            ) : (
-              <ChevronsRight strokeWidth={1.5} className="w-6 h-6" />
-            )}
-          </SidebarIcon>
         </div>
+      </div>
+
+      <div className="flex flex-col mt-auto justify-between px-4 pt-4 pb-1">
+        <hr className="border-gray-100" />
+
+        <SidebarIcon
+          name="Collapse Sidebar"
+          isActive={false}
+          isSidebarExpanded={isSidebarExpanded}
+          onClick={() => setSidebarExpanded(!isSidebarExpanded)}
+        >
+          {isSidebarExpanded ? (
+            <ChevronsLeft strokeWidth={1.5} className="w-6 h-6" />
+          ) : (
+            <ChevronsRight strokeWidth={1.5} className="w-6 h-6" />
+          )}
+        </SidebarIcon>
       </div>
     </div>
   );
