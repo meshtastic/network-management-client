@@ -243,6 +243,7 @@ export const MapView = () => {
           ))}
 
         <Waypoints currWaypoint={tempWaypoint} />
+        <NodeSearchDock />
       </Map>
 
       {/* Popups */}
@@ -255,8 +256,6 @@ export const MapView = () => {
       ) : null}
 
       <MapSelectedNodeMenu />
-
-      <NodeSearchDock />
       <MapInteractionPane />
     </div>
   );
