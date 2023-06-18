@@ -135,7 +135,7 @@ pub async fn connect_to_tcp_port(
         connections_guard.insert(address.clone(), Box::new(connection));
     }
 
-    // * Needs the device struct and port name to be loaded into Tauri state before running
+    // Needs the device struct and port name to be loaded into Tauri state before running
     spawn_configuration_timeout_handler(
         handle.clone(),
         mesh_devices_arc.clone(),

@@ -22,7 +22,7 @@ const DefaultTooltip = ({
         <Tooltip.Portal>
           <Tooltip.Content
             side={rest.side ?? "top"}
-            className="px-3 py-1.5 shadow-lg rounded-lg bg-white border border-gray-200 text-xs font-normal text-gray-400"
+            className="z-50 px-3 py-1.5 shadow-lg rounded-lg bg-white border border-gray-200 text-xs font-normal text-gray-400"
             sideOffset={5}
             avoidCollisions
             collisionPadding={20}

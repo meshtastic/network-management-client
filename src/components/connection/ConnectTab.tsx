@@ -1,5 +1,7 @@
 import React from "react";
 import * as Tabs from "@radix-ui/react-tabs";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import DefaultTooltip from "@components/DefaultTooltip";
 
 export interface IConnectTabProps {
   value: string;
@@ -11,7 +13,7 @@ export interface IConnectTabProps {
 const ConnectTab = ({
   value,
   label,
-  // tooltip,
+  tooltip,
   className = "",
 }: IConnectTabProps) => {
   return (
@@ -20,12 +22,11 @@ const ConnectTab = ({
       value={value}
     >
       <p>{label}</p>
-      {/* TODO - add tooltip support, bug with radix tooltip */}
-      {/* <DefaultTooltip text={tooltip}>
+      <DefaultTooltip text={tooltip}>
         <div className="m-auto">
           <QuestionMarkCircledIcon />
         </div>
-      </DefaultTooltip> */}
+      </DefaultTooltip>
     </Tabs.Trigger>
   );
 };

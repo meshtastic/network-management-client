@@ -158,8 +158,8 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
         <div className="flex justify-center mt-5">
           <h2 className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
-            Connect a supported Meshtastic radio to your computer via USB
-            Serial. For more detailed instructions,{" "}
+            Connect a supported Meshtastic radio to your computer via USB serial
+            or via TCP over Ethernet or WiFi. For more detailed instructions,{" "}
             <button
               type="button"
               onClick={() =>
@@ -181,12 +181,12 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
             >
               <ConnectTab
                 label="Serial"
-                tooltip="Connect to your radio via a USB Serial cable"
+                tooltip="Connect to your radio via a USB serial cable"
                 value={ConnectionType.SERIAL}
               />
               <ConnectTab
                 label="TCP"
-                tooltip="Connect to your radio via ethernet or WiFi"
+                tooltip="Connect to your radio via Ethernet or WiFi"
                 value={ConnectionType.TCP}
               />
             </Tabs.List>
