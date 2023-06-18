@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useMap } from "react-map-gl";
 
 import type {
   app_device_MeshDevice,
@@ -15,6 +16,8 @@ import {
   selectAllNodes,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
+
+import { MapIDs } from "@utils/map";
 
 interface _INodeSearchDockProps {
   filteredNodes: app_device_MeshNode[];
@@ -82,6 +85,8 @@ const filterNodes =
 
 const NodeSearchDock = () => {
   const dispatch = useDispatch();
+  const { [MapIDs.MapView]: map } = useMap();
+
   const nodes = useSelector(selectAllNodes());
   const device = useSelector(selectDevice());
   const activeNodeId = useSelector(selectActiveNodeId());
@@ -89,9 +94,22 @@ const NodeSearchDock = () => {
   const [query, setQuery] = useState("");
 
   const handleNodeSelect = (nodeId: number) => {
-    dispatch(
-      deviceSliceActions.setActiveNode(activeNodeId !== nodeId ? nodeId : null)
-    );
+    const isNodeActive = activeNodeId === nodeId;
+    dispatch(deviceSliceActions.setActiveNode(isNodeActive ? null : nodeId));
+
+    // Only animate when node is not currently active
+    if (isNodeActive) return;
+
+    const foundNode = nodes.find((node) => node.data.num === nodeId);
+    if (!foundNode?.data.position) return;
+
+    map?.flyTo({
+      center: [
+        foundNode.data.position.longitudeI / 1e7,
+        foundNode.data.position.latitudeI / 1e7,
+      ],
+      duration: 900,
+    });
   };
 
   return (
