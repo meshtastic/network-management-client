@@ -17,6 +17,8 @@ import {
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
+import { MapIDs } from "@utils/map";
+
 interface _INodeSearchDockProps {
   filteredNodes: app_device_MeshNode[];
   device: app_device_MeshDevice | null;
@@ -83,7 +85,7 @@ const filterNodes =
 
 const NodeSearchDock = () => {
   const dispatch = useDispatch();
-  const map = useMap();
+  const { [MapIDs.MapView]: map } = useMap();
 
   const nodes = useSelector(selectAllNodes());
   const device = useSelector(selectDevice());
@@ -101,7 +103,7 @@ const NodeSearchDock = () => {
     const foundNode = nodes.find((node) => node.data.num === nodeId);
     if (!foundNode?.data.position) return;
 
-    map.current?.flyTo({
+    map?.flyTo({
       center: [
         foundNode.data.position.longitudeI / 1e7,
         foundNode.data.position.latitudeI / 1e7,

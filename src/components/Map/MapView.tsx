@@ -16,6 +16,7 @@ import {
   MapLayerMouseEvent,
   ViewState,
   useControl,
+  MapProvider,
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useDebounce } from "react-use";
@@ -43,6 +44,8 @@ import {
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
 import { mapSliceActions } from "@features/map/mapSlice";
+
+import { MapIDs } from "@utils/map";
 
 import "@components/Map/MapView.css";
 
@@ -212,51 +215,58 @@ export const MapView = () => {
   };
 
   return (
-    <div
-      className="relative w-full h-full z-0"
-      onContextMenu={(e) => e.preventDefault()}
-    >
-      {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
-      {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
-
-      <Map
-        reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
-        mapStyle={config.style}
-        mapLib={maplibregl}
-        onDragEnd={handleUpdateViewState}
-        onZoomEnd={handleUpdateViewState}
-        initialViewState={viewState}
-        onClick={handleClick}
+    <MapProvider>
+      <div
+        className="relative w-full h-full z-0"
+        onContextMenu={(e) => e.preventDefault()}
       >
-        <DeckGLOverlay pickingRadius={12} layers={layers} />
+        {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
+        {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
 
-        {/* Controls at bottom right */}
-        <ScaleControl maxWidth={144} position="bottom-right" unit="imperial" />
-        <NavigationControl position="bottom-right" showCompass={false} />
+        <Map
+          id={MapIDs.MapView}
+          reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
+          mapStyle={config.style}
+          mapLib={maplibregl}
+          onDragEnd={handleUpdateViewState}
+          onZoomEnd={handleUpdateViewState}
+          initialViewState={viewState}
+          onClick={handleClick}
+        >
+          <DeckGLOverlay pickingRadius={12} layers={layers} />
 
-        {/* Visualize all waypoints */}
-        {waypoints
-          // Filter invalid locations (falsy lat or long, includes 0,0)
-          .filter((n) => !!n.latitudeI && !!n.longitudeI)
-          .map((waypoint) => (
-            <Waypoints key={waypoint.id} currWaypoint={waypoint} />
-          ))}
+          {/* Controls at bottom right */}
+          <ScaleControl
+            maxWidth={144}
+            position="bottom-right"
+            unit="imperial"
+          />
+          <NavigationControl position="bottom-right" showCompass={false} />
 
-        <Waypoints currWaypoint={tempWaypoint} />
+          {/* Visualize all waypoints */}
+          {waypoints
+            // Filter invalid locations (falsy lat or long, includes 0,0)
+            .filter((n) => !!n.latitudeI && !!n.longitudeI)
+            .map((waypoint) => (
+              <Waypoints key={waypoint.id} currWaypoint={waypoint} />
+            ))}
+
+          <Waypoints currWaypoint={tempWaypoint} />
+        </Map>
+
+        {/* Popups */}
+        {showInfoPane == "waypoint" ? (
+          <WaypointMenu />
+        ) : showInfoPane == "waypointEdit" ? (
+          <WaypointMenuEdit />
+        ) : showInfoPane == "algos" ? (
+          <AnalyticsPane />
+        ) : null}
+
         <NodeSearchDock />
-      </Map>
-
-      {/* Popups */}
-      {showInfoPane == "waypoint" ? (
-        <WaypointMenu />
-      ) : showInfoPane == "waypointEdit" ? (
-        <WaypointMenuEdit />
-      ) : showInfoPane == "algos" ? (
-        <AnalyticsPane />
-      ) : null}
-
-      <MapSelectedNodeMenu />
-      <MapInteractionPane />
-    </div>
+        <MapSelectedNodeMenu />
+        <MapInteractionPane />
+      </div>
+    </MapProvider>
   );
 };
