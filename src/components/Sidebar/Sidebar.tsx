@@ -94,9 +94,9 @@ const Sidebar = () => {
 
             <SidebarIcon
               name="Configure Modules"
-              isActive={location.pathname.includes(AppRoutes.CONFIGURE_PLUGINS)}
+              isActive={location.pathname.includes(AppRoutes.CONFIGURE_MODULES)}
               isSidebarExpanded={isSidebarExpanded}
-              onClick={() => navigateTo(AppRoutes.CONFIGURE_PLUGINS)}
+              onClick={() => navigateTo(AppRoutes.CONFIGURE_MODULES)}
             >
               <Component strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
