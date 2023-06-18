@@ -4,7 +4,7 @@ export enum AppRoutes {
   MANAGE_NODES = "/manage/nodes",
   MANAGE_WAYPOINTS = "/manage/waypoints",
   CONFIGURE_RADIO = "/config/radio",
-  CONFIGURE_PLUGINS = "/config/plugins",
+  CONFIGURE_MODULES = "/config/modules",
   CONFIGURE_CHANNELS = "/config/channels",
   APPLICATION_STATE = "/app-state",
   APPLICATION_SETTINGS = "/settings",
