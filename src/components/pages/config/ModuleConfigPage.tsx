@@ -25,7 +25,7 @@ import {
   selectEditedModuleConfig,
 } from "@features/config/configSelectors";
 
-export const PluginConfigOptions: Record<keyof IModuleConfigState, string> = {
+export const ModuleConfigOptions: Record<keyof IModuleConfigState, string> = {
   // audio: "Audio",
   cannedMessage: "Canned Message",
   externalNotification: "External Notification",
@@ -104,7 +104,7 @@ const getNumberOfPendingChanges = (
   );
 };
 
-const PluginConfigPage = () => {
+const ModuleConfigPage = () => {
   const dispatch = useDispatch();
 
   const currentModuleConfig = useSelector(selectCurrentModuleConfig());
@@ -129,7 +129,7 @@ const PluginConfigPage = () => {
         titleIconTooltip="Upload config to device"
         onTitleIconClick={() => dispatch(requestCommitConfig(["module"]))}
         renderOptions={() =>
-          Object.entries(PluginConfigOptions).map(([k, displayName]) => {
+          Object.entries(ModuleConfigOptions).map(([k, displayName]) => {
             // * This is a limitation of Object.entries typing
             const configKey = k as keyof IModuleConfigState;
 
@@ -159,4 +159,4 @@ const PluginConfigPage = () => {
   );
 };
 
-export default PluginConfigPage;
+export default ModuleConfigPage;

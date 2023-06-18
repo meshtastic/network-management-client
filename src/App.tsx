@@ -11,7 +11,7 @@ import MessagingPage from "@components/pages/MessagingPage";
 import ManageWaypointPage from "@components/pages/ManageWaypointPage";
 import ManageNodePage from "@components/pages/ManageNodePage";
 import RadioConfigPage from "@components/pages/config/RadioConfigPage";
-import PluginConfigPage from "@components/pages/config/PluginConfigPage";
+import ModuleConfigPage from "@app/components/pages/config/ModuleConfigPage";
 import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
 import ApplicationStatePage from "@components/pages/ApplicationStatePage";
 import ApplicationSettingsPage from "@components/pages/config/ApplicationSettingsPage";
@@ -64,8 +64,8 @@ const App = () => {
             element={<RadioConfigPage />}
           />
           <Route
-            path={`${AppRoutes.CONFIGURE_PLUGINS}/:configKey?`}
-            element={<PluginConfigPage />}
+            path={`${AppRoutes.CONFIGURE_MODULES}/:configKey?`}
+            element={<ModuleConfigPage />}
           />
           <Route
             path={`${AppRoutes.CONFIGURE_CHANNELS}/:channelId?`}

@@ -38,6 +38,20 @@ This application is an unofficial desktop client for the [Meshtastic Project](ht
 
 This application is built using the [Tauri Framework](https://tauri.app/), a modern, secure successor to the [Electron Framework](https://www.electronjs.org/). This allows us to natively support Linux, macOS, and Windows within the same codebase without the performance or memory overhead of a Chromium browser. Our core application infrastructure is written in Rust due to its performance and safety, and our UI and client functionality is written in React TypeScript using [Vite](https://vitejs.dev/). This project is in early stages of development, and as such is **not yet suitable for production use**.
 
+## :pray: Call for Contributions
+
+At the time of writing, this project is currently maintained by a single developer. As such, the project is looking for developers willing to contribute towards or take lead on the following major initiatives:
+
+- Full offline map support, including region-based downloading and loading of custom maps
+- Persisting application state across client sessions
+- Rust backend testing (unit, integration, e2e, smoke)
+- TS frontend testing (unit, integration, e2e, smoke)
+- Adding support for remote node configuration
+- Integrating UI components into the [Storybook](https://storybook.js.org/) framework
+- Adding support for i18n translations within the UI layer
+- General reorganization of application file structure to make the project intuitive
+- Setting up robust CI/CD pipelines for the project, including linting, testing, and artifact building
+
 ## :rocket: Functionality
 
 This project is still in early stages of development, but here's a rough roadmap of functionality we're working on. We're placing a high priority on getting our core infrastructure right, since this is the core of any robust and effective UI layer.

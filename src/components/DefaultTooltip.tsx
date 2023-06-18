@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { ReactNode } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
@@ -14,10 +14,15 @@ const DefaultTooltip = ({
   deactivated,
   ...rest
 }: IDefaultTooltipProps) => {
-  if (deactivated) return <>{children}</>;
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <Tooltip.Provider>
-      <Tooltip.Root delayDuration={300}>
+      <Tooltip.Root
+        open={isOpen}
+        onOpenChange={(e) => setIsOpen(e && !deactivated)}
+        delayDuration={300}
+      >
         <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
@@ -26,6 +31,7 @@ const DefaultTooltip = ({
             sideOffset={5}
             avoidCollisions
             collisionPadding={20}
+            side={rest.side || "top"}
           >
             {text}
             <Tooltip.Arrow className="fill-gray-200" />

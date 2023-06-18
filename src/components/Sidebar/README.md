@@ -54,6 +54,6 @@ These are currently routed to `"/TODO"`:
 - Manage Nodes
 - Manage Waypoints
 - Radio Configuration
-- Plugin Configuration
+- Module Configuration
 - Channel Configuration
 - Export Data

@@ -227,7 +227,6 @@ function* disconnectFromDeviceWorker(
   action: ReturnType<typeof requestDisconnectFromDevice>
 ) {
   try {
-    // FIXME disconnect from socket as well
     yield call(invoke, "drop_device_connection", {
       portName: action.payload,
     });
@@ -241,7 +240,6 @@ function* disconnectFromDeviceWorker(
 
 function* disconnectFromAllDevicesWorker() {
   try {
-    // FIXME disconnect from socket as well
     yield call(invoke, "drop_all_device_connections");
     yield put(deviceSliceActions.setPrimarySerialPort(null));
     yield put(deviceSliceActions.setActiveNode(null));
