@@ -9,6 +9,7 @@ use super::{
 
 pub mod helpers;
 pub mod serial;
+pub mod stream_buffer;
 pub mod tcp;
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -23,10 +24,7 @@ pub enum PacketDestination {
 pub trait MeshConnection {
     async fn ping_radio(&mut self) -> Result<(), String>;
     async fn disconnect(&mut self) -> Result<(), String>;
-
-    // async fn configure(&mut self, config_id: u32) -> Result<(), String>;
     async fn send_raw(&mut self, data: Vec<u8>) -> Result<(), String>;
-    // fn write_to_radio(&mut self, data: Vec<u8>) -> Result<(), String>; // ! Serial connection doesn't save port
 
     // Default implementations
 

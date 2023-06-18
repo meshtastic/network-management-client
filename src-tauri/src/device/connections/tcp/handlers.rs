@@ -4,15 +4,7 @@ use tauri::async_runtime;
 use tokio::{io::AsyncReadExt, sync::broadcast};
 use tokio_util::sync::CancellationToken;
 
-use crate::device::connections::{helpers::process_serial_bytes, tcp::TcpConnection};
-
-// #[derive(Clone, Debug)]
-// enum TcpReadResult {
-//     Success(Vec<u8>),
-//     TimedOut,
-//     FatalError,
-//     NonFatalError,
-// }
+use crate::device::connections::{stream_buffer::StreamBuffer, tcp::TcpConnection};
 
 // Handlers
 
@@ -138,10 +130,10 @@ async fn start_tcp_message_processing_worker(
 ) {
     trace!("Started message processing worker");
 
-    let mut transform_serial_buf: Vec<u8> = vec![];
+    let mut buffer = StreamBuffer::new(decoded_packet_tx);
 
     while let Some(message) = read_output_rx.recv().await {
-        process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
+        buffer.process_serial_bytes(message);
     }
 
     debug!("Serial processing read_output_rx channel closed");
