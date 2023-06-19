@@ -3,12 +3,19 @@ use log::{debug, error, info, warn};
 use prost::Message;
 use tokio::sync::broadcast;
 
+/// A struct that represents a buffer of bytes received from a radio stream.
+/// This struct is used to store bytes received from a radio stream, and is
+/// used to incrementally decode bytes from the received stream into valid
+/// FromRadio packets.
 pub struct StreamBuffer {
     buffer: Vec<u8>,
     decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
 }
 
 #[derive(Debug, Clone)]
+/// An enum that represents the possible errors that can occur when processing
+/// a stream buffer. These errors are used to determine whether the application
+/// should wait to receive more data or if the buffer should be purged.
 pub enum StreamBufferError {
     MissingHeaderByte,      // Wait for more data
     IncorrectFramingByte,   // Wait for more data
@@ -23,6 +30,8 @@ pub enum StreamBufferError {
 type Result<T> = std::result::Result<T, StreamBufferError>;
 
 impl StreamBuffer {
+    /// Creates a new StreamBuffer instance that will send decoded FromRadio packets
+    /// to the given broadcast channel.
     pub fn new(decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>) -> Self {
         StreamBuffer {
             buffer: vec![],
@@ -30,6 +39,23 @@ impl StreamBuffer {
         }
     }
 
+    /// Takes in a portion of a stream message, stores it in a buffer,
+    /// and attempts to decode the buffer into valid FromRadio packets.
+    ///
+    /// # Arguments
+    ///
+    /// * `message` - A vector of bytes received from a radio stream
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let (rx, mut tx) = broadcast::channel::<protobufs::FromRadio>(32);
+    /// let buffer = StreamBuffer::new(tx);
+    ///
+    /// while let Some(message) = stream.try_next().await? {
+    ///    buffer.process_serial_bytes(message);
+    /// }
+    /// ```
     pub fn process_serial_bytes(&mut self, message: Vec<u8>) {
         let mut message = message;
         self.buffer.append(&mut message);
@@ -61,7 +87,13 @@ impl StreamBuffer {
         }
     }
 
-    // Recall: This function will only be called when processing is not exhausted
+    /// An internal helper function that is called iteratively on the internal buffer. This
+    /// function attempts to decode the buffer into a valid FromRadio packet. This function
+    /// will return an error if the buffer does not contain enough data to decode a packet or
+    /// if a packet is malformed. This function will return a packet if the buffer contains
+    /// enough data to decode a packet, and is able to successfully decode the packet.
+    ///
+    /// **Note:** This function should only be called when not all received data in the buffer has been processed.
     fn process_packet_buffer(&mut self) -> Result<protobufs::FromRadio> {
         // All valid packets start with the sequence [0x94 0xc3 size_msb size_lsb], where
         // size_msb and size_lsb collectively give the size of the incoming packet
@@ -74,6 +106,7 @@ impl StreamBuffer {
             }
         };
 
+        // Get the "framing byte" after the start of the packet header, or fail if not found
         let framing_byte = match self.buffer.get(framing_index + 1) {
             Some(val) => val,
             None => {
@@ -82,6 +115,7 @@ impl StreamBuffer {
             }
         };
 
+        // Check that the framing byte is correct, and fail if not
         if *framing_byte != 0xc3 {
             warn!("Framing byte [{}] not equal to 0xc3", framing_byte);
             return Err(StreamBufferError::IncorrectFramingByte);
@@ -98,6 +132,7 @@ impl StreamBuffer {
             self.buffer = self.buffer[framing_index..].to_vec();
         }
 
+        // Get the MSB of the packet header size, or wait to receive all data
         let msb = match self.buffer.get(2) {
             Some(val) => val,
             None => {
@@ -106,6 +141,7 @@ impl StreamBuffer {
             }
         };
 
+        // Get the LSB of the packet header size, or wait to receive all data
         let lsb = match self.buffer.get(3) {
             Some(val) => val,
             None => {
@@ -115,10 +151,11 @@ impl StreamBuffer {
         };
 
         // Combine MSB and LSB of incoming packet size bytes
-        // * NOTE: packet size doesn't consider the first four magic bytes
+        // Recall that packet size doesn't include the first four magic bytes
         let shifted_msb: u32 = (*msb as u32).checked_shl(8).unwrap_or(0);
         let incoming_packet_size: usize = 4 + shifted_msb as usize + (*lsb as usize);
 
+        // Defer decoding until the correct number of bytes are received
         if self.buffer.len() < incoming_packet_size {
             warn!("Serial buffer size is less than size of packet");
             return Err(StreamBufferError::IncompletePacket);
@@ -137,6 +174,8 @@ impl StreamBuffer {
             None
         };
 
+        // If the byte after the 0x94 is 0xc3, this means not all bytes were received
+        // in the current packet, meaning the packet is malformed and should be purged
         if *malformed_packet_detector_byte.unwrap_or(&0) == 0xc3 {
             info!("Detected malformed packet, purging");
 
@@ -149,11 +188,13 @@ impl StreamBuffer {
             return Err(StreamBufferError::MalformedPacket);
         }
 
-        let start_of_next_packet_idx: usize = 3 + (shifted_msb as usize) + ((*lsb) as usize) + 1; // ? Why this way?
+        // Get index of next packet after removing current packet from buffer
+        let start_of_next_packet_idx: usize = 3 + (shifted_msb as usize) + ((*lsb) as usize) + 1;
 
-        // Remove valid packet from buffer
+        // Remove current packet from buffer based on start location of next packet
         self.buffer = self.buffer[start_of_next_packet_idx..].to_vec();
 
+        // Attempt to decode the current packet
         let decoded_packet = match protobufs::FromRadio::decode(packet.as_slice()) {
             Ok(d) => d,
             Err(err) => {
