@@ -22,7 +22,7 @@ import {
 } from "@features/config/configSelectors";
 import { configSliceActions } from "@features/config/configSlice";
 
-import { selectPrimarySerialPort } from "@features/device/deviceSelectors";
+import { selectPrimaryDeviceKey } from "@features/device/deviceSelectors";
 import { requestSliceActions } from "@features/requests/requestReducer";
 
 import type { CommandError } from "@utils/errors";
@@ -38,12 +38,12 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
     const includeModuleConfig = fieldFlags.includes("module");
     const includeChannelConfig = fieldFlags.includes("channel");
 
-    const activePort = (yield select(selectPrimarySerialPort())) as
+    const primaryDeviceKey = (yield select(selectPrimaryDeviceKey())) as
       | string
       | null;
 
-    if (!activePort) {
-      throw new Error("No active port");
+    if (!primaryDeviceKey) {
+      throw new Error("No active connection");
     }
 
     // Get current and edited config
@@ -129,7 +129,7 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
     // Dispatch update to backend
 
     yield call(invoke, "update_device_config_bulk", {
-      portName: activePort,
+      deviceKey: primaryDeviceKey,
       config: configPayload,
     });
 

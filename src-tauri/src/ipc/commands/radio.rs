@@ -2,6 +2,7 @@ use crate::ipc::events;
 use crate::ipc::CommandError;
 use crate::ipc::DeviceBulkConfig;
 use crate::state;
+use crate::state::DeviceKey;
 
 use app::protobufs;
 use log::debug;
@@ -9,7 +10,7 @@ use log::trace;
 
 #[tauri::command]
 pub async fn update_device_config(
-    port_name: String,
+    device_key: DeviceKey,
     config: protobufs::Config,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
@@ -19,12 +20,12 @@ pub async fn update_device_config(
 
     let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Device not connected")?;
 
     let mut connections_guard = radio_connections.inner.lock().await;
     let connection = connections_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
     connection.update_device_config(device, config).await?;
@@ -34,7 +35,7 @@ pub async fn update_device_config(
 
 #[tauri::command]
 pub async fn update_device_user(
-    port_name: String,
+    device_key: DeviceKey,
     user: protobufs::User,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
@@ -44,12 +45,12 @@ pub async fn update_device_user(
 
     let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Device not connected")?;
 
     let mut connections_guard = radio_connections.inner.lock().await;
     let connection = connections_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
     connection.update_device_user(device, user).await?;
@@ -59,7 +60,7 @@ pub async fn update_device_user(
 
 #[tauri::command]
 pub async fn start_configuration_transaction(
-    port_name: String,
+    device_key: DeviceKey,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
@@ -67,12 +68,12 @@ pub async fn start_configuration_transaction(
 
     let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Device not connected")?;
 
     let mut connections_guard = radio_connections.inner.lock().await;
     let connection = connections_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
     connection.start_configuration_transaction(device).await?;
@@ -83,7 +84,7 @@ pub async fn start_configuration_transaction(
 // UNUSED
 #[tauri::command]
 pub async fn commit_configuration_transaction(
-    port_name: String,
+    device_key: DeviceKey,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
@@ -91,12 +92,12 @@ pub async fn commit_configuration_transaction(
 
     let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Device not connected")?;
 
     let mut connections_guard = radio_connections.inner.lock().await;
     let connection = connections_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
     connection.commit_configuration_transaction(device).await?;
@@ -106,7 +107,7 @@ pub async fn commit_configuration_transaction(
 
 #[tauri::command]
 pub async fn update_device_config_bulk(
-    port_name: String,
+    device_key: DeviceKey,
     app_handle: tauri::AppHandle,
     config: DeviceBulkConfig,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
@@ -116,12 +117,12 @@ pub async fn update_device_config_bulk(
 
     let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Device not connected")?;
 
     let mut connections_guard = radio_connections.inner.lock().await;
     let connection = connections_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
     connection.start_configuration_transaction(device).await?;

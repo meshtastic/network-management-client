@@ -5,7 +5,7 @@ import type {
   app_protobufs_Waypoint,
 } from "@bindings/index";
 
-import type { DeviceKey } from "@features/device/deviceSagas";
+import type { ConnectionType, DeviceKey } from "@utils/connections";
 
 export const requestAvailablePorts = createAction(
   "@device/request-available-ports"
@@ -17,8 +17,9 @@ export const requestInitializeApplication = createAction(
 
 // TODO this type shouldn't expose both portName and socketAddress at the same time
 export const requestConnectToDevice = createAction<{
-  portName?: string;
-  socketAddress?: string;
+  params:
+    | { type: ConnectionType.SERIAL; portName: string }
+    | { type: ConnectionType.TCP; socketAddress: string };
   setPrimary: boolean;
 }>("@device/request-connect");
 
@@ -31,18 +32,18 @@ export const requestDisconnectFromAllDevices = createAction(
 );
 
 export const requestSendMessage = createAction<{
-  portName: string;
+  deviceKey: string;
   text: string;
   channel: number;
 }>("@device/request-send-message");
 
 export const requestUpdateUser = createAction<{
-  portName: string;
+  deviceKey: string;
   user: app_protobufs_User;
 }>("@device/update-device-user");
 
 export const requestNewWaypoint = createAction<{
-  portName: string;
+  deviceKey: string;
   waypoint: app_protobufs_Waypoint;
   channel: number;
 }>("@device/send-waypoint");

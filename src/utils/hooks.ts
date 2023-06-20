@@ -7,7 +7,7 @@ import type { app_protobufs_Waypoint } from "@bindings/index";
 import {
   selectActiveWaypoint,
   selectInfoPane,
-  selectPrimarySerialPort,
+  selectPrimaryDeviceKey,
 } from "@features/device/deviceSelectors";
 import { requestNewWaypoint } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
@@ -33,7 +33,7 @@ const useComponentReload = (interval: number) => {
 const useDeleteWaypoint = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
-  const primaryPortName = useSelector(selectPrimarySerialPort());
+  const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
 
   return () => {
     // Set expiry to time one second ago
@@ -42,7 +42,7 @@ const useDeleteWaypoint = () => {
       return;
     }
 
-    if (!primaryPortName) {
+    if (!primaryDeviceKey) {
       console.warn("No active port, not deleting waypoint");
       return;
     }
@@ -55,7 +55,7 @@ const useDeleteWaypoint = () => {
     // Update waypoint and clear ActiveWaypoint
     dispatch(
       requestNewWaypoint({
-        portName: primaryPortName,
+        deviceKey: primaryDeviceKey,
         waypoint: updatedWaypoint,
         channel: 0,
       })

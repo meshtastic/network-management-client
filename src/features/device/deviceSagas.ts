@@ -33,12 +33,12 @@ import {
 } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestSliceActions } from "@features/requests/requestReducer";
+
+import { ConnectionType, DeviceKey } from "@utils/connections";
 import type { CommandError } from "@utils/errors";
 import { error } from "@utils/errors";
 
-// TODO what's a good place for this?
-export type DeviceKey = string;
-
+// Currently this only suports serial ports
 function* getAutoConnectPortWorker(
   action: ReturnType<typeof requestAutoConnectPort>
 ) {
@@ -51,7 +51,15 @@ function* getAutoConnectPortWorker(
 
     // Automatically connect to port
     if (portName) {
-      yield put(requestConnectToDevice({ portName, setPrimary: true }));
+      yield put(
+        requestConnectToDevice({
+          params: {
+            type: ConnectionType.SERIAL,
+            portName,
+          },
+          setPrimary: true,
+        })
+      );
     }
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
@@ -141,15 +149,18 @@ function* connectToDeviceWorker(
   action: ReturnType<typeof requestConnectToDevice>
 ) {
   let subscribeTask: Task | null = null;
+  const deviceKey: DeviceKey =
+    action.payload.params.type === ConnectionType.SERIAL
+      ? action.payload.params.portName
+      : action.payload.params.type === ConnectionType.TCP
+      ? action.payload.params.socketAddress
+      : error("Neither portName nor socketAddress were set");
 
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
     yield put(
       connectionSliceActions.setConnectionState({
-        deviceKey:
-          action.payload.portName ??
-          action.payload.socketAddress ??
-          error("Neither portName nor socketAddress were set"),
+        deviceKey,
         status: {
           status: "PENDING",
         },
@@ -163,29 +174,33 @@ function* connectToDeviceWorker(
 
     yield call(invoke, "initialize_graph_state");
 
-    if (action.payload.portName) {
+    if (action.payload.params.type === ConnectionType.SERIAL) {
       yield call(invoke, "connect_to_serial_port", {
-        portName: action.payload.portName,
+        portName: action.payload.params.portName,
       });
-    } else if (action.payload.socketAddress) {
+    }
+
+    if (action.payload.params.type === ConnectionType.TCP) {
       yield call(invoke, "connect_to_tcp_port", {
-        address: action.payload.socketAddress,
+        address: action.payload.params.socketAddress,
       });
     }
 
     if (action.payload.setPrimary) {
-      if (action.payload.portName) {
+      if (action.payload.params.type === ConnectionType.SERIAL) {
         yield put(
-          deviceSliceActions.setPrimarySerialPort(action.payload.portName)
-        );
-      } else if (action.payload.socketAddress) {
-        yield put(
-          deviceSliceActions.setPrimarySocketAddress(
-            action.payload.socketAddress
+          deviceSliceActions.setPrimaryDeviceConnectionKey(
+            action.payload.params.portName
           )
         );
-      } else {
-        error("Neither portName nor socketAddress were specified");
+      }
+
+      if (action.payload.params.type === ConnectionType.TCP) {
+        yield put(
+          deviceSliceActions.setPrimaryDeviceConnectionKey(
+            action.payload.params.socketAddress
+          )
+        );
       }
     }
 
@@ -206,10 +221,7 @@ function* connectToDeviceWorker(
 
     yield put(
       connectionSliceActions.setConnectionState({
-        deviceKey:
-          action.payload.portName ??
-          action.payload.socketAddress ??
-          error("Neither portName nor socketAddress were set"),
+        deviceKey,
         status: {
           status: "FAILED",
           message: (e as CommandError).message,
@@ -228,9 +240,9 @@ function* disconnectFromDeviceWorker(
 ) {
   try {
     yield call(invoke, "drop_device_connection", {
-      portName: action.payload,
+      deviceKey: action.payload,
     });
-    yield put(deviceSliceActions.setPrimarySerialPort(null));
+    yield put(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
     yield put(deviceSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
   } catch (error) {
@@ -241,7 +253,7 @@ function* disconnectFromDeviceWorker(
 function* disconnectFromAllDevicesWorker() {
   try {
     yield call(invoke, "drop_all_device_connections");
-    yield put(deviceSliceActions.setPrimarySerialPort(null));
+    yield put(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
     yield put(deviceSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
   } catch (error) {
@@ -254,7 +266,7 @@ function* sendTextWorker(action: ReturnType<typeof requestSendMessage>) {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     yield call(invoke, "send_text", {
-      portName: action.payload.portName,
+      deviceKey: action.payload.deviceKey,
       channel: action.payload.channel,
       text: action.payload.text,
     });
@@ -275,7 +287,7 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     yield call(invoke, "update_device_user", {
-      portName: action.payload.portName,
+      deviceKey: action.payload.deviceKey,
       user: action.payload.user,
     });
 
@@ -294,7 +306,7 @@ function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
     yield call(invoke, "send_waypoint", {
-      portName: action.payload.portName,
+      deviceKey: action.payload.deviceKey,
       waypoint: action.payload.waypoint,
       channel: action.payload.channel,
     });

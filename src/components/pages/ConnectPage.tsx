@@ -28,12 +28,9 @@ import {
 } from "@features/device/deviceSelectors";
 import { requestSliceActions } from "@features/requests/requestReducer";
 
-import "@components/SplashScreen/SplashScreen.css";
+import { ConnectionType } from "@utils/connections";
 
-export enum ConnectionType {
-  SERIAL = "SERIAL",
-  TCP = "TCP",
-}
+import "@components/SplashScreen/SplashScreen.css";
 
 const getFullSocketAddress = (address: string, port: string) =>
   `${address}:${port}`;
@@ -74,7 +71,10 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
     dispatch(
       requestConnectToDevice({
-        socketAddress: getFullSocketAddress(socketAddress, socketPort),
+        params: {
+          type: ConnectionType.TCP,
+          socketAddress: getFullSocketAddress(socketAddress, socketPort),
+        },
         setPrimary: true,
       })
     );
@@ -92,7 +92,12 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   const handlePortSelected = (portName: string) => {
     setSelectedPortName(portName);
-    dispatch(requestConnectToDevice({ portName: portName, setPrimary: true }));
+    dispatch(
+      requestConnectToDevice({
+        params: { type: ConnectionType.SERIAL, portName },
+        setPrimary: true,
+      })
+    );
   };
 
   const openExternalLink = (url: string) => () => {

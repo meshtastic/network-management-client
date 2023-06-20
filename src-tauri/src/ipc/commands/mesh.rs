@@ -1,5 +1,5 @@
 use crate::ipc::CommandError;
-use crate::state;
+use crate::state::{self, DeviceKey};
 use crate::{device::connections::PacketDestination, ipc::events};
 
 use app::protobufs;
@@ -7,7 +7,7 @@ use log::{debug, trace};
 
 #[tauri::command]
 pub async fn send_text(
-    port_name: String,
+    device_key: DeviceKey,
     text: String,
     channel: u32,
     app_handle: tauri::AppHandle,
@@ -19,12 +19,12 @@ pub async fn send_text(
 
     let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Device not connected")?;
 
     let mut connections_guard = radio_connections.inner.lock().await;
     let connection = connections_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
     connection
@@ -44,7 +44,7 @@ pub async fn send_text(
 
 #[tauri::command]
 pub async fn send_waypoint(
-    port_name: String,
+    device_key: DeviceKey,
     waypoint: protobufs::Waypoint,
     channel: u32,
     app_handle: tauri::AppHandle,
@@ -56,12 +56,12 @@ pub async fn send_waypoint(
 
     let mut devices_guard = mesh_devices.inner.lock().await;
     let device = devices_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Device not connected")?;
 
     let mut connections_guard = radio_connections.inner.lock().await;
     let connection = connections_guard
-        .get_mut(&port_name)
+        .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
     connection

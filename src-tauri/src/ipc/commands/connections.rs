@@ -8,6 +8,7 @@ use crate::ipc::helpers::spawn_configuration_timeout_handler;
 use crate::ipc::helpers::spawn_decoded_handler;
 use crate::ipc::CommandError;
 use crate::state;
+use crate::state::DeviceKey;
 
 use log::debug;
 use std::time::Duration;
@@ -134,7 +135,7 @@ pub async fn connect_to_tcp_port(
 
 #[tauri::command]
 pub async fn drop_device_connection(
-    port_name: String,
+    device_key: DeviceKey,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
 ) -> Result<(), CommandError> {
@@ -144,13 +145,13 @@ pub async fn drop_device_connection(
         let mut state_devices = mesh_devices.inner.lock().await;
         let mut connections_guard = radio_connections.inner.lock().await;
 
-        connections_guard.remove(&port_name);
+        connections_guard.remove(&device_key);
 
-        if let Some(device) = state_devices.get_mut(&port_name) {
+        if let Some(device) = state_devices.get_mut(&device_key) {
             device.set_status(SerialDeviceStatus::Disconnected);
         }
 
-        state_devices.remove(&port_name);
+        state_devices.remove(&device_key);
     }
 
     Ok(())

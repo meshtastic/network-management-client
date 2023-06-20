@@ -79,10 +79,23 @@ async fn start_tcp_read_worker(
         let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
         let read_bytes = match read_stream.read(&mut incoming_serial_buf).await {
             Ok(bytes) => bytes,
-            Err(e) => {
-                error!("Error reading from serial port: {}", e.to_string());
-                continue;
-            }
+            Err(e) => match e.kind() {
+                tokio::io::ErrorKind::WouldBlock => {
+                    continue;
+                }
+                tokio::io::ErrorKind::ConnectionReset => {
+                    error!("TCP connection reset");
+                    break;
+                }
+                tokio::io::ErrorKind::ConnectionAborted => {
+                    error!("TCP connection aborted");
+                    break;
+                }
+                _ => {
+                    error!("Error reading from TCP port: {}", e.to_string());
+                    continue;
+                }
+            },
         };
 
         if !incoming_serial_buf.is_empty() {

@@ -95,13 +95,20 @@ impl StreamBuffer {
     ///
     /// **Note:** This function should only be called when not all received data in the buffer has been processed.
     fn process_packet_buffer(&mut self) -> Result<protobufs::FromRadio> {
+        // Check that the buffer can potentially contain a packet header
+        if self.buffer.len() < 4 {
+            debug!("Buffer can't contain packet header, failing");
+            return Err(StreamBufferError::IncompletePacket);
+        }
+
         // All valid packets start with the sequence [0x94 0xc3 size_msb size_lsb], where
         // size_msb and size_lsb collectively give the size of the incoming packet
         // Note that the maximum packet size currently stands at 240 bytes, meaning an MSB is not needed
         let framing_index = match self.buffer.iter().position(|&b| b == 0x94) {
             Some(idx) => idx,
             None => {
-                warn!("Could not find index of 0x94");
+                warn!("Could not find index of 0x94, purging");
+                self.buffer.clear(); // Clear buffer since no packets exist
                 return Err(StreamBufferError::MissingHeaderByte);
             }
         };
@@ -110,7 +117,7 @@ impl StreamBuffer {
         let framing_byte = match self.buffer.get(framing_index + 1) {
             Some(val) => val,
             None => {
-                debug!("Found incomplete packet");
+                debug!("Could not find framing byte, waiting for more data");
                 return Err(StreamBufferError::IncompletePacket);
             }
         };
