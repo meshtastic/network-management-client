@@ -1,8 +1,8 @@
+use crate::state::DeviceKey;
 use app::protobufs;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::collections::HashMap;
-use crate::state::DeviceKey;
 
 pub mod commands;
 pub mod events;
@@ -10,6 +10,8 @@ pub mod helpers;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, thiserror::Error)]
 #[serde(rename_all = "camelCase")]
+/// An error structure that is intended to be transmitted to the UI layer
+/// and is designed to be interchangable with the default JS `Error` type.
 pub struct CommandError {
     message: String,
 }
