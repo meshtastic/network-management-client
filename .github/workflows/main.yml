@@ -22,6 +22,11 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
+      - name: setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7.1.7
+
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
