@@ -6,11 +6,12 @@
 </div>
 
 <p align="center">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ajmcquilkin/meshtastic-network-management-client">
+  <a href="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/main.yml">
+    <img alt="Publish action status" src="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/main.yml/badge.svg">
   </a>
   
-  <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client/blob/main/LICENSE">
-    <img alt="GitHub" src="https://img.shields.io/github/license/ajmcquilkin/meshtastic-network-management-client">
+  <a href="">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ajmcquilkin/meshtastic-network-management-client">
   </a>
   
   <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client/issues">
