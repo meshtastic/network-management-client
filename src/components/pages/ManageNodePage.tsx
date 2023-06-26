@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
+import TimeAgo from "timeago-react";
 
 import type { app_device_MeshNode } from "@bindings/index";
 
@@ -27,11 +28,13 @@ const ManageNodePage = () => {
       },
       {
         id: "Last Heard",
-        accessorFn: (n) => {
-          const lastHeardTime = getLastHeardTime(n);
-          if (!lastHeardTime) return "No packets received";
-          // TODO implement this with timeago.js
-          return new Date(lastHeardTime * 1000).toLocaleString();
+        header: "Last Heard",
+        cell: ({ row }) => {
+          const node = row.original;
+          const lastHeardTime = getLastHeardTime(node);
+
+          if (!lastHeardTime) return <p>No packets received</p>;
+          return <TimeAgo datetime={lastHeardTime * 1000} />;
         },
       },
       {
