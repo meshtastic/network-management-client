@@ -1,5 +1,7 @@
 mod handlers;
 
+use std::time::Duration;
+
 use app::protobufs;
 use async_trait::async_trait;
 use log::{error, trace};
@@ -102,9 +104,19 @@ impl TcpConnection {
     pub async fn connect(&mut self, address: String) -> Result<(), String> {
         // Create TCP connection
 
-        let stream = tokio::net::TcpStream::connect(address)
-            .await
-            .map_err(|e| e.to_string())?;
+        let connection_future = tokio::net::TcpStream::connect(address.clone());
+        let timeout_duration = Duration::from_millis(3000);
+
+        let stream = match tokio::time::timeout(timeout_duration, connection_future).await {
+            Ok(stream) => stream.map_err(|e| e.to_string())?,
+            Err(e) => {
+                return Err(format!(
+                    "Timed out connecting to {} with error \"{}.\" Check that the radio is on, network is enabled, and the address is correct.",
+                    address,
+                    e.to_string()
+                ));
+            }
+        };
 
         // Create message channels
 

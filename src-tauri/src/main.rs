@@ -128,22 +128,22 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            ipc::commands::request_autoconnect_port,
-            ipc::commands::get_all_serial_ports,
-            ipc::commands::connect_to_serial_port,
-            ipc::commands::connect_to_tcp_port,
-            ipc::commands::drop_device_connection,
-            ipc::commands::drop_all_device_connections,
-            ipc::commands::send_text,
-            ipc::commands::update_device_config,
-            ipc::commands::update_device_user,
-            ipc::commands::send_waypoint,
-            ipc::commands::get_node_edges,
-            ipc::commands::run_algorithms,
-            ipc::commands::initialize_graph_state,
-            ipc::commands::start_configuration_transaction,
-            ipc::commands::commit_configuration_transaction,
-            ipc::commands::update_device_config_bulk,
+            ipc::commands::connections::request_autoconnect_port,
+            ipc::commands::connections::get_all_serial_ports,
+            ipc::commands::connections::connect_to_serial_port,
+            ipc::commands::connections::connect_to_tcp_port,
+            ipc::commands::connections::drop_device_connection,
+            ipc::commands::connections::drop_all_device_connections,
+            ipc::commands::graph::initialize_graph_state,
+            ipc::commands::graph::get_node_edges,
+            ipc::commands::graph::run_algorithms,
+            ipc::commands::mesh::send_text,
+            ipc::commands::mesh::send_waypoint,
+            ipc::commands::radio::update_device_config,
+            ipc::commands::radio::update_device_user,
+            ipc::commands::radio::start_configuration_transaction,
+            ipc::commands::radio::commit_configuration_transaction,
+            ipc::commands::radio::update_device_config_bulk,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

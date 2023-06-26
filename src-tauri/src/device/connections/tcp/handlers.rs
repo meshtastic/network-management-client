@@ -4,15 +4,7 @@ use tauri::async_runtime;
 use tokio::{io::AsyncReadExt, sync::broadcast};
 use tokio_util::sync::CancellationToken;
 
-use crate::device::connections::{helpers::process_serial_bytes, tcp::TcpConnection};
-
-// #[derive(Clone, Debug)]
-// enum TcpReadResult {
-//     Success(Vec<u8>),
-//     TimedOut,
-//     FatalError,
-//     NonFatalError,
-// }
+use crate::device::connections::{stream_buffer::StreamBuffer, tcp::TcpConnection};
 
 // Handlers
 
@@ -87,10 +79,23 @@ async fn start_tcp_read_worker(
         let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
         let read_bytes = match read_stream.read(&mut incoming_serial_buf).await {
             Ok(bytes) => bytes,
-            Err(e) => {
-                error!("Error reading from serial port: {}", e.to_string());
-                continue;
-            }
+            Err(e) => match e.kind() {
+                tokio::io::ErrorKind::WouldBlock => {
+                    continue;
+                }
+                tokio::io::ErrorKind::ConnectionReset => {
+                    error!("TCP connection reset");
+                    break;
+                }
+                tokio::io::ErrorKind::ConnectionAborted => {
+                    error!("TCP connection aborted");
+                    break;
+                }
+                _ => {
+                    error!("Error reading from TCP port: {}", e.to_string());
+                    continue;
+                }
+            },
         };
 
         if !incoming_serial_buf.is_empty() {
@@ -138,10 +143,10 @@ async fn start_tcp_message_processing_worker(
 ) {
     trace!("Started message processing worker");
 
-    let mut transform_serial_buf: Vec<u8> = vec![];
+    let mut buffer = StreamBuffer::new(decoded_packet_tx);
 
     while let Some(message) = read_output_rx.recv().await {
-        process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
+        buffer.process_serial_bytes(message);
     }
 
     debug!("Serial processing read_output_rx channel closed");

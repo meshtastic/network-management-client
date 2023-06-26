@@ -1,3 +1,4 @@
+use crate::state::DeviceKey;
 use app::protobufs;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -9,6 +10,8 @@ pub mod helpers;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, thiserror::Error)]
 #[serde(rename_all = "camelCase")]
+/// An error structure that is intended to be transmitted to the UI layer
+/// and is designed to be interchangable with the default JS `Error` type.
 pub struct CommandError {
     message: String,
 }
@@ -44,7 +47,7 @@ pub struct APMincutStringResults {
 #[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ConfigurationStatus {
-    pub port_name: String,
+    pub device_key: DeviceKey,
     pub successful: bool,
     pub message: Option<String>,
 }

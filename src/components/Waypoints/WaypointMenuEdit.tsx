@@ -9,7 +9,7 @@ import type { app_protobufs_Waypoint } from "@bindings/index";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestNewWaypoint } from "@features/device/deviceActions";
 import {
-  selectPrimarySerialPort,
+  selectPrimaryDeviceKey,
   selectActiveWaypoint,
   selectActiveWaypointID,
   selectPlaceholderWaypoint,
@@ -24,7 +24,7 @@ const WaypointMenuEdit = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
   const activeWaypointID = useSelector(selectActiveWaypointID());
-  const primaryPortName = useSelector(selectPrimarySerialPort());
+  const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
 
   const placeholderWaypoint = useSelector(selectPlaceholderWaypoint());
 
@@ -50,7 +50,7 @@ const WaypointMenuEdit = () => {
       Number((document.getElementById("channel") as HTMLInputElement).value) ??
       0;
 
-    if (!primaryPortName) {
+    if (!primaryDeviceKey) {
       console.warn("No primary serial port, not updating waypoint");
       return;
     }
@@ -64,7 +64,7 @@ const WaypointMenuEdit = () => {
       };
       dispatch(
         requestNewWaypoint({
-          portName: primaryPortName,
+          deviceKey: primaryDeviceKey,
           waypoint: updatedWaypoint,
           channel: channelNum,
         })
@@ -79,7 +79,7 @@ const WaypointMenuEdit = () => {
 
       dispatch(
         requestNewWaypoint({
-          portName: primaryPortName,
+          deviceKey: primaryDeviceKey,
           waypoint: updatedWaypoint,
           channel: channelNum,
         })

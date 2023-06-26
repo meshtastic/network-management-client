@@ -10,7 +10,7 @@ import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
 
 import { requestSendMessage } from "@features/device/deviceActions";
-import { selectPrimarySerialPort } from "@features/device/deviceSelectors";
+import { selectPrimaryDeviceKey } from "@features/device/deviceSelectors";
 
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
 import { AppRoutes } from "@utils/routing";
@@ -25,7 +25,7 @@ const ChannelDetailView = ({
   className = "",
 }: IChannelDetailViewProps) => {
   const dispatch = useDispatch();
-  const primaryPortName = useSelector(selectPrimarySerialPort());
+  const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
 
   const navigateTo = useNavigate();
 
@@ -35,14 +35,14 @@ const ChannelDetailView = ({
       return;
     }
 
-    if (!primaryPortName) {
+    if (!primaryDeviceKey) {
       console.warn("No primary serial port, not sending message");
       return;
     }
 
     dispatch(
       requestSendMessage({
-        portName: primaryPortName,
+        deviceKey: primaryDeviceKey,
         text: message,
         channel: channel.config.index,
       })

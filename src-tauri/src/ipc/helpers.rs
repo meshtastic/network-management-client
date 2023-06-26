@@ -145,24 +145,27 @@ pub async fn initialize_serial_connection_handlers(
     let mesh_devices_arc = mesh_devices.inner.clone();
     let radio_connections_arc = radio_connections.inner.clone();
     let graph_arc = mesh_graph.inner.clone();
+    // TODO introduce a utility or something that converts an input to a device_key.
+    let device_key = port_name.clone();
 
     // Save device into Tauri state
     {
         let mut devices_guard = mesh_devices_arc.lock().await;
-        devices_guard.insert(port_name.clone(), device);
+        devices_guard.insert(device_key.clone(), device);
     }
 
     // Save connection into Tauri state
     {
         let mut connections_guard = radio_connections_arc.lock().await;
-        connections_guard.insert(port_name.clone(), Box::new(connection));
+        connections_guard.insert(device_key.clone(), Box::new(connection));
     }
 
     // * Needs the device struct and port name to be loaded into Tauri state before running
     spawn_configuration_timeout_handler(
         handle.clone(),
         mesh_devices_arc.clone(),
-        port_name.clone(),
+        device_key.clone(),
+        Duration::from_millis(1500),
     );
 
     spawn_decoded_handler(
@@ -180,12 +183,13 @@ pub fn spawn_configuration_timeout_handler(
     handle: tauri::AppHandle,
     connected_devices_inner: state::MeshDevicesInner,
     device_key: DeviceKey,
+    timeout: Duration,
 ) {
     trace!("Spawning device configuration timeout");
 
     tauri::async_runtime::spawn(async move {
         // Wait for device to configure
-        tokio::time::sleep(Duration::from_millis(1500)).await;
+        tokio::time::sleep(timeout).await;
 
         trace!("Device configuration timeout completed");
 
@@ -216,7 +220,7 @@ pub fn spawn_configuration_timeout_handler(
         dispatch_configuration_status(
             &handle,
             ConfigurationStatus {
-                port_name: device_key,
+                device_key,
                 successful: false,
                 message: Some(
                     "Configuration timed out. Are you sure this is a Meshtastic device?".into(),
@@ -234,7 +238,7 @@ pub fn spawn_decoded_handler(
     mut decoded_listener: broadcast::Receiver<protobufs::FromRadio>,
     connected_devices_arc: state::MeshDevicesInner,
     graph_arc: state::NetworkGraphInner,
-    port_name: String,
+    device_key: DeviceKey,
 ) {
     tauri::async_runtime::spawn(async move {
         let handle = handle;
@@ -247,7 +251,7 @@ pub fn spawn_decoded_handler(
 
             let mut devices_guard = connected_devices_arc.lock().await;
             let device = match devices_guard
-                .get_mut(&port_name)
+                .get_mut(&device_key)
                 .ok_or("Device not initialized")
             {
                 Ok(d) => d,
@@ -300,14 +304,14 @@ pub fn spawn_decoded_handler(
                 && device.status == SerialDeviceStatus::Configured
             {
                 debug!(
-                    "Emitting successful configuration of port \"{}\"",
-                    port_name.clone()
+                    "Emitting successful configuration of device \"{}\"",
+                    device_key.clone()
                 );
 
                 dispatch_configuration_status(
                     &handle,
                     ConfigurationStatus {
-                        port_name: port_name.clone(),
+                        device_key: device_key.clone(),
                         successful: true,
                         message: None,
                     },

@@ -10,6 +10,10 @@ body {
   @apply font-sans;
 }
 
+.no-gutter {
+  scrollbar-gutter: stable;
+}
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
 

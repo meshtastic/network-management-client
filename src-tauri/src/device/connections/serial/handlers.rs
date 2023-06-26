@@ -6,7 +6,7 @@ use tauri::{async_runtime, Manager};
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
 
-use crate::device::connections::helpers::process_serial_bytes;
+use crate::device::connections::stream_buffer::StreamBuffer;
 
 use super::SerialConnection;
 
@@ -198,10 +198,10 @@ async fn start_serial_message_processing_worker(
 ) {
     trace!("Started message processing worker");
 
-    let mut transform_serial_buf: Vec<u8> = vec![];
+    let mut buffer = StreamBuffer::new(decoded_packet_tx);
 
     while let Some(message) = read_output_rx.recv().await {
-        process_serial_bytes(&mut transform_serial_buf, &decoded_packet_tx, message);
+        buffer.process_serial_bytes(message);
     }
 
     trace!("Serial processing read_output_rx channel closed");

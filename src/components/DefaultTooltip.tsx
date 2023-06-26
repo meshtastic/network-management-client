@@ -26,11 +26,11 @@ const DefaultTooltip = ({
         <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content
-            className="px-3 py-1.5 shadow-lg rounded-lg bg-white border border-gray-200 text-xs font-normal text-gray-400"
+            className="z-50 px-3 py-1.5 shadow-lg rounded-lg bg-white border border-gray-200 text-xs font-normal text-gray-400"
             sideOffset={5}
             avoidCollisions
             collisionPadding={20}
-            side={rest.side || "top"}
+            side={rest.side ?? "top"}
           >
             {text}
             <Tooltip.Arrow className="fill-gray-200" />

@@ -9,7 +9,7 @@ import type { app_protobufs_User } from "@bindings/index";
 
 import {
   selectActiveNode,
-  selectPrimarySerialPort,
+  selectPrimaryDeviceKey,
 } from "@features/device/deviceSelectors";
 import { requestUpdateUser } from "@features/device/deviceActions";
 
@@ -28,7 +28,7 @@ const Settings = () => {
   const navigateTo = useNavigate();
 
   const activeNode = useSelector(selectActiveNode());
-  const primaryPortName = useSelector(selectPrimarySerialPort());
+  const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
 
   // Functions to set device info. Forbidden non-null suppressed, but I checked if a device is connected.
   const [deviceID, setDeviceID] = useState(
@@ -57,7 +57,7 @@ const Settings = () => {
       return;
     }
 
-    if (!primaryPortName) {
+    if (!primaryDeviceKey) {
       console.warn("No primary serial port, not updating device");
       return;
     }
@@ -69,7 +69,7 @@ const Settings = () => {
     };
 
     dispatch(
-      requestUpdateUser({ portName: primaryPortName, user: updatedUser })
+      requestUpdateUser({ deviceKey: primaryDeviceKey, user: updatedUser })
     );
   };
 

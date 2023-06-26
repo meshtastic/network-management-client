@@ -23,7 +23,7 @@ const SidebarIcon = ({
     <DefaultTooltip text={name} deactivated={isSidebarExpanded} side="right">
       <button
         type="button"
-        onClick={() => onClick()}
+        onClick={onClick}
         className={`sidebar-background-color-transition flex flex-row align-middle w-full rounded-lg
         ${isActive ? "bg-gray-700" : "bg-white"} `}
       >
