@@ -36,17 +36,15 @@ const _NodeSearchDock = ({
 }: _INodeSearchDockProps) => {
   if (!filteredNodes.length && !!device) {
     return (
-      <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
-        <p className="text-sm font-normal text-gray-500">
-          No results for &quot;{query}&quot;
-        </p>
-      </div>
+      <p className="text-sm font-normal text-gray-500">
+        No results for &quot;{query}&quot;
+      </p>
     );
   }
 
   if (filteredNodes.length) {
     return (
-      <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
+      <>
         {filteredNodes.map((node) => (
           <NodeSearchResult
             key={node.data.num}
@@ -55,7 +53,7 @@ const _NodeSearchDock = ({
             selectNode={handleNodeSelect}
           />
         ))}
-      </div>
+      </>
     );
   }
 
@@ -122,13 +120,15 @@ const NodeSearchDock = () => {
         />
       </div>
 
-      <_NodeSearchDock
-        filteredNodes={nodes.filter(filterNodes(query))}
-        device={device}
-        activeNodeId={activeNodeId}
-        query={query}
-        handleNodeSelect={handleNodeSelect}
-      />
+      <div className="flex flex-col gap-4 px-4 py-3 default-overlay overflow-auto hide-scrollbar max-h-72">
+        <_NodeSearchDock
+          filteredNodes={nodes.filter(filterNodes(query))}
+          device={device}
+          activeNodeId={activeNodeId}
+          query={query}
+          handleNodeSelect={handleNodeSelect}
+        />
+      </div>
     </div>
   );
 };
