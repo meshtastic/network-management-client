@@ -16,35 +16,55 @@ const ManageWaypointPage = () => {
 
   const columns = useMemo<ColumnDef<app_protobufs_Waypoint, unknown>[]>(
     () => [
-      { header: "ID", accessorKey: "id" },
-      { id: "Name", accessorFn: (n) => (n.name !== "" ? n.name : "N/A") },
+      { header: "ID", accessorFn: (n) => n.id },
+      {
+        id: "Name",
+        accessorFn: (n) => {
+          const name = n.name;
+          if (!name) return "No name provided";
+          return name;
+        },
+      },
       {
         id: "Description",
-        accessorFn: (n) => (n.description !== "" ? n.description : "N/A"),
+        accessorFn: (n) => {
+          const description = n.description;
+          if (!description) return "No description provided";
+          return description;
+        },
       },
-      { id: "Expires", accessorFn: (n) => new Date(n.expire * 1000) },
+      {
+        id: "Expires",
+        accessorFn: (n) => {
+          const expireTime = n.expire;
+          if (!expireTime) return "Does not expire";
+          return new Date(expireTime * 1000);
+        },
+      },
       {
         id: "Latitude",
-        accessorFn: (n) =>
-          n.latitudeI || n.latitudeI == 0
-            ? n.latitudeI / 1e7
-            : "Latitude Unavailable",
+        accessorFn: (n) => {
+          const latitude = n.latitudeI;
+          return `${latitude / 1e7}`; // TODO add degree symbol
+        },
       },
       {
         id: "Longitude",
-        accessorFn: (n) =>
-          n.longitudeI || n.longitudeI == 0
-            ? n.longitudeI / 1e7
-            : "Longitude Unavailable",
+        accessorFn: (n) => {
+          const longitude = n.longitudeI;
+          return `${longitude / 1e7}`; // TODO add degree symbol
+        },
       },
       {
         id: "Owned by",
-        accessorFn: (n) =>
-          n.lockedTo == 0
-            ? "Public"
-            : users[n.lockedTo]
-            ? users[n.lockedTo]?.longName
-            : "N/A",
+        accessorFn: (n) => {
+          const lockedTo = n.lockedTo;
+          const owner = users[lockedTo];
+
+          if (!lockedTo) return "Not locked";
+          if (!owner) return "Unknown owner";
+          return owner.longName;
+        },
       },
     ],
     [waypoints]

@@ -3,7 +3,6 @@ import { all, call, put, select, takeEvery } from "redux-saga/effects";
 
 import merge from "lodash.merge";
 import mergeWith from "lodash.mergewith";
-import isArray from "lodash.isarray";
 import cloneDeep from "lodash.clonedeep";
 
 import type {
@@ -116,7 +115,7 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
           // * Need to override array values instead of merging
           (objVal, srcVal) => {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-            if (isArray(objVal)) return srcVal;
+            if (Array.isArray(objVal)) return srcVal;
           }
         );
       }
