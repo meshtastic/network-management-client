@@ -1,43 +1,67 @@
 import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
+import TimeAgo from "timeago-react";
 
-import type { app_protobufs_NodeInfo } from "@bindings/index";
+import type { app_device_MeshNode } from "@bindings/index";
 
 import TableLayout from "@components/Table/TableLayout";
 import { selectAllNodes } from "@features/device/deviceSelectors";
+import { getLastHeardTime } from "@utils/nodes";
 
 const ManageNodePage = () => {
-  const nodes = useSelector(selectAllNodes()).map((n) => n.data);
-  const columns = useMemo<ColumnDef<app_protobufs_NodeInfo, unknown>[]>(
+  const nodes = useSelector(selectAllNodes());
+
+  const columns = useMemo<ColumnDef<app_device_MeshNode, unknown>[]>(
     () => [
-      { id: "ID", accessorFn: (n) => n.num?.toString(16) ?? "No user info" },
+      {
+        id: "ID",
+        accessorFn: (n) => {
+          const nodeNum = n.data.num;
+          if (!nodeNum) return "No user info";
+          return `0x${n.data.num?.toString(16)}`;
+        },
+      },
       {
         id: "Short Name",
-        accessorFn: (n) => n.user?.shortName ?? "No user info",
+        accessorFn: (n) => n.data.user?.shortName ?? "No user info",
       },
       {
         id: "Last Heard",
-        accessorFn: (n) => (!n.lastHeard ? n.lastHeard : "No data"),
+        header: "Last Heard",
+        cell: ({ row }) => {
+          const node = row.original;
+          const lastHeardTime = getLastHeardTime(node);
+
+          if (!lastHeardTime) return <p>No packets received</p>;
+          return <TimeAgo datetime={lastHeardTime * 1000} />;
+        },
       },
       {
         id: "Latitude",
-        accessorFn: (n) =>
-          n.position?.latitudeI ? n.position?.latitudeI / 1e7 : "No GPS lock",
+        accessorFn: (n) => {
+          const latitude = n.data.position?.latitudeI;
+          if (!latitude) return "No GPS lock";
+          return `${latitude / 1e7}`; // TODO add degree symbol
+        },
       },
       {
         id: "Longitude",
-        accessorFn: (n) =>
-          n.position?.longitudeI ? n.position?.longitudeI / 1e7 : "No GPS lock",
+        accessorFn: (n) => {
+          const longitude = n.data.position?.longitudeI;
+          if (!longitude) return "No GPS lock";
+          return `${longitude / 1e7}`; // TODO add degree symbol
+        },
       },
       {
         id: "Battery",
-        accessorFn: (n) =>
-          n.deviceMetrics?.batteryLevel && n.deviceMetrics.batteryLevel
-            ? `${n.deviceMetrics.voltage.toPrecision(4)}V (${
-                n.deviceMetrics.batteryLevel
-              }%)`
-            : "No battery info",
+        accessorFn: (n) => {
+          const batteryLevel = n.data.deviceMetrics?.batteryLevel;
+          const batteryVoltage = n.data.deviceMetrics?.voltage;
+
+          if (!batteryLevel || !batteryVoltage) return "No battery info";
+          return `${batteryVoltage.toPrecision(4)}V (${batteryLevel}%)`;
+        },
       },
     ],
     [nodes]

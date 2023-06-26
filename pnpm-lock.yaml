@@ -67,9 +67,6 @@ dependencies:
   lodash.debounce:
     specifier: ^4.0.8
     version: 4.0.8
-  lodash.isarray:
-    specifier: ^4.0.0
-    version: 4.0.0
   lodash.merge:
     specifier: ^4.6.2
     version: 4.6.2
@@ -157,9 +154,6 @@ devDependencies:
     specifier: ^4.5.7
     version: 4.5.7
   '@types/lodash.debounce':
-    specifier: ^4.0.7
-    version: 4.0.7
-  '@types/lodash.isarray':
     specifier: ^4.0.7
     version: 4.0.7
   '@types/lodash.merge':
@@ -3003,12 +2997,6 @@ packages:
       '@types/lodash': 4.14.194
     dev: true
 
-  /@types/lodash.isarray@4.0.7:
-    resolution: {integrity: sha512-j4LGkaWRU3siKODqnY9xffwoJgnpp4TYsfCxDhRSZwIbX4qD+TkH483r6+mqGkgqlnP08NhjQYhDXPLWgA2uxQ==}
-    dependencies:
-      '@types/lodash': 4.14.194
-    dev: true
-
   /@types/lodash.merge@4.6.7:
     resolution: {integrity: sha512-OwxUJ9E50gw3LnAefSHJPHaBLGEKmQBQ7CZe/xflHkyy/wH2zVyEIAKReHvVrrn7zKdF58p16We9kMfh7v0RRQ==}
     dependencies:
@@ -5703,11 +5691,6 @@ packages:
 
   /lodash.flow@3.5.0:
     resolution: {integrity: sha512-ff3BX/tSioo+XojX4MOsOMhJw0nZoUEF011LX8g8d3gvjVbxd89cCio4BCXronjxcTUIJUoqKEUA+n4CqvvRPw==}
-    dev: false
-
-  /lodash.isarray@4.0.0:
-    resolution: {integrity: sha512-V8ViWvoNlXpCrB6Ewaj3ScRXUpmCvqp4tJUxa3dlovuJj/8lp3SND5Kw4v5OeuHgoyw4qJN+gl36qZqp6WYQ6g==}
-    deprecated: This package is deprecated. Use Array.isArray.
     dev: false
 
   /lodash.memoize@4.1.2:
