@@ -5,6 +5,7 @@ import {
   LinkIcon,
 } from "@heroicons/react/24/outline";
 
+import ConnectionInput from "@components/connection/ConnectionInput";
 import type { RequestStatus } from "@features/requests/requestReducer";
 
 export interface ITcpConnectPaneProps {
@@ -26,8 +27,7 @@ const TcpConnectPane = ({
 }: ITcpConnectPaneProps) => {
   return (
     <form className="flex flex-col gap-4 mt-4" onSubmit={handleSocketConnect}>
-      <input
-        className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-wait"
+      <ConnectionInput
         type="text"
         enterKeyHint="go"
         placeholder="IP address or host name"
@@ -36,8 +36,7 @@ const TcpConnectPane = ({
         disabled={activeSocketState.status === "PENDING"}
       />
 
-      <input
-        className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-wait"
+      <ConnectionInput
         type="text"
         placeholder="Port"
         value={socketPort}

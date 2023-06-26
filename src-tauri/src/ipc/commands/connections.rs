@@ -40,6 +40,9 @@ pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
 #[tauri::command]
 pub async fn connect_to_serial_port(
     port_name: String,
+    baud_rate: Option<u32>,
+    dtr: Option<bool>,
+    rts: Option<bool>,
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
@@ -52,6 +55,9 @@ pub async fn connect_to_serial_port(
 
     initialize_serial_connection_handlers(
         port_name,
+        baud_rate,
+        dtr,
+        rts,
         app_handle,
         mesh_devices,
         radio_connections,

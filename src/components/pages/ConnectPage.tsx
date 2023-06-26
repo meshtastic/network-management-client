@@ -40,10 +40,18 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const autoConnectPort = useSelector(selectAutoConnectPort());
 
+  // UI state
+  const [isScreenActive, setScreenActive] = useState(true);
+
+  // Connection-level state, held here to persist across tab switches
   const [selectedPortName, setSelectedPortName] = useState("");
   const [socketAddress, setSocketAddress] = useState("");
   const [socketPort, setSocketPort] = useState("4403");
-  const [isScreenActive, setScreenActive] = useState(true);
+
+  // Advanced serial options, held here to persist across tab switches
+  const [baudRate, setBaudRate] = useState(115_200);
+  const [dtr, setDtr] = useState(true);
+  const [rts, setRts] = useState(false);
 
   // autoConnectPort takes priority over selectedPortName if it exists
   const activePort = autoConnectPort ?? selectedPortName;
@@ -90,7 +98,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     setSelectedPortName(portName);
     dispatch(
       requestConnectToDevice({
-        params: { type: ConnectionType.SERIAL, portName },
+        params: { type: ConnectionType.SERIAL, portName, dtr, rts },
         setPrimary: true,
       })
     );
@@ -199,6 +207,12 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                 activePortState={activePortState}
                 handlePortSelected={handlePortSelected}
                 refreshPorts={refreshPorts}
+                baudRate={baudRate}
+                setBaudRate={setBaudRate}
+                dtr={dtr}
+                setDtr={setDtr}
+                rts={rts}
+                setRts={setRts}
               />
             </Tabs.Content>
 
@@ -216,7 +230,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
         </div>
       </div>
 
-      <div className="flex-1 relative">
+      <div className="flex-1 relative hidden xl:block">
         <img
           className="w-full h-full object-cover object-center bg-gray-700"
           src={Hero_Image}
