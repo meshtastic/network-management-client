@@ -42,6 +42,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   // UI state
   const [isScreenActive, setScreenActive] = useState(true);
+  const [isAdvancedOpen, setAdvancedOpen] = useState(false);
 
   // Connection-level state, held here to persist across tab switches
   const [selectedPortName, setSelectedPortName] = useState("");
@@ -207,6 +208,8 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                 activePortState={activePortState}
                 handlePortSelected={handlePortSelected}
                 refreshPorts={refreshPorts}
+                isAdvancedOpen={isAdvancedOpen}
+                setAdvancedOpen={setAdvancedOpen}
                 baudRate={baudRate}
                 setBaudRate={setBaudRate}
                 dtr={dtr}

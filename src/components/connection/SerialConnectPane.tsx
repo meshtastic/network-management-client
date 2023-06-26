@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { RowSpacingIcon, Cross2Icon } from "@radix-ui/react-icons";
@@ -13,6 +13,8 @@ export interface ISerialConnectPaneProps {
   activePort: string;
   activePortState: RequestStatus;
   handlePortSelected: (portName: string) => void;
+  isAdvancedOpen: boolean;
+  setAdvancedOpen: (isAdvancedOpen: boolean) => void;
   baudRate: number;
   setBaudRate: (baudRate: number) => void;
   dtr: boolean;
@@ -28,6 +30,8 @@ const SerialConnectPane = ({
   activePortState,
   handlePortSelected,
   refreshPorts,
+  isAdvancedOpen,
+  setAdvancedOpen,
   baudRate,
   setBaudRate,
   dtr,
@@ -35,8 +39,6 @@ const SerialConnectPane = ({
   rts,
   setRts,
 }: ISerialConnectPaneProps) => {
-  const [isAdvancedOpen, setAdvancedOpen] = useState(false);
-
   return (
     <Collapsible.Root open={isAdvancedOpen} onOpenChange={setAdvancedOpen}>
       <div className="flex flex-col mt-4">
@@ -69,16 +71,16 @@ const SerialConnectPane = ({
         <p className="my-auto text-gray-500">Refresh ports</p>
       </button>
 
-      <div className="flex flex-row align-middle justify-between mt-5 mb-2">
-        <p className="text-base font-normal text-gray-500">
-          Advanced connection options
-        </p>
-        <Collapsible.Trigger asChild>
-          <button className="text-gray-500">
+      <Collapsible.Trigger asChild>
+        <button className="flex flex-row align-middle justify-between w-full mt-5 mb-2">
+          <p className="my-auto text-base font-normal text-gray-500">
+            Advanced connection options
+          </p>
+          <span className="my-auto text-gray-500">
             {isAdvancedOpen ? <Cross2Icon /> : <RowSpacingIcon />}
-          </button>
-        </Collapsible.Trigger>
-      </div>
+          </span>
+        </button>
+      </Collapsible.Trigger>
 
       <Collapsible.Content>
         <div className="flex flex-col gap-4">
