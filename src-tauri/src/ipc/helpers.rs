@@ -104,6 +104,9 @@ pub async fn initialize_graph_state(
 
 pub async fn initialize_serial_connection_handlers(
     port_name: String,
+    baud_rate: Option<u32>,
+    dtr: Option<bool>,
+    rts: Option<bool>,
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
@@ -115,7 +118,13 @@ pub async fn initialize_serial_connection_handlers(
     device.set_status(SerialDeviceStatus::Connecting);
 
     match connection
-        .connect(app_handle.clone(), port_name.clone(), 115_200)
+        .connect(
+            app_handle.clone(),
+            port_name.clone(),
+            baud_rate.unwrap_or(115_200),
+            dtr.unwrap_or(true),
+            rts.unwrap_or(false),
+        )
         .await
     {
         Ok(_) => (),

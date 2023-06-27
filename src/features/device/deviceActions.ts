@@ -15,10 +15,14 @@ export const requestInitializeApplication = createAction(
   "@device/request-initialize-application"
 );
 
-// TODO this type shouldn't expose both portName and socketAddress at the same time
 export const requestConnectToDevice = createAction<{
   params:
-    | { type: ConnectionType.SERIAL; portName: string }
+    | {
+        type: ConnectionType.SERIAL;
+        portName: string;
+        dtr: boolean;
+        rts: boolean;
+      }
     | { type: ConnectionType.TCP; socketAddress: string };
   setPrimary: boolean;
 }>("@device/request-connect");

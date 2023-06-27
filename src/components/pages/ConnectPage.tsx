@@ -1,18 +1,12 @@
 import React, { FormEventHandler, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { open } from "@tauri-apps/api/shell";
-import {
-  ArrowPathIcon,
-  EllipsisHorizontalCircleIcon,
-  LinkIcon,
-} from "@heroicons/react/24/outline";
 import * as Tabs from "@radix-ui/react-tabs";
 
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 
 import ConnectTab from "@components/connection/ConnectTab";
-import SerialPortOption from "@components/Onboard/SerialPortOption";
 
 import { selectConnectionStatus } from "@features/connection/connectionSelectors";
 import { connectionSliceActions } from "@features/connection/connectionSlice";
@@ -31,6 +25,8 @@ import { requestSliceActions } from "@features/requests/requestReducer";
 import { ConnectionType } from "@utils/connections";
 
 import "@components/SplashScreen/SplashScreen.css";
+import TcpConnectPane from "../connection/TcpConnectPane";
+import SerialConnectPane from "../connection/SerialConnectPane";
 
 const getFullSocketAddress = (address: string, port: string) =>
   `${address}:${port}`;
@@ -44,10 +40,19 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const autoConnectPort = useSelector(selectAutoConnectPort());
 
+  // UI state
+  const [isScreenActive, setScreenActive] = useState(true);
+  const [isAdvancedOpen, setAdvancedOpen] = useState(false);
+
+  // Connection-level state, held here to persist across tab switches
   const [selectedPortName, setSelectedPortName] = useState("");
   const [socketAddress, setSocketAddress] = useState("");
   const [socketPort, setSocketPort] = useState("4403");
-  const [isScreenActive, setScreenActive] = useState(true);
+
+  // Advanced serial options, held here to persist across tab switches
+  const [baudRate, setBaudRate] = useState(115_200);
+  const [dtr, setDtr] = useState(true);
+  const [rts, setRts] = useState(false);
 
   // autoConnectPort takes priority over selectedPortName if it exists
   const activePort = autoConnectPort ?? selectedPortName;
@@ -94,7 +99,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     setSelectedPortName(portName);
     dispatch(
       requestConnectToDevice({
-        params: { type: ConnectionType.SERIAL, portName },
+        params: { type: ConnectionType.SERIAL, portName, dtr, rts },
         setPrimary: true,
       })
     );
@@ -197,95 +202,38 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
             </Tabs.List>
 
             <Tabs.Content value={ConnectionType.SERIAL}>
-              <div className="flex flex-col mt-4">
-                <div className="flex flex-col gap-4">
-                  {availableSerialPorts?.length ? (
-                    availableSerialPorts.map((portName) => (
-                      <SerialPortOption
-                        key={portName}
-                        name={portName}
-                        connectionState={
-                          activePort === portName
-                            ? activePortState
-                            : { status: "IDLE" }
-                        }
-                        onClick={handlePortSelected}
-                      />
-                    ))
-                  ) : (
-                    <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
-                      No ports detected.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <button
-                type="button"
-                className="flex flex-row justify-center align-middle mx-auto gap-4 mt-5"
-                onClick={() => refreshPorts()}
-              >
-                <ArrowPathIcon className="text-gray-400 w-6 h-6 hover:cursor-pointer" />
-                <p className="my-auto text-gray-500">Refresh ports</p>
-              </button>
+              <SerialConnectPane
+                availableSerialPorts={availableSerialPorts}
+                activePort={activePort}
+                activePortState={activePortState}
+                handlePortSelected={handlePortSelected}
+                refreshPorts={refreshPorts}
+                isAdvancedOpen={isAdvancedOpen}
+                setAdvancedOpen={setAdvancedOpen}
+                baudRate={baudRate}
+                setBaudRate={setBaudRate}
+                dtr={dtr}
+                setDtr={setDtr}
+                rts={rts}
+                setRts={setRts}
+              />
             </Tabs.Content>
 
             <Tabs.Content value={ConnectionType.TCP}>
-              <form
-                className="flex flex-col gap-4 mt-4"
-                onSubmit={handleSocketConnect}
-              >
-                <input
-                  className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-wait"
-                  type="text"
-                  enterKeyHint="go"
-                  placeholder="IP address or host name"
-                  value={socketAddress}
-                  onChange={(e) => setSocketAddress(e.target.value)}
-                  disabled={activeSocketState.status === "PENDING"}
-                />
-
-                <input
-                  className="flex-1 border border-gray-400 rounded-lg px-5 py-4 text-gray-700 placeholder:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-wait"
-                  type="text"
-                  placeholder="Port"
-                  value={socketPort}
-                  onChange={(e) => setSocketPort(e.target.value)}
-                  disabled={activeSocketState.status === "PENDING"}
-                />
-
-                <button
-                  className="flex flex-row flex-1 justify-center gap-3 border rounded-lg border-gray-400 mx-auto px-5 py-4 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg disabled:cursor-wait"
-                  disabled={activeSocketState.status === "PENDING"}
-                  type="submit"
-                >
-                  {activeSocketState.status === "PENDING" ? (
-                    <>
-                      <EllipsisHorizontalCircleIcon className="w-6 h-6 text-gray-500" />
-                      <p className="text-gray-700">Connecting...</p>
-                    </>
-                  ) : (
-                    <>
-                      <LinkIcon className="w-6 h-6 text-gray-500" />
-                      <p className="text-gray-700">Connect</p>
-                    </>
-                  )}
-                </button>
-
-                {activeSocketState.status === "FAILED" && (
-                  <div>
-                    <p className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 my-1">
-                      {activeSocketState.message}
-                    </p>
-                  </div>
-                )}
-              </form>
+              <TcpConnectPane
+                socketAddress={socketAddress}
+                setSocketAddress={setSocketAddress}
+                socketPort={socketPort}
+                setSocketPort={setSocketPort}
+                activeSocketState={activeSocketState}
+                handleSocketConnect={handleSocketConnect}
+              />
             </Tabs.Content>
           </Tabs.Root>
         </div>
       </div>
 
-      <div className="flex-1 relative">
+      <div className="flex-1 relative hidden xl:block">
         <img
           className="w-full h-full object-cover object-center bg-gray-700"
           src={Hero_Image}
