@@ -108,9 +108,6 @@ export const selectActiveWaypoint =
 export const selectInfoPane = () => (state: RootState) =>
   state.devices.infoPane;
 
-export const selectAllowOnMapWaypointCreation = () => (state: RootState) =>
-  state.devices.allowOnMapWaypointCreation;
-
 export const selectWaypointByLocation =
   (lat: number, long: number) =>
   (state: RootState): app_protobufs_Waypoint | null => {

@@ -25,10 +25,10 @@ const WaypointMenu = () => {
   const waypointTitle = activeWaypoint?.name;
   const waypointDescription = activeWaypoint?.description;
   const waypointLong = activeWaypoint?.longitudeI
-    ? (activeWaypoint.longitudeI / 1e7).toString()
+    ? activeWaypoint.longitudeI.toString()
     : null;
   const waypointLat = activeWaypoint?.latitudeI
-    ? (activeWaypoint.latitudeI / 1e7).toString()
+    ? activeWaypoint.latitudeI.toString()
     : null;
 
   // Waypoint Utils, used when the buttons at bottom are clicked
@@ -36,9 +36,8 @@ const WaypointMenu = () => {
   const toggleEditWaypoint = useToggleEditWaypoint();
 
   // Only show if there is an active waypoint
-  if (!activeWaypoint) {
-    return null;
-  }
+  if (!activeWaypoint) return null;
+
   return (
     <div className="absolute top-24 right-9 bg-white pt-5 pr-5 pb-3 pl-4 rounded-lg drop-shadow-lg w-80">
       <div className="flex justify-between">

@@ -12,7 +12,6 @@ export interface IDeviceState {
   availableSerialPorts: string[] | null;
   primaryDeviceKey: string | null; // port or socket ddress
   activeWaypoint: app_protobufs_Waypoint["id"] | null;
-  allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
   autoConnectPort: string | null; // Port to automatically connect to on startup
   placeholderWaypoint: app_protobufs_Waypoint | null;
   infoPane: "waypoint" | "waypointEdit" | "algos" | null;
@@ -24,7 +23,6 @@ export const initialDeviceState: IDeviceState = {
   availableSerialPorts: null,
   primaryDeviceKey: null,
   activeWaypoint: null,
-  allowOnMapWaypointCreation: false,
   autoConnectPort: null,
   placeholderWaypoint: null,
   infoPane: null,
@@ -94,10 +92,6 @@ export const deviceSlice = createSlice({
       action: PayloadAction<app_protobufs_Waypoint | null>
     ) => {
       state.placeholderWaypoint = action.payload;
-    },
-
-    setAllowOnMapWaypointCreation: (state, action: PayloadAction<boolean>) => {
-      state.allowOnMapWaypointCreation = action.payload;
     },
 
     setAutoConnectPort: (state, action: PayloadAction<string | null>) => {

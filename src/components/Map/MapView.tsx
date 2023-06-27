@@ -17,9 +17,12 @@ import {
   ViewState,
   useControl,
   MapProvider,
+  Marker,
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useDebounce } from "react-use";
+import * as Separator from "@radix-ui/react-separator";
+import { MapPin, X } from "lucide-react";
 
 import type { app_protobufs_Waypoint } from "@bindings/index";
 
@@ -28,16 +31,16 @@ import MapInteractionPane from "@components/Map/MapInteractionPane";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
-import Waypoints from "@app/components/Waypoints/Waypoint";
+import Waypoints from "@components/Waypoints/Waypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
-import MapNodeTooltip from "@components/Map/MapNodeTooltip";
+import MapContextOption from "@components/Map/MapContextOption";
 import MapEdgeTooltip from "@components/Map/MapEdgeTooltip";
+import MapNodeTooltip from "@components/Map/MapNodeTooltip";
 
 import {
   selectActiveNodeId,
   selectAllWaypoints,
-  selectAllowOnMapWaypointCreation,
   selectInfoPane,
   selectPlaceholderWaypoint,
 } from "@features/device/deviceSelectors";
@@ -71,11 +74,13 @@ export const MapView = () => {
   const showInfoPane = useSelector(selectInfoPane());
 
   const waypoints = useSelector(selectAllWaypoints());
-  const newWaypointAllowed = useSelector(selectAllowOnMapWaypointCreation());
   const tempWaypoint = useSelector(selectPlaceholderWaypoint());
 
   const [nodeHoverInfo, setNodeHoverInfo] = useState<PickingInfo | null>(null);
   const [edgeHoverInfo, setEdgeHoverInfo] = useState<PickingInfo | null>(null);
+
+  const [contextMenuEvent, setContextMenuEvent] =
+    useState<MapLayerMouseEvent | null>(null);
 
   const [localViewState, setLocalViewState] =
     useState<Partial<ViewState>>(viewState);
@@ -182,26 +187,27 @@ export const MapView = () => {
     ]
   );
 
-  const handleClick = (e: MapLayerMouseEvent) => {
-    // Can only create new waypoint if the state is toggled
-    if (newWaypointAllowed) {
-      const createdWaypoint: app_protobufs_Waypoint = {
-        id: 0,
-        latitudeI: e.lngLat.lat * 1e7, // Location clicked
-        longitudeI: e.lngLat.lng * 1e7,
-        expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
-        lockedTo: 0, // Public
-        name: "New Waypoint",
-        description: "",
-        icon: 0, // Default
-      };
+  const handleClick = () => {
+    // Clear right click menu
+    setContextMenuEvent(null);
+  };
 
-      // Save temporary waypoint in redux, and change the type of popup
-      dispatch(deviceSliceActions.setActiveWaypoint(0));
-      dispatch(deviceSliceActions.setPlaceholderWaypoint(createdWaypoint));
-      dispatch(deviceSliceActions.setInfoPane("waypointEdit"));
-      dispatch(deviceSliceActions.setAllowOnMapWaypointCreation(false));
-    }
+  const handleDropWaypoint = (e: MapLayerMouseEvent) => {
+    const createdWaypoint: app_protobufs_Waypoint = {
+      id: 0,
+      latitudeI: e.lngLat.lat,
+      longitudeI: e.lngLat.lng,
+      expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
+      lockedTo: 0, // Public
+      name: "New Waypoint",
+      description: "",
+      icon: 0, // Default
+    };
+
+    // Save temporary waypoint in redux, and change the type of popup
+    dispatch(deviceSliceActions.setActiveWaypoint(0));
+    dispatch(deviceSliceActions.setPlaceholderWaypoint(createdWaypoint));
+    dispatch(deviceSliceActions.setInfoPane("waypointEdit"));
   };
 
   useDebounce(
@@ -232,8 +238,49 @@ export const MapView = () => {
           onZoomEnd={handleUpdateViewState}
           initialViewState={viewState}
           onClick={handleClick}
+          onContextMenu={setContextMenuEvent}
         >
           <DeckGLOverlay pickingRadius={12} layers={layers} />
+
+          {contextMenuEvent && (
+            <Marker
+              latitude={contextMenuEvent.lngLat.lat}
+              longitude={contextMenuEvent.lngLat.lng}
+            >
+              <div className="translate-y-1/2">
+                {/* https://www.kindacode.com/article/how-to-create-triangles-with-tailwind-css-4-examples/ */}
+                <div className="w-full">
+                  <div className="mx-auto w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px] border-b-gray-200 border-r-[6px] border-r-transparent" />
+                </div>
+
+                <div className="flex flex-col gap-2 default-overlay p-2">
+                  <MapContextOption
+                    text="Drop a waypoint here"
+                    renderIcon={(c) => (
+                      <MapPin className={c} strokeWidth={1.5} />
+                    )}
+                    onClick={() => {
+                      console.warn(
+                        "dropping waypoint at",
+                        contextMenuEvent.lngLat
+                      );
+                      handleDropWaypoint(contextMenuEvent);
+                    }}
+                  />
+                  <Separator.Root
+                    className="h-px w-full bg-gray-200"
+                    decorative
+                    orientation="horizontal"
+                  />
+                  <MapContextOption
+                    text="Close menu"
+                    renderIcon={(c) => <X className={c} strokeWidth={1.5} />}
+                    onClick={() => setContextMenuEvent(null)}
+                  />
+                </div>
+              </div>
+            </Marker>
+          )}
 
           {/* Controls at bottom right */}
           <ScaleControl
