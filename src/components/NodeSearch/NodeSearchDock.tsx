@@ -17,6 +17,8 @@ import {
   selectAllNodes,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
+import { selectMapUIState } from "@features/map/mapSelectors";
+import { mapSliceActions } from "@features/map/mapSlice";
 
 import { MapIDs } from "@utils/map";
 
@@ -89,9 +91,9 @@ const NodeSearchDock = () => {
   const nodes = useSelector(selectAllNodes());
   const device = useSelector(selectDevice());
   const activeNodeId = useSelector(selectActiveNodeId());
+  const { searchDockExpanded } = useSelector(selectMapUIState());
 
   const [query, setQuery] = useState("");
-  const [isExpanded, setExpanded] = useState(true);
 
   const handleNodeSelect = (nodeId: number) => {
     const isNodeActive = activeNodeId === nodeId;
@@ -112,6 +114,10 @@ const NodeSearchDock = () => {
     });
   };
 
+  const setNodeSearchDockExpanded = (isExpanded: boolean) => {
+    dispatch(mapSliceActions.setMapUIState({ searchDockExpanded: isExpanded }));
+  };
+
   return (
     <div className="absolute left-9 top-9 w-96 flex flex-col p-4 gap-4">
       <div className="flex flex-row gap-4">
@@ -122,7 +128,7 @@ const NodeSearchDock = () => {
         />
       </div>
 
-      {isExpanded && (
+      {searchDockExpanded && (
         <div className="flex flex-col gap-4 px-4 py-3 default-overlay overflow-auto hide-scrollbar max-h-72">
           <_NodeSearchDock
             filteredNodes={nodes.filter(filterNodes(query))}
@@ -135,10 +141,10 @@ const NodeSearchDock = () => {
       )}
 
       <button
-        onClick={() => setExpanded(!isExpanded)}
+        onClick={() => setNodeSearchDockExpanded(!searchDockExpanded)}
         className="flex flex-row align-middle justify-center bg-white rounded-full mx-auto p-2 shadow-lg text-gray-700 border border-gray-200"
       >
-        {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        {searchDockExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
       </button>
     </div>
   );
