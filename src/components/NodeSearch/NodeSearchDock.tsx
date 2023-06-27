@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMap } from "react-map-gl";
+import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 
 import type {
   app_device_MeshDevice,
   app_device_MeshNode,
 } from "@bindings/index";
 
+import DefaultTooltip from "@components/DefaultTooltip";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
@@ -16,6 +18,8 @@ import {
   selectAllNodes,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
+import { selectMapUIState } from "@features/map/mapSelectors";
+import { mapSliceActions } from "@features/map/mapSlice";
 
 import { MapIDs } from "@utils/map";
 
@@ -36,17 +40,15 @@ const _NodeSearchDock = ({
 }: _INodeSearchDockProps) => {
   if (!filteredNodes.length && !!device) {
     return (
-      <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
-        <p className="text-sm font-normal text-gray-500">
-          No results for &quot;{query}&quot;
-        </p>
-      </div>
+      <p className="text-sm font-normal text-gray-500">
+        No results for &quot;{query}&quot;
+      </p>
     );
   }
 
   if (filteredNodes.length) {
     return (
-      <div className="flex flex-col gap-4 px-4 py-3 default-overlay">
+      <>
         {filteredNodes.map((node) => (
           <NodeSearchResult
             key={node.data.num}
@@ -55,7 +57,7 @@ const _NodeSearchDock = ({
             selectNode={handleNodeSelect}
           />
         ))}
-      </div>
+      </>
     );
   }
 
@@ -90,6 +92,7 @@ const NodeSearchDock = () => {
   const nodes = useSelector(selectAllNodes());
   const device = useSelector(selectDevice());
   const activeNodeId = useSelector(selectActiveNodeId());
+  const { searchDockExpanded } = useSelector(selectMapUIState());
 
   const [query, setQuery] = useState("");
 
@@ -112,6 +115,10 @@ const NodeSearchDock = () => {
     });
   };
 
+  const setNodeSearchDockExpanded = (isExpanded: boolean) => {
+    dispatch(mapSliceActions.setMapUIState({ searchDockExpanded: isExpanded }));
+  };
+
   return (
     <div className="absolute left-9 top-9 w-96 flex flex-col p-4 gap-4">
       <div className="flex flex-row gap-4">
@@ -122,13 +129,29 @@ const NodeSearchDock = () => {
         />
       </div>
 
-      <_NodeSearchDock
-        filteredNodes={nodes.filter(filterNodes(query))}
-        device={device}
-        activeNodeId={activeNodeId}
-        query={query}
-        handleNodeSelect={handleNodeSelect}
-      />
+      {searchDockExpanded && (
+        <div className="flex flex-col gap-4 px-4 py-3 default-overlay overflow-auto hide-scrollbar max-h-72">
+          <_NodeSearchDock
+            filteredNodes={nodes.filter(filterNodes(query))}
+            device={device}
+            activeNodeId={activeNodeId}
+            query={query}
+            handleNodeSelect={handleNodeSelect}
+          />
+        </div>
+      )}
+
+      <DefaultTooltip
+        text={searchDockExpanded ? "Collapse node list" : "Expand node list"}
+        side="right"
+      >
+        <button
+          onClick={() => setNodeSearchDockExpanded(!searchDockExpanded)}
+          className="flex flex-row align-middle justify-center bg-white rounded-full mx-auto p-2 shadow-lg text-gray-700 border border-gray-200"
+        >
+          {searchDockExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        </button>
+      </DefaultTooltip>
     </div>
   );
 };

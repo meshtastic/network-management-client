@@ -5,11 +5,16 @@ export interface IMapConfig {
   style: string;
 }
 
+export interface IMapUIState {
+  searchDockExpanded: boolean;
+}
+
 export interface IMapState {
   viewState: Partial<ViewState>;
   nodesFeatureCollection: GeoJSON.FeatureCollection | null;
   edgesFeatureCollection: GeoJSON.FeatureCollection | null;
-  config: IMapConfig
+  config: IMapConfig;
+  mapUIState: IMapUIState;
 }
 
 export const initialMapState: IMapState = {
@@ -21,8 +26,11 @@ export const initialMapState: IMapState = {
   nodesFeatureCollection: null,
   edgesFeatureCollection: null,
   config: {
-    style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-  }
+    style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+  },
+  mapUIState: {
+    searchDockExpanded: true,
+  },
 };
 
 export const mapSlice = createSlice({
@@ -34,7 +42,7 @@ export const mapSlice = createSlice({
     },
     setPosition: (
       state,
-      action: PayloadAction<{ latitude: number; longitude: number }>,
+      action: PayloadAction<{ latitude: number; longitude: number }>
     ) => {
       state.viewState.latitude = action.payload.latitude;
       state.viewState.longitude = action.payload.longitude;
@@ -44,22 +52,22 @@ export const mapSlice = createSlice({
     },
     setNodesFeatureCollection: (
       state,
-      action: PayloadAction<GeoJSON.FeatureCollection | null>,
+      action: PayloadAction<GeoJSON.FeatureCollection | null>
     ) => {
       state.nodesFeatureCollection = action.payload;
     },
     setEdgesFeatureCollection: (
       state,
-      action: PayloadAction<GeoJSON.FeatureCollection | null>,
+      action: PayloadAction<GeoJSON.FeatureCollection | null>
     ) => {
       state.edgesFeatureCollection = action.payload;
     },
-    updateConfig: (
-      state,
-      action: PayloadAction<Partial<IMapConfig>>
-    ) => {
-      state.config = { ...state.config, ...action.payload }
-    }
+    updateConfig: (state, action: PayloadAction<Partial<IMapConfig>>) => {
+      state.config = { ...state.config, ...action.payload };
+    },
+    setMapUIState: (state, action: PayloadAction<Partial<IMapUIState>>) => {
+      state.mapUIState = { ...state.mapUIState, ...action.payload };
+    },
   },
 });
 
