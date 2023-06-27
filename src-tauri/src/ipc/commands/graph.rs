@@ -8,6 +8,7 @@ use crate::ipc::APMincutStringResults;
 use crate::ipc::CommandError;
 use crate::state;
 
+use app::protobufs;
 use log::{debug, error, trace};
 use serde::Deserialize;
 use serde::Serialize;
@@ -60,15 +61,22 @@ pub async fn get_node_edges(
             .nodes
             .iter()
             .filter_map(|(num, node)| {
-                node.data.clone().position.map(|position| {
-                    (
-                        *num,
-                        vec![
-                            (position.longitude_i as f64) / 1e7,
-                            (position.latitude_i as f64) / 1e7,
-                        ],
-                    )
-                })
+                let protobufs::NodeInfo { position, .. } = node.data.clone();
+
+                let protobufs::Position {
+                    latitude_i,
+                    longitude_i,
+                    ..
+                } = position?;
+
+                if latitude_i == 0 || longitude_i == 0 {
+                    return None;
+                }
+
+                Some((
+                    *num,
+                    vec![(longitude_i as f64) / 1e7, (latitude_i as f64) / 1e7],
+                ))
             })
             .collect::<Vec<(u32, geojson::Position)>>();
 
