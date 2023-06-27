@@ -122,6 +122,8 @@ impl SerialConnection {
         app_handle: tauri::AppHandle,
         port_name: String,
         baud_rate: u32,
+        dtr: bool,
+        rts: bool,
     ) -> Result<(), SerialConnectionError> {
         // Create serial port connection
 
@@ -137,7 +139,10 @@ impl SerialConnection {
         port.set_configuration(&config)
             .map_err(|_e| SerialConnectionError::ConfigurationError)?;
 
-        port.set_dtr(true)
+        port.set_dtr(dtr)
+            .map_err(|_e| SerialConnectionError::ConfigurationError)?;
+
+        port.set_rts(rts)
             .map_err(|_e| SerialConnectionError::ConfigurationError)?;
 
         port.set_read_timeout(Duration::from_millis(10))
