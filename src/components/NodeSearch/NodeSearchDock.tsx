@@ -8,6 +8,7 @@ import type {
   app_device_MeshNode,
 } from "@bindings/index";
 
+import DefaultTooltip from "@components/DefaultTooltip";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
@@ -140,12 +141,17 @@ const NodeSearchDock = () => {
         </div>
       )}
 
-      <button
-        onClick={() => setNodeSearchDockExpanded(!searchDockExpanded)}
-        className="flex flex-row align-middle justify-center bg-white rounded-full mx-auto p-2 shadow-lg text-gray-700 border border-gray-200"
+      <DefaultTooltip
+        text={searchDockExpanded ? "Collapse node list" : "Expand node list"}
+        side="right"
       >
-        {searchDockExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-      </button>
+        <button
+          onClick={() => setNodeSearchDockExpanded(!searchDockExpanded)}
+          className="flex flex-row align-middle justify-center bg-white rounded-full mx-auto p-2 shadow-lg text-gray-700 border border-gray-200"
+        >
+          {searchDockExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        </button>
+      </DefaultTooltip>
     </div>
   );
 };
