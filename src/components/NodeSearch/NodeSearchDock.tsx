@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useMap } from "react-map-gl";
+import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 
 import type {
   app_device_MeshDevice,
@@ -90,6 +91,7 @@ const NodeSearchDock = () => {
   const activeNodeId = useSelector(selectActiveNodeId());
 
   const [query, setQuery] = useState("");
+  const [isExpanded, setExpanded] = useState(true);
 
   const handleNodeSelect = (nodeId: number) => {
     const isNodeActive = activeNodeId === nodeId;
@@ -120,15 +122,24 @@ const NodeSearchDock = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-4 px-4 py-3 default-overlay overflow-auto hide-scrollbar max-h-72">
-        <_NodeSearchDock
-          filteredNodes={nodes.filter(filterNodes(query))}
-          device={device}
-          activeNodeId={activeNodeId}
-          query={query}
-          handleNodeSelect={handleNodeSelect}
-        />
-      </div>
+      {isExpanded && (
+        <div className="flex flex-col gap-4 px-4 py-3 default-overlay overflow-auto hide-scrollbar max-h-72">
+          <_NodeSearchDock
+            filteredNodes={nodes.filter(filterNodes(query))}
+            device={device}
+            activeNodeId={activeNodeId}
+            query={query}
+            handleNodeSelect={handleNodeSelect}
+          />
+        </div>
+      )}
+
+      <button
+        onClick={() => setExpanded(!isExpanded)}
+        className="flex flex-row align-middle justify-center bg-white rounded-full mx-auto p-2 shadow-lg text-gray-700 border border-gray-200"
+      >
+        {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+      </button>
     </div>
   );
 };
