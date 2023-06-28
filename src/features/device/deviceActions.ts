@@ -46,11 +46,16 @@ export const requestUpdateUser = createAction<{
   user: app_protobufs_User;
 }>("@device/update-device-user");
 
-export const requestNewWaypoint = createAction<{
+export const requestSendWaypoint = createAction<{
   deviceKey: string;
   waypoint: app_protobufs_Waypoint;
   channel: number;
 }>("@device/send-waypoint");
+
+export const requestDeleteWaypoint = createAction<{
+  deviceKey: string;
+  waypointId: number;
+}>("@device/delete-waypoint");
 
 export const requestAutoConnectPort = createAction(
   "@device/request-autoconnect-port"

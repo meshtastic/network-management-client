@@ -8,7 +8,7 @@ import type { app_protobufs_Waypoint } from "@bindings/index";
 import ConnectionInput from "@components/connection/ConnectionInput";
 
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { requestNewWaypoint } from "@features/device/deviceActions";
+import { requestSendWaypoint } from "@features/device/deviceActions";
 import {
   selectPrimaryDeviceKey,
   selectPlaceholderWaypoint,
@@ -60,7 +60,7 @@ const WaypointMenuEdit = () => {
     };
 
     dispatch(
-      requestNewWaypoint({
+      requestSendWaypoint({
         deviceKey: primaryDeviceKey,
         waypoint: updatedWaypoint,
         channel: channelNum,

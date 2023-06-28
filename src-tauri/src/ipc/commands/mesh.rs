@@ -78,3 +78,26 @@ pub async fn send_waypoint(
 
     Ok(())
 }
+
+#[tauri::command]
+pub async fn delete_waypoint(
+    device_key: DeviceKey,
+    waypoint_id: u32,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+) -> Result<(), CommandError> {
+    debug!("Called delete_waypoint command");
+
+    let mut devices_guard = mesh_devices.inner.lock().await;
+    let device = devices_guard
+        .get_mut(&device_key)
+        .ok_or("Device not connected")?;
+
+    if device.waypoints.contains_key(&waypoint_id) {
+        let _removed_waypoint = device.waypoints.remove(&waypoint_id);
+    }
+
+    events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
+
+    Ok(())
+}

@@ -5,15 +5,17 @@ import {
   XMarkIcon,
   DocumentDuplicateIcon,
   MapPinIcon,
-  PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
-import { selectActiveWaypoint } from "@features/device/deviceSelectors";
+import { requestDeleteWaypoint } from "@features/device/deviceActions";
+import {
+  selectActiveWaypoint,
+  selectPrimaryDeviceKey,
+} from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 
 import { writeValueToClipboard } from "@utils/clipboard";
-import { useDeleteWaypoint, useToggleEditWaypoint } from "@utils/hooks";
 import { formatLocation } from "@utils/map";
 
 // This file contains the WaypointMenu component when it is not being edited
@@ -22,13 +24,24 @@ import { formatLocation } from "@utils/map";
 const WaypointMenu = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
-
-  // Waypoint utils, used when the buttons at bottom are clicked
-  const deleteWaypoint = useDeleteWaypoint();
-  const toggleEditWaypoint = useToggleEditWaypoint();
+  const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
 
   // Only show if there is an active waypoint
   if (!activeWaypoint) return null;
+
+  const handleDeleteWaypoint = () => {
+    if (!primaryDeviceKey) {
+      console.warn("No primary device key set, cannot delete waypoint");
+      return;
+    }
+
+    dispatch(
+      requestDeleteWaypoint({
+        deviceKey: primaryDeviceKey,
+        waypointId: activeWaypoint.id,
+      })
+    );
+  };
 
   const { name, description, latitudeI, longitudeI } = activeWaypoint;
 
@@ -86,22 +99,13 @@ const WaypointMenu = () => {
         <hr className="my-2" />
       </div>
 
-      {/* Delete / Edit */}
       <div className="flex flex-row justify-evenly space-x-8 mt-3 mb-2 text-gray-500 text-base font-semibold">
         <button
           className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
-          onClick={deleteWaypoint}
+          onClick={handleDeleteWaypoint}
         >
           <div className="self-center pr-2">Trash</div>
           <TrashIcon className="self-center w-10 my-2 p-1" />
-        </button>
-
-        <button
-          className="flex flex-row border-2 rounded-md border-gray-200 h-8 px-3 py-5 hover:drop-shadow-lg"
-          onClick={toggleEditWaypoint}
-        >
-          <div className="self-center pr-2">Edit</div>
-          <PencilSquareIcon className="self-center w-10 my-2 p-1" />
         </button>
       </div>
     </div>

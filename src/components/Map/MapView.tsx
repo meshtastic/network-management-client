@@ -197,11 +197,12 @@ export const MapView = () => {
       id: 0,
       latitudeI: e.lngLat.lat * 1e7,
       longitudeI: e.lngLat.lng * 1e7,
+      // TODO add selector for this
       expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
-      lockedTo: 0, // Public
-      name: "New Waypoint",
+      lockedTo: 0, // Not locked
+      name: "",
       description: "",
-      icon: 0, // Default
+      icon: 0, // No icon
     };
 
     // Save temporary waypoint in redux, and change the type of popup

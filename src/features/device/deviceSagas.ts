@@ -27,9 +27,10 @@ import {
   requestDisconnectFromAllDevices,
   requestDisconnectFromDevice,
   requestInitializeApplication,
-  requestNewWaypoint,
+  requestSendWaypoint,
   requestSendMessage,
   requestUpdateUser,
+  requestDeleteWaypoint,
 } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestSliceActions } from "@features/requests/requestReducer";
@@ -284,7 +285,7 @@ function* sendTextWorker(action: ReturnType<typeof requestSendMessage>) {
   }
 }
 
-function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
+function* updateUserConfigWorker(action: ReturnType<typeof requestUpdateUser>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
@@ -304,7 +305,7 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
   }
 }
 
-function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
+function* sendWaypointWorker(action: ReturnType<typeof requestSendWaypoint>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
@@ -328,6 +329,28 @@ function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
   }
 }
 
+function* deleteWaypointWorker(
+  action: ReturnType<typeof requestDeleteWaypoint>
+) {
+  try {
+    yield put(requestSliceActions.setRequestPending({ name: action.type }));
+
+    yield call(invoke, "delete_waypoint", {
+      deviceKey: action.payload.deviceKey,
+      waypointId: action.payload.waypointId,
+    });
+
+    yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
+  } catch (error) {
+    yield put(
+      requestSliceActions.setRequestFailed({
+        name: action.type,
+        message: (error as CommandError).message,
+      })
+    );
+  }
+}
+
 export function* devicesSaga() {
   yield all([
     takeEvery(requestAutoConnectPort.type, getAutoConnectPortWorker),
@@ -340,7 +363,8 @@ export function* devicesSaga() {
       disconnectFromAllDevicesWorker
     ),
     takeEvery(requestSendMessage.type, sendTextWorker),
-    takeEvery(requestUpdateUser.type, updateUserConfig),
-    takeEvery(requestNewWaypoint.type, newWaypoint),
+    takeEvery(requestUpdateUser.type, updateUserConfigWorker),
+    takeEvery(requestSendWaypoint.type, sendWaypointWorker),
+    takeEvery(requestDeleteWaypoint.type, deleteWaypointWorker),
   ]);
 }
