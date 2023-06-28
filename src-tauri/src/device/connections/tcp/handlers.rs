@@ -18,10 +18,10 @@ pub fn spawn_tcp_read_handler(
     async_runtime::spawn(async move {
         tokio::select! {
             _ = cancellation_token.cancelled() => {
-              debug!("Serial read handler cancelled");
+              debug!("TCP read handler cancelled");
             }
             _ = handle => {
-                error!("Serial read handler unexpectedly terminated");
+                error!("TCP read handler unexpectedly terminated");
             }
         }
     })
@@ -37,10 +37,10 @@ pub fn spawn_tcp_write_handler(
     async_runtime::spawn(async move {
         tokio::select! {
             _ = cancellation_token.cancelled() => {
-              debug!("Serial write handler cancelled");
+              debug!("TCP write handler cancelled");
             }
             _ = handle => {
-                error!("Serial write handler unexpectedly terminated");
+                error!("TCP write handler unexpectedly terminated");
             }
         }
     })
@@ -71,13 +71,13 @@ async fn start_tcp_read_worker(
     read_stream: tokio::net::tcp::OwnedReadHalf,
     read_output_tx: tokio::sync::mpsc::UnboundedSender<Vec<u8>>,
 ) -> Result<(), String> {
-    trace!("Started tcp read worker");
+    trace!("Started TCP read worker");
 
     let mut read_stream = read_stream; // Move read stream into worker context
 
     loop {
-        let mut incoming_serial_buf: Vec<u8> = vec![0; 1024];
-        let read_bytes = match read_stream.read(&mut incoming_serial_buf).await {
+        let mut incoming_tcp_buf: Vec<u8> = vec![0; 1024];
+        let read_bytes = match read_stream.read(&mut incoming_tcp_buf).await {
             Ok(bytes) => bytes,
             Err(e) => match e.kind() {
                 tokio::io::ErrorKind::WouldBlock => {
@@ -98,13 +98,13 @@ async fn start_tcp_read_worker(
             },
         };
 
-        if !incoming_serial_buf.is_empty() {
+        if !incoming_tcp_buf.is_empty() {
             trace!(
                 "Received info from radio: {:?}",
-                incoming_serial_buf[..read_bytes].to_vec()
+                incoming_tcp_buf[..read_bytes].to_vec()
             );
 
-            match read_output_tx.send(incoming_serial_buf[..read_bytes].to_vec()) {
+            match read_output_tx.send(incoming_tcp_buf[..read_bytes].to_vec()) {
                 Ok(_) => (),
                 Err(err) => {
                     warn!("Binary read packet transmission failed: {}", err);
@@ -113,7 +113,7 @@ async fn start_tcp_read_worker(
             };
         }
 
-        incoming_serial_buf.clear();
+        incoming_tcp_buf.clear();
     }
 
     Ok(())
@@ -123,7 +123,7 @@ async fn start_tcp_write_worker(
     write_stream: tokio::net::tcp::OwnedWriteHalf,
     mut write_input_rx: tokio::sync::mpsc::UnboundedReceiver<Vec<u8>>,
 ) {
-    trace!("Started serial write worker");
+    trace!("Started TCP write worker");
 
     let mut write_stream = write_stream; // Move write stream into worker context
 
@@ -134,7 +134,7 @@ async fn start_tcp_write_worker(
         };
     }
 
-    debug!("Serial write write_input_rx channel closed");
+    debug!("TCP write write_input_rx channel closed");
 }
 
 async fn start_tcp_message_processing_worker(
@@ -146,8 +146,8 @@ async fn start_tcp_message_processing_worker(
     let mut buffer = StreamBuffer::new(decoded_packet_tx);
 
     while let Some(message) = read_output_rx.recv().await {
-        buffer.process_serial_bytes(message);
+        buffer.process_incoming_bytes(message);
     }
 
-    debug!("Serial processing read_output_rx channel closed");
+    debug!("TCP processing read_output_rx channel closed");
 }
