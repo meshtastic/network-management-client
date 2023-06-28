@@ -8,6 +8,7 @@ import type { app_device_MeshNode } from "@bindings/index";
 import TableLayout from "@components/Table/TableLayout";
 import { selectAllNodes } from "@features/device/deviceSelectors";
 import { getLastHeardTime } from "@utils/nodes";
+import { formatLocation } from "@utils/map";
 
 const ManageNodePage = () => {
   const nodes = useSelector(selectAllNodes());
@@ -42,7 +43,7 @@ const ManageNodePage = () => {
         accessorFn: (n) => {
           const latitude = n.data.position?.latitudeI;
           if (!latitude) return "No GPS lock";
-          return `${latitude / 1e7}`; // TODO add degree symbol
+          return formatLocation(latitude / 1e7);
         },
       },
       {
@@ -50,7 +51,7 @@ const ManageNodePage = () => {
         accessorFn: (n) => {
           const longitude = n.data.position?.longitudeI;
           if (!longitude) return "No GPS lock";
-          return `${longitude / 1e7}`; // TODO add degree symbol
+          return formatLocation(longitude / 1e7);
         },
       },
       {

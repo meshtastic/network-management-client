@@ -195,8 +195,8 @@ export const MapView = () => {
   const handleDropWaypoint = (e: MapLayerMouseEvent) => {
     const createdWaypoint: app_protobufs_Waypoint = {
       id: 0,
-      latitudeI: e.lngLat.lat,
-      longitudeI: e.lngLat.lng,
+      latitudeI: e.lngLat.lat * 1e7,
+      longitudeI: e.lngLat.lng * 1e7,
       expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
       lockedTo: 0, // Public
       name: "New Waypoint",
@@ -259,13 +259,7 @@ export const MapView = () => {
                     renderIcon={(c) => (
                       <MapPin className={c} strokeWidth={1.5} />
                     )}
-                    onClick={() => {
-                      console.warn(
-                        "dropping waypoint at",
-                        contextMenuEvent.lngLat
-                      );
-                      handleDropWaypoint(contextMenuEvent);
-                    }}
+                    onClick={() => handleDropWaypoint(contextMenuEvent)}
                   />
                   <Separator.Root
                     className="h-px w-full bg-gray-200"

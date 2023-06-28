@@ -9,10 +9,12 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 
-import { useDeleteWaypoint, useToggleEditWaypoint } from "@app/utils/hooks";
-import { writeValueToClipboard } from "@utils/clipboard";
-import { selectActiveWaypoint } from "@app/features/device/deviceSelectors";
+import { selectActiveWaypoint } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
+
+import { writeValueToClipboard } from "@utils/clipboard";
+import { useDeleteWaypoint, useToggleEditWaypoint } from "@utils/hooks";
+import { formatLocation } from "@utils/map";
 
 // This file contains the WaypointMenu component when it is not being edited
 // It is called in MapView.tsx
@@ -21,33 +23,22 @@ const WaypointMenu = () => {
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
 
-  // Waypoint information
-  const waypointTitle = activeWaypoint?.name;
-  const waypointDescription = activeWaypoint?.description;
-  const waypointLong = activeWaypoint?.longitudeI
-    ? activeWaypoint.longitudeI.toString()
-    : null;
-  const waypointLat = activeWaypoint?.latitudeI
-    ? activeWaypoint.latitudeI.toString()
-    : null;
-
-  // Waypoint Utils, used when the buttons at bottom are clicked
+  // Waypoint utils, used when the buttons at bottom are clicked
   const deleteWaypoint = useDeleteWaypoint();
   const toggleEditWaypoint = useToggleEditWaypoint();
 
   // Only show if there is an active waypoint
   if (!activeWaypoint) return null;
 
+  const { name, description, latitudeI, longitudeI } = activeWaypoint;
+
   return (
     <div className="absolute top-24 right-9 bg-white pt-5 pr-5 pb-3 pl-4 rounded-lg drop-shadow-lg w-80">
       <div className="flex justify-between">
-        {/* Title */}
         <h1 className="text-gray-600 text-2xl leading-5 font-semibold ">
-          {/* If waypoint has no title / empty string for a title*/}
-          {waypointTitle?.length ? waypointTitle : "No Title"}
+          {name || "No title"}
         </h1>
 
-        {/* X-button */}
         <button
           type="button"
           onClick={() => dispatch(deviceSliceActions.setActiveWaypoint(null))}
@@ -56,36 +47,36 @@ const WaypointMenu = () => {
         </button>
       </div>
 
-      {/* Description */}
       <div className="text-gray-500 text-base">
         <h2 className="leading-6 font-semibold pt-2">Description</h2>
         <h2 className="leading-5 font-normal py-1">
-          {waypointDescription?.length ? waypointDescription : "No Title"}
+          {description || "No description"}
         </h2>
       </div>
 
-      {/* Details */}
       <h2 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
         Details
       </h2>
+
       <div className="flex flex-col">
-        {/* Location data */}
         <div className="flex justify-between pb-1 text-gray-500">
           <div className="flex justify-start">
             <MapPinIcon className="w-5 h-5  mt-0.5" />
             <h2 className="text-base leading-6 font-normal pl-2">
-              {waypointLat && waypointLong
-                ? "(" + waypointLat + ", " + waypointLong + ")"
-                : "No location data"}
+              {latitudeI && longitudeI
+                ? `(${formatLocation(latitudeI / 1e7)} lat, ${formatLocation(
+                    longitudeI / 1e7
+                  )} lon)`
+                : "No location set"}
             </h2>
           </div>
           <button
             type="button"
             onClick={() =>
               void writeValueToClipboard(
-                waypointLat && waypointLong
-                  ? "(" + waypointLat + ", " + waypointLong + ")"
-                  : "No location data"
+                latitudeI && longitudeI
+                  ? `(${latitudeI / 1e7}, ${longitudeI / 1e7})`
+                  : "No location set"
               )
             }
           >

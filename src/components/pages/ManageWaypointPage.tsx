@@ -9,6 +9,7 @@ import {
   selectAllUsersByNodeIds,
   selectAllWaypoints,
 } from "@features/device/deviceSelectors";
+import { formatLocation } from "@utils/map";
 
 const ManageWaypointPage = () => {
   const waypoints = useSelector(selectAllWaypoints());
@@ -45,14 +46,14 @@ const ManageWaypointPage = () => {
         id: "Latitude",
         accessorFn: (n) => {
           const latitude = n.latitudeI;
-          return `${latitude / 1e7}`; // TODO add degree symbol
+          return formatLocation(latitude / 1e7);
         },
       },
       {
         id: "Longitude",
         accessorFn: (n) => {
           const longitude = n.longitudeI;
-          return `${longitude / 1e7}`; // TODO add degree symbol
+          return formatLocation(longitude / 1e7);
         },
       },
       {

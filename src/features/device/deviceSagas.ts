@@ -56,6 +56,8 @@ function* getAutoConnectPortWorker(
           params: {
             type: ConnectionType.SERIAL,
             portName,
+            dtr: true,
+            rts: false,
           },
           setPrimary: true,
         })
@@ -305,14 +307,18 @@ function* updateUserConfig(action: ReturnType<typeof requestUpdateUser>) {
 function* newWaypoint(action: ReturnType<typeof requestNewWaypoint>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
+
     yield call(invoke, "send_waypoint", {
       deviceKey: action.payload.deviceKey,
-      waypoint: action.payload.waypoint,
       channel: action.payload.channel,
+      waypoint: action.payload.waypoint,
     });
 
+    yield put(deviceSliceActions.setPlaceholderWaypoint(null));
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {
+    console.error(error);
+    // TODO error.message doesn't catch invalid Tauri type errors
     yield put(
       requestSliceActions.setRequestFailed({
         name: action.type,
