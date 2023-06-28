@@ -8,12 +8,12 @@ import { connectionSliceActions } from "@features/connection/connectionSlice";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { requestDisconnectFromDevice } from "@features/device/deviceActions";
 import { mapSliceActions } from "@features/map/mapSlice";
-import { error } from "@utils/errors";
-import type { DeviceKey } from "@features/device/deviceSagas";
+
+import type { DeviceKey } from "@utils/connections";
 
 export type GraphGeoJSONResult = {
-  nodes: GeoJSON.FeatureCollection,
-  edges: GeoJSON.FeatureCollection
+  nodes: GeoJSON.FeatureCollection;
+  edges: GeoJSON.FeatureCollection;
 };
 
 export type DeviceUpdateChannel = EventChannel<app_device_MeshDevice>;

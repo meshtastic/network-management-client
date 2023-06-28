@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RequestStatus } from "@features/requests/requestReducer";
-import type  {DeviceKey } from "@features/device/deviceSagas";
+import type { DeviceKey } from "@utils/connections";
 
 export interface IConnectionState {
   connections: Record<DeviceKey, RequestStatus>;

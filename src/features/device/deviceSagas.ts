@@ -56,6 +56,8 @@ function* getAutoConnectPortWorker(
           params: {
             type: ConnectionType.SERIAL,
             portName,
+            dtr: true,
+            rts: false,
           },
           setPrimary: true,
         })
