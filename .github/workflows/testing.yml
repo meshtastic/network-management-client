@@ -1,4 +1,4 @@
-name: test suite
+name: "Testing Suite"
 on: [push, pull_request]
 
 jobs:
@@ -9,15 +9,46 @@ jobs:
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
 
-    runs-on: $${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
       - run: git submodule update --init
 
+      - name: Initialize Rust Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
-      - run: pnpm run rust:test
+      - name: Install dependencies (Ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Create empty dist directory (Windows only)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          mkdir dist
+        shell: pwsh
+
+      - name: Create empty dist directory (Unix only)
+        if: matrix.platform != 'windows-latest'
+        run: |
+          mkdir dist
+
+      - name: Run test suite
+        working-directory: ./src-tauri
+        run: cargo test
 
   ui-test:
     permissions:
@@ -27,7 +58,7 @@ jobs:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
         node-version: [16]
 
-    runs-on: $${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
       - run: git submodule update --init
@@ -42,5 +73,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
+
+      - name: Install frontend dependencies
+        run: pnpm install
 
       - run: pnpm run ui:test

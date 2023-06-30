@@ -6,8 +6,8 @@
 </div>
 
 <p align="center">
-  <a href="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/main.yml">
-    <img alt="Publish action status" src="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/main.yml/badge.svg">
+  <a href="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/testing.yml">
+    <img alt="Application testing action status" src="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/testing.yml/badge.svg">
   </a>
   
   <a href="">
@@ -51,7 +51,6 @@ At the time of writing, this project is currently maintained by a single develop
 - Integrating UI components into the [Storybook](https://storybook.js.org/) framework
 - Adding support for i18n translations within the UI layer
 - General reorganization of application file structure to make the project intuitive
-- Setting up robust CI/CD pipelines for the project, including linting, testing, and artifact building
 
 ## :rocket: Functionality
 
