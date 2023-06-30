@@ -1,6 +1,15 @@
-import React, { ChangeEventHandler, useRef, useState } from "react";
+import React, { ChangeEventHandler, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import type { LngLat } from "react-map-gl";
+import {
+  Map,
+  type LngLat,
+  NavigationControl,
+  ScaleControl,
+  MarkerDragEvent,
+  useMap,
+} from "react-map-gl";
+import maplibregl from "maplibre-gl";
+import debounce from "lodash.debounce";
 
 import moment from "moment";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -16,13 +25,15 @@ import type { app_protobufs_Waypoint } from "@bindings/index";
 
 import ConnectionInput from "@components/connection/ConnectionInput";
 import { requestSendWaypoint } from "@features/device/deviceActions";
+import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import {
   selectDeviceChannels,
   selectPrimaryDeviceKey,
 } from "@features/device/deviceSelectors";
+import { selectMapState } from "@features/map/mapSelectors";
 
 import { dateTimeLocalFormatString } from "@utils/form";
-import { formatLocation } from "@utils/map";
+import { MapIDs, formatLocation } from "@utils/map";
 import { getChannelName } from "@utils/messaging";
 
 import "@components/Map/MapView.css";
@@ -35,6 +46,7 @@ export interface ICreateWaypointDialogProps {
 const WAYPOINT_NAME_MAX_LEN = 30;
 const WAYPOINT_DESC_MAX_LEN = 100;
 
+// Needs to be rendered within a MapProvider component
 const CreateWaypointDialog = ({
   lngLat,
   closeDialog,
@@ -42,6 +54,10 @@ const CreateWaypointDialog = ({
   const dispatch = useDispatch();
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
   const deviceChannels = useSelector(selectDeviceChannels());
+  const { config } = useSelector(selectMapState());
+
+  const [waypointPosition, setWaypointPosition] = useState<LngLat>(lngLat);
+  const { [MapIDs.CreateWaypointDialog]: map } = useMap();
 
   const nameRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState<{ value: string; isValid: boolean }>({
@@ -97,11 +113,23 @@ const CreateWaypointDialog = ({
 
   const [channelNum, setChannelNum] = useState(0);
 
+  const handlePositionUpdate = useMemo(
+    () =>
+      debounce<(e: MarkerDragEvent) => void>((e) => {
+        setWaypointPosition(e.lngLat);
+        map?.flyTo({
+          center: [e.lngLat.lng, e.lngLat.lat],
+          duration: 900,
+        });
+      }, 300),
+    [map]
+  );
+
   const handleSubmit = () => {
     const createdWaypoint: app_protobufs_Waypoint = {
       id: 0, // New waypoint
-      latitudeI: Math.round(lngLat.lat * 1e7),
-      longitudeI: Math.round(lngLat.lng * 1e7),
+      latitudeI: Math.round(waypointPosition.lat * 1e7),
+      longitudeI: Math.round(waypointPosition.lng * 1e7),
       name: name.value,
       description: desc.value,
       expire: moment(expireTime).valueOf() / 1000, // secs since epoch
@@ -128,153 +156,198 @@ const CreateWaypointDialog = ({
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="fixed inset-0 bg-gray-900/[0.4]" />
-      <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white default-overlay w-[480px] flex flex-col gap-4 p-6">
-        <div className="flex flex-col">
-          <Dialog.Title className="text-base font-medium text-gray-700">
-            Create Waypoint
-          </Dialog.Title>
-
-          <Dialog.Description className="text-sm font-normal text-gray-500">
-            Create a new waypoint at ({formatLocation(lngLat.lat)},{" "}
-            {formatLocation(lngLat.lng)}).
-          </Dialog.Description>
-        </div>
-
-        <fieldset className="">
-          <label className="flex flex-col flex-1">
-            <p
-              className={`flex flex-row justify-between ${
-                name.isValid ? "text-gray-600" : "text-red-500"
-              }`}
+      <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col bg-white default-overlay">
+        <div className="flex flex-row">
+          <div className="relative">
+            <Map
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: "100%",
+                height: "100%",
+                borderRadius: "8px 0px 0px 8px",
+              }}
+              id={MapIDs.CreateWaypointDialog}
+              mapStyle={config.style}
+              mapLib={maplibregl}
+              interactive={false}
+              initialViewState={{
+                latitude: waypointPosition.lat,
+                longitude: waypointPosition.lng,
+                zoom: 12,
+              }}
+              attributionControl={false}
             >
-              <span>Name</span>
-              <span>
-                ({name.value.length}/{WAYPOINT_NAME_MAX_LEN})
-              </span>
-            </p>
+              <MeshWaypoint
+                latitude={waypointPosition.lat}
+                longitude={waypointPosition.lng}
+                isSelected
+                draggable
+                onDrag={handlePositionUpdate}
+              />
 
-            <ConnectionInput
-              className="w-full invalid:border-red-400 invalid:text-red-400"
-              placeholder="Enter a title"
-              value={name.value}
-              onChange={handleNameChange}
-              ref={nameRef}
-            />
-          </label>
-        </fieldset>
+              <ScaleControl
+                maxWidth={144}
+                position="bottom-right"
+                unit="imperial"
+              />
+              <NavigationControl position="bottom-right" showCompass={false} />
+            </Map>
+            <div className=" w-[480px] h-full" />
+          </div>
 
-        <fieldset className="">
-          <label className="flex flex-col flex-1">
-            <p
-              className={`flex flex-row justify-between ${
-                desc.isValid ? "text-gray-600" : "text-red-500"
-              }`}
-            >
-              <span>Description</span>
-              <span>
-                ({desc.value.length}/{WAYPOINT_DESC_MAX_LEN})
-              </span>
-            </p>
+          <div className="flex flex-col gap-4 px-9 py-7">
+            <div className="flex flex-col">
+              <Dialog.Title className="text-base font-medium text-gray-700">
+                Create Waypoint
+              </Dialog.Title>
 
-            <ConnectionInput
-              className="w-full invalid:border-red-400 invalid:text-red-400"
-              placeholder="Enter a description"
-              value={desc.value}
-              onChange={handleDescChange}
-              ref={descRef}
-            />
-          </label>
-        </fieldset>
+              <Dialog.Description className="text-sm font-normal text-gray-500">
+                {formatLocation(waypointPosition.lat)},{" "}
+                {formatLocation(waypointPosition.lng)}
+              </Dialog.Description>
+            </div>
 
-        <fieldset className="">
-          <label className="">
-            <p className="text-gray-600">Expire Time</p>
-            <ConnectionInput
-              className="w-full"
-              type="datetime-local"
-              min={moment().format(dateTimeLocalFormatString)}
-              value={expireTime}
-              onChange={(e) => setExpireTime(e.target.value)}
-            />
-          </label>
-        </fieldset>
+            <fieldset className="">
+              <label className="flex flex-col flex-1">
+                <p
+                  className={`flex flex-row justify-between ${
+                    name.isValid ? "text-gray-600" : "text-red-500"
+                  }`}
+                >
+                  <span>Name</span>
+                  <span>
+                    ({name.value.length}/{WAYPOINT_NAME_MAX_LEN})
+                  </span>
+                </p>
 
-        <fieldset className="">
-          <label className="">
-            <p className="text-gray-600">Device Channel</p>
-            <Select.Root
-              value={`${channelNum}`}
-              onValueChange={(e) => setChannelNum(parseInt(e))}
-            >
-              <Select.Trigger
-                className="flex-1 border px-5 py-4 border-gray-400 rounded-lg text-gray-700 h-full bg-transparent focus:outline-none disabled:cursor-wait inline-flex items-center justify-center"
-                aria-label="Channels"
-                asChild
+                <ConnectionInput
+                  className="w-full invalid:border-red-400 invalid:text-red-400"
+                  placeholder="Enter a title"
+                  value={name.value}
+                  onChange={handleNameChange}
+                  ref={nameRef}
+                />
+              </label>
+            </fieldset>
+
+            <fieldset className="">
+              <label className="flex flex-col flex-1">
+                <p
+                  className={`flex flex-row justify-between ${
+                    desc.isValid ? "text-gray-600" : "text-red-500"
+                  }`}
+                >
+                  <span>Description</span>
+                  <span>
+                    ({desc.value.length}/{WAYPOINT_DESC_MAX_LEN})
+                  </span>
+                </p>
+
+                <ConnectionInput
+                  className="w-full invalid:border-red-400 invalid:text-red-400"
+                  placeholder="Enter a description"
+                  value={desc.value}
+                  onChange={handleDescChange}
+                  ref={descRef}
+                />
+              </label>
+            </fieldset>
+
+            <fieldset className="">
+              <label className="">
+                <p className="text-gray-600">Expire Time</p>
+                <ConnectionInput
+                  className="w-full"
+                  type="datetime-local"
+                  min={moment().format(dateTimeLocalFormatString)}
+                  value={expireTime}
+                  onChange={(e) => setExpireTime(e.target.value)}
+                />
+              </label>
+            </fieldset>
+
+            <fieldset className="">
+              <label className="">
+                <p className="text-gray-600">Device Channel</p>
+                <Select.Root
+                  value={`${channelNum}`}
+                  onValueChange={(e) => setChannelNum(parseInt(e))}
+                >
+                  <Select.Trigger
+                    className="flex-1 border px-5 py-4 border-gray-400 rounded-lg text-gray-700 h-full bg-transparent focus:outline-none disabled:cursor-wait inline-flex items-center justify-center"
+                    aria-label="Channels"
+                    asChild
+                  >
+                    <button>
+                      <Select.Value
+                        placeholder="Select a channel..."
+                        defaultValue={0}
+                      />
+                      <Select.Icon className="ml-2">
+                        <ChevronDownIcon />
+                      </Select.Icon>
+                    </button>
+                  </Select.Trigger>
+
+                  <Select.Portal>
+                    <Select.Content className="">
+                      <Select.ScrollUpButton className="flex items-center justify-center h-6">
+                        <ChevronUpIcon />
+                      </Select.ScrollUpButton>
+
+                      <Select.Viewport className="bg-white p-2 rounded-lg shadow-lg">
+                        <Select.Group>
+                          {deviceChannels.map((c) => (
+                            <Select.Item
+                              key={c.config.index}
+                              value={`${c.config.index}`}
+                              className={`relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50`}
+                              disabled={c.config.role === 0} // DISABLED role
+                            >
+                              <Select.ItemText>
+                                {getChannelName(c)}
+                              </Select.ItemText>
+                              <Select.ItemIndicator className="absolute left-0 w-6 inline-flex items-center justify-center">
+                                <CheckIcon />
+                              </Select.ItemIndicator>
+                            </Select.Item>
+                          ))}
+                        </Select.Group>
+                      </Select.Viewport>
+
+                      <Select.ScrollDownButton className="flex items-center justify-center h-6">
+                        <ChevronDownIcon />
+                      </Select.ScrollDownButton>
+                    </Select.Content>
+                  </Select.Portal>
+                </Select.Root>
+              </label>
+            </fieldset>
+
+            <div className="flex flex-row gap-6 justify-end mt-2">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!(name.isValid && desc.isValid)}
+                className=" text-gray-600 hover:text-gray-700 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
               >
-                <button>
-                  <Select.Value
-                    placeholder="Select a channel..."
-                    defaultValue={0}
-                  />
-                  <Select.Icon className="ml-2">
-                    <ChevronDownIcon />
-                  </Select.Icon>
+                Create waypoint
+              </button>
+
+              <Dialog.Close asChild>
+                <button className="text-red-400 hover:text-red-500 transition-colors">
+                  Cancel
                 </button>
-              </Select.Trigger>
-
-              <Select.Portal>
-                <Select.Content className="">
-                  <Select.ScrollUpButton className="flex items-center justify-center h-6">
-                    <ChevronUpIcon />
-                  </Select.ScrollUpButton>
-
-                  <Select.Viewport className="bg-white p-2 rounded-lg shadow-lg">
-                    <Select.Group>
-                      {deviceChannels.map((c) => (
-                        <Select.Item
-                          key={c.config.index}
-                          value={`${c.config.index}`}
-                          className={`relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50`}
-                          disabled={c.config.role === 0} // DISABLED role
-                        >
-                          <Select.ItemText>{getChannelName(c)}</Select.ItemText>
-                          <Select.ItemIndicator className="absolute left-0 w-6 inline-flex items-center justify-center">
-                            <CheckIcon />
-                          </Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Group>
-                  </Select.Viewport>
-
-                  <Select.ScrollDownButton className="flex items-center justify-center h-6">
-                    <ChevronDownIcon />
-                  </Select.ScrollDownButton>
-                </Select.Content>
-              </Select.Portal>
-            </Select.Root>
-          </label>
-        </fieldset>
-
-        <div className="flex flex-row gap-6 justify-end mt-2">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={!(name.isValid && desc.isValid)}
-            className=" text-gray-600 hover:text-gray-700 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            Create waypoint
-          </button>
-
-          <Dialog.Close asChild>
-            <button className="text-red-400 hover:text-red-500 transition-colors">
-              Cancel
-            </button>
-          </Dialog.Close>
+              </Dialog.Close>
+            </div>
+          </div>
         </div>
 
         <Dialog.Close asChild>
           <button
-            className="absolute top-6 right-6 w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors"
+            className="absolute top-7 right-9 w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors"
             aria-label="Close"
           >
             <X strokeWidth={1.5} />

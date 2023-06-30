@@ -8,14 +8,13 @@ import DefaultWaypoint from "@app/assets/waypoints/waypoint_default.svg";
 
 export interface IWaypointProps {
   isSelected: boolean;
-  expired: boolean;
 }
 
-const WaypointIcon = ({ isSelected, expired }: IWaypointProps) => {
+const WaypointIcon = ({ isSelected }: IWaypointProps) => {
   return (
     <img
       className={"drop-shadow-lg"}
-      src={expired ? "" : isSelected ? SelectedWaypoint : DefaultWaypoint}
+      src={isSelected ? SelectedWaypoint : DefaultWaypoint}
     />
   );
 };

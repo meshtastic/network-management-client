@@ -38,6 +38,7 @@ import MapNodeTooltip from "@components/Map/MapNodeTooltip";
 
 import {
   selectActiveNodeId,
+  selectActiveWaypoint,
   selectAllWaypoints,
   selectInfoPane,
 } from "@features/device/deviceSelectors";
@@ -67,11 +68,13 @@ const DeckGLOverlay = (props: IDeckGLOverlayProps) => {
 export const MapView = () => {
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId());
-  const { nodesFeatureCollection, edgesFeatureCollection, viewState, config } =
-    useSelector(selectMapState());
   const showInfoPane = useSelector(selectInfoPane());
 
+  const { nodesFeatureCollection, edgesFeatureCollection, viewState, config } =
+    useSelector(selectMapState());
+
   const waypoints = useSelector(selectAllWaypoints());
+  const activeWaypoint = useSelector(selectActiveWaypoint());
 
   const [nodeHoverInfo, setNodeHoverInfo] = useState<PickingInfo | null>(null);
   const [edgeHoverInfo, setEdgeHoverInfo] = useState<PickingInfo | null>(null);
@@ -292,8 +295,13 @@ export const MapView = () => {
             {waypoints
               // Filter invalid locations (falsy lat or long, includes 0,0)
               .filter((n) => !!n.latitudeI && !!n.longitudeI)
-              .map((waypoint) => (
-                <MeshWaypoint key={waypoint.id} currWaypoint={waypoint} />
+              .map((w) => (
+                <MeshWaypoint
+                  key={w.id}
+                  latitude={w.latitudeI}
+                  longitude={w.longitudeI}
+                  isSelected={activeWaypoint?.id === w.id}
+                />
               ))}
           </Map>
 
@@ -308,17 +316,17 @@ export const MapView = () => {
           <MapSelectedNodeMenu />
           <MapInteractionPane />
         </div>
-      </MapProvider>
 
-      {lastRightClickLngLat && (
-        <CreateWaypointDialog
-          lngLat={lastRightClickLngLat}
-          closeDialog={() => {
-            setWaypointDialogOpen(false);
-            setLastRightClickLngLat(null);
-          }}
-        />
-      )}
+        {lastRightClickLngLat && (
+          <CreateWaypointDialog
+            lngLat={lastRightClickLngLat}
+            closeDialog={() => {
+              setWaypointDialogOpen(false);
+              setLastRightClickLngLat(null);
+            }}
+          />
+        )}
+      </MapProvider>
     </Dialog.Root>
   );
 };
