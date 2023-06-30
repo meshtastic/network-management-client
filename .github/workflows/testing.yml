@@ -18,9 +18,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/src-tauri/.cargo/registry
-            ~/src-tauri/.cargo/git
-            target
+            ~/src-tauri/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Setup pnpm
