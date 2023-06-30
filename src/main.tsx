@@ -42,7 +42,9 @@ listen("reboot", (event) => {
   })
   .catch(console.error);
 
-createRoot(document.getElementById("root") as HTMLElement).render(
+const container = document.getElementById("root");
+const root = createRoot(container as HTMLElement);
+root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
