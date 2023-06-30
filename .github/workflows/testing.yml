@@ -14,6 +14,15 @@ jobs:
       - uses: actions/checkout@v3
       - run: git submodule update --init
 
+      - name: Initialize Rust Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/src-tauri/.cargo/registry
+            ~/src-tauri/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -22,12 +31,22 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
-      # Dependencies of Rust crates on Linux
-      - name: Install dependencies (ubuntu only)
+      - name: Install dependencies (Ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Create empty dist directory (Windows only)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          mkdir dist
+        shell: pwsh
+
+      - name: Create empty dist directory (Unix only)
+        if: matrix.platform != 'windows-latest'
+        run: |
+          mkdir dist
 
       - name: Run test suite
         working-directory: ./src-tauri
