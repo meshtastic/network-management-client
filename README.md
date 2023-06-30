@@ -51,7 +51,6 @@ At the time of writing, this project is currently maintained by a single develop
 - Integrating UI components into the [Storybook](https://storybook.js.org/) framework
 - Adding support for i18n translations within the UI layer
 - General reorganization of application file structure to make the project intuitive
-- Setting up robust CI/CD pipelines for the project, including linting, testing, and artifact building
 
 ## :rocket: Functionality
 
