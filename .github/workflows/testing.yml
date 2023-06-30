@@ -58,4 +58,13 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
-      - run: pnpm run ui:test
+      - name: Run test suite (Windows only)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          pnpm run ui:test
+        shell: pwsh
+
+      - name: Run test suite (non-Windows)
+        if: matrix.platform != 'windows-latest'
+        run: |
+          pnpm run ui:test
