@@ -1,4 +1,4 @@
-name: lint
+name: "Code Lint Check"
 on: [pull_request]
 
 env:
