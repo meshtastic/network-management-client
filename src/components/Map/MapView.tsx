@@ -30,9 +30,8 @@ import MapInteractionPane from "@components/Map/MapInteractionPane";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
-import Waypoints from "@components/Waypoints/Waypoint";
+import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
-import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
 import MapContextOption from "@components/Map/MapContextOption";
 import MapEdgeTooltip from "@components/Map/MapEdgeTooltip";
 import MapNodeTooltip from "@components/Map/MapNodeTooltip";
@@ -41,7 +40,6 @@ import {
   selectActiveNodeId,
   selectAllWaypoints,
   selectInfoPane,
-  selectPlaceholderWaypoint,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -74,7 +72,6 @@ export const MapView = () => {
   const showInfoPane = useSelector(selectInfoPane());
 
   const waypoints = useSelector(selectAllWaypoints());
-  const tempWaypoint = useSelector(selectPlaceholderWaypoint());
 
   const [nodeHoverInfo, setNodeHoverInfo] = useState<PickingInfo | null>(null);
   const [edgeHoverInfo, setEdgeHoverInfo] = useState<PickingInfo | null>(null);
@@ -296,17 +293,13 @@ export const MapView = () => {
               // Filter invalid locations (falsy lat or long, includes 0,0)
               .filter((n) => !!n.latitudeI && !!n.longitudeI)
               .map((waypoint) => (
-                <Waypoints key={waypoint.id} currWaypoint={waypoint} />
+                <MeshWaypoint key={waypoint.id} currWaypoint={waypoint} />
               ))}
-
-            <Waypoints currWaypoint={tempWaypoint} />
           </Map>
 
           {/* Popups */}
           {showInfoPane == "waypoint" ? (
             <WaypointMenu />
-          ) : showInfoPane == "waypointEdit" ? (
-            <WaypointMenuEdit />
           ) : showInfoPane == "algos" ? (
             <AnalyticsPane />
           ) : null}

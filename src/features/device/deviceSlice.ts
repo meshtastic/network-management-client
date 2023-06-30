@@ -13,8 +13,7 @@ export interface IDeviceState {
   primaryDeviceKey: string | null; // port or socket ddress
   activeWaypoint: app_protobufs_Waypoint["id"] | null;
   autoConnectPort: string | null; // Port to automatically connect to on startup
-  placeholderWaypoint: app_protobufs_Waypoint | null;
-  infoPane: "waypoint" | "waypointEdit" | "algos" | null;
+  infoPane: "waypoint" | "algos" | null;
 }
 
 export const initialDeviceState: IDeviceState = {
@@ -24,7 +23,6 @@ export const initialDeviceState: IDeviceState = {
   primaryDeviceKey: null,
   activeWaypoint: null,
   autoConnectPort: null,
-  placeholderWaypoint: null,
   infoPane: null,
 };
 
@@ -76,7 +74,7 @@ export const deviceSlice = createSlice({
 
     setInfoPane: (
       state,
-      action: PayloadAction<"waypoint" | "waypointEdit" | "algos" | null>
+      action: PayloadAction<"waypoint" | "algos" | null>
     ) => {
       state.infoPane = action.payload;
 
@@ -85,13 +83,6 @@ export const deviceSlice = createSlice({
       } else {
         state.activeWaypoint = null;
       }
-    },
-
-    setPlaceholderWaypoint: (
-      state,
-      action: PayloadAction<app_protobufs_Waypoint | null>
-    ) => {
-      state.placeholderWaypoint = action.payload;
     },
 
     setAutoConnectPort: (state, action: PayloadAction<string | null>) => {

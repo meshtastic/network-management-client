@@ -315,7 +315,6 @@ function* sendWaypointWorker(action: ReturnType<typeof requestSendWaypoint>) {
       waypoint: action.payload.waypoint,
     });
 
-    yield put(deviceSliceActions.setPlaceholderWaypoint(null));
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {
     console.error(error);

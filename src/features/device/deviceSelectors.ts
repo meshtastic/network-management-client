@@ -82,7 +82,7 @@ export const selectAllWaypoints =
     Object.values(state.devices.device?.waypoints ?? []);
 
 // Returns single waypoint object given ID
-export const selectWaypointByID =
+export const selectWaypointById =
   (id: number) =>
   (state: RootState): app_protobufs_Waypoint | null => {
     for (const waypoint of selectAllWaypoints()(state)) {
@@ -101,7 +101,7 @@ export const selectActiveWaypoint =
   (state: RootState): app_protobufs_Waypoint | null => {
     const activeID = selectActiveWaypointID()(state);
     if (activeID === null) return null;
-    return selectWaypointByID(activeID)(state);
+    return selectWaypointById(activeID)(state);
   };
 
 // What info pane are we showing
@@ -117,9 +117,6 @@ export const selectWaypointByLocation =
       ) ?? null
     );
   };
-
-export const selectPlaceholderWaypoint = () => (state: RootState) =>
-  state.devices.placeholderWaypoint;
 
 export const selectAutoConnectPort = () => (state: RootState) =>
   state.devices.autoConnectPort;

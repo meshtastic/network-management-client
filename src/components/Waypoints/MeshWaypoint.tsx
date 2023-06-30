@@ -4,18 +4,17 @@ import { Marker } from "react-map-gl";
 
 import type { app_protobufs_Waypoint } from "@bindings/index";
 
+import WaypointIcon from "@components/Waypoints/WaypointIcon";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectActiveWaypointID } from "@features/device/deviceSelectors";
 
-import WaypointIcon from "@app/components/Waypoints/WaypointIcon";
-
 // This component returns a marker for each individual waypoint. It is called from MapView.tsx
-interface IWaypoints {
+interface IMeshWaypointProps {
   currWaypoint: app_protobufs_Waypoint | null;
 }
 
 // All references to currWaypoint being null don't end up getting used because if it's null then we return <></>
-const Waypoints = ({ currWaypoint }: IWaypoints) => {
+const MeshWaypoint = ({ currWaypoint }: IMeshWaypointProps) => {
   const dispatch = useDispatch();
   const activeWaypointID = useSelector(selectActiveWaypointID());
   const isSelected = currWaypoint?.id === activeWaypointID;
@@ -46,10 +45,10 @@ const Waypoints = ({ currWaypoint }: IWaypoints) => {
         anchor="center"
         onClick={handleClick}
       >
-        <WaypointIcon isSelected={isSelected} expired={expired}></WaypointIcon>
+        <WaypointIcon isSelected={isSelected} expired={expired} />
       </Marker>
     </div>
   );
 };
 
-export default Waypoints;
+export default MeshWaypoint;
