@@ -6,8 +6,8 @@
 </div>
 
 <p align="center">
-  <a href="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/main.yml">
-    <img alt="Publish action status" src="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/main.yml/badge.svg">
+  <a href="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/testing.yml">
+    <img alt="Application testing action status" src="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/testing.yml/badge.svg">
   </a>
   
   <a href="">
