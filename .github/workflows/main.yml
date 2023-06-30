@@ -1,4 +1,4 @@
-name: 'publish'
+name: "publish"
 on:
   workflow_dispatch:
 
@@ -10,39 +10,43 @@ jobs:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
+        node-version: [16]
 
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
       - run: git submodule update --init
-      - name: setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
 
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: setup pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7.1.7
+          version: 8
 
-      - name: install dependencies (ubuntu only)
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: install frontend dependencies
-        run: pnpm install # change this to npm or pnpm depending on which one you use
+      - name: Install frontend dependencies
+        run: pnpm install
 
-      - uses: tauri-apps/tauri-action@v0
+      - name: Build Tauri application
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
-          releaseName: 'MNMC v__VERSION__'
-          releaseBody: 'See release assets to download this version and install.'
+          releaseName: "MNMC v__VERSION__"
+          releaseBody: "See release assets to download this version and install."
           releaseDraft: true
           prerelease: true
