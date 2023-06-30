@@ -29,7 +29,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - run: pnpm run rust:test
+      - name: Run test suite (Windows only)
+        if: matrix.platform == 'windows-latest'
+        run: |
+          pnpm run rust:test
+        shell: pwsh
+
+      - name: Run test suite (non-Windows)
+        if: matrix.platform != 'windows-latest'
+        run: |
+          pnpm run rust:test
 
   ui-test:
     permissions:
@@ -58,13 +67,4 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install
 
-      - name: Run test suite (Windows only)
-        if: matrix.platform == 'windows-latest'
-        run: |
-          pnpm run ui:test
-        shell: pwsh
-
-      - name: Run test suite (non-Windows)
-        if: matrix.platform != 'windows-latest'
-        run: |
-          pnpm run ui:test
+      - run: pnpm run ui:test
