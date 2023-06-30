@@ -255,24 +255,26 @@ const CreateWaypointDialog = ({
           </label>
         </fieldset>
 
-        <div className="flex flex-row gap-4 justify-end mt-2">
+        <div className="flex flex-row gap-6 justify-end mt-2">
           <button
             type="button"
             onClick={handleSubmit}
             disabled={!(name.isValid && desc.isValid)}
-            className=" text-gray-600 disabled:text-gray-300 disabled:cursor-not-allowed"
+            className=" text-gray-600 hover:text-gray-700 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             Create waypoint
           </button>
 
           <Dialog.Close asChild>
-            <button className="text-gray-600">Cancel</button>
+            <button className="text-red-400 hover:text-red-500 transition-colors">
+              Cancel
+            </button>
           </Dialog.Close>
         </div>
 
         <Dialog.Close asChild>
           <button
-            className="absolute top-6 right-6 w-6 h-6 text-gray-500"
+            className="absolute top-6 right-6 w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors"
             aria-label="Close"
           >
             <X strokeWidth={1.5} />
