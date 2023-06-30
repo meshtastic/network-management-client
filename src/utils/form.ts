@@ -6,6 +6,8 @@ import type { app_device_MeshChannel } from "@bindings/index";
 import type { ChannelConfigInput } from "@features/config/configSlice";
 import type { DeepPartial } from "react-hook-form";
 
+export const dateTimeLocalFormatString = "YYYY-MM-DDThh:mm";
+
 export const getDefaultConfigInput = <C, E>(
   currentConfig: C | undefined,
   editedConfig: E | undefined

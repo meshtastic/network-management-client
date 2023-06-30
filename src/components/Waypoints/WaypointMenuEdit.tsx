@@ -54,9 +54,8 @@ const WaypointMenuEdit = () => {
       id: 0,
       name: waypointName,
       description: waypointDescription,
-      // TODO there has to be a better way to drop decimals
-      latitudeI: parseInt((waypointLat * 1e7).toString()),
-      longitudeI: parseInt((waypointLong * 1e7).toString()),
+      latitudeI: Math.round(waypointLat * 1e7),
+      longitudeI: Math.round(waypointLong * 1e7),
     };
 
     dispatch(
