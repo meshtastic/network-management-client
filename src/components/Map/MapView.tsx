@@ -289,7 +289,11 @@ export const MapView = () => {
               position="bottom-right"
               unit="imperial"
             />
-            <NavigationControl position="bottom-right" showCompass={false} />
+            <NavigationControl
+              position="bottom-right"
+              showCompass
+              visualizePitch
+            />
 
             {/* Visualize all waypoints */}
             {waypoints
@@ -301,6 +305,9 @@ export const MapView = () => {
                   latitude={w.latitudeI}
                   longitude={w.longitudeI}
                   isSelected={activeWaypoint?.id === w.id}
+                  onClick={() =>
+                    dispatch(deviceSliceActions.setActiveWaypoint(w.id))
+                  }
                 />
               ))}
           </Map>

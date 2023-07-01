@@ -25,7 +25,15 @@ const MeshWaypoint = ({
       anchor="center"
       {...props}
     >
-      <div className={`${props.draggable ? "cursor-move" : "cursor-default"}`}>
+      <div
+        className={`${
+          props.onClick
+            ? "cursor-pointer"
+            : props.draggable
+            ? "cursor-move"
+            : "cursor-default"
+        }`}
+      >
         <WaypointIcon isSelected={isSelected} />
       </div>
     </Marker>

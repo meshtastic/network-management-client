@@ -14,12 +14,16 @@ import debounce from "lodash.debounce";
 import moment from "moment";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Select from "@radix-ui/react-select";
+import * as Popover from "@radix-ui/react-popover";
 import {
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  Cross2Icon,
 } from "@radix-ui/react-icons";
-import { X } from "lucide-react";
+import { Plus, X, Locate } from "lucide-react";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 import type { app_protobufs_Waypoint } from "@bindings/index";
 
@@ -33,10 +37,20 @@ import {
 import { selectMapState } from "@features/map/mapSelectors";
 
 import { dateTimeLocalFormatString } from "@utils/form";
-import { MapIDs, formatLocation } from "@utils/map";
+import { MapIDs, formatLocation, getFlyToConfig } from "@utils/map";
 import { getChannelName } from "@utils/messaging";
 
 import "@components/Map/MapView.css";
+import DefaultTooltip from "../DefaultTooltip";
+
+// TODO follow this: https://github.com/missive/emoji-mart/issues/576
+export type Emoji = {
+  id: string;
+  native: string;
+  shortcodes: string;
+  keywords: string[];
+  unified: string;
+};
 
 export interface ICreateWaypointDialogProps {
   lngLat: LngLat;
@@ -71,14 +85,12 @@ const CreateWaypointDialog = ({
     setName({ value, isValid });
 
     if (!isValid && nameRef.current) {
-      console.warn("setting name invalid");
       nameRef.current.setCustomValidity(
         `Entered name too long (${value.length}/${WAYPOINT_NAME_MAX_LEN})`
       );
     }
 
     if (isValid && nameRef.current) {
-      console.warn("setting name valid");
       nameRef.current.setCustomValidity(""); // Make input valid
     }
   };
@@ -95,14 +107,12 @@ const CreateWaypointDialog = ({
     setDesc({ value, isValid });
 
     if (!isValid && descRef.current) {
-      console.warn("setting desc invalid");
       descRef.current.setCustomValidity(
         `Entered description too long (${value.length}/${WAYPOINT_DESC_MAX_LEN})`
       );
     }
 
     if (isValid && descRef.current) {
-      console.warn("setting desc valid");
       descRef.current.setCustomValidity(""); // Make input valid
     }
   };
@@ -112,20 +122,27 @@ const CreateWaypointDialog = ({
   );
 
   const [channelNum, setChannelNum] = useState(0);
+  const [emoji, setEmoji] = useState<Emoji | null>(null); // TODO will need unicode for this too
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+
+  const flyToPosition = useMemo(
+    () => (pos: LngLat) => map?.flyTo(getFlyToConfig(pos)),
+    [getFlyToConfig, map]
+  );
 
   const handlePositionUpdate = useMemo(
     () =>
       debounce<(e: MarkerDragEvent) => void>((e) => {
         setWaypointPosition(e.lngLat);
-        map?.flyTo({
-          center: [e.lngLat.lng, e.lngLat.lat],
-          duration: 900,
-        });
+        flyToPosition(e.lngLat);
       }, 300),
     [map]
   );
 
   const handleSubmit = () => {
+    // Take the emoji and convert it to a base 10 number (unicode bytes)
+    const encodedEmoji = parseInt(emoji?.unified ?? "0", 16);
+
     const createdWaypoint: app_protobufs_Waypoint = {
       id: 0, // New waypoint
       latitudeI: Math.round(waypointPosition.lat * 1e7),
@@ -134,8 +151,10 @@ const CreateWaypointDialog = ({
       description: desc.value,
       expire: moment(expireTime).valueOf() / 1000, // secs since epoch
       lockedTo: 0, // Not locked
-      icon: 0, // No icon
+      icon: encodedEmoji, // No icon
     };
+
+    console.warn(createdWaypoint);
 
     if (!primaryDeviceKey) {
       console.warn("No primary device key port, not creating waypoint");
@@ -171,7 +190,7 @@ const CreateWaypointDialog = ({
               id={MapIDs.CreateWaypointDialog}
               mapStyle={config.style}
               mapLib={maplibregl}
-              interactive={false}
+              // interactive={false}
               initialViewState={{
                 latitude: waypointPosition.lat,
                 longitude: waypointPosition.lng,
@@ -192,7 +211,23 @@ const CreateWaypointDialog = ({
                 position="bottom-right"
                 unit="imperial"
               />
-              <NavigationControl position="bottom-right" showCompass={false} />
+              <NavigationControl
+                position="bottom-right"
+                showCompass
+                visualizePitch
+              />
+
+              <div className="absolute top-9 right-9 flex bg-white rounded-lg shadow-lg w-10 h-10">
+                <DefaultTooltip text="Center waypoint on map">
+                  <button
+                    type="button"
+                    onClick={() => flyToPosition(waypointPosition)}
+                    className="m-auto text-gray-700"
+                  >
+                    <Locate strokeWidth={1} />
+                  </button>
+                </DefaultTooltip>
+              </div>
             </Map>
             <div className=" w-[480px] h-full" />
           </div>
@@ -325,6 +360,65 @@ const CreateWaypointDialog = ({
                 </Select.Root>
               </label>
             </fieldset>
+
+            <div>
+              <p className="text-gray-600">Pin Emoji</p>
+              <Popover.Root
+                open={isEmojiPickerOpen}
+                onOpenChange={(e) => setIsEmojiPickerOpen(e)}
+              >
+                <div className="flex flex-row">
+                  <Popover.Trigger asChild>
+                    <div className="relative mr-auto">
+                      <button
+                        className="relative w-9 h-9 flex align-middle justify-center border border-gray-200 rounded-full"
+                        aria-label="Select emoji"
+                      >
+                        <p className="m-auto text-xl">
+                          {emoji?.native ?? (
+                            <Plus
+                              strokeWidth={1.5}
+                              className="text-gray-400 p-0.5"
+                            />
+                          )}
+                        </p>
+                      </button>
+
+                      {emoji && (
+                        <button
+                          type="button"
+                          className="absolute -bottom-1 -right-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEmoji(null);
+                          }}
+                        >
+                          <Cross2Icon className="w-4 h-4 p-0.5 bg-white rounded-full shadow-md border border-gray-200 text-gray-400" />
+                        </button>
+                      )}
+                    </div>
+                  </Popover.Trigger>
+                </div>
+
+                <Popover.Portal>
+                  <Popover.Content className="" side="bottom" sideOffset={5}>
+                    <div className="relative z-50">
+                      <Picker
+                        data={data}
+                        onEmojiSelect={(e: Emoji) => {
+                          console.warn("emoji", e);
+                          setEmoji(e);
+                          setIsEmojiPickerOpen(false);
+                        }}
+                        theme="light"
+                        previewPosition="none"
+                      />
+                      <Popover.Arrow className="fill-gray-200" />
+                    </div>
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
+            </div>
 
             <div className="flex flex-row gap-6 justify-end mt-2">
               <button

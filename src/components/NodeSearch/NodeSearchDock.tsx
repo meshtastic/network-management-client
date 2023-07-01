@@ -21,7 +21,7 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapUIState } from "@features/map/mapSelectors";
 import { mapSliceActions } from "@features/map/mapSlice";
 
-import { MapIDs } from "@utils/map";
+import { MapIDs, getFlyToConfig } from "@utils/map";
 
 interface _INodeSearchDockProps {
   filteredNodes: app_device_MeshNode[];
@@ -106,13 +106,12 @@ const NodeSearchDock = () => {
     const foundNode = nodes.find((node) => node.data.num === nodeId);
     if (!foundNode?.data.position) return;
 
-    map?.flyTo({
-      center: [
-        foundNode.data.position.longitudeI / 1e7,
-        foundNode.data.position.latitudeI / 1e7,
-      ],
-      duration: 900,
-    });
+    map?.flyTo(
+      getFlyToConfig({
+        lat: foundNode.data.position.latitudeI / 1e7,
+        lng: foundNode.data.position.longitudeI / 1e7,
+      })
+    );
   };
 
   const setNodeSearchDockExpanded = (isExpanded: boolean) => {
