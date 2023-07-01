@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import type { app_protobufs_Waypoint } from "@bindings/index";
+import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
 import TableLayout from "@components/Table/TableLayout";
 import {
@@ -15,7 +15,7 @@ const ManageWaypointPage = () => {
   const waypoints = useSelector(selectAllWaypoints());
   const users = useSelector(selectAllUsersByNodeIds());
 
-  const columns = useMemo<ColumnDef<app_protobufs_Waypoint, unknown>[]>(
+  const columns = useMemo<ColumnDef<app_device_NormalizedWaypoint, unknown>[]>(
     () => [
       { header: "ID", accessorFn: (n) => n.id },
       {
@@ -45,15 +45,15 @@ const ManageWaypointPage = () => {
       {
         id: "Latitude",
         accessorFn: (n) => {
-          const latitude = n.latitudeI;
-          return formatLocation(latitude / 1e7);
+          const { latitude } = n;
+          return formatLocation(latitude);
         },
       },
       {
         id: "Longitude",
         accessorFn: (n) => {
-          const longitude = n.longitudeI;
-          return formatLocation(longitude / 1e7);
+          const { longitude } = n;
+          return formatLocation(longitude);
         },
       },
       {

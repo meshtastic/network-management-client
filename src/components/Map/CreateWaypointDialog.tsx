@@ -25,7 +25,7 @@ import { Plus, X, Locate } from "lucide-react";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 
-import type { app_protobufs_Waypoint } from "@bindings/index";
+import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
 import ConnectionInput from "@components/connection/ConnectionInput";
 import { requestSendWaypoint } from "@features/device/deviceActions";
@@ -143,10 +143,10 @@ const CreateWaypointDialog = ({
     // Take the emoji and convert it to a base 10 number (unicode bytes)
     const encodedEmoji = parseInt(emoji?.unified ?? "0", 16);
 
-    const createdWaypoint: app_protobufs_Waypoint = {
+    const createdWaypoint: app_device_NormalizedWaypoint = {
       id: 0, // New waypoint
-      latitudeI: Math.round(waypointPosition.lat * 1e7),
-      longitudeI: Math.round(waypointPosition.lng * 1e7),
+      latitude: waypointPosition.lat,
+      longitude: waypointPosition.lng,
       name: name.value,
       description: desc.value,
       expire: moment(expireTime).valueOf() / 1000, // secs since epoch

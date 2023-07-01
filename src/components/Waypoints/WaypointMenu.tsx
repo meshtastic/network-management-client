@@ -43,7 +43,7 @@ const WaypointMenu = () => {
     );
   };
 
-  const { name, description, latitudeI, longitudeI } = activeWaypoint;
+  const { name, description, latitude, longitude } = activeWaypoint;
 
   return (
     <div className="absolute top-24 right-9 bg-white pt-5 pr-5 pb-3 pl-4 rounded-lg drop-shadow-lg w-80">
@@ -76,9 +76,9 @@ const WaypointMenu = () => {
           <div className="flex justify-start">
             <MapPinIcon className="w-5 h-5  mt-0.5" />
             <h2 className="text-base leading-6 font-normal pl-2">
-              {latitudeI && longitudeI
-                ? `(${formatLocation(latitudeI / 1e7)} lat, ${formatLocation(
-                    longitudeI / 1e7
+              {latitude && longitude
+                ? `(${formatLocation(latitude)} lat, ${formatLocation(
+                    longitude
                   )} lon)`
                 : "No location set"}
             </h2>
@@ -87,8 +87,8 @@ const WaypointMenu = () => {
             type="button"
             onClick={() =>
               void writeValueToClipboard(
-                latitudeI && longitudeI
-                  ? `(${latitudeI / 1e7}, ${longitudeI / 1e7})`
+                latitude && longitude
+                  ? `(${latitude}, ${longitude})`
                   : "No location set"
               )
             }

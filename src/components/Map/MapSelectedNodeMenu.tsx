@@ -62,9 +62,9 @@ const MapSelectedNodeMenu = () => {
 
   const lastPacketTime = getLastHeardTime(activeNode);
 
-  const deviceName = activeNode.data.user?.longName ?? "N/A";
-  const deviceLtCoord = (activeNode.data.position?.latitudeI ?? 0) / 1e7;
-  const deviceLgCoord = (activeNode.data.position?.longitudeI ?? 0) / 1e7;
+  const deviceName = activeNode.user?.longName ?? "N/A";
+  const deviceLtCoord = activeNode.positionMetrics.at(-1)?.latitude ?? 0;
+  const deviceLgCoord = activeNode.positionMetrics.at(-1)?.longitude ?? 0;
   const batteryLevel =
     activeNode.deviceMetrics.at(-1)?.metrics.batteryLevel ?? null;
 

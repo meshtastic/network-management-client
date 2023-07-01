@@ -1,8 +1,8 @@
+use crate::device::NormalizedWaypoint;
 use crate::ipc::CommandError;
 use crate::state::{self, DeviceKey};
 use crate::{device::connections::PacketDestination, ipc::events};
 
-use app::protobufs;
 use log::{debug, trace};
 
 #[tauri::command]
@@ -45,7 +45,7 @@ pub async fn send_text(
 #[tauri::command]
 pub async fn send_waypoint(
     device_key: DeviceKey,
-    waypoint: protobufs::Waypoint,
+    waypoint: NormalizedWaypoint,
     channel: u32,
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::MeshDevices>,

@@ -39,7 +39,7 @@ const UserConfigPage = ({ className = "" }: IUserConfigPageProps) => {
     formState: { errors },
   } = useForm<UserConfigInput>({
     defaultValues: connectedNodeId
-      ? device?.nodes[connectedNodeId].data.user ?? undefined
+      ? device?.nodes[connectedNodeId].user ?? undefined
       : undefined,
   });
 

@@ -49,10 +49,8 @@ export const getPacketDisplayText = ({
   type,
 }: app_device_ChannelMessagePayload) => {
   if (type === "text") return data;
-
-  const { name, latitudeI, longitudeI } = data;
-  return `Received waypoint "${name}" at ${latitudeI / 1e7}, ${longitudeI / 1e7
-    }`;
+  const { name, latitude, longitude } = data;
+  return `Received waypoint "${name}" at ${latitude}, ${longitude}`;
 };
 
 export const getLastChannelMessageDisplayText = (

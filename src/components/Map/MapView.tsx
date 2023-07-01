@@ -298,12 +298,12 @@ export const MapView = () => {
             {/* Visualize all waypoints */}
             {waypoints
               // Filter invalid locations (falsy lat or long, includes 0,0)
-              .filter((n) => !!n.latitudeI && !!n.longitudeI)
+              .filter((w) => !!w.latitude && !!w.longitude)
               .map((w) => (
                 <MeshWaypoint
                   key={w.id}
-                  latitude={w.latitudeI}
-                  longitude={w.longitudeI}
+                  latitude={w.latitude}
+                  longitude={w.longitude}
                   isSelected={activeWaypoint?.id === w.id}
                   onClick={() =>
                     dispatch(deviceSliceActions.setActiveWaypoint(w.id))

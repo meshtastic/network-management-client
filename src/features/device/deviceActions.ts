@@ -2,7 +2,7 @@ import { createAction } from "@reduxjs/toolkit";
 
 import type {
   app_protobufs_User,
-  app_protobufs_Waypoint,
+  app_device_NormalizedWaypoint,
 } from "@bindings/index";
 
 import type { ConnectionType, DeviceKey } from "@utils/connections";
@@ -48,7 +48,7 @@ export const requestUpdateUser = createAction<{
 
 export const requestSendWaypoint = createAction<{
   deviceKey: string;
-  waypoint: app_protobufs_Waypoint;
+  waypoint: app_device_NormalizedWaypoint;
   channel: number;
 }>("@device/send-waypoint");
 

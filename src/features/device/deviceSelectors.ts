@@ -5,7 +5,7 @@ import type {
   app_device_MeshNode,
   app_protobufs_User,
   app_device_MeshChannel,
-  app_protobufs_Waypoint,
+  app_device_NormalizedWaypoint,
 } from "@bindings/index";
 
 export const selectRootState = () => (state: RootState) => state;
@@ -44,7 +44,7 @@ export const selectAllNodes =
 export const selectNodeById =
   (id: number | null) =>
   (state: RootState): app_device_MeshNode | null =>
-    id ? selectAllNodes()(state).find((n) => n.data.num === id) ?? null : null;
+    id ? selectAllNodes()(state).find((n) => n.nodeNum === id) ?? null : null;
 
 export const selectActiveNodeId = () => (state: RootState) =>
   state.devices.activeNode;
@@ -61,14 +61,14 @@ export const selectAllUsersByNodeIds =
   () =>
   (state: RootState): Record<number, app_protobufs_User | null> =>
     selectAllNodes()(state).reduce((accum, n) => {
-      const user = n.data.user;
-      return user ? { ...accum, [n.data.num]: user } : accum;
+      const { user } = n;
+      return user ? { ...accum, [n.nodeNum]: user } : accum;
     }, [] as app_protobufs_User[]);
 
 export const selectUserByNodeId =
   (nodeId: number) =>
   (state: RootState): app_protobufs_User | null =>
-    selectNodeById(nodeId)(state)?.data.user ?? null;
+    selectNodeById(nodeId)(state)?.user ?? null;
 
 export const selectDeviceChannels =
   () =>
@@ -78,13 +78,13 @@ export const selectDeviceChannels =
 // Returns list of all waypoints on connected node
 export const selectAllWaypoints =
   () =>
-  (state: RootState): app_protobufs_Waypoint[] =>
+  (state: RootState): app_device_NormalizedWaypoint[] =>
     Object.values(state.devices.device?.waypoints ?? []);
 
 // Returns single waypoint object given ID
 export const selectWaypointById =
   (id: number) =>
-  (state: RootState): app_protobufs_Waypoint | null => {
+  (state: RootState): app_device_NormalizedWaypoint | null => {
     for (const waypoint of selectAllWaypoints()(state)) {
       if (waypoint.id === id) return waypoint;
     }
@@ -98,7 +98,7 @@ export const selectActiveWaypointID = () => (state: RootState) =>
 // Get actual Waypoint object
 export const selectActiveWaypoint =
   () =>
-  (state: RootState): app_protobufs_Waypoint | null => {
+  (state: RootState): app_device_NormalizedWaypoint | null => {
     const activeID = selectActiveWaypointID()(state);
     if (activeID === null) return null;
     return selectWaypointById(activeID)(state);
@@ -110,10 +110,10 @@ export const selectInfoPane = () => (state: RootState) =>
 
 export const selectWaypointByLocation =
   (lat: number, long: number) =>
-  (state: RootState): app_protobufs_Waypoint | null => {
+  (state: RootState): app_device_NormalizedWaypoint | null => {
     return (
       selectAllWaypoints()(state).find(
-        (waypoint) => waypoint.latitudeI === lat && waypoint.longitudeI === long
+        (waypoint) => waypoint.latitude === lat && waypoint.longitude === long
       ) ?? null
     );
   };

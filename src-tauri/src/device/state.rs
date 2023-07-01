@@ -1,18 +1,18 @@
 #![allow(dead_code)]
 
 use app::protobufs;
-use log::{debug, trace};
+use log::{debug, trace, warn};
 
 use super::helpers::get_current_time_u32;
 use super::{
     ChannelMessagePayload, ChannelMessageWithState, MeshChannel, MeshDevice, MeshGraph, MeshNode,
-    MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, NeighborInfoPacket, PositionPacket,
-    SerialDeviceStatus, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
+    MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, NeighborInfoPacket, NormalizedWaypoint,
+    PositionPacket, SerialDeviceStatus, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 
 use crate::constructors::init::init_edge_map::init_edge_map;
 use crate::constructors::init::init_graph::init_graph;
-use crate::device::ChannelMessageState;
+use crate::device::{ChannelMessageState, LastHeardMetadata};
 
 impl MeshDevice {
     pub fn set_ready(&mut self, ready: bool) {
@@ -120,29 +120,7 @@ impl MeshDevice {
     }
 
     pub fn set_device_metrics(&mut self, metrics: TelemetryPacket) {
-        let mut origin_node = self.nodes.get_mut(&metrics.packet.from);
-
-        if origin_node.is_none() {
-            let new_node = MeshNode {
-                data: protobufs::NodeInfo {
-                    num: metrics.packet.from,
-                    snr: metrics.packet.rx_snr,
-                    last_heard: get_current_time_u32(),
-                    ..Default::default()
-                },
-                device_metrics: vec![],
-                environment_metrics: vec![],
-            };
-
-            debug!(
-                "Inserting new node with id {} from metrics",
-                metrics.packet.from,
-            );
-            trace!("{:?}", new_node);
-
-            self.nodes.insert(metrics.packet.from, new_node);
-            origin_node = self.nodes.get_mut(&metrics.packet.from);
-        }
+        let origin_node = self.nodes.get_mut(&metrics.packet.from);
 
         if let Some(node) = origin_node {
             if let Some(variant) = metrics.data.variant {
@@ -160,6 +138,7 @@ impl MeshDevice {
                         node.device_metrics.push(MeshNodeDeviceMetrics {
                             metrics: protobufs::DeviceMetrics { ..device_metrics },
                             timestamp: get_current_time_u32(),
+                            snr: metrics.packet.rx_snr,
                         });
                     }
                     protobufs::telemetry::Variant::EnvironmentMetrics(environment_metrics) => {
@@ -174,6 +153,7 @@ impl MeshDevice {
                                 ..environment_metrics
                             },
                             timestamp: get_current_time_u32(),
+                            snr: metrics.packet.rx_snr,
                         });
                     }
                     protobufs::telemetry::Variant::AirQualityMetrics(air_quality_metrics) => {
@@ -182,6 +162,27 @@ impl MeshDevice {
                     }
                 }
             }
+        } else {
+            let new_node = MeshNode {
+                node_num: metrics.packet.from,
+                last_heard: Some(LastHeardMetadata {
+                    timestamp: get_current_time_u32(),
+                    snr: metrics.packet.rx_snr,
+                    channel: metrics.packet.channel,
+                }),
+                user: None,
+                device_metrics: vec![],
+                environment_metrics: vec![],
+                position_metrics: vec![],
+            };
+
+            debug!(
+                "Inserting new node with id {} from metrics",
+                metrics.packet.from,
+            );
+            trace!("{:?}", new_node);
+
+            self.nodes.insert(metrics.packet.from, new_node);
         }
     }
 
@@ -199,97 +200,83 @@ impl MeshDevice {
         );
     }
 
-    pub fn add_waypoint(&mut self, waypoint: protobufs::Waypoint) {
+    pub fn add_waypoint(&mut self, waypoint: NormalizedWaypoint) {
         debug!("Adding own managed waypoint: {:?}", waypoint);
         self.waypoints.insert(waypoint.id, waypoint);
     }
 
     pub fn add_node_info(&mut self, node_info: protobufs::NodeInfo) {
-        let existing_node = self.nodes.get_mut(&node_info.num);
+        let found_node = self.nodes.get_mut(&node_info.num);
 
-        if let Some(ex_node) = existing_node {
+        if let Some(node) = found_node {
             debug!("Updating existing node with id {} from info", node_info.num,);
             trace!("{:?}", node_info);
 
-            ex_node.data = node_info;
+            node.update_from_node_info(node_info);
         } else {
             debug!("Inserting new node with id {} from info", node_info.num,);
             trace!("{:?}", node_info);
 
-            self.nodes.insert(
-                node_info.num,
-                MeshNode {
-                    data: node_info,
-                    device_metrics: vec![],
-                    environment_metrics: vec![],
-                },
-            );
+            let mut new_node = MeshNode::new(node_info.num);
+            new_node.update_from_node_info(node_info.clone());
+
+            self.nodes.insert(node_info.num, new_node);
         }
     }
 
     pub fn add_user(&mut self, user: UserPacket) {
-        let existing_node = self.nodes.get_mut(&user.packet.from);
+        let found_node = self.nodes.get_mut(&user.packet.from);
 
-        if let Some(ex_node) = existing_node {
+        if let Some(node) = found_node {
             debug!(
                 "Updating user of existing node {:?}: {:?}",
                 user.packet.from, user.data
             );
-            ex_node.data.user = Some(user.data);
+            node.user = Some(user.data);
         } else {
             debug!(
                 "Adding user to new node {:?}: {:?}",
                 user.packet.from, user.data
             );
-            self.nodes.insert(
-                user.packet.from,
-                MeshNode {
-                    device_metrics: vec![],
-                    environment_metrics: vec![],
-                    data: protobufs::NodeInfo {
-                        num: user.packet.from,
-                        user: Some(user.data),
-                        snr: user.packet.rx_snr,
-                        last_heard: get_current_time_u32(),
-                        ..Default::default()
-                    },
-                },
-            );
+
+            let mut new_node = MeshNode::new(self.my_node_info.my_node_num);
+            new_node.user = Some(user.data);
+            new_node.last_heard = Some(LastHeardMetadata {
+                timestamp: get_current_time_u32(),
+                snr: user.packet.rx_snr,
+                channel: user.packet.channel,
+            });
+
+            self.nodes.insert(user.packet.from, new_node);
         }
     }
 
     pub fn add_position(&mut self, position: PositionPacket) {
-        let existing_node = self.nodes.get_mut(&position.packet.from);
+        let found_node = self.nodes.get_mut(&position.packet.from);
 
-        if let Some(ex_node) = existing_node {
+        if let Some(node) = found_node {
             debug!(
                 "Updating position of existing node {:?}: {:?}",
                 position.packet.from, position.data
             );
-            ex_node.data.position = Some(position.data);
+            node.position_metrics.push(position.data.into());
         } else {
             debug!(
                 "Adding position to new node {:?}: {:?}",
                 position.packet.from, position.data
             );
-            self.nodes.insert(
-                position.packet.from,
-                MeshNode {
-                    device_metrics: vec![],
-                    environment_metrics: vec![],
-                    data: protobufs::NodeInfo {
-                        num: position.packet.from,
-                        position: Some(position.data),
-                        snr: position.packet.rx_snr,
-                        ..Default::default()
-                    },
-                },
-            );
+
+            let mut new_node = MeshNode::new(self.my_node_info.my_node_num);
+            new_node.position_metrics.push(position.data.into());
+
+            self.nodes.insert(position.packet.from, new_node);
         }
     }
 
     pub fn add_neighborinfo(&mut self, neighborinfo: NeighborInfoPacket) {
         let existing_node = self.neighbors.get_mut(&neighborinfo.packet.from);
+
+        warn!("NOT FULLY IMPLEMENTED");
 
         if existing_node.is_some() {
             debug!(
