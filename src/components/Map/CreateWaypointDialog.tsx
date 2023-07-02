@@ -175,7 +175,8 @@ const CreateWaypointDialog = ({
 
   return (
     <Dialog.Portal>
-      <Dialog.Overlay className="fixed inset-0 bg-gray-900/[0.4]" />
+      {/* Tracking https://github.com/radix-ui/primitives/issues/1159 */}
+      <div className="fixed inset-0 bg-gray-900/[0.4]" />
       <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col bg-white default-overlay">
         <div className="flex flex-row">
           <div className="relative">
