@@ -32,7 +32,7 @@ const MeshWaypoint = ({
             : props.draggable
             ? "cursor-move"
             : "cursor-default"
-        }`}
+        } -translate-y-1/2`}
       >
         <WaypointIcon isSelected={isSelected} />
       </div>

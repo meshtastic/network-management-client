@@ -1,6 +1,7 @@
 export enum MapIDs {
   MapView = "MapView",
   CreateWaypointDialog = "CreateWaypointDialog",
+  ChannelWaypointMessage = "ChannelWaypointMessage",
 }
 
 export const formatLocation = (location: number): string =>
@@ -15,3 +16,7 @@ export const getFlyToConfig = (target: {
   pitch: 0,
   speed: 0.6,
 });
+
+export const getWaypointMapId = (id: number): string => {
+  return `${MapIDs.ChannelWaypointMessage}_${id}`;
+};

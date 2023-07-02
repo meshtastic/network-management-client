@@ -28,8 +28,10 @@ import Picker from "@emoji-mart/react";
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
 import ConnectionInput from "@components/connection/ConnectionInput";
-import { requestSendWaypoint } from "@features/device/deviceActions";
+import MapOverlayButton from "@components/Map/MapOverlayButton";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
+
+import { requestSendWaypoint } from "@features/device/deviceActions";
 import {
   selectDeviceChannels,
   selectPrimaryDeviceKey,
@@ -41,7 +43,6 @@ import { MapIDs, formatLocation, getFlyToConfig } from "@utils/map";
 import { getChannelName } from "@utils/messaging";
 
 import "@components/Map/MapView.css";
-import DefaultTooltip from "../DefaultTooltip";
 
 // TODO follow this: https://github.com/missive/emoji-mart/issues/576
 export type Emoji = {
@@ -217,17 +218,14 @@ const CreateWaypointDialog = ({
                 visualizePitch
               />
 
-              <div className="absolute top-9 right-9 flex bg-white rounded-lg shadow-lg w-10 h-10">
-                <DefaultTooltip text="Center waypoint on map">
-                  <button
-                    type="button"
-                    onClick={() => flyToPosition(waypointPosition)}
-                    className="m-auto text-gray-700"
-                  >
-                    <Locate strokeWidth={1} />
-                  </button>
-                </DefaultTooltip>
-              </div>
+              <MapOverlayButton
+                className="absolute top-9 right-9"
+                onClick={() => flyToPosition(waypointPosition)}
+                tooltipText="Center waypoint on map"
+                tooltipProps={{ side: "left" }}
+              >
+                <Locate strokeWidth={1} className="text-gray-600" />
+              </MapOverlayButton>
             </Map>
             <div className=" w-[480px] h-full" />
           </div>

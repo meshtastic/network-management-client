@@ -15,7 +15,6 @@ import {
   MapLayerMouseEvent,
   ViewState,
   useControl,
-  MapProvider,
   Marker,
   LngLat,
 } from "react-map-gl";
@@ -225,115 +224,113 @@ export const MapView = () => {
       open={isWaypointDialogOpen}
       onOpenChange={handleDialogIsOpenChange}
     >
-      <MapProvider>
-        <div
-          className="relative w-full h-full z-0"
-          onContextMenu={(e) => e.preventDefault()}
+      <div
+        className="relative w-full h-full z-0"
+        onContextMenu={(e) => e.preventDefault()}
+      >
+        {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
+        {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
+
+        <Map
+          id={MapIDs.MapView}
+          reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
+          mapStyle={config.style}
+          mapLib={maplibregl}
+          onDragEnd={handleUpdateViewState}
+          onZoomEnd={handleUpdateViewState}
+          initialViewState={viewState}
+          onClick={handleClick}
+          onContextMenu={handleContextMenu}
         >
-          {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
-          {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
+          <DeckGLOverlay pickingRadius={12} layers={layers} />
 
-          <Map
-            id={MapIDs.MapView}
-            reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
-            mapStyle={config.style}
-            mapLib={maplibregl}
-            onDragEnd={handleUpdateViewState}
-            onZoomEnd={handleUpdateViewState}
-            initialViewState={viewState}
-            onClick={handleClick}
-            onContextMenu={handleContextMenu}
-          >
-            <DeckGLOverlay pickingRadius={12} layers={layers} />
-
-            {contextMenuEvent && lastRightClickLngLat && (
-              <Marker
-                latitude={lastRightClickLngLat.lat}
-                longitude={lastRightClickLngLat.lng}
-              >
-                <div className="translate-y-1/2">
-                  {/* https://www.kindacode.com/article/how-to-create-triangles-with-tailwind-css-4-examples/ */}
-                  <div className="w-full">
-                    <div className="mx-auto w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px] border-b-gray-200 border-r-[6px] border-r-transparent" />
-                  </div>
-
-                  <div className="flex flex-col gap-2 default-overlay p-2">
-                    <Dialog.Trigger asChild>
-                      <MapContextOption
-                        text="Drop a waypoint here"
-                        renderIcon={(c) => (
-                          <MapPin className={c} strokeWidth={1.5} />
-                        )}
-                      />
-                    </Dialog.Trigger>
-
-                    <Separator.Root
-                      className="h-px w-full bg-gray-200"
-                      decorative
-                      orientation="horizontal"
-                    />
-
-                    <MapContextOption
-                      text="Close menu"
-                      renderIcon={(c) => <X className={c} strokeWidth={1.5} />}
-                      onClick={() => setContextMenuEvent(null)}
-                    />
-                  </div>
+          {contextMenuEvent && lastRightClickLngLat && (
+            <Marker
+              latitude={lastRightClickLngLat.lat}
+              longitude={lastRightClickLngLat.lng}
+            >
+              <div className="translate-y-1/2">
+                {/* https://www.kindacode.com/article/how-to-create-triangles-with-tailwind-css-4-examples/ */}
+                <div className="w-full">
+                  <div className="mx-auto w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px] border-b-gray-200 border-r-[6px] border-r-transparent" />
                 </div>
-              </Marker>
-            )}
 
-            {/* Controls at bottom right */}
-            <ScaleControl
-              maxWidth={144}
-              position="bottom-right"
-              unit="imperial"
-            />
-            <NavigationControl
-              position="bottom-right"
-              showCompass
-              visualizePitch
-            />
+                <div className="flex flex-col gap-2 default-overlay p-2">
+                  <Dialog.Trigger asChild>
+                    <MapContextOption
+                      text="Drop a waypoint here"
+                      renderIcon={(c) => (
+                        <MapPin className={c} strokeWidth={1.5} />
+                      )}
+                    />
+                  </Dialog.Trigger>
 
-            {/* Visualize all waypoints */}
-            {waypoints
-              // Filter invalid locations (falsy lat or long, includes 0,0)
-              .filter((w) => !!w.latitude && !!w.longitude)
-              .map((w) => (
-                <MeshWaypoint
-                  key={w.id}
-                  latitude={w.latitude}
-                  longitude={w.longitude}
-                  isSelected={activeWaypoint?.id === w.id}
-                  onClick={() =>
-                    dispatch(deviceSliceActions.setActiveWaypoint(w.id))
-                  }
-                />
-              ))}
-          </Map>
+                  <Separator.Root
+                    className="h-px w-full bg-gray-200"
+                    decorative
+                    orientation="horizontal"
+                  />
 
-          {/* Popups */}
-          {showInfoPane == "waypoint" ? (
-            <WaypointMenu />
-          ) : showInfoPane == "algos" ? (
-            <AnalyticsPane />
-          ) : null}
+                  <MapContextOption
+                    text="Close menu"
+                    renderIcon={(c) => <X className={c} strokeWidth={1.5} />}
+                    onClick={() => setContextMenuEvent(null)}
+                  />
+                </div>
+              </div>
+            </Marker>
+          )}
 
-          <NodeSearchDock />
-          <MapSelectedNodeMenu />
-          <MapInteractionPane />
-        </div>
-
-        {lastRightClickLngLat && (
-          <CreateWaypointDialog
-            lngLat={lastRightClickLngLat}
-            closeDialog={() => {
-              setWaypointDialogOpen(false);
-              setLastRightClickLngLat(null);
-            }}
+          {/* Controls at bottom right */}
+          <ScaleControl
+            maxWidth={144}
+            position="bottom-right"
+            unit="imperial"
           />
-        )}
-      </MapProvider>
+          <NavigationControl
+            position="bottom-right"
+            showCompass
+            visualizePitch
+          />
+
+          {/* Visualize all waypoints */}
+          {waypoints
+            // Filter invalid locations (falsy lat or long, includes 0,0)
+            .filter((w) => !!w.latitude && !!w.longitude)
+            .map((w) => (
+              <MeshWaypoint
+                key={w.id}
+                latitude={w.latitude}
+                longitude={w.longitude}
+                isSelected={activeWaypoint?.id === w.id}
+                onClick={() =>
+                  dispatch(deviceSliceActions.setActiveWaypoint(w.id))
+                }
+              />
+            ))}
+        </Map>
+
+        {/* Popups */}
+        {showInfoPane == "waypoint" ? (
+          <WaypointMenu />
+        ) : showInfoPane == "algos" ? (
+          <AnalyticsPane />
+        ) : null}
+
+        <NodeSearchDock />
+        <MapSelectedNodeMenu />
+        <MapInteractionPane />
+      </div>
+
+      {lastRightClickLngLat && (
+        <CreateWaypointDialog
+          lngLat={lastRightClickLngLat}
+          closeDialog={() => {
+            setWaypointDialogOpen(false);
+            setLastRightClickLngLat(null);
+          }}
+        />
+      )}
     </Dialog.Root>
   );
 };
