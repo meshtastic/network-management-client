@@ -1,15 +1,20 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
 import { Map, ScaleControl } from "react-map-gl";
+import { MapIcon } from "lucide-react";
 
 import type { app_device_ChannelMessageWithState } from "@bindings/index";
 
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
+import MapOverlayButton from "@components/Map/MapOverlayButton";
+
 import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
 } from "@features/device/deviceSelectors";
+import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
 
 import { getWaypointMapId } from "@utils/map";
@@ -18,6 +23,7 @@ import {
   formatMessageUsername,
   getPacketDisplayText,
 } from "@utils/messaging";
+import { AppRoutes } from "@utils/routing";
 
 export interface ITextMessageBubbleProps {
   message: app_device_ChannelMessageWithState;
@@ -42,6 +48,8 @@ const TextMessageBubble = ({
   message,
   className = "",
 }: ITextMessageBubbleProps) => {
+  const dispatch = useDispatch();
+  const navigateTo = useNavigate();
   const { packet, type } = message.payload;
 
   const user = useSelector(selectUserByNodeId(packet.from));
@@ -53,6 +61,12 @@ const TextMessageBubble = ({
     ownNodeId ?? 0,
     packet.from
   );
+
+  const handleShowOnMapClick = () => {
+    if (type !== "waypoint") return;
+    dispatch(deviceSliceActions.setActiveWaypoint(message.payload.data.id));
+    navigateTo(AppRoutes.MAP);
+  };
 
   if (isSelf) {
     const { text, isError } = getAcknowledgementText(message);
@@ -73,7 +87,11 @@ const TextMessageBubble = ({
             type === "waypoint" ? "w-2/5" : "w-fit"
           } max-w-[40%] rounded-l-lg rounded-br-lg border border-gray-200`}
         >
-          <p className="px-3 py-2 rounded-tl-lg bg-gray-700 text-sm font-normal text-gray-100 break-words border-b border-gray-400">
+          <p
+            className={`px-3 py-2 rounded-tl-lg bg-gray-700 text-sm font-normal text-gray-100 break-words border-b border-gray-400 ${
+              message.payload.type !== "waypoint" ? "rounded-b-lg" : ""
+            }`}
+          >
             {getPacketDisplayText(message.payload)}
           </p>
           {message.payload.type === "waypoint" && (
@@ -106,6 +124,15 @@ const TextMessageBubble = ({
                   unit="imperial"
                   position="bottom-right"
                 />
+
+                <MapOverlayButton
+                  className="absolute top-9 right-9"
+                  onClick={handleShowOnMapClick}
+                  tooltipText="Show on map"
+                  tooltipProps={{ side: "left" }}
+                >
+                  <MapIcon className="text-gray-400" strokeWidth={1.5} />
+                </MapOverlayButton>
               </Map>
             </div>
           )}
@@ -138,7 +165,11 @@ const TextMessageBubble = ({
           type === "waypoint" ? "w-2/5" : "w-fit"
         } max-w-[40%] rounded-r-lg rounded-bl-lg border border-gray-200`}
       >
-        <p className="px-3 py-2 rounded-tr-lg bg-white text-sm font-normal text-gray-600 break-words border-b border-gray-100">
+        <p
+          className={`px-3 py-2 rounded-tr-lg bg-white text-sm font-normal text-gray-600 break-words border-b border-gray-100 ${
+            message.payload.type !== "waypoint" ? "rounded-b-lg" : ""
+          }`}
+        >
           {getPacketDisplayText(message.payload)}
         </p>
         {message.payload.type === "waypoint" && (
@@ -171,6 +202,15 @@ const TextMessageBubble = ({
                 unit="imperial"
                 position="bottom-right"
               />
+
+              <MapOverlayButton
+                className="absolute top-9 right-9"
+                onClick={handleShowOnMapClick}
+                tooltipText="Show on map"
+                tooltipProps={{ side: "left" }}
+              >
+                <MapIcon className="text-gray-400" strokeWidth={1.5} />
+              </MapOverlayButton>
             </Map>
           </div>
         )}

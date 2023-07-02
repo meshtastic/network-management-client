@@ -17,6 +17,7 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 
 import { writeValueToClipboard } from "@utils/clipboard";
 import { formatLocation } from "@utils/map";
+import { getWaypointTitle } from "@utils/messaging";
 
 // This file contains the WaypointMenu component when it is not being edited
 // It is called in MapView.tsx
@@ -43,22 +44,21 @@ const WaypointMenu = () => {
     );
   };
 
-  const { name, description, latitude, longitude } = activeWaypoint;
+  const { description, latitude, longitude } = activeWaypoint;
 
   return (
     <div className="absolute top-24 right-9 bg-white pt-5 pr-5 pb-3 pl-4 rounded-lg drop-shadow-lg w-80">
-      <div className="flex justify-between">
-        <h1 className="text-gray-600 text-2xl leading-5 font-semibold ">
-          {name || "No title"}
-        </h1>
+      <button
+        className="absolute top-5 right-5"
+        type="button"
+        onClick={() => dispatch(deviceSliceActions.setActiveWaypoint(null))}
+      >
+        <XMarkIcon className="w-5 h-5 text-gray-500" />
+      </button>
 
-        <button
-          type="button"
-          onClick={() => dispatch(deviceSliceActions.setActiveWaypoint(null))}
-        >
-          <XMarkIcon className="w-5 h-5 text-gray-500" />
-        </button>
-      </div>
+      <h1 className="mr-8 text-gray-600 text-2xl leading-5 font-semibold break-words">
+        {getWaypointTitle(activeWaypoint)}
+      </h1>
 
       <div className="text-gray-500 text-base">
         <h2 className="leading-6 font-semibold pt-2">Description</h2>
