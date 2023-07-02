@@ -24,6 +24,8 @@ import * as Separator from "@radix-ui/react-separator";
 import * as Dialog from "@radix-ui/react-dialog";
 import { MapPin, X } from "lucide-react";
 
+import type { app_device_NormalizedWaypoint } from "@bindings/index";
+
 import AnalyticsPane from "@components/Map/AnalyticsPane";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
@@ -81,6 +83,9 @@ export const MapView = () => {
 
   const [contextMenuEvent, setContextMenuEvent] =
     useState<MapLayerMouseEvent | null>(null);
+
+  const [editingWaypoint, setEditingWaypoint] =
+    useState<app_device_NormalizedWaypoint | null>(null);
 
   const [lastRightClickLngLat, setLastRightClickLngLat] =
     useState<LngLat | null>(null);
@@ -196,7 +201,6 @@ export const MapView = () => {
   };
 
   const handleContextMenu = (e: MapLayerMouseEvent) => {
-    console.warn(e.lngLat);
     setContextMenuEvent(e);
     setLastRightClickLngLat(e.lngLat);
   };
@@ -315,7 +319,12 @@ export const MapView = () => {
 
         {/* Popups */}
         {showInfoPane == "waypoint" ? (
-          <WaypointMenu />
+          <WaypointMenu
+            editWaypoint={(w) => {
+              setWaypointDialogOpen(true);
+              setEditingWaypoint(w);
+            }}
+          />
         ) : showInfoPane == "algos" ? (
           <AnalyticsPane />
         ) : null}
@@ -325,13 +334,21 @@ export const MapView = () => {
         <MapInteractionPane />
       </div>
 
-      {lastRightClickLngLat && (
+      {(lastRightClickLngLat || editingWaypoint) && (
         <CreateWaypointDialog
-          lngLat={lastRightClickLngLat}
+          lngLat={
+            lastRightClickLngLat ??
+            ({
+              lng: 0,
+              lat: 0,
+            } as LngLat)
+          }
           closeDialog={() => {
-            setWaypointDialogOpen(false);
+            setEditingWaypoint(null);
             setLastRightClickLngLat(null);
+            setWaypointDialogOpen(false);
           }}
+          existingWaypoint={editingWaypoint}
         />
       )}
     </Dialog.Root>

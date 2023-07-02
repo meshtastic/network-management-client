@@ -1,14 +1,14 @@
 import React, { ChangeEventHandler, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import maplibregl from "maplibre-gl";
 import {
   Map,
-  type LngLat,
+  LngLat,
   NavigationControl,
   ScaleControl,
   MarkerDragEvent,
   useMap,
 } from "react-map-gl";
-import maplibregl from "maplibre-gl";
 import debounce from "lodash.debounce";
 
 import moment from "moment";
@@ -46,6 +46,9 @@ import { getChannelName } from "@utils/messaging";
 
 import "@components/Map/MapView.css";
 
+const WAYPOINT_NAME_MAX_LEN = 30;
+const WAYPOINT_DESC_MAX_LEN = 100;
+
 // TODO follow this: https://github.com/missive/emoji-mart/issues/576
 export type Emoji = {
   id: string;
@@ -58,15 +61,14 @@ export type Emoji = {
 export interface ICreateWaypointDialogProps {
   lngLat: LngLat;
   closeDialog: () => void;
+  existingWaypoint?: app_device_NormalizedWaypoint | null;
 }
-
-const WAYPOINT_NAME_MAX_LEN = 30;
-const WAYPOINT_DESC_MAX_LEN = 100;
 
 // Needs to be rendered within a MapProvider component
 const CreateWaypointDialog = ({
   lngLat,
   closeDialog,
+  existingWaypoint,
 }: ICreateWaypointDialogProps) => {
   const dispatch = useDispatch();
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
@@ -74,14 +76,58 @@ const CreateWaypointDialog = ({
   const { config } = useSelector(selectMapState());
   const device = useSelector(selectDevice());
 
-  const [waypointPosition, setWaypointPosition] = useState<LngLat>(lngLat);
   const { [MapIDs.CreateWaypointDialog]: map } = useMap();
 
+  const [name, setName] = useState<{ value: string; isValid: boolean }>(
+    existingWaypoint
+      ? { value: existingWaypoint.name, isValid: true }
+      : {
+          value: "",
+          isValid: true,
+        }
+  );
+
+  const [desc, setDesc] = useState<{
+    value: string;
+    isValid: boolean;
+  }>(
+    existingWaypoint
+      ? { value: existingWaypoint.description, isValid: true }
+      : { value: "", isValid: true }
+  );
+
+  const [waypointPosition, setWaypointPosition] = useState<LngLat>(
+    existingWaypoint
+      ? ({
+          lng: existingWaypoint.longitude,
+          lat: existingWaypoint.latitude,
+        } as LngLat)
+      : lngLat
+  );
+
+  const [waypointLocked, setWaypointLocked] = useState<boolean>(
+    existingWaypoint ? existingWaypoint.lockedTo !== 0 : false
+  );
+
+  const [waypointExpires, setWaypointExpires] = useState<boolean>(
+    existingWaypoint ? existingWaypoint.expire !== 0 : false
+  );
+
+  const [expireTime, setExpireTime] = useState<string>(
+    existingWaypoint
+      ? moment(existingWaypoint.expire * 1000).format(dateTimeLocalFormatString)
+      : moment().add(1, "years").format(dateTimeLocalFormatString)
+  );
+
+  const [emoji, setEmoji] = useState<string | null>(
+    existingWaypoint ? String.fromCodePoint(existingWaypoint.icon) : null
+  );
+
+  const [channelNum, setChannelNum] = useState(0);
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
+
   const nameRef = useRef<HTMLInputElement>(null);
-  const [name, setName] = useState<{ value: string; isValid: boolean }>({
-    value: "",
-    isValid: true,
-  });
+  const descRef = useRef<HTMLInputElement>(null);
 
   const handleNameChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.target;
@@ -99,12 +145,6 @@ const CreateWaypointDialog = ({
     }
   };
 
-  const descRef = useRef<HTMLInputElement>(null);
-  const [desc, setDesc] = useState<{
-    value: string;
-    isValid: boolean;
-  }>({ value: "", isValid: true });
-
   const handleDescChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.target;
     const isValid = value.length <= WAYPOINT_DESC_MAX_LEN;
@@ -121,16 +161,6 @@ const CreateWaypointDialog = ({
     }
   };
 
-  const [waypointLocked, setWaypointLocked] = useState<boolean>(false);
-  const [waypointExpires, setWaypointExpires] = useState<boolean>(false);
-  const [expireTime, setExpireTime] = useState<string>(
-    moment().add(1, "years").format(dateTimeLocalFormatString)
-  );
-
-  const [channelNum, setChannelNum] = useState(0);
-  const [emoji, setEmoji] = useState<Emoji | null>(null); // TODO will need unicode for this too
-  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-
   const flyToPosition = useMemo(
     () => (pos: LngLat) => map?.flyTo(getFlyToConfig(pos)),
     [getFlyToConfig, map]
@@ -145,8 +175,12 @@ const CreateWaypointDialog = ({
     [map]
   );
 
-  const encodeEmoji = (emojiString: string | undefined): number =>
-    parseInt(emojiString ?? "0", 16);
+  const encodeEmoji = (emoji: string | null): number => {
+    if (!emoji) return 0; // Catches null or empty string
+
+    const emojiUnicodeString = (emoji.codePointAt(0) ?? 0).toString(16);
+    return parseInt(emojiUnicodeString, 16);
+  };
 
   const handleUpdateExpireTime: ChangeEventHandler<HTMLInputElement> = (e) => {
     const { value } = e.target;
@@ -163,10 +197,10 @@ const CreateWaypointDialog = ({
 
   const handleSubmit = () => {
     // Take the emoji and convert it to a base 10 number (unicode bytes)
-    const encodedEmoji = encodeEmoji(emoji?.unified);
+    const encodedEmoji = encodeEmoji(emoji);
 
     const createdWaypoint: app_device_NormalizedWaypoint = {
-      id: 0, // New waypoint
+      id: existingWaypoint?.id ?? 0,
       latitude: waypointPosition.lat,
       longitude: waypointPosition.lng,
       name: name.value,
@@ -223,11 +257,13 @@ const CreateWaypointDialog = ({
                   name: name.value,
                   description: desc.value,
                   expire: moment(expireTime).valueOf() / 1000,
-                  icon: encodeEmoji(emoji?.unified),
-                  id: 0,
+                  icon: encodeEmoji(emoji),
+                  id: existingWaypoint?.id ?? 0,
                   latitude: waypointPosition.lat,
                   longitude: waypointPosition.lng,
-                  lockedTo: 0,
+                  lockedTo: waypointLocked
+                    ? device?.myNodeInfo.myNodeNum ?? 0
+                    : 0,
                 }}
                 isSelected
                 draggable
@@ -260,7 +296,7 @@ const CreateWaypointDialog = ({
           <div className="flex flex-col gap-4 px-9 py-7 w-96">
             <div className="flex flex-col">
               <Dialog.Title className="text-base font-medium text-gray-700">
-                Create Waypoint
+                {existingWaypoint ? "Edit Waypoint" : "Create Waypoint"}
               </Dialog.Title>
 
               <Dialog.Description className="text-sm font-normal text-gray-500">
@@ -422,7 +458,7 @@ const CreateWaypointDialog = ({
                           aria-label="Select emoji"
                         >
                           <p className="m-auto text-xl">
-                            {emoji?.native ?? (
+                            {emoji ?? (
                               <Plus
                                 strokeWidth={1.5}
                                 className="text-gray-400 p-0.5"
@@ -454,7 +490,7 @@ const CreateWaypointDialog = ({
                           data={data}
                           onEmojiSelect={(e: Emoji) => {
                             console.warn("emoji", e);
-                            setEmoji(e);
+                            setEmoji(e.native);
                             setIsEmojiPickerOpen(false);
                           }}
                           theme="light"
@@ -475,7 +511,7 @@ const CreateWaypointDialog = ({
                 disabled={!(name.isValid && desc.isValid)}
                 className=" text-gray-600 hover:text-gray-700 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
               >
-                Create waypoint
+                {existingWaypoint ? "Save Changes" : "Create Waypoint"}{" "}
               </button>
 
               <Dialog.Close asChild>
