@@ -113,11 +113,7 @@ const TextMessageBubble = ({
                 }}
                 attributionControl={false}
               >
-                <MeshWaypoint
-                  latitude={message.payload.data.latitude}
-                  longitude={message.payload.data.longitude}
-                  isSelected
-                />
+                <MeshWaypoint waypoint={message.payload.data} isSelected />
 
                 <ScaleControl
                   maxWidth={144}
@@ -191,11 +187,7 @@ const TextMessageBubble = ({
               }}
               attributionControl={false}
             >
-              <MeshWaypoint
-                latitude={message.payload.data.latitude}
-                longitude={message.payload.data.longitude}
-                isSelected
-              />
+              <MeshWaypoint waypoint={message.payload.data} isSelected />
 
               <ScaleControl
                 maxWidth={144}

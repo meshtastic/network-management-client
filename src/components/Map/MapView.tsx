@@ -29,11 +29,12 @@ import MapInteractionPane from "@components/Map/MapInteractionPane";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
-import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
-import WaypointMenu from "@components/Waypoints/WaypointMenu";
+import CreateWaypointDialog from "@components/Map/CreateWaypointDialog";
 import MapContextOption from "@components/Map/MapContextOption";
 import MapEdgeTooltip from "@components/Map/MapEdgeTooltip";
 import MapNodeTooltip from "@components/Map/MapNodeTooltip";
+import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
+import WaypointMenu from "@components/Waypoints/WaypointMenu";
 
 import {
   selectActiveNodeId,
@@ -48,7 +49,6 @@ import { mapSliceActions } from "@features/map/mapSlice";
 import { MapIDs } from "@utils/map";
 
 import "@components/Map/MapView.css";
-import CreateWaypointDialog from "./CreateWaypointDialog";
 
 export interface IDeckGLOverlayProps extends MapboxOverlayProps {
   interleaved?: boolean;
@@ -300,11 +300,14 @@ export const MapView = () => {
             .map((w) => (
               <MeshWaypoint
                 key={w.id}
-                latitude={w.latitude}
-                longitude={w.longitude}
+                waypoint={w}
                 isSelected={activeWaypoint?.id === w.id}
                 onClick={() =>
-                  dispatch(deviceSliceActions.setActiveWaypoint(w.id))
+                  dispatch(
+                    deviceSliceActions.setActiveWaypoint(
+                      activeWaypoint?.id === w.id ? null : w.id
+                    )
+                  )
                 }
               />
             ))}

@@ -28,11 +28,13 @@ import Picker from "@emoji-mart/react";
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
 import ConnectionInput from "@components/connection/ConnectionInput";
+import ConnectionSwitch from "@components/connection/ConnectionSwitch";
 import MapOverlayButton from "@components/Map/MapOverlayButton";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 
 import { requestSendWaypoint } from "@features/device/deviceActions";
 import {
+  selectDevice,
   selectDeviceChannels,
   selectPrimaryDeviceKey,
 } from "@features/device/deviceSelectors";
@@ -70,6 +72,7 @@ const CreateWaypointDialog = ({
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
   const deviceChannels = useSelector(selectDeviceChannels());
   const { config } = useSelector(selectMapState());
+  const device = useSelector(selectDevice());
 
   const [waypointPosition, setWaypointPosition] = useState<LngLat>(lngLat);
   const { [MapIDs.CreateWaypointDialog]: map } = useMap();
@@ -118,6 +121,8 @@ const CreateWaypointDialog = ({
     }
   };
 
+  const [waypointLocked, setWaypointLocked] = useState<boolean>(false);
+  const [waypointExpires, setWaypointExpires] = useState<boolean>(false);
   const [expireTime, setExpireTime] = useState<string>(
     moment().add(1, "years").format(dateTimeLocalFormatString)
   );
@@ -140,9 +145,25 @@ const CreateWaypointDialog = ({
     [map]
   );
 
+  const encodeEmoji = (emojiString: string | undefined): number =>
+    parseInt(emojiString ?? "0", 16);
+
+  const handleUpdateExpireTime: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const { value } = e.target;
+
+    // Don't reset expire time if the user clears the input
+    // Disable waypoint expiring to prevent empty input state
+    if (!value) {
+      setWaypointExpires(false);
+      return;
+    }
+
+    setExpireTime(value);
+  };
+
   const handleSubmit = () => {
     // Take the emoji and convert it to a base 10 number (unicode bytes)
-    const encodedEmoji = parseInt(emoji?.unified ?? "0", 16);
+    const encodedEmoji = encodeEmoji(emoji?.unified);
 
     const createdWaypoint: app_device_NormalizedWaypoint = {
       id: 0, // New waypoint
@@ -150,12 +171,10 @@ const CreateWaypointDialog = ({
       longitude: waypointPosition.lng,
       name: name.value,
       description: desc.value,
-      expire: moment(expireTime).valueOf() / 1000, // secs since epoch
-      lockedTo: 0, // Not locked
-      icon: encodedEmoji, // No icon
+      expire: waypointExpires ? moment(expireTime).valueOf() / 1000 : 0, // secs since epoch
+      lockedTo: waypointLocked ? device?.myNodeInfo.myNodeNum ?? 0 : 0,
+      icon: encodedEmoji,
     };
-
-    console.warn(createdWaypoint);
 
     if (!primaryDeviceKey) {
       console.warn("No primary device key port, not creating waypoint");
@@ -178,8 +197,8 @@ const CreateWaypointDialog = ({
       {/* Tracking https://github.com/radix-ui/primitives/issues/1159 */}
       <div className="fixed inset-0 bg-gray-900/[0.4]" />
       <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col bg-white default-overlay">
-        <div className="flex flex-row">
-          <div className="relative">
+        <div className="flex flex-row max-h-[80vh]">
+          <div className="relative w-[600px]">
             <Map
               style={{
                 position: "absolute",
@@ -192,7 +211,6 @@ const CreateWaypointDialog = ({
               id={MapIDs.CreateWaypointDialog}
               mapStyle={config.style}
               mapLib={maplibregl}
-              // interactive={false}
               initialViewState={{
                 latitude: waypointPosition.lat,
                 longitude: waypointPosition.lng,
@@ -201,11 +219,19 @@ const CreateWaypointDialog = ({
               attributionControl={false}
             >
               <MeshWaypoint
-                latitude={waypointPosition.lat}
-                longitude={waypointPosition.lng}
+                waypoint={{
+                  name: name.value,
+                  description: desc.value,
+                  expire: moment(expireTime).valueOf() / 1000,
+                  icon: encodeEmoji(emoji?.unified),
+                  id: 0,
+                  latitude: waypointPosition.lat,
+                  longitude: waypointPosition.lng,
+                  lockedTo: 0,
+                }}
                 isSelected
                 draggable
-                onDrag={handlePositionUpdate}
+                onDragEnd={handlePositionUpdate}
               />
 
               <ScaleControl
@@ -231,7 +257,7 @@ const CreateWaypointDialog = ({
             <div className=" w-[480px] h-full" />
           </div>
 
-          <div className="flex flex-col gap-4 px-9 py-7">
+          <div className="flex flex-col gap-4 px-9 py-7 w-96">
             <div className="flex flex-col">
               <Dialog.Title className="text-base font-medium text-gray-700">
                 Create Waypoint
@@ -243,180 +269,203 @@ const CreateWaypointDialog = ({
               </Dialog.Description>
             </div>
 
-            <fieldset className="">
-              <label className="flex flex-col flex-1">
-                <p
-                  className={`flex flex-row justify-between ${
-                    name.isValid ? "text-gray-600" : "text-red-500"
-                  }`}
-                >
-                  <span>Name</span>
-                  <span>
-                    ({name.value.length}/{WAYPOINT_NAME_MAX_LEN})
-                  </span>
-                </p>
-
-                <ConnectionInput
-                  className="w-full invalid:border-red-400 invalid:text-red-400"
-                  placeholder="Enter a title"
-                  value={name.value}
-                  onChange={handleNameChange}
-                  ref={nameRef}
-                />
-              </label>
-            </fieldset>
-
-            <fieldset className="">
-              <label className="flex flex-col flex-1">
-                <p
-                  className={`flex flex-row justify-between ${
-                    desc.isValid ? "text-gray-600" : "text-red-500"
-                  }`}
-                >
-                  <span>Description</span>
-                  <span>
-                    ({desc.value.length}/{WAYPOINT_DESC_MAX_LEN})
-                  </span>
-                </p>
-
-                <ConnectionInput
-                  className="w-full invalid:border-red-400 invalid:text-red-400"
-                  placeholder="Enter a description"
-                  value={desc.value}
-                  onChange={handleDescChange}
-                  ref={descRef}
-                />
-              </label>
-            </fieldset>
-
-            <fieldset className="">
-              <label className="">
-                <p className="text-gray-600">Expire Time</p>
-                <ConnectionInput
-                  className="w-full"
-                  type="datetime-local"
-                  min={moment().format(dateTimeLocalFormatString)}
-                  value={expireTime}
-                  onChange={(e) => setExpireTime(e.target.value)}
-                />
-              </label>
-            </fieldset>
-
-            <fieldset className="">
-              <label className="">
-                <p className="text-gray-600">Device Channel</p>
-                <Select.Root
-                  value={`${channelNum}`}
-                  onValueChange={(e) => setChannelNum(parseInt(e))}
-                >
-                  <Select.Trigger
-                    className="flex-1 border px-5 py-4 border-gray-400 rounded-lg text-gray-700 h-full bg-transparent focus:outline-none disabled:cursor-wait inline-flex items-center justify-center"
-                    aria-label="Channels"
-                    asChild
+            <div className="flex flex-col gap-4 overflow-auto hide-scrollbar">
+              <fieldset className="">
+                <label className="flex flex-col flex-1">
+                  <p
+                    className={`flex flex-row justify-between ${
+                      name.isValid ? "text-gray-600" : "text-red-500"
+                    }`}
                   >
-                    <button>
-                      <Select.Value
-                        placeholder="Select a channel..."
-                        defaultValue={0}
-                      />
-                      <Select.Icon className="ml-2">
-                        <ChevronDownIcon />
-                      </Select.Icon>
-                    </button>
-                  </Select.Trigger>
+                    <span>Name</span>
+                    <span>
+                      ({name.value.length}/{WAYPOINT_NAME_MAX_LEN})
+                    </span>
+                  </p>
 
-                  <Select.Portal>
-                    <Select.Content className="">
-                      <Select.ScrollUpButton className="flex items-center justify-center h-6">
-                        <ChevronUpIcon />
-                      </Select.ScrollUpButton>
+                  <ConnectionInput
+                    className="w-full invalid:border-red-400 invalid:text-red-400"
+                    placeholder="Enter a title"
+                    value={name.value}
+                    onChange={handleNameChange}
+                    ref={nameRef}
+                  />
+                </label>
+              </fieldset>
 
-                      <Select.Viewport className="bg-white p-2 rounded-lg shadow-lg">
-                        <Select.Group>
-                          {deviceChannels.map((c) => (
-                            <Select.Item
-                              key={c.config.index}
-                              value={`${c.config.index}`}
-                              className={`relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50`}
-                              disabled={c.config.role === 0} // DISABLED role
-                            >
-                              <Select.ItemText>
-                                {getChannelName(c)}
-                              </Select.ItemText>
-                              <Select.ItemIndicator className="absolute left-0 w-6 inline-flex items-center justify-center">
-                                <CheckIcon />
-                              </Select.ItemIndicator>
-                            </Select.Item>
-                          ))}
-                        </Select.Group>
-                      </Select.Viewport>
+              <fieldset className="">
+                <label className="flex flex-col flex-1">
+                  <p
+                    className={`flex flex-row justify-between ${
+                      desc.isValid ? "text-gray-600" : "text-red-500"
+                    }`}
+                  >
+                    <span>Description</span>
+                    <span>
+                      ({desc.value.length}/{WAYPOINT_DESC_MAX_LEN})
+                    </span>
+                  </p>
 
-                      <Select.ScrollDownButton className="flex items-center justify-center h-6">
-                        <ChevronDownIcon />
-                      </Select.ScrollDownButton>
-                    </Select.Content>
-                  </Select.Portal>
-                </Select.Root>
-              </label>
-            </fieldset>
+                  <ConnectionInput
+                    className="w-full invalid:border-red-400 invalid:text-red-400"
+                    placeholder="Enter a description"
+                    value={desc.value}
+                    onChange={handleDescChange}
+                    ref={descRef}
+                  />
+                </label>
+              </fieldset>
 
-            <div>
-              <p className="text-gray-600">Pin Emoji</p>
-              <Popover.Root
-                open={isEmojiPickerOpen}
-                onOpenChange={(e) => setIsEmojiPickerOpen(e)}
-              >
-                <div className="flex flex-row">
-                  <Popover.Trigger asChild>
-                    <div className="relative mr-auto">
-                      <button
-                        className="relative w-9 h-9 flex align-middle justify-center border border-gray-200 rounded-full"
-                        aria-label="Select emoji"
-                      >
-                        <p className="m-auto text-xl">
-                          {emoji?.native ?? (
-                            <Plus
-                              strokeWidth={1.5}
-                              className="text-gray-400 p-0.5"
-                            />
-                          )}
-                        </p>
+              <fieldset className="">
+                <label className="text-gray-600">
+                  <p>Block Waypoint Editing</p>
+                  <ConnectionSwitch
+                    checked={waypointLocked}
+                    setChecked={setWaypointLocked}
+                  />
+                </label>
+              </fieldset>
+
+              <fieldset className="">
+                <label className="text-gray-600">
+                  <p>Waypoint Expires</p>
+                  <ConnectionSwitch
+                    checked={waypointExpires}
+                    setChecked={setWaypointExpires}
+                  />
+                </label>
+              </fieldset>
+
+              <fieldset className="">
+                <label className="">
+                  <p className="text-gray-600">Expire Time</p>
+                  <ConnectionInput
+                    className="w-full disabled:cursor-not-allowed disabled:text-gray-300"
+                    type="datetime-local"
+                    disabled={!waypointExpires}
+                    min={moment().format(dateTimeLocalFormatString)}
+                    value={expireTime}
+                    onChange={handleUpdateExpireTime}
+                  />
+                </label>
+              </fieldset>
+
+              <fieldset className="">
+                <label className="">
+                  <p className="text-gray-600">Device Channel</p>
+                  <Select.Root
+                    value={`${channelNum}`}
+                    onValueChange={(e) => setChannelNum(parseInt(e))}
+                  >
+                    <Select.Trigger
+                      className="flex-1 border px-5 py-4 border-gray-400 rounded-lg text-gray-700 h-full bg-transparent focus:outline-none disabled:cursor-wait inline-flex items-center justify-center"
+                      aria-label="Channels"
+                      asChild
+                    >
+                      <button>
+                        <Select.Value
+                          placeholder="Select a channel..."
+                          defaultValue={0}
+                        />
+                        <Select.Icon className="ml-2">
+                          <ChevronDownIcon />
+                        </Select.Icon>
                       </button>
+                    </Select.Trigger>
 
-                      {emoji && (
+                    <Select.Portal>
+                      <Select.Content className="">
+                        <Select.ScrollUpButton className="flex items-center justify-center h-6">
+                          <ChevronUpIcon />
+                        </Select.ScrollUpButton>
+
+                        <Select.Viewport className="bg-white p-2 rounded-lg shadow-lg">
+                          <Select.Group>
+                            {deviceChannels.map((c) => (
+                              <Select.Item
+                                key={c.config.index}
+                                value={`${c.config.index}`}
+                                className={`relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50`}
+                                disabled={c.config.role === 0} // DISABLED role
+                              >
+                                <Select.ItemText>
+                                  {getChannelName(c)}
+                                </Select.ItemText>
+                                <Select.ItemIndicator className="absolute left-0 w-6 inline-flex items-center justify-center">
+                                  <CheckIcon />
+                                </Select.ItemIndicator>
+                              </Select.Item>
+                            ))}
+                          </Select.Group>
+                        </Select.Viewport>
+
+                        <Select.ScrollDownButton className="flex items-center justify-center h-6">
+                          <ChevronDownIcon />
+                        </Select.ScrollDownButton>
+                      </Select.Content>
+                    </Select.Portal>
+                  </Select.Root>
+                </label>
+              </fieldset>
+
+              <div className="mb-2">
+                <p className="text-gray-600">Pin Emoji</p>
+                <Popover.Root
+                  open={isEmojiPickerOpen}
+                  onOpenChange={(e) => setIsEmojiPickerOpen(e)}
+                >
+                  <div className="flex flex-row">
+                    <Popover.Trigger asChild>
+                      <div className="relative mr-auto">
                         <button
-                          type="button"
-                          className="absolute -bottom-1 -right-1"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEmoji(null);
-                          }}
+                          className="relative w-9 h-9 flex align-middle justify-center border border-gray-200 rounded-full"
+                          aria-label="Select emoji"
                         >
-                          <Cross2Icon className="w-4 h-4 p-0.5 bg-white rounded-full shadow-md border border-gray-200 text-gray-400" />
+                          <p className="m-auto text-xl">
+                            {emoji?.native ?? (
+                              <Plus
+                                strokeWidth={1.5}
+                                className="text-gray-400 p-0.5"
+                              />
+                            )}
+                          </p>
                         </button>
-                      )}
-                    </div>
-                  </Popover.Trigger>
-                </div>
 
-                <Popover.Portal>
-                  <Popover.Content className="" side="bottom" sideOffset={5}>
-                    <div className="relative z-50">
-                      <Picker
-                        data={data}
-                        onEmojiSelect={(e: Emoji) => {
-                          console.warn("emoji", e);
-                          setEmoji(e);
-                          setIsEmojiPickerOpen(false);
-                        }}
-                        theme="light"
-                        previewPosition="none"
-                      />
-                      <Popover.Arrow className="fill-gray-200" />
-                    </div>
-                  </Popover.Content>
-                </Popover.Portal>
-              </Popover.Root>
+                        {emoji && (
+                          <button
+                            type="button"
+                            className="absolute -bottom-1 -right-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEmoji(null);
+                            }}
+                          >
+                            <Cross2Icon className="w-4 h-4 p-0.5 bg-white rounded-full shadow-md border border-gray-200 text-gray-400" />
+                          </button>
+                        )}
+                      </div>
+                    </Popover.Trigger>
+                  </div>
+
+                  <Popover.Portal>
+                    <Popover.Content className="" side="bottom" sideOffset={5}>
+                      <div className="relative z-50">
+                        <Picker
+                          data={data}
+                          onEmojiSelect={(e: Emoji) => {
+                            console.warn("emoji", e);
+                            setEmoji(e);
+                            setIsEmojiPickerOpen(false);
+                          }}
+                          theme="light"
+                          previewPosition="none"
+                        />
+                        <Popover.Arrow className="fill-gray-200" />
+                      </div>
+                    </Popover.Content>
+                  </Popover.Portal>
+                </Popover.Root>
+              </div>
             </div>
 
             <div className="flex flex-row gap-6 justify-end mt-2">
@@ -440,7 +489,7 @@ const CreateWaypointDialog = ({
 
         <Dialog.Close asChild>
           <button
-            className="absolute top-7 right-9 w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors"
+            className="fixed top-7 right-9 w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors"
             aria-label="Close"
           >
             <X strokeWidth={1.5} />
