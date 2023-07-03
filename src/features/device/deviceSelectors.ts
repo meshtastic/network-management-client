@@ -79,7 +79,10 @@ export const selectDeviceChannels =
 export const selectAllWaypoints =
   () =>
   (state: RootState): app_device_NormalizedWaypoint[] =>
-    Object.values(state.devices.device?.waypoints ?? []);
+    Object.values(state.devices.device?.waypoints ?? []).filter(
+      // Filter waypoints that were set to expire in the past
+      (w) => !w.expire || w.expire * 1000 > Date.now()
+    );
 
 // Returns single waypoint object given ID
 export const selectWaypointById =
