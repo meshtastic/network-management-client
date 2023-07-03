@@ -61,7 +61,7 @@ impl MeshDevice {
 
 #[cfg(test)]
 mod tests {
-    use crate::device;
+    use crate::device::{self, helpers::get_current_time_u32};
 
     use super::*;
 
@@ -179,7 +179,19 @@ mod tests {
         assert!(result1.notification_config.is_none());
 
         assert!(device.nodes.get(&1).is_some());
-        assert_eq!(device.nodes.get(&1).unwrap().data.last_heard, 1500);
+
+        // Check time set within a second of current time
+        assert!(
+            get_current_time_u32() - 1000
+                < device
+                    .nodes
+                    .get(&1)
+                    .unwrap()
+                    .last_heard
+                    .as_ref()
+                    .unwrap()
+                    .timestamp
+        );
 
         // Update NodeInfo in device state
 
@@ -195,7 +207,19 @@ mod tests {
         // Assert NodeInfo updated correctly
 
         assert!(device.nodes.get(&1).is_some());
-        assert_eq!(device.nodes.get(&1).unwrap().data.last_heard, 2000);
+
+        // Check time set within a second of current time
+        assert!(
+            get_current_time_u32() - 1000
+                < device
+                    .nodes
+                    .get(&1)
+                    .unwrap()
+                    .last_heard
+                    .as_ref()
+                    .unwrap()
+                    .timestamp
+        );
     }
 
     // #[test]

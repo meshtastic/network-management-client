@@ -7,7 +7,7 @@ use std::collections::HashMap;
 pub fn init_node_map(meshnode_vec: Vec<MeshNode>) -> HashMap<u32, MeshNode> {
     let mut loc_hashmap: HashMap<u32, MeshNode> = HashMap::new();
     for meshnode in meshnode_vec {
-        let node_id = meshnode.data.num;
+        let node_id = meshnode.node_num;
         loc_hashmap.insert(node_id, meshnode);
     }
     loc_hashmap
@@ -15,12 +15,10 @@ pub fn init_node_map(meshnode_vec: Vec<MeshNode>) -> HashMap<u32, MeshNode> {
 
 #[cfg(test)]
 mod tests {
+    use crate::device::NormalizedPosition;
+
     use super::*;
     use app::protobufs;
-
-    fn generate_zeroed_position() -> protobufs::Position {
-        protobufs::Position::default()
-    }
 
     fn generate_test_user() -> protobufs::User {
         protobufs::User {
@@ -33,63 +31,31 @@ mod tests {
         }
     }
 
-    fn generate_zeroed_device_metrics() -> protobufs::DeviceMetrics {
-        protobufs::DeviceMetrics {
-            battery_level: 0,
-            voltage: 0.0,
-            channel_utilization: 0.0,
-            air_util_tx: 0.0,
-        }
-    }
-
     #[test]
     pub fn test_init_node_map() {
-        let meshnode_1: MeshNode = MeshNode {
-            device_metrics: vec![],
-            environment_metrics: vec![],
-            data: protobufs::NodeInfo {
-                num: 1,
-                user: Some(generate_test_user()),
-                position: Some(generate_zeroed_position()),
-                device_metrics: Some(generate_zeroed_device_metrics()),
-                ..Default::default()
-            },
-        };
-        let meshnode_2: MeshNode = MeshNode {
-            device_metrics: vec![],
-            environment_metrics: vec![],
-            data: protobufs::NodeInfo {
-                num: 2,
-                user: Some(generate_test_user()),
-                position: Some(generate_zeroed_position()),
-                device_metrics: Some(generate_zeroed_device_metrics()),
-                ..Default::default()
-            },
-        };
+        let mut meshnode_1 = MeshNode::new(1);
+        meshnode_1.user = Some(generate_test_user());
+        meshnode_1
+            .position_metrics
+            .push(NormalizedPosition::default());
 
-        let meshnode_3 = MeshNode {
-            device_metrics: vec![],
-            environment_metrics: vec![],
-            data: protobufs::NodeInfo {
-                num: 3,
-                user: Some(generate_test_user()),
-                position: Some(generate_zeroed_position()),
-                device_metrics: Some(generate_zeroed_device_metrics()),
-                ..Default::default()
-            },
-        };
+        let mut meshnode_2 = MeshNode::new(2);
+        meshnode_2.user = Some(generate_test_user());
+        meshnode_2
+            .position_metrics
+            .push(NormalizedPosition::default());
 
-        let meshnode_4 = MeshNode {
-            device_metrics: vec![],
-            environment_metrics: vec![],
-            data: protobufs::NodeInfo {
-                num: 4,
-                user: Some(generate_test_user()),
-                position: Some(generate_zeroed_position()),
-                device_metrics: Some(generate_zeroed_device_metrics()),
-                ..Default::default()
-            },
-        };
+        let mut meshnode_3 = MeshNode::new(3);
+        meshnode_3.user = Some(generate_test_user());
+        meshnode_3
+            .position_metrics
+            .push(NormalizedPosition::default());
+
+        let mut meshnode_4 = MeshNode::new(4);
+        meshnode_4.user = Some(generate_test_user());
+        meshnode_4
+            .position_metrics
+            .push(NormalizedPosition::default());
 
         let meshnode_vec = vec![meshnode_1, meshnode_2, meshnode_3, meshnode_4];
         let node_map = init_node_map(meshnode_vec);

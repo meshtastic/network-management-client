@@ -8,6 +8,7 @@ import type { app_device_MeshNode } from "@bindings/index";
 import TableLayout from "@components/Table/TableLayout";
 import { selectAllNodes } from "@features/device/deviceSelectors";
 import { getLastHeardTime } from "@utils/nodes";
+import { formatLocation } from "@utils/map";
 
 const ManageNodePage = () => {
   const nodes = useSelector(selectAllNodes());
@@ -17,14 +18,14 @@ const ManageNodePage = () => {
       {
         id: "ID",
         accessorFn: (n) => {
-          const nodeNum = n.data.num;
+          const { nodeNum } = n;
           if (!nodeNum) return "No user info";
-          return `0x${n.data.num?.toString(16)}`;
+          return `0x${nodeNum?.toString(16)}`;
         },
       },
       {
         id: "Short Name",
-        accessorFn: (n) => n.data.user?.shortName ?? "No user info",
+        accessorFn: (n) => n.user?.shortName ?? "No user info",
       },
       {
         id: "Last Heard",
@@ -40,24 +41,24 @@ const ManageNodePage = () => {
       {
         id: "Latitude",
         accessorFn: (n) => {
-          const latitude = n.data.position?.latitudeI;
+          const latitude = n.positionMetrics.at(-1)?.latitude;
           if (!latitude) return "No GPS lock";
-          return `${latitude / 1e7}`; // TODO add degree symbol
+          return formatLocation(latitude / 1e7);
         },
       },
       {
         id: "Longitude",
         accessorFn: (n) => {
-          const longitude = n.data.position?.longitudeI;
+          const longitude = n.positionMetrics.at(-1)?.longitude;
           if (!longitude) return "No GPS lock";
-          return `${longitude / 1e7}`; // TODO add degree symbol
+          return formatLocation(longitude / 1e7);
         },
       },
       {
         id: "Battery",
         accessorFn: (n) => {
-          const batteryLevel = n.data.deviceMetrics?.batteryLevel;
-          const batteryVoltage = n.data.deviceMetrics?.voltage;
+          const batteryLevel = n.deviceMetrics.at(-1)?.metrics.batteryLevel;
+          const batteryVoltage = n.deviceMetrics.at(-1)?.metrics.voltage;
 
           if (!batteryLevel || !batteryVoltage) return "No battery info";
           return `${batteryVoltage.toPrecision(4)}V (${batteryLevel}%)`;

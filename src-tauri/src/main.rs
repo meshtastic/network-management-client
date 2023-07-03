@@ -139,6 +139,7 @@ fn main() {
             ipc::commands::graph::run_algorithms,
             ipc::commands::mesh::send_text,
             ipc::commands::mesh::send_waypoint,
+            ipc::commands::mesh::delete_waypoint,
             ipc::commands::radio::update_device_config,
             ipc::commands::radio::update_device_user,
             ipc::commands::radio::start_configuration_transaction,

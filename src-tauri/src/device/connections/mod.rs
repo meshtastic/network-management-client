@@ -4,7 +4,7 @@ use prost::Message;
 
 use super::{
     helpers::{generate_rand_id, get_current_time_u32},
-    MeshDevice,
+    MeshDevice, NormalizedWaypoint,
 };
 
 pub mod helpers;
@@ -69,18 +69,19 @@ pub trait MeshConnection {
     async fn send_waypoint(
         &mut self,
         device: &mut MeshDevice,
-        waypoint: protobufs::Waypoint,
+        waypoint: NormalizedWaypoint,
         destination: PacketDestination,
         want_ack: bool,
         channel: u32,
     ) -> Result<(), String> {
-        let mut new_waypoint = waypoint;
+        // Need to convert waypoint into protobuf waypoint to implement prost::Message
+        let mut proto_waypoint: protobufs::Waypoint = waypoint.into();
 
-        // Waypoint with ID of zero denotes a new waypoint; check whether to generate its ID on backend.
-        if new_waypoint.id == 0 {
-            new_waypoint.id = generate_rand_id();
+        // Waypoint with ID of zero denotes a new waypoint; check whether to generate its ID on backend
+        if proto_waypoint.id == 0 {
+            proto_waypoint.id = generate_rand_id();
         }
-        let byte_data = new_waypoint.encode_to_vec();
+        let byte_data = proto_waypoint.encode_to_vec();
 
         self.send_packet(
             device,

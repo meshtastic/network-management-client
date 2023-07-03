@@ -62,7 +62,7 @@ impl MeshConnection for TcpConnection {
                 .map_err(|_e| "Error joining message_processing_handle".to_string())?;
         }
 
-        trace!("Serial handlers fully disconnected");
+        trace!("TCP handlers fully disconnected");
 
         Ok(())
     }

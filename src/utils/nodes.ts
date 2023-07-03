@@ -16,14 +16,13 @@ export const getLastHeardTime = (node: app_device_MeshNode): number | null => {
   const lastEnvironmentMetricTimestamp =
     node.environmentMetrics.at(-1)?.timestamp; // s
 
-  const lastDataTimestamp = node.data.lastHeard; // s
+  const lastDataTimestamp = node.lastHeard?.timestamp; // s
 
   const lastHeard = Math.max(
     lastDeviceMetricTimestamp ?? 0,
     lastEnvironmentMetricTimestamp ?? 0,
-    lastDataTimestamp,
+    lastDataTimestamp ?? 0
   );
-
 
   if (lastHeard === 0) return null;
   return lastHeard;

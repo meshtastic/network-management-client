@@ -2,13 +2,13 @@ use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
+use crate::device::NormalizedPosition;
 use crate::ipc;
 use crate::ipc::helpers::node_index_to_node_id;
 use crate::ipc::APMincutStringResults;
 use crate::ipc::CommandError;
 use crate::state;
 
-use app::protobufs;
 use log::{debug, error, trace};
 use serde::Deserialize;
 use serde::Serialize;
@@ -61,21 +61,19 @@ pub async fn get_node_edges(
             .nodes
             .iter()
             .filter_map(|(num, node)| {
-                let protobufs::NodeInfo { position, .. } = node.data.clone();
-
-                let protobufs::Position {
-                    latitude_i,
-                    longitude_i,
+                let NormalizedPosition {
+                    latitude,
+                    longitude,
                     ..
-                } = position?;
+                } = node.position_metrics.last()?;
 
-                if latitude_i == 0 || longitude_i == 0 {
+                if latitude == &0.0 || longitude == &0.0 {
                     return None;
                 }
 
                 Some((
                     *num,
-                    vec![(longitude_i as f64) / 1e7, (latitude_i as f64) / 1e7],
+                    vec![longitude.clone() as f64, latitude.clone() as f64],
                 ))
             })
             .collect::<Vec<(u32, geojson::Position)>>();

@@ -21,7 +21,7 @@ import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapUIState } from "@features/map/mapSelectors";
 import { mapSliceActions } from "@features/map/mapSlice";
 
-import { MapIDs } from "@utils/map";
+import { MapIDs, getFlyToConfig } from "@utils/map";
 
 interface _INodeSearchDockProps {
   filteredNodes: app_device_MeshNode[];
@@ -51,9 +51,9 @@ const _NodeSearchDock = ({
       <>
         {filteredNodes.map((node) => (
           <NodeSearchResult
-            key={node.data.num}
+            key={node.nodeNum}
             node={node}
-            isActive={node.data.num === activeNodeId}
+            isActive={node.nodeNum === activeNodeId}
             selectNode={handleNodeSelect}
           />
         ))}
@@ -74,12 +74,12 @@ const filterNodes =
 
     const lowercaseQuery = query.toLocaleLowerCase();
 
-    if (String(node.data.num).includes(lowercaseQuery)) return true;
+    if (String(node.nodeNum).includes(lowercaseQuery)) return true;
 
-    if (node.data.user?.shortName.toLocaleLowerCase().includes(lowercaseQuery))
+    if (node.user?.shortName?.toLocaleLowerCase().includes(lowercaseQuery))
       return true;
 
-    if (node.data.user?.longName.toLocaleLowerCase().includes(lowercaseQuery))
+    if (node.user?.longName?.toLocaleLowerCase().includes(lowercaseQuery))
       return true;
 
     return false;
@@ -103,16 +103,17 @@ const NodeSearchDock = () => {
     // Only animate when node is not currently active
     if (isNodeActive) return;
 
-    const foundNode = nodes.find((node) => node.data.num === nodeId);
-    if (!foundNode?.data.position) return;
+    const foundNode = nodes.find((node) => node.nodeNum === nodeId);
+    const nodePosition = foundNode?.positionMetrics.at(-1);
 
-    map?.flyTo({
-      center: [
-        foundNode.data.position.longitudeI / 1e7,
-        foundNode.data.position.latitudeI / 1e7,
-      ],
-      duration: 900,
-    });
+    if (!nodePosition) return;
+
+    map?.flyTo(
+      getFlyToConfig({
+        lat: nodePosition.latitude / 1e7,
+        lng: nodePosition.longitude / 1e7,
+      })
+    );
   };
 
   const setNodeSearchDockExpanded = (isExpanded: boolean) => {

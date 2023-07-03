@@ -6,7 +6,6 @@ import {
   PathStyleExtension,
 } from "@deck.gl/extensions/typed";
 import maplibregl from "maplibre-gl";
-import moment from "moment";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import {
   Map,
@@ -16,30 +15,34 @@ import {
   MapLayerMouseEvent,
   ViewState,
   useControl,
-  MapProvider,
+  Marker,
+  LngLat,
 } from "react-map-gl";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useDebounce } from "react-use";
+import * as Separator from "@radix-ui/react-separator";
+import * as Dialog from "@radix-ui/react-dialog";
+import { MapPin, X } from "lucide-react";
 
-import type { app_protobufs_Waypoint } from "@bindings/index";
+import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
 import AnalyticsPane from "@components/Map/AnalyticsPane";
 import MapInteractionPane from "@components/Map/MapInteractionPane";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
-import Waypoints from "@app/components/Waypoints/Waypoint";
-import WaypointMenu from "@components/Waypoints/WaypointMenu";
-import WaypointMenuEdit from "@components/Waypoints/WaypointMenuEdit";
-import MapNodeTooltip from "@components/Map/MapNodeTooltip";
+import CreateWaypointDialog from "@components/Map/CreateWaypointDialog";
+import MapContextOption from "@components/Map/MapContextOption";
 import MapEdgeTooltip from "@components/Map/MapEdgeTooltip";
+import MapNodeTooltip from "@components/Map/MapNodeTooltip";
+import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
+import WaypointMenu from "@components/Waypoints/WaypointMenu";
 
 import {
   selectActiveNodeId,
+  selectActiveWaypoint,
   selectAllWaypoints,
-  selectAllowOnMapWaypointCreation,
   selectInfoPane,
-  selectPlaceholderWaypoint,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
 import { selectMapState } from "@features/map/mapSelectors";
@@ -66,16 +69,26 @@ const DeckGLOverlay = (props: IDeckGLOverlayProps) => {
 export const MapView = () => {
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId());
-  const { nodesFeatureCollection, edgesFeatureCollection, viewState, config } =
-    useSelector(selectMapState());
   const showInfoPane = useSelector(selectInfoPane());
 
+  const { nodesFeatureCollection, edgesFeatureCollection, viewState, config } =
+    useSelector(selectMapState());
+
   const waypoints = useSelector(selectAllWaypoints());
-  const newWaypointAllowed = useSelector(selectAllowOnMapWaypointCreation());
-  const tempWaypoint = useSelector(selectPlaceholderWaypoint());
+  const activeWaypoint = useSelector(selectActiveWaypoint());
 
   const [nodeHoverInfo, setNodeHoverInfo] = useState<PickingInfo | null>(null);
   const [edgeHoverInfo, setEdgeHoverInfo] = useState<PickingInfo | null>(null);
+  const [isWaypointDialogOpen, setWaypointDialogOpen] = useState(false);
+
+  const [contextMenuEvent, setContextMenuEvent] =
+    useState<MapLayerMouseEvent | null>(null);
+
+  const [editingWaypoint, setEditingWaypoint] =
+    useState<app_device_NormalizedWaypoint | null>(null);
+
+  const [lastRightClickLngLat, setLastRightClickLngLat] =
+    useState<LngLat | null>(null);
 
   const [localViewState, setLocalViewState] =
     useState<Partial<ViewState>>(viewState);
@@ -182,26 +195,14 @@ export const MapView = () => {
     ]
   );
 
-  const handleClick = (e: MapLayerMouseEvent) => {
-    // Can only create new waypoint if the state is toggled
-    if (newWaypointAllowed) {
-      const createdWaypoint: app_protobufs_Waypoint = {
-        id: 0,
-        latitudeI: e.lngLat.lat * 1e7, // Location clicked
-        longitudeI: e.lngLat.lng * 1e7,
-        expire: Math.round(moment().add(1, "years").valueOf() / 1000), // Expires one year from today
-        lockedTo: 0, // Public
-        name: "New Waypoint",
-        description: "",
-        icon: 0, // Default
-      };
+  const handleClick = () => {
+    // Clear right click menu while saving value
+    setContextMenuEvent(null);
+  };
 
-      // Save temporary waypoint in redux, and change the type of popup
-      dispatch(deviceSliceActions.setActiveWaypoint(0));
-      dispatch(deviceSliceActions.setPlaceholderWaypoint(createdWaypoint));
-      dispatch(deviceSliceActions.setInfoPane("waypointEdit"));
-      dispatch(deviceSliceActions.setAllowOnMapWaypointCreation(false));
-    }
+  const handleContextMenu = (e: MapLayerMouseEvent) => {
+    setContextMenuEvent(e);
+    setLastRightClickLngLat(e.lngLat);
   };
 
   useDebounce(
@@ -214,8 +215,19 @@ export const MapView = () => {
     setLocalViewState((prevState) => ({ ...prevState, ...e.viewState }));
   };
 
+  const handleDialogIsOpenChange = (isOpen: boolean) => {
+    setWaypointDialogOpen(isOpen);
+
+    // Unmount waypoint dialog to force state reset on close
+    if (isOpen) return;
+    setLastRightClickLngLat(null);
+  };
+
   return (
-    <MapProvider>
+    <Dialog.Root
+      open={isWaypointDialogOpen}
+      onOpenChange={handleDialogIsOpenChange}
+    >
       <div
         className="relative w-full h-full z-0"
         onContextMenu={(e) => e.preventDefault()}
@@ -232,8 +244,46 @@ export const MapView = () => {
           onZoomEnd={handleUpdateViewState}
           initialViewState={viewState}
           onClick={handleClick}
+          onContextMenu={handleContextMenu}
         >
           <DeckGLOverlay pickingRadius={12} layers={layers} />
+
+          {contextMenuEvent && lastRightClickLngLat && (
+            <Marker
+              latitude={lastRightClickLngLat.lat}
+              longitude={lastRightClickLngLat.lng}
+            >
+              <div className="translate-y-1/2">
+                {/* https://www.kindacode.com/article/how-to-create-triangles-with-tailwind-css-4-examples/ */}
+                <div className="w-full">
+                  <div className="mx-auto w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px] border-b-gray-200 border-r-[6px] border-r-transparent" />
+                </div>
+
+                <div className="flex flex-col gap-2 default-overlay p-2">
+                  <Dialog.Trigger asChild>
+                    <MapContextOption
+                      text="Drop a waypoint here"
+                      renderIcon={(c) => (
+                        <MapPin className={c} strokeWidth={1.5} />
+                      )}
+                    />
+                  </Dialog.Trigger>
+
+                  <Separator.Root
+                    className="h-px w-full bg-gray-200"
+                    decorative
+                    orientation="horizontal"
+                  />
+
+                  <MapContextOption
+                    text="Close menu"
+                    renderIcon={(c) => <X className={c} strokeWidth={1.5} />}
+                    onClick={() => setContextMenuEvent(null)}
+                  />
+                </div>
+              </div>
+            </Marker>
+          )}
 
           {/* Controls at bottom right */}
           <ScaleControl
@@ -241,24 +291,40 @@ export const MapView = () => {
             position="bottom-right"
             unit="imperial"
           />
-          <NavigationControl position="bottom-right" showCompass={false} />
+          <NavigationControl
+            position="bottom-right"
+            showCompass
+            visualizePitch
+          />
 
           {/* Visualize all waypoints */}
           {waypoints
             // Filter invalid locations (falsy lat or long, includes 0,0)
-            .filter((n) => !!n.latitudeI && !!n.longitudeI)
-            .map((waypoint) => (
-              <Waypoints key={waypoint.id} currWaypoint={waypoint} />
+            .filter((w) => !!w.latitude && !!w.longitude)
+            .map((w) => (
+              <MeshWaypoint
+                key={w.id}
+                waypoint={w}
+                isSelected={activeWaypoint?.id === w.id}
+                onClick={() =>
+                  dispatch(
+                    deviceSliceActions.setActiveWaypoint(
+                      activeWaypoint?.id === w.id ? null : w.id
+                    )
+                  )
+                }
+              />
             ))}
-
-          <Waypoints currWaypoint={tempWaypoint} />
         </Map>
 
         {/* Popups */}
         {showInfoPane == "waypoint" ? (
-          <WaypointMenu />
-        ) : showInfoPane == "waypointEdit" ? (
-          <WaypointMenuEdit />
+          <WaypointMenu
+            editWaypoint={(w) => {
+              setWaypointDialogOpen(true);
+              setEditingWaypoint(w);
+            }}
+          />
         ) : showInfoPane == "algos" ? (
           <AnalyticsPane />
         ) : null}
@@ -267,6 +333,24 @@ export const MapView = () => {
         <MapSelectedNodeMenu />
         <MapInteractionPane />
       </div>
-    </MapProvider>
+
+      {(lastRightClickLngLat || editingWaypoint) && (
+        <CreateWaypointDialog
+          lngLat={
+            lastRightClickLngLat ??
+            ({
+              lng: 0,
+              lat: 0,
+            } as LngLat)
+          }
+          closeDialog={() => {
+            setEditingWaypoint(null);
+            setLastRightClickLngLat(null);
+            setWaypointDialogOpen(false);
+          }}
+          existingWaypoint={editingWaypoint}
+        />
+      )}
+    </Dialog.Root>
   );
 };

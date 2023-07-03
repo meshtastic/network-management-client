@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { listen } from "@tauri-apps/api/event";
 import { BrowserRouter } from "react-router-dom";
+import { MapProvider } from "react-map-gl";
 
 import App from "@app/App";
 import { store } from "@store/index";
@@ -48,7 +49,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <App />
+        <MapProvider>
+          <App />
+        </MapProvider>
       </Provider>
     </BrowserRouter>
   </React.StrictMode>

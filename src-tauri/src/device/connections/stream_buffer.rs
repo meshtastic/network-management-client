@@ -53,10 +53,10 @@ impl StreamBuffer {
     /// let buffer = StreamBuffer::new(tx);
     ///
     /// while let Some(message) = stream.try_next().await? {
-    ///    buffer.process_serial_bytes(message);
+    ///    buffer.process_incoming_bytes(message);
     /// }
     /// ```
-    pub fn process_serial_bytes(&mut self, message: Vec<u8>) {
+    pub fn process_incoming_bytes(&mut self, message: Vec<u8>) {
         let mut message = message;
         self.buffer.append(&mut message);
 
@@ -254,7 +254,7 @@ mod tests {
         // Attempt to decode packet
 
         let mut buffer = StreamBuffer::new(mock_tx);
-        buffer.process_serial_bytes(encoded_packet);
+        buffer.process_incoming_bytes(encoded_packet);
 
         assert_eq!(mock_rx.recv().await.unwrap(), packet);
         assert_eq!(buffer.buffer.len(), 0);
@@ -288,7 +288,7 @@ mod tests {
 
         let mut buffer = StreamBuffer::new(mock_tx);
         buffer.buffer.append(&mut encoded_packet1);
-        buffer.process_serial_bytes(encoded_packet2);
+        buffer.process_incoming_bytes(encoded_packet2);
 
         assert_eq!(mock_rx.recv().await.unwrap(), packet1);
         assert_eq!(mock_rx.recv().await.unwrap(), packet2);

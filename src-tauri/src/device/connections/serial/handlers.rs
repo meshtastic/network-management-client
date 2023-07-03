@@ -201,7 +201,7 @@ async fn start_serial_message_processing_worker(
     let mut buffer = StreamBuffer::new(decoded_packet_tx);
 
     while let Some(message) = read_output_rx.recv().await {
-        buffer.process_serial_bytes(message);
+        buffer.process_incoming_bytes(message);
     }
 
     trace!("Serial processing read_output_rx channel closed");

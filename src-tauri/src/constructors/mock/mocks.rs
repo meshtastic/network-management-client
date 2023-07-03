@@ -123,11 +123,8 @@ pub fn mock_meshnode_packets(num_nodes: i32) -> Vec<MeshNode> {
             ..Default::default()
         };
 
-        let meshnode = MeshNode {
-            device_metrics: vec![],
-            environment_metrics: vec![],
-            data: node_info,
-        };
+        let mut meshnode = MeshNode::new(node_id.try_into().expect("Node ID cannot be negative"));
+        meshnode.update_from_node_info(node_info);
 
         meshnode_vec.push(meshnode);
     }
@@ -147,9 +144,15 @@ pub fn mock_edge_map_from_loc_info(
     for (node_id, node) in nodes.iter() {
         for (neighbor_id, neighbor) in nodes.iter() {
             if node_id != neighbor_id && !edge_map.contains_key(&as_key(*neighbor_id, *node_id)) {
-                let distance = get_spherical_distance(Some(node), Some(neighbor));
+                let distance = get_spherical_distance(Some(node), Some(neighbor)).unwrap();
                 if distance < r {
-                    let snr = nodes.get(neighbor_id).unwrap().data.snr;
+                    let snr = nodes
+                        .get(neighbor_id)
+                        .unwrap()
+                        .last_heard
+                        .as_ref()
+                        .unwrap()
+                        .snr;
                     let time = get_current_time_u32();
                     edge_map.insert(as_key(*node_id, *neighbor_id), (snr as f64, time as u64));
                 }
@@ -182,7 +185,7 @@ mod tests {
         let meshnodes = mock_meshnode_packets(3);
         let mut nodes = HashMap::new();
         for node in meshnodes {
-            nodes.insert(node.data.num, node);
+            nodes.insert(node.node_num, node);
         }
         let edge_map = mock_edge_map_from_loc_info(nodes, None);
         println!("{:?}", edge_map);
@@ -194,7 +197,7 @@ mod tests {
         let meshnodes = mock_meshnode_packets(1);
         let mut nodes = HashMap::new();
         for node in meshnodes {
-            nodes.insert(node.data.num, node);
+            nodes.insert(node.node_num, node);
         }
         let edge_map = mock_edge_map_from_loc_info(nodes, None);
         println!("{:?}", edge_map);
@@ -207,7 +210,7 @@ mod tests {
         let meshnodes = mock_meshnode_packets(3);
         let mut nodes = HashMap::new();
         for node in meshnodes {
-            nodes.insert(node.data.num, node);
+            nodes.insert(node.node_num, node);
         }
         let edge_map = mock_edge_map_from_loc_info(nodes, Some(0.00001));
         println!("{:?}", edge_map);

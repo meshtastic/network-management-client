@@ -3,19 +3,17 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type {
   app_device_MeshDevice,
   app_device_MeshNode,
-  app_protobufs_Waypoint,
+  app_device_NormalizedWaypoint,
 } from "@bindings/index";
 
 export interface IDeviceState {
   device: app_device_MeshDevice | null;
-  activeNode: app_device_MeshNode["data"]["num"] | null;
+  activeNode: app_device_MeshNode["nodeNum"] | null;
   availableSerialPorts: string[] | null;
   primaryDeviceKey: string | null; // port or socket ddress
-  activeWaypoint: app_protobufs_Waypoint["id"] | null;
-  allowOnMapWaypointCreation: boolean; // If true, we can create new waypoints from the map
+  activeWaypoint: app_device_NormalizedWaypoint["id"] | null;
   autoConnectPort: string | null; // Port to automatically connect to on startup
-  placeholderWaypoint: app_protobufs_Waypoint | null;
-  infoPane: "waypoint" | "waypointEdit" | "algos" | null;
+  infoPane: "waypoint" | "algos" | null;
 }
 
 export const initialDeviceState: IDeviceState = {
@@ -24,9 +22,7 @@ export const initialDeviceState: IDeviceState = {
   availableSerialPorts: null,
   primaryDeviceKey: null,
   activeWaypoint: null,
-  allowOnMapWaypointCreation: false,
   autoConnectPort: null,
-  placeholderWaypoint: null,
   infoPane: null,
 };
 
@@ -54,7 +50,7 @@ export const deviceSlice = createSlice({
 
     setActiveNode: (
       state,
-      action: PayloadAction<app_device_MeshNode["data"]["num"] | null>
+      action: PayloadAction<app_device_MeshNode["nodeNum"] | null>
     ) => {
       state.activeNode = action.payload;
       if (action.payload) {
@@ -66,7 +62,7 @@ export const deviceSlice = createSlice({
 
     setActiveWaypoint: (
       state,
-      action: PayloadAction<app_protobufs_Waypoint["id"] | null>
+      action: PayloadAction<app_device_NormalizedWaypoint["id"] | null>
     ) => {
       state.activeWaypoint = action.payload;
       if (action.payload) {
@@ -78,7 +74,7 @@ export const deviceSlice = createSlice({
 
     setInfoPane: (
       state,
-      action: PayloadAction<"waypoint" | "waypointEdit" | "algos" | null>
+      action: PayloadAction<"waypoint" | "algos" | null>
     ) => {
       state.infoPane = action.payload;
 
@@ -87,17 +83,6 @@ export const deviceSlice = createSlice({
       } else {
         state.activeWaypoint = null;
       }
-    },
-
-    setPlaceholderWaypoint: (
-      state,
-      action: PayloadAction<app_protobufs_Waypoint | null>
-    ) => {
-      state.placeholderWaypoint = action.payload;
-    },
-
-    setAllowOnMapWaypointCreation: (state, action: PayloadAction<boolean>) => {
-      state.allowOnMapWaypointCreation = action.payload;
     },
 
     setAutoConnectPort: (state, action: PayloadAction<string | null>) => {

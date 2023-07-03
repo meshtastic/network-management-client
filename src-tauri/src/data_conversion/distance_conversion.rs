@@ -11,26 +11,25 @@ use crate::device::MeshNode;
 * Lat/Long: 1e-7 conversion from int to floating point degrees; see mesh.proto
 * Altitude: in meters above sea level, no conversion needed
 */
-pub fn get_spherical_distance(node_1: Option<&MeshNode>, node_2: Option<&MeshNode>) -> f64 {
-    let default_distance = 0.0;
+pub fn get_spherical_distance(node_1: Option<&MeshNode>, node_2: Option<&MeshNode>) -> Option<f64> {
     match (node_1, node_2) {
         (Some(node_1), Some(node_2)) => {
-            let node_1_pos = &node_1.data.position;
-            let node_2_pos = &node_2.data.position;
+            let node_1_pos = &node_1.position_metrics.last();
+            let node_2_pos = &node_2.position_metrics.last();
 
             match (node_1_pos, node_2_pos) {
-                (Some(node_1_pos), Some(node_2_pos)) => total_distance(
-                    node_1_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
-                    node_1_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,
+                (Some(node_1_pos), Some(node_2_pos)) => Some(total_distance(
+                    node_1_pos.latitude as f64 * LAT_CONVERSION_FACTOR,
+                    node_1_pos.longitude as f64 * LON_CONVERSION_FACTOR,
                     node_1_pos.altitude as f64 * ALT_CONVERSION_FACTOR,
-                    node_2_pos.latitude_i as f64 * LAT_CONVERSION_FACTOR,
-                    node_2_pos.longitude_i as f64 * LON_CONVERSION_FACTOR,
+                    node_2_pos.latitude as f64 * LAT_CONVERSION_FACTOR,
+                    node_2_pos.longitude as f64 * LON_CONVERSION_FACTOR,
                     node_2_pos.altitude as f64 * ALT_CONVERSION_FACTOR,
-                ),
-                _ => default_distance,
+                )),
+                _ => None,
             }
         }
-        _ => default_distance,
+        _ => None,
     }
 }
 

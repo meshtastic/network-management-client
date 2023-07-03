@@ -33,7 +33,7 @@ const NodeSearchResult = ({
     <div className="flex flex-row gap-4">
       <div className={`flex-grow ${colorClasses.text}`}>
         <p className="text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
-          {node.data.user?.longName ?? node.data.num}
+          {node.user?.longName ?? node.nodeNum}
           <span className="pl-2 text-xs font-normal">
             {lastPacketTime ? (
               <TimeAgo datetime={lastPacketTime * 1000} locale="en-us" live />
@@ -43,9 +43,10 @@ const NodeSearchResult = ({
           </span>
         </p>
         <p className="text-sm font-light">
-          {!!node.data.position?.latitudeI && !!node.data.position?.longitudeI
-            ? `${node.data.position.latitudeI / 1e7}°, ${
-                node.data.position.longitudeI / 1e7
+          {!!node.positionMetrics.at(-1)?.latitude &&
+          !!node.positionMetrics.at(-1)?.longitude
+            ? `${node.positionMetrics.at(-1)?.latitude ?? ""}°, ${
+                node.positionMetrics.at(-1)?.longitude ?? ""
               }°`
             : "No GPS lock, hidden from map"}
         </p>
@@ -54,13 +55,13 @@ const NodeSearchResult = ({
       {isActive ? (
         <LocateFixed
           className={`w-6 h-6 mx-0 my-auto ${colorClasses.text} hover:cursor-pointer`}
-          onClick={() => selectNode(node.data.num)}
+          onClick={() => selectNode(node.nodeNum)}
           strokeWidth={1.5}
         />
       ) : (
         <Locate
           className={`w-6 h-6 mx-0 my-auto ${colorClasses.text} hover:cursor-pointer`}
-          onClick={() => selectNode(node.data.num)}
+          onClick={() => selectNode(node.nodeNum)}
           strokeWidth={1.5}
         />
       )}

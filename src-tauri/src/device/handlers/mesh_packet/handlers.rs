@@ -4,8 +4,8 @@ use log::debug;
 use crate::device::{
     handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
     helpers::{get_channel_name, get_node_user_name},
-    ChannelMessageState, MeshDevice, NeighborInfoPacket, PositionPacket, TelemetryPacket,
-    TextPacket, UserPacket, WaypointPacket,
+    ChannelMessageState, MeshDevice, NeighborInfoPacket, NormalizedWaypoint, PositionPacket,
+    TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 use prost::Message;
 
@@ -171,10 +171,12 @@ pub fn handle_waypoint_mesh_packet(
     let data = protobufs::Waypoint::decode(data.payload.as_slice())
         .map_err(DeviceUpdateError::DecodeFailure)?;
 
-    device.add_waypoint(data.clone());
+    let converted_data: NormalizedWaypoint = data.into();
+
+    device.add_waypoint(converted_data.clone());
     device.add_waypoint_message(WaypointPacket {
         packet: packet.clone(),
-        data: data.clone(),
+        data: converted_data.clone(),
     });
 
     let from_user_name =
@@ -187,9 +189,7 @@ pub fn handle_waypoint_mesh_packet(
     notification.title = format!("{} in {}", from_user_name, channel_name);
     notification.body = format!(
         "Sent waypoint \"{}\" at {}, {}",
-        data.name,
-        data.latitude_i as f32 / 1e7,
-        data.longitude_i as f32 / 1e7
+        converted_data.name, converted_data.latitude, converted_data.longitude
     );
 
     update_result.device_updated = true;

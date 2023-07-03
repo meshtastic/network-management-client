@@ -50,15 +50,17 @@
   @apply text-xs !important;
 }
 
-/* Zoom Control Buttons */
+/* Zoom Control Buttons and Compass */
 .maplibregl-ctrl-zoom-in,
-.maplibregl-ctrl-zoom-out {
+.maplibregl-ctrl-zoom-out,
+.maplibregl-ctrl-compass {
   width: 40px !important;
   height: 40px !important;
 }
 
-/* Zoom Out Button */
-.maplibregl-ctrl-zoom-out {
+/* Zoom Out Button and Compass */
+.maplibregl-ctrl-zoom-out,
+.maplibregl-ctrl-compass {
   @apply border-t-gray-100 !important;
 }
 

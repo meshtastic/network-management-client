@@ -21,7 +21,7 @@ const DefaultTooltip = ({
       <Tooltip.Root
         open={isOpen}
         onOpenChange={(e) => setIsOpen(e && !deactivated)}
-        delayDuration={300}
+        delayDuration={700}
       >
         <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
