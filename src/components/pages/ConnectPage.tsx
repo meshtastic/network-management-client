@@ -1,4 +1,5 @@
 import React, { FormEventHandler, useEffect, useState } from "react";
+import { useTranslation, Trans } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { open } from "@tauri-apps/api/shell";
 import * as Tabs from "@radix-ui/react-tabs";
@@ -36,6 +37,8 @@ export interface IOnboardPageProps {
 }
 
 const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const autoConnectPort = useSelector(selectAutoConnectPort());
@@ -162,24 +165,42 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
         <div className="flex justify-center mt-10">
           <h1 className="text-4xl font-semibold leading-10 text-gray-800">
-            Connect a radio
+            {t("connectPage.title")}
           </h1>
         </div>
 
         <div className="flex justify-center mt-5">
           <h2 className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
-            Connect a supported Meshtastic radio to your computer via USB serial
-            or via TCP over Ethernet or WiFi. For more detailed instructions,{" "}
-            <button
-              type="button"
-              onClick={() =>
-                void open("https://meshtastic.org/docs/introduction")
-              }
-              className="hover:cursor-pointer hover:text-gray-600 underline"
-            >
-              click here
-            </button>
-            .
+            <Trans
+              i18nKey={"connectPage.supportedRadioBlurb"}
+              // t={t}
+              components={{
+                link: (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      void open("https://meshtastic.org/docs/introduction")
+                    }
+                    className="hover:cursor-pointer hover:text-gray-600 underline"
+                  />
+                ),
+              }}
+            />
+            {/* <Trans i18nKey={"connectPage.supportedRadioBlurb"}>
+              Connect a supported Meshtastic radio to your computer via USB
+              serial or via TCP over Ethernet or WiFi. For more detailed
+              instructions,{" "}
+              <button
+                type="button"
+                onClick={() =>
+                  void open("https://meshtastic.org/docs/introduction")
+                }
+                className="hover:cursor-pointer hover:text-gray-600 underline"
+              >
+                click here
+              </button>
+              .
+            </Trans> */}
           </h2>
         </div>
 
@@ -190,13 +211,13 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
               aria-label="Choose a connection type"
             >
               <ConnectTab
-                label="Serial"
-                tooltip="Connect to your radio via a USB serial cable"
+                label={t("connectPage.tabs.serial.title")}
+                tooltip={t("connectPage.tabs.serial.tooltip")}
                 value={ConnectionType.SERIAL}
               />
               <ConnectTab
-                label="TCP"
-                tooltip="Connect to your radio via Ethernet or WiFi"
+                label={t("connectPage.tabs.tcp.title")}
+                tooltip={t("connectPage.tabs.tcp.tooltip")}
                 value={ConnectionType.TCP}
               />
             </Tabs.List>

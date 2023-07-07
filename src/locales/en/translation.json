@@ -1,0 +1,27 @@
+{
+  "connectPage": {
+    "title": "Connect a radio",
+    "supportedRadioBlurb": "Connect a supported Meshtastic radio to your computer via USB serial or via TCP over Ethernet or WiFi. For more detailed instructions, <link>click here</link>.",
+    "tabs": {
+      "serial": {
+        "title": "Serial",
+        "tooltip": "Connect to your radio via a USB serial cable",
+        "portOption": "Serial port on {{name}}",
+        "empty": "No ports detected.",
+        "refresh": "Refresh ports",
+        "advancedTitle": "Advanced connection options",
+        "baudTitle": "Baud rate",
+        "dtrTitle": "Enable DTR",
+        "rtsTitle": "Enable RTS"
+      },
+      "tcp": {
+        "title": "TCP",
+        "tooltip": "Connect to your radio via Ethernet or WiFi",
+        "ip": "IP address or host name",
+        "port": "Port",
+        "connect": "Connect",
+        "connecting": "Connecting..."
+      }
+    }
+  }
+}
