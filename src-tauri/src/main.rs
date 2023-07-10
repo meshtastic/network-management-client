@@ -110,6 +110,7 @@ fn main() {
     };
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             match handle_cli_matches(app, &mut inital_autoconnect_state) {
                 Ok(_) => {}
