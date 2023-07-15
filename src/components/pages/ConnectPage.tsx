@@ -8,7 +8,14 @@ import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 
 import ConnectTab from "@components/connection/ConnectTab";
+import TcpConnectPane from "@components/connection/TcpConnectPane";
+import SerialConnectPane from "@components/connection/SerialConnectPane";
 
+import {
+  requestFetchLastTcpConnectionMeta,
+  requestPersistLastTcpConnectionMeta,
+} from "@features/appConfig/appConfigActions";
+import { selectPersistedTCPConnectionMeta } from "@features/appConfig/appConfigSelectors";
 import { selectConnectionStatus } from "@features/connection/connectionSelectors";
 import { connectionSliceActions } from "@features/connection/connectionSlice";
 import {
@@ -26,8 +33,6 @@ import { requestSliceActions } from "@features/requests/requestReducer";
 import { ConnectionType } from "@utils/connections";
 
 import "@components/SplashScreen/SplashScreen.css";
-import TcpConnectPane from "../connection/TcpConnectPane";
-import SerialConnectPane from "../connection/SerialConnectPane";
 
 const getFullSocketAddress = (address: string, port: string) =>
   `${address}:${port}`;
@@ -70,12 +75,23 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     status: "IDLE",
   };
 
+  const persistedTCPConnectionMeta = useSelector(
+    selectPersistedTCPConnectionMeta()
+  );
+
   const requestPorts = () => {
     dispatch(requestAvailablePorts());
   };
 
   const handleSocketConnect: FormEventHandler = (e) => {
     e.preventDefault();
+
+    dispatch(
+      requestPersistLastTcpConnectionMeta({
+        address: socketAddress,
+        port: parseInt(socketPort),
+      })
+    );
 
     dispatch(
       requestConnectToDevice({
@@ -115,8 +131,18 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   useEffect(() => {
     dispatch(requestDisconnectFromAllDevices());
     dispatch(requestAutoConnectPort());
+    dispatch(requestFetchLastTcpConnectionMeta());
     requestPorts();
   }, []);
+
+  // Initialize TCP state to persisted state
+  useEffect(() => {
+    if (!persistedTCPConnectionMeta) return;
+
+    const { address, port } = persistedTCPConnectionMeta;
+    setSocketAddress(address);
+    setSocketPort(port.toString());
+  }, [persistedTCPConnectionMeta]);
 
   // Wait to allow user to recognize serial connection succeeded
   useEffect(() => {

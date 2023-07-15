@@ -43,7 +43,7 @@ const ManageNodePage = () => {
         accessorFn: (n) => {
           const latitude = n.positionMetrics.at(-1)?.latitude;
           if (!latitude) return "No GPS lock";
-          return formatLocation(latitude / 1e7);
+          return formatLocation(latitude);
         },
       },
       {
@@ -51,7 +51,7 @@ const ManageNodePage = () => {
         accessorFn: (n) => {
           const longitude = n.positionMetrics.at(-1)?.longitude;
           if (!longitude) return "No GPS lock";
-          return formatLocation(longitude / 1e7);
+          return formatLocation(longitude);
         },
       },
       {

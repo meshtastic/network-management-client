@@ -110,8 +110,8 @@ const NodeSearchDock = () => {
 
     map?.flyTo(
       getFlyToConfig({
-        lat: nodePosition.latitude / 1e7,
-        lng: nodePosition.longitude / 1e7,
+        lat: nodePosition.latitude,
+        lng: nodePosition.longitude,
       })
     );
   };
