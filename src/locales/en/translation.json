@@ -1,4 +1,10 @@
 {
+  "general": {
+    "meshtastic": "Meshtastic",
+    "networkManagement": "Network Management",
+    "client": "Client"
+  },
+
   "connectPage": {
     "title": "Connect a radio",
     "supportedRadioBlurb": "Connect a supported Meshtastic radio to your computer via USB serial or via TCP over Ethernet or WiFi. For more detailed instructions, <linkButton>click here</linkButton>.",
@@ -23,5 +29,22 @@
         "connecting": "Connecting..."
       }
     }
+  },
+  "sidebar": {
+    "overviewGroup": "Overview",
+    "viewMap": "View Map",
+    "messaging": "Messaging",
+    "networkGroup": "Network",
+    "manageNodes": "Manage Nodes",
+    "manageWaypoints": "Manage Waypoints",
+    "configurationGroup": "Configuration",
+    "configureRadio": "Configure Radio",
+    "configureModules": "Configure Modules",
+    "configureChannels": "Configure Channels",
+    "settingsGroup": "Settings",
+    "applicationState": "Application State",
+    "applicationSettings": "Application Settings",
+    "expand": "Expand Sidebar",
+    "collapse": "Collapse Sidebar"
   }
 }

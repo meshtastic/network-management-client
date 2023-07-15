@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
 
 import "@components/Sidebar/Sidebar.css";
@@ -8,6 +9,8 @@ export interface IMeshLogoProps {
 }
 
 const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-row justify-start align-middle h-20 p-4 border-b border-gray-100">
       <img
@@ -18,8 +21,12 @@ const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
         className="sidebar-opacity-transition my-auto pl-4 whitespace-nowrap"
         style={isSidebarExpanded ? { opacity: 1 } : { opacity: 0 }}
       >
-        <p className="text-gray-700 text-sm font-medium">Meshtastic</p>
-        <p className="text-gray-400 text-xs font-normal">Network Management</p>
+        <p className="text-gray-700 text-sm font-medium">
+          {t("general.meshtastic")}
+        </p>
+        <p className="text-gray-400 text-xs font-normal">
+          {t("general.networkManagement")}
+        </p>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import {
   ChevronsLeft,
@@ -24,6 +25,8 @@ import { AppRoutes } from "@utils/routing";
 import "@components/Sidebar/Sidebar.css";
 
 const Sidebar = () => {
+  const { t } = useTranslation();
+
   const [isSidebarExpanded, setSidebarExpanded] = useState(true);
 
   const navigateTo = useNavigate();
@@ -39,9 +42,12 @@ const Sidebar = () => {
 
       <div className="flex flex-col flex-1 justify-between px-4 pt-4 pb-1 overflow-y-auto hide-scrollbar">
         <div className="flex flex-col gap-6 mb-6">
-          <SidebarTab title="Overview" isSidebarExpanded={isSidebarExpanded}>
+          <SidebarTab
+            title={t("sidebar.overviewGroup")}
+            isSidebarExpanded={isSidebarExpanded}
+          >
             <SidebarIcon
-              name="View Map"
+              name={t("sidebar.viewMap")}
               isActive={location.pathname === AppRoutes.MAP}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MAP)}
@@ -50,7 +56,7 @@ const Sidebar = () => {
             </SidebarIcon>
 
             <SidebarIcon
-              name="Messaging"
+              name={t("sidebar.messaging")}
               isActive={location.pathname === AppRoutes.MESSAGING}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MESSAGING)}
@@ -59,9 +65,12 @@ const Sidebar = () => {
             </SidebarIcon>
           </SidebarTab>
 
-          <SidebarTab title="Network" isSidebarExpanded={isSidebarExpanded}>
+          <SidebarTab
+            title={t("sidebar.networkGroup")}
+            isSidebarExpanded={isSidebarExpanded}
+          >
             <SidebarIcon
-              name="Manage Nodes"
+              name={t("sidebar.manageNodes")}
               isActive={location.pathname === AppRoutes.MANAGE_NODES}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MANAGE_NODES)}
@@ -70,7 +79,7 @@ const Sidebar = () => {
             </SidebarIcon>
 
             <SidebarIcon
-              name="Manage Waypoints"
+              name={t("sidebar.manageWaypoints")}
               isActive={location.pathname === AppRoutes.MANAGE_WAYPOINTS}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MANAGE_WAYPOINTS)}
@@ -80,11 +89,11 @@ const Sidebar = () => {
           </SidebarTab>
 
           <SidebarTab
-            title="Configuration"
+            title={t("sidebar.configurationGroup")}
             isSidebarExpanded={isSidebarExpanded}
           >
             <SidebarIcon
-              name="Configure Radio"
+              name={t("sidebar.configureRadio")}
               isActive={location.pathname.includes(AppRoutes.CONFIGURE_RADIO)}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.CONFIGURE_RADIO)}
@@ -93,7 +102,7 @@ const Sidebar = () => {
             </SidebarIcon>
 
             <SidebarIcon
-              name="Configure Modules"
+              name={t("sidebar.configureModules")}
               isActive={location.pathname.includes(AppRoutes.CONFIGURE_MODULES)}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.CONFIGURE_MODULES)}
@@ -102,7 +111,7 @@ const Sidebar = () => {
             </SidebarIcon>
 
             <SidebarIcon
-              name="Configure Channels"
+              name={t("sidebar.configureChannels")}
               isActive={location.pathname.includes(
                 AppRoutes.CONFIGURE_CHANNELS
               )}
@@ -115,9 +124,12 @@ const Sidebar = () => {
         </div>
 
         <div className="">
-          <SidebarTab title="Settings" isSidebarExpanded={isSidebarExpanded}>
+          <SidebarTab
+            title={t("sidebar.settingsGroup")}
+            isSidebarExpanded={isSidebarExpanded}
+          >
             <SidebarIcon
-              name="Application State"
+              name={t("sidebar.applicationState")}
               isActive={location.pathname === AppRoutes.APPLICATION_STATE}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.APPLICATION_STATE)}
@@ -126,7 +138,7 @@ const Sidebar = () => {
             </SidebarIcon>
 
             <SidebarIcon
-              name="Application Settings"
+              name={t("sidebar.applicationSettings")}
               isActive={location.pathname === AppRoutes.APPLICATION_SETTINGS}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.APPLICATION_SETTINGS)}
@@ -141,7 +153,7 @@ const Sidebar = () => {
         <hr className="border-gray-100" />
 
         <SidebarIcon
-          name="Collapse Sidebar"
+          name={isSidebarExpanded ? t("sidebar.expand") : t("sidebar.collapse")}
           isActive={false}
           isSidebarExpanded={isSidebarExpanded}
           onClick={() => setSidebarExpanded(!isSidebarExpanded)}
