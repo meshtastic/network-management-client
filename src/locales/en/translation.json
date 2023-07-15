@@ -2,9 +2,9 @@
   "general": {
     "meshtastic": "Meshtastic",
     "networkManagement": "Network Management",
-    "client": "Client"
+    "client": "Client",
+    "notApplicable": "N/A"
   },
-
   "connectPage": {
     "title": "Connect a radio",
     "supportedRadioBlurb": "Connect a supported Meshtastic radio to your computer via USB serial or via TCP over Ethernet or WiFi. For more detailed instructions, <linkButton>click here</linkButton>.",
@@ -12,7 +12,7 @@
       "serial": {
         "title": "Serial",
         "tooltip": "Connect to your radio via a USB serial cable",
-        "portOption": "Serial port on {{name}}",
+        "portOption": "Serial port on {{portName}}",
         "empty": "No ports detected.",
         "refresh": "Refresh ports",
         "advancedTitle": "Advanced connection options",
@@ -33,9 +33,7 @@
   "sidebar": {
     "overviewGroup": "Overview",
     "viewMap": "View Map",
-    "messaging": "Messaging",
     "networkGroup": "Network",
-    "manageNodes": "Manage Nodes",
     "manageWaypoints": "Manage Waypoints",
     "configurationGroup": "Configuration",
     "configureRadio": "Configure Radio",
@@ -46,5 +44,41 @@
     "applicationSettings": "Application Settings",
     "expand": "Expand Sidebar",
     "collapse": "Collapse Sidebar"
+  },
+  "messaging": {
+    "title": "Messaging",
+    "configureChannels": "Configure Channels",
+    "noChannelsSelected": "No channels selected",
+    "noMessages": "No messages received on this channel",
+    "channelNumber": "(Ch. {{channelNum}})",
+    "unnamedWaypoint": "[Unnamed waypoint]",
+    "waypointInfo": "Waypoint \"{{title}}\" ({{latitude}}, {{longitude}})"
+  },
+  "manageNodes": {
+    "title": "Manage Nodes",
+    "id": "ID",
+    "shortName": "Short Name",
+    "noUserInfo": "No user info",
+    "lastHeard": "Last Heard",
+    "latitude": "Latitude",
+    "noGpsLock": "No GPS Lock",
+    "longitude": "Longitude",
+    "battery": "Battery",
+    "noBatteryInfo": "No battery info"
+  },
+  "manageWaypoints": {
+    "title": "Manage Waypoints",
+    "id": "ID",
+    "name": "Name",
+    "noName": "No name provided",
+    "description": "Description",
+    "noDescription": "No description provided",
+    "expires": "Expires",
+    "doesNotExpire": "Does not expire",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "ownedBy": "Owned by",
+    "notLocked": "Not locked",
+    "unknownOwner": "Unknown owner"
   }
 }

@@ -10,60 +10,63 @@ import {
   selectAllWaypoints,
 } from "@features/device/deviceSelectors";
 import { formatLocation } from "@utils/map";
+import { useTranslation } from "react-i18next";
 
 const ManageWaypointPage = () => {
+  const { t } = useTranslation();
+
   const waypoints = useSelector(selectAllWaypoints());
   const users = useSelector(selectAllUsersByNodeIds());
 
   const columns = useMemo<ColumnDef<app_device_NormalizedWaypoint, unknown>[]>(
     () => [
-      { header: "ID", accessorFn: (n) => n.id },
+      { header: t("manageWaypoints.id"), accessorFn: (n) => n.id },
       {
-        id: "Name",
+        id: t("manageWaypoints.name"),
         accessorFn: (n) => {
           const name = n.name;
-          if (!name) return "No name provided";
+          if (!name) return t("manageWaypoints.noName");
           return name;
         },
       },
       {
-        id: "Description",
+        id: t("manageWaypoints.description"),
         accessorFn: (n) => {
           const description = n.description;
-          if (!description) return "No description provided";
+          if (!description) return t("manageWaypoints.noDescription");
           return description;
         },
       },
       {
-        id: "Expires",
+        id: t("manageWaypoints.expires"),
         accessorFn: (n) => {
           const expireTime = n.expire;
-          if (!expireTime) return "Does not expire";
+          if (!expireTime) return t("manageWaypoints.doesNotExpire");
           return new Date(expireTime * 1000);
         },
       },
       {
-        id: "Latitude",
+        id: t("manageWaypoints.latitude"),
         accessorFn: (n) => {
           const { latitude } = n;
           return formatLocation(latitude);
         },
       },
       {
-        id: "Longitude",
+        id: t("manageWaypoints.longitude"),
         accessorFn: (n) => {
           const { longitude } = n;
           return formatLocation(longitude);
         },
       },
       {
-        id: "Owned by",
+        id: t("manageWaypoints.ownedBy"),
         accessorFn: (n) => {
           const lockedTo = n.lockedTo;
           const owner = users[lockedTo];
 
-          if (!lockedTo) return "Not locked";
-          if (!owner) return "Unknown owner";
+          if (!lockedTo) return t("manageWaypoints.notLocked");
+          if (!owner) return t("manageWaypoints.unknownOwner");
           return owner.longName;
         },
       },
@@ -75,8 +78,8 @@ const ManageWaypointPage = () => {
     <TableLayout
       data={waypoints}
       columns={columns}
-      title="Manage Waypoints"
-      backtrace={["Waypoints"]}
+      title={t("manageWaypoints.title")}
+      backtrace={[t("manageWaypoints.title")]}
     />
   );
 };

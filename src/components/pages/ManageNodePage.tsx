@@ -9,14 +9,17 @@ import TableLayout from "@components/Table/TableLayout";
 import { selectAllNodes } from "@features/device/deviceSelectors";
 import { getLastHeardTime } from "@utils/nodes";
 import { formatLocation } from "@utils/map";
+import { useTranslation } from "react-i18next";
 
 const ManageNodePage = () => {
+  const { t, i18n } = useTranslation();
+
   const nodes = useSelector(selectAllNodes());
 
   const columns = useMemo<ColumnDef<app_device_MeshNode, unknown>[]>(
     () => [
       {
-        id: "ID",
+        id: t("manageNodes.id"),
         accessorFn: (n) => {
           const { nodeNum } = n;
           if (!nodeNum) return "No user info";
@@ -24,43 +27,46 @@ const ManageNodePage = () => {
         },
       },
       {
-        id: "Short Name",
-        accessorFn: (n) => n.user?.shortName ?? "No user info",
+        id: t("manageNodes.shortName"),
+        accessorFn: (n) => n.user?.shortName ?? t("manageNodes.noUserInfo"),
       },
       {
-        id: "Last Heard",
-        header: "Last Heard",
+        id: t("manageNodes.lastHeard"),
+        header: t("manageNodes.lastHeard"),
         cell: ({ row }) => {
           const node = row.original;
           const lastHeardTime = getLastHeardTime(node);
 
           if (!lastHeardTime) return <p>No packets received</p>;
-          return <TimeAgo datetime={lastHeardTime * 1000} />;
+          return (
+            <TimeAgo datetime={lastHeardTime * 1000} locale={i18n.language} />
+          );
         },
       },
       {
-        id: "Latitude",
+        id: t("manageNodes.latitude"),
         accessorFn: (n) => {
           const latitude = n.positionMetrics.at(-1)?.latitude;
-          if (!latitude) return "No GPS lock";
+          if (!latitude) return t("manageNodes.noGpsLock");
           return formatLocation(latitude);
         },
       },
       {
-        id: "Longitude",
+        id: t("manageNodes.longitude"),
         accessorFn: (n) => {
           const longitude = n.positionMetrics.at(-1)?.longitude;
-          if (!longitude) return "No GPS lock";
+          if (!longitude) return t("manageNodes.noGpsLock");
           return formatLocation(longitude);
         },
       },
       {
-        id: "Battery",
+        id: t("manageNodes.battery"),
         accessorFn: (n) => {
           const batteryLevel = n.deviceMetrics.at(-1)?.metrics.batteryLevel;
           const batteryVoltage = n.deviceMetrics.at(-1)?.metrics.voltage;
 
-          if (!batteryLevel || !batteryVoltage) return "No battery info";
+          if (!batteryLevel || !batteryVoltage)
+            return t("manageNodes.noBatteryInfo");
           return `${batteryVoltage.toPrecision(4)}V (${batteryLevel}%)`;
         },
       },
@@ -72,8 +78,8 @@ const ManageNodePage = () => {
     <TableLayout
       data={nodes}
       columns={columns}
-      title="Manage Nodes"
-      backtrace={["Nodes"]}
+      title={t("manageNodes.title")}
+      backtrace={[t("manageNodes.title")]}
     />
   );
 };
