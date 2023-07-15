@@ -1,7 +1,7 @@
 {
   "connectPage": {
     "title": "Connect a radio",
-    "supportedRadioBlurb": "Connect a supported Meshtastic radio to your computer via USB serial or via TCP over Ethernet or WiFi. For more detailed instructions, <link>click here</link>.",
+    "supportedRadioBlurb": "Connect a supported Meshtastic radio to your computer via USB serial or via TCP over Ethernet or WiFi. For more detailed instructions, <linkButton>click here</linkButton>.",
     "tabs": {
       "serial": {
         "title": "Serial",

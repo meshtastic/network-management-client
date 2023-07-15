@@ -199,9 +199,8 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
           <h2 className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
             <Trans
               i18nKey={"connectPage.supportedRadioBlurb"}
-              // t={t}
               components={{
-                link: (
+                linkButton: (
                   <button
                     type="button"
                     onClick={() =>
@@ -212,21 +211,6 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                 ),
               }}
             />
-            {/* <Trans i18nKey={"connectPage.supportedRadioBlurb"}>
-              Connect a supported Meshtastic radio to your computer via USB
-              serial or via TCP over Ethernet or WiFi. For more detailed
-              instructions,{" "}
-              <button
-                type="button"
-                onClick={() =>
-                  void open("https://meshtastic.org/docs/introduction")
-                }
-                className="hover:cursor-pointer hover:text-gray-600 underline"
-              >
-                click here
-              </button>
-              .
-            </Trans> */}
           </h2>
         </div>
 
