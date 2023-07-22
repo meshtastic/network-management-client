@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -35,6 +36,8 @@ const parseRemoteHardwareModuleConfigInput = (
 const RemoteHardwareConfigPage = ({
   className = "",
 }: IRemoteHardwareConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -105,16 +108,16 @@ const RemoteHardwareConfigPage = ({
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Remote Hardware Configuration"}
-        subtitle={"Configure remote network hardware"}
+        title={t("config.module.remoteHardware.title")}
+        subtitle={t("config.module.remoteHardware.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="Remote Hardware Enabled"
+            text={t("config.module.remoteHardware.remoteHardwareEnabled")}
             error={errors.enabled?.message}
             {...register("enabled")}
           />

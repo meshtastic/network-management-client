@@ -56,7 +56,7 @@ const Sidebar = () => {
             </SidebarIcon>
 
             <SidebarIcon
-              name={t("messaging.title")}
+              name={t("sidebar.messaging")}
               isActive={location.pathname === AppRoutes.MESSAGING}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MESSAGING)}
@@ -70,7 +70,7 @@ const Sidebar = () => {
             isSidebarExpanded={isSidebarExpanded}
           >
             <SidebarIcon
-              name={t("manageNodes.title")}
+              name={t("sidebar.manageNodes")}
               isActive={location.pathname === AppRoutes.MANAGE_NODES}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.MANAGE_NODES)}

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -45,6 +46,8 @@ const parsePositionConfigInput = (
 });
 
 const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -116,16 +119,16 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Position Configuration"}
-        subtitle={"Configure device Position settings"}
+        title={t("config.radio.position.title")}
+        subtitle={t("config.radio.position.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="GPS Enabled"
+            text={t("config.radio.position.gpsEnabled")}
             error={errors.gpsEnabled?.message}
             {...register("gpsEnabled")}
           />
@@ -133,14 +136,14 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
           <ConfigInput
             disabled={gpsDisabled}
             type="number"
-            text="Position Broadcast Interval (seconds, 0 = 15m)"
+            text={t("config.radio.position.posBroadcastInterval")}
             error={errors.positionBroadcastSecs?.message}
             {...register("positionBroadcastSecs")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Fixed Position"
+            text={t("config.radio.position.fixedPosition")}
             error={errors.fixedPosition?.message}
             {...register("fixedPosition")}
           />
@@ -151,7 +154,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
           <ConfigInput
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="number"
-            text="GPS Update Interval (seconds, 0 = 30s)"
+            text={t("config.radio.position.gpsUpdateInterval")}
             error={errors.gpsUpdateInterval?.message}
             {...register("gpsUpdateInterval")}
           />
@@ -159,7 +162,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
           <ConfigInput
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="number"
-            text="GPS Attempt Time (seconds, 0 = 30s)"
+            text={t("config.radio.position.gpsAttemptTime")}
             error={errors.gpsAttemptTime?.message}
             {...register("gpsAttemptTime")}
           />
@@ -167,7 +170,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
           <ConfigInput
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="checkbox"
-            text="Enable Smart Position Broadcast"
+            text={t("config.radio.position.enableSmartPosBroadcast")}
             error={errors.positionBroadcastSmartEnabled?.message}
             {...register("positionBroadcastSmartEnabled")}
           />

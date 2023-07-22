@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -36,6 +37,8 @@ const parseDeviceConfigInput = (
 });
 
 const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -88,35 +91,52 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Device Configuration"}
-        subtitle={"Configure hardware device"}
+        title={t("config.radio.device.title")}
+        subtitle={t("config.radio.device.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
-          <ConfigLabel text="Device Role" error={errors.role?.message}>
+          <ConfigLabel
+            text={t("config.radio.device.deviceRole.title")}
+            error={errors.role?.message}
+          >
             <select {...register("role")}>
-              <option value="0">Client</option>
-              <option value="1">Client (Muted)</option>
-              <option value="2">Router</option>
-              <option value="3">Router + Client</option>
-              <option value="4">Repeater</option>
-              <option value="5">Tracker</option>
-              <option value="6">Sensor</option>
+              <option value="0">
+                {t("config.radio.device.deviceRole.client")}
+              </option>
+              <option value="1">
+                {t("config.radio.device.deviceRole.clientMuted")}
+              </option>
+              <option value="2">
+                {t("config.radio.device.deviceRole.router")}
+              </option>
+              <option value="3">
+                {t("config.radio.device.deviceRole.routerClient")}
+              </option>
+              <option value="4">
+                {t("config.radio.device.deviceRole.repeater")}
+              </option>
+              <option value="5">
+                {t("config.radio.device.deviceRole.tracker")}
+              </option>
+              <option value="6">
+                {t("config.radio.device.deviceRole.sensor")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="checkbox"
-            text="Serial Enabled"
+            text={t("config.radio.device.serialEnabled")}
             error={errors.serialEnabled?.message}
             {...register("serialEnabled")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Serial Debug Enabled"
+            text={t("config.radio.device.serialDebugEnabled")}
             error={errors.debugLogEnabled?.message}
             {...register("debugLogEnabled")}
           />
@@ -125,26 +145,32 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           {/* TODO BUZZER GPIO */}
 
           <ConfigLabel
-            text="Rebroadcast Mode"
+            text={t("config.radio.device.rebroadcastMode.title")}
             error={errors.rebroadcastMode?.message}
           >
             <select {...register("rebroadcastMode")}>
-              <option value="0">All</option>
-              <option value="1">All, skip decoding (repeater only)</option>
-              <option value="2">Local Only (Ignores foreign messages)</option>
+              <option value="0">
+                {t("config.radio.device.rebroadcastMode.all")}
+              </option>
+              <option value="1">
+                {t("config.radio.device.rebroadcastMode.allSkipDecoding")}
+              </option>
+              <option value="2">
+                {t("config.radio.device.rebroadcastMode.localOnly")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="number"
-            text="Node Info Broadcast Interval (seconds)"
+            text={t("config.radio.device.nodeInfoBroadcastInterval")}
             error={errors.nodeInfoBroadcastSecs?.message}
             {...register("nodeInfoBroadcastSecs")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Double Tap as Button Press"
+            text={t("config.radio.device.doubleTapButtonPress")}
             error={errors.doubleTapAsButtonPress?.message}
             {...register("doubleTapAsButtonPress")}
           />

@@ -1,7 +1,11 @@
 import React, { useLayoutEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Upload } from "lucide-react";
+
+import type { app_protobufs_LocalConfig } from "@app/bindings";
+import i18next from "@app/i18n";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
@@ -13,7 +17,6 @@ import LoRaConfigPage from "@components/config/device/LoRaConfigPage";
 import NetworkConfigPage from "@components/config/device/NetworkConfigPage";
 import PositionConfigPage from "@components/config/device/PositionConfigPage";
 import PowerConfigPage from "@components/config/device/PowerConfigPage";
-// import UserConfigPage from "@components/config/device/UserConfigPage";
 
 import {
   selectCurrentRadioConfig,
@@ -21,20 +24,24 @@ import {
 } from "@features/config/configSelectors";
 import { requestCommitConfig } from "@features/config/configActions";
 import type { IRadioConfigState } from "@features/config/configSlice";
-import type { app_protobufs_LocalConfig } from "@app/bindings";
 
 export const RadioConfigOptions: Record<keyof IRadioConfigState, string> = {
-  bluetooth: "Bluetooth",
-  device: "Device",
-  display: "Display",
-  lora: "LoRa",
-  network: "Network",
-  position: "Position",
-  power: "Power",
-  // user: "User",
+  bluetooth: i18next.t("config.radio.options.bluetooth"),
+  device: i18next.t("config.radio.options.device"),
+  display: i18next.t("config.radio.options.display"),
+  lora: i18next.t("config.radio.options.lora"),
+  network: i18next.t("config.radio.options.network"),
+  position: i18next.t("config.radio.options.position"),
+  power: i18next.t("config.radio.options.power"),
 };
 
-const switchActiveDetailView = (activeOption: keyof IRadioConfigState) => {
+const _ActiveDetailView = ({
+  activeOption,
+}: {
+  activeOption: keyof IRadioConfigState;
+}) => {
+  const { t } = useTranslation();
+
   switch (activeOption) {
     case "bluetooth":
       return <BluetoothConfigPage />;
@@ -50,12 +57,10 @@ const switchActiveDetailView = (activeOption: keyof IRadioConfigState) => {
       return <PositionConfigPage />;
     case "power":
       return <PowerConfigPage />;
-    // case "user":
-    //   return <UserConfigPage />;
     default:
       return (
         <p className="m-auto text-base font-normal text-gray-700">
-          Unknown option selected
+          {t("config.unknownOption")}
         </p>
       );
   }
@@ -100,6 +105,8 @@ const getNumberOfPendingChanges = (
 };
 
 const RadioConfigPage = () => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
 
   const currentRadioConfig = useSelector(selectCurrentRadioConfig());
@@ -118,10 +125,10 @@ const RadioConfigPage = () => {
   return (
     <div className="flex-1">
       <ConfigLayout
-        title="Radio Config"
-        backtrace={["Radio Configuration"]}
+        title={t("config.radio.title")}
+        backtrace={[t("sidebar.configureRadio")]}
         renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
-        titleIconTooltip="Upload config to device"
+        titleIconTooltip={t("config.uploadChanges")}
         onTitleIconClick={() => dispatch(requestCommitConfig(["radio"]))}
         renderOptions={() =>
           Object.entries(RadioConfigOptions).map(([k, displayName]) => {
@@ -138,7 +145,9 @@ const RadioConfigPage = () => {
               <ConfigOption
                 key={configKey}
                 title={displayName}
-                subtitle={`${pendingChanges} pending changes`}
+                subtitle={t("config.numPendingChanges", {
+                  numChanges: pendingChanges,
+                })}
                 isActive={activeOption === configKey}
                 onClick={() => setActiveOption(configKey)}
               />
@@ -147,7 +156,7 @@ const RadioConfigPage = () => {
         }
       >
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
-          {switchActiveDetailView(activeOption)}
+          <_ActiveDetailView activeOption={activeOption} />
         </div>
       </ConfigLayout>
     </div>

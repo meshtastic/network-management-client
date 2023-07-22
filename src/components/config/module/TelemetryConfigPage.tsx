@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -38,6 +39,8 @@ const parseTelemetryModuleConfigInput = (
 });
 
 const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -109,30 +112,30 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Telemetry Configuration"}
-        subtitle={"Configure device telemetry"}
+        title={t("config.module.telemetry.title")}
+        subtitle={t("config.module.telemetry.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="number"
-            text="Device Metrics Interval (sec)"
+            text={t("config.module.telemetry.deviceMetricsInterval")}
             error={errors.deviceUpdateInterval?.message}
             {...register("deviceUpdateInterval")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Enable Air Quality Measurements"
+            text={t("config.module.telemetry.enableAirQualityMetrics")}
             error={errors.airQualityEnabled?.message}
             {...register("airQualityEnabled")}
           />
 
           <ConfigInput
             type="number"
-            text="Air Quality Update Interval (sec)"
+            text={t("config.module.telemetry.airQualityUpdateInterval")}
             disabled={airQualityDisabled}
             error={errors.airQualityInterval?.message}
             {...register("airQualityInterval")}
@@ -140,14 +143,14 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
 
           <ConfigInput
             type="checkbox"
-            text="Enable Environment Measurements"
+            text={t("config.module.telemetry.enableEnvironmentMetrics")}
             error={errors.environmentMeasurementEnabled?.message}
             {...register("environmentMeasurementEnabled")}
           />
 
           <ConfigInput
             type="number"
-            text="Environment Update Interval (sec)"
+            text={t("config.module.telemetry.environmentUpdateInterval")}
             disabled={envMeasurementDisabled}
             error={errors.environmentUpdateInterval?.message}
             {...register("environmentUpdateInterval")}
@@ -155,7 +158,7 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
 
           <ConfigInput
             type="checkbox"
-            text="Use Fahrenheit for Environment Measurementss"
+            text={t("config.module.telemetry.useFahrenheitForEnvMetrics")}
             disabled={envMeasurementDisabled}
             error={errors.environmentDisplayFahrenheit?.message}
             {...register("environmentDisplayFahrenheit")}
@@ -163,7 +166,7 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
 
           <ConfigInput
             type="checkbox"
-            text="Show Environment Measurements on Device Screen"
+            text={t("config.module.telemetry.showEnvMetricsOnDeviceScreen")}
             disabled={envMeasurementDisabled}
             error={errors.environmentScreenEnabled?.message}
             {...register("environmentScreenEnabled")}

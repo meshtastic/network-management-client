@@ -79,7 +79,7 @@ const ManageNodePage = () => {
       data={nodes}
       columns={columns}
       title={t("manageNodes.title")}
-      backtrace={[t("manageNodes.title")]}
+      backtrace={[t("sidebar.manageNodes")]}
     />
   );
 };

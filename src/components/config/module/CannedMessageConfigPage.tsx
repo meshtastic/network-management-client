@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -41,6 +42,8 @@ const parseCannedMessageModuleConfigInput = (
 const CannedMessageConfigPage = ({
   className = "",
 }: ICannedMessageConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -109,36 +112,46 @@ const CannedMessageConfigPage = ({
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"CannedMessage Configuration"}
-        subtitle={"Configure canned messages"}
+        title={t("config.module.cannedMessages.title")}
+        subtitle={t("config.module.cannedMessages.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="Canned Messages Enabled"
+            text={t("config.module.cannedMessages.cannedMessagesEnabled")}
             error={errors.enabled?.message}
             {...register("enabled")}
           />
 
           <ConfigLabel
-            text="Allow Input Source"
+            text={t("config.module.cannedMessages.allowInputSource.title")}
             error={errors.allowInputSource?.message}
           >
             <select disabled={moduleDisabled} {...register("allowInputSource")}>
-              <option value="">None Selected</option>
-              <option value="_any">Any Peripheral</option>
-              <option value="rotEnc1">3200 bps</option>
-              <option value="upDownEnc1">Up / Down Encoder, RAK14006</option>
-              <option value="cardkb">M5 Stack CardKB</option>
+              <option value="">
+                {t("config.module.cannedMessages.allowInputSource.noSelect")}
+              </option>
+              <option value="_any">
+                {t("config.module.cannedMessages.allowInputSource.any")}
+              </option>
+              <option value="rotEnc1">
+                {t("config.module.cannedMessages.allowInputSource.3200bps")}
+              </option>
+              <option value="upDownEnc1">
+                {t("config.module.cannedMessages.allowInputSource.encoder")}
+              </option>
+              <option value="cardkb">
+                {t("config.module.cannedMessages.allowInputSource.cardKb")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="checkbox"
-            text="Send Bell"
+            text={t("config.module.cannedMessages.sendBell")}
             disabled={moduleDisabled}
             error={errors.sendBell?.message}
             {...register("sendBell")}
@@ -146,7 +159,7 @@ const CannedMessageConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Rotary Encoder Enabled"
+            text={t("config.module.cannedMessages.enableRotaryEncoder")}
             disabled={moduleDisabled}
             error={errors.rotary1Enabled?.message}
             {...register("rotary1Enabled")}
@@ -154,7 +167,7 @@ const CannedMessageConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Up / Down Encoder Enabled"
+            text={t("config.module.cannedMessages.enableUpDownEncoder")}
             disabled={moduleDisabled}
             error={errors.updown1Enabled?.message}
             {...register("updown1Enabled")}
@@ -162,7 +175,7 @@ const CannedMessageConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Input Broker Pin A"
+            text={t("config.module.cannedMessages.brokerA")}
             disabled={moduleDisabled}
             error={errors.inputbrokerPinA?.message}
             {...register("inputbrokerPinA")}
@@ -170,7 +183,7 @@ const CannedMessageConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Input Broker Pin B"
+            text={t("config.module.cannedMessages.brokerB")}
             disabled={moduleDisabled}
             error={errors.inputbrokerPinB?.message}
             {...register("inputbrokerPinB")}
@@ -178,7 +191,7 @@ const CannedMessageConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Input Broker Press Pin"
+            text={t("config.module.cannedMessages.brokerPress")}
             disabled={moduleDisabled}
             error={errors.inputbrokerPinPress?.message}
             {...register("inputbrokerPinPress")}
@@ -186,7 +199,7 @@ const CannedMessageConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Input Broker Event CW"
+            text={t("config.module.cannedMessages.brokerEventCw")}
             disabled={moduleDisabled}
             error={errors.inputbrokerEventCw?.message}
             {...register("inputbrokerEventCw")}
@@ -194,7 +207,7 @@ const CannedMessageConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Input Broker Event CCW"
+            text={t("config.module.cannedMessages.brokerEventCcw")}
             disabled={moduleDisabled}
             error={errors.inputbrokerEventCcw?.message}
             {...register("inputbrokerEventCcw")}
@@ -202,7 +215,7 @@ const CannedMessageConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Fixed Pin (if enabled)"
+            text={t("config.module.cannedMessages.brokerEventPress")}
             disabled={moduleDisabled}
             error={errors.inputbrokerEventPress?.message}
             {...register("inputbrokerEventPress")}

@@ -1,4 +1,5 @@
 import React, { useLayoutEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Upload } from "lucide-react";
@@ -51,6 +52,8 @@ const getNumberOfPendingChanges = (
 };
 
 const ChannelConfigPage = () => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const meshChannels = useSelector(selectDeviceChannels());
 
@@ -77,10 +80,10 @@ const ChannelConfigPage = () => {
   return (
     <div className="flex-1">
       <ConfigLayout
-        title="Channel Config"
-        backtrace={["Channel Configuration"]}
+        title={t("config.channel.title")}
+        backtrace={[t("sidebar.configureChannels")]}
         renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
-        titleIconTooltip="Upload config to device"
+        titleIconTooltip={t("config.uploadChanges")}
         onTitleIconClick={() => dispatch(requestCommitConfig(["channel"]))}
         renderOptions={() =>
           meshChannels.map((c) => {
@@ -94,8 +97,15 @@ const ChannelConfigPage = () => {
             return (
               <ConfigOption
                 key={c.config.index}
-                title={displayName || `Channel ${c.config.index}`}
-                subtitle={`${pendingChanges} pending changes`}
+                title={
+                  displayName ||
+                  t("config.channel.option.title", {
+                    channelIndex: c.config.index,
+                  })
+                }
+                subtitle={t("config.numPendingChanges", {
+                  numChanges: pendingChanges,
+                })}
                 isActive={activeChannelIndex === c.config.index}
                 onClick={() => setActiveChannelIndex(c.config.index)}
               />
@@ -111,7 +121,7 @@ const ChannelConfigPage = () => {
         ) : (
           <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
             <p className="m-auto text-base font-normal text-gray-700">
-              Unknown channel selected
+              {t("config.channel.unkownChannel")}
             </p>
           </div>
         )}

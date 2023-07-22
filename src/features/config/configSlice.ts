@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import merge from "lodash.merge";
-import cloneDeep from 'lodash.clonedeep'
+import cloneDeep from "lodash.clonedeep";
 import type { DeepPartial } from "react-hook-form";
 
 import type {
@@ -12,7 +12,6 @@ import type {
   app_protobufs_config_PositionConfig,
   app_protobufs_config_PowerConfig,
   app_protobufs_module_config_AudioConfig,
-
   app_protobufs_module_config_CannedMessageConfig,
   app_protobufs_module_config_ExternalNotificationConfig,
   app_protobufs_module_config_MqttConfig,
@@ -21,11 +20,8 @@ import type {
   app_protobufs_module_config_SerialConfig,
   app_protobufs_module_config_StoreForwardConfig,
   app_protobufs_module_config_TelemetryConfig,
-
   app_protobufs_Channel,
   app_protobufs_ChannelSettings,
-
-  app_protobufs_User,
 } from "@bindings/index";
 
 export type BluetoothConfigInput = app_protobufs_config_BluetoothConfig;
@@ -37,25 +33,25 @@ export type PositionConfigInput = app_protobufs_config_PositionConfig;
 export type PowerConfigInput = app_protobufs_config_PowerConfig;
 
 export type AudioModuleConfigInput = app_protobufs_module_config_AudioConfig;
-export type CannedMessageModuleConfigInput = app_protobufs_module_config_CannedMessageConfig;
-export type ExternalNotificationModuleConfigInput = app_protobufs_module_config_ExternalNotificationConfig;
+export type CannedMessageModuleConfigInput =
+  app_protobufs_module_config_CannedMessageConfig;
+export type ExternalNotificationModuleConfigInput =
+  app_protobufs_module_config_ExternalNotificationConfig;
 export type MQTTModuleConfigInput = app_protobufs_module_config_MqttConfig;
-export type RangeTestModuleConfigInput = app_protobufs_module_config_RangeTestConfig;
-export type RemoteHardwareModuleConfigInput = app_protobufs_module_config_RemoteHardwareConfig;
+export type RangeTestModuleConfigInput =
+  app_protobufs_module_config_RangeTestConfig;
+export type RemoteHardwareModuleConfigInput =
+  app_protobufs_module_config_RemoteHardwareConfig;
 export type SerialModuleConfigInput = app_protobufs_module_config_SerialConfig;
-export type StoreForwardModuleConfigInput = app_protobufs_module_config_StoreForwardConfig;
-export type TelemetryModuleConfigInput = app_protobufs_module_config_TelemetryConfig;
+export type StoreForwardModuleConfigInput =
+  app_protobufs_module_config_StoreForwardConfig;
+export type TelemetryModuleConfigInput =
+  app_protobufs_module_config_TelemetryConfig;
 
 export type ChannelConfigInput = Omit<
   app_protobufs_ChannelSettings,
   "id" | "channelNum" | "psk"
-> & { psk: string } &
-  Pick<app_protobufs_Channel, "role">;
-
-export type UserConfigInput = Pick<
-  app_protobufs_User,
-  "shortName" | "longName" | "isLicensed"
->;
+> & { psk: string } & Pick<app_protobufs_Channel, "role">;
 
 export interface IRadioConfigState {
   bluetooth: BluetoothConfigInput | null;
@@ -65,7 +61,6 @@ export interface IRadioConfigState {
   network: NetworkConfigInput | null;
   position: PositionConfigInput | null;
   power: PowerConfigInput | null;
-  // user: UserConfigInput | null;
 }
 
 export interface IModuleConfigState {
@@ -143,8 +138,16 @@ export const configSlice = createSlice({
       state.module = initialConfigState.module;
     },
 
-    updateChannelConfig: (state, action: PayloadAction<{ channelNum: number, config: DeepPartial<ChannelConfigInput> | null }[]>) => {
-      const updatedPartialConfig: Record<number, DeepPartial<ChannelConfigInput> | null> = {};
+    updateChannelConfig: (
+      state,
+      action: PayloadAction<
+        { channelNum: number; config: DeepPartial<ChannelConfigInput> | null }[]
+      >
+    ) => {
+      const updatedPartialConfig: Record<
+        number,
+        DeepPartial<ChannelConfigInput> | null
+      > = {};
 
       for (const entry of action.payload) {
         const { channelNum, config } = entry;
@@ -153,7 +156,6 @@ export const configSlice = createSlice({
         // This is a limitation of Object.entries
         updatedPartialConfig[channelNum] = config;
       }
-
 
       state.channel = merge(cloneDeep(state.channel), updatedPartialConfig);
     },

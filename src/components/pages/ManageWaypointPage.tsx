@@ -79,7 +79,7 @@ const ManageWaypointPage = () => {
       data={waypoints}
       columns={columns}
       title={t("manageWaypoints.title")}
-      backtrace={[t("manageWaypoints.title")]}
+      backtrace={[t("sidebar.manageWaypoints")]}
     />
   );
 };

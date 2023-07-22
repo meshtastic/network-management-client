@@ -25,7 +25,7 @@ const MessagingPage = () => {
     <div className="flex-1">
       <ConfigLayout
         title={t("messaging.title")}
-        backtrace={[t("messaging.title")]}
+        backtrace={[t("sidebar.messaging")]}
         renderTitleIcon={(c) => <Cog6ToothIcon className={`${c}`} />}
         titleIconTooltip={t("messaging.configureChannels")}
         onTitleIconClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}

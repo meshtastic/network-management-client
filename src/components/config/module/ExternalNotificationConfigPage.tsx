@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -40,6 +41,8 @@ const parseExternalNotificationModuleConfigInput = (
 const ExternalNotificationConfigPage = ({
   className = "",
 }: IExternalNotificationConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -124,23 +127,23 @@ const ExternalNotificationConfigPage = ({
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"ExternalNotification Configuration"}
-        subtitle={"Configure external notifications"}
+        title={t("config.module.externalNotification.title")}
+        subtitle={t("config.module.externalNotification.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="External Notification Enabled"
+            text={t("config.module.externalNotification.extNotEnabled")}
             error={errors.enabled?.message}
             {...register("enabled")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Active High LED"
+            text={t("config.module.externalNotification.activeHighLed")}
             disabled={moduleDisabled}
             error={errors.active?.message}
             {...register("active")}
@@ -148,7 +151,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Enable Bell Alerts"
+            text={t("config.module.externalNotification.enableBellAlerts")}
             disabled={moduleDisabled}
             error={errors.alertBell?.message}
             {...register("alertBell")}
@@ -156,7 +159,9 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Enable Bell Vibrate Alert"
+            text={t(
+              "config.module.externalNotification.enableBellVibrateAlert"
+            )}
             disabled={moduleDisabled || bellAlertsDisabled}
             error={errors.alertBellVibra?.message}
             {...register("alertBellVibra")}
@@ -164,7 +169,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Enable Bell Buzzer Alert"
+            text={t("config.module.externalNotification.enableBellBuzzerAlert")}
             disabled={moduleDisabled || bellAlertsDisabled}
             error={errors.alertBellBuzzer?.message}
             {...register("alertBellBuzzer")}
@@ -172,7 +177,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Enable Message Alerts"
+            text={t("config.module.externalNotification.enableMessageAlerts")}
             disabled={moduleDisabled}
             error={errors.alertMessage?.message}
             {...register("alertMessage")}
@@ -180,7 +185,9 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Enable Message Vibrate Alert"
+            text={t(
+              "config.module.externalNotification.enableMessageVibrateAlert"
+            )}
             disabled={moduleDisabled || messageAlertsDisabled}
             error={errors.alertMessageVibra?.message}
             {...register("alertMessageVibra")}
@@ -188,7 +195,9 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Enable Message Buzzer Alert"
+            text={t(
+              "config.module.externalNotification.enableMessageBuzzerAlert"
+            )}
             disabled={moduleDisabled || messageAlertsDisabled}
             error={errors.alertMessageBuzzer?.message}
             {...register("alertMessageBuzzer")}
@@ -196,7 +205,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Alert LED Pin"
+            text={t("config.module.externalNotification.alertLedPin")}
             disabled={moduleDisabled}
             error={errors.output?.message}
             {...register("output")}
@@ -204,7 +213,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Alert Vibrate Pin"
+            text={t("config.module.externalNotification.alertVibratePin")}
             disabled={moduleDisabled}
             error={errors.outputVibra?.message}
             {...register("outputVibra")}
@@ -212,7 +221,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Alert Buzzer Pin"
+            text={t("config.module.externalNotification.alertBuzzerPin")}
             disabled={moduleDisabled}
             error={errors.outputBuzzer?.message}
             {...register("outputBuzzer")}
@@ -220,7 +229,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="checkbox"
-            text="Enable Buzzer PWM"
+            text={t("config.module.externalNotification.enableBuzzerPwm")}
             disabled={moduleDisabled}
             error={errors.usePwm?.message}
             {...register("usePwm")}
@@ -228,7 +237,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Alert Duration (0 = 1000ms)"
+            text={t("config.module.externalNotification.alertDuration")}
             disabled={moduleDisabled}
             error={errors.outputMs?.message}
             {...register("outputMs")}
@@ -236,7 +245,7 @@ const ExternalNotificationConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Alert Nag Duration (0 = off)"
+            text={t("config.module.externalNotification.alertNagDuration")}
             disabled={moduleDisabled}
             error={errors.nagTimeout?.message}
             {...register("nagTimeout")}

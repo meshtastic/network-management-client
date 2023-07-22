@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -42,6 +43,8 @@ const parseLoRaConfigInput = (
 });
 
 const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -113,56 +116,80 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"LoRa Configuration"}
-        subtitle={"Configure device LoRa connection"}
+        title={t("config.radio.lora.title")}
+        subtitle={t("config.radio.lora.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
-          <ConfigLabel text="Region" error={errors.region?.message}>
+          <ConfigLabel
+            text={t("config.radio.lora.region.title")}
+            error={errors.region?.message}
+          >
             <select {...register("region")}>
-              <option value="0">UNSET</option>
-              <option value="1">US</option>
-              <option value="2">EU (433 MHz)</option>
-              <option value="3">EU (868 MHz)</option>
-              <option value="4">China</option>
-              <option value="5">Japan</option>
-              <option value="6">Australia + New Zealand</option>
-              <option value="7">Korea</option>
-              <option value="8">Taiwan</option>
-              <option value="9">Russia</option>
-              <option value="10">India</option>
-              <option value="11">New Zealand (865 MHz)</option>
-              <option value="12">Ukraine (433 MHz)</option>
-              <option value="13">Thailand</option>
-              <option value="14">2.4 GHz (worldwide)</option>
+              <option value="0">{t("config.radio.lora.region.unset")}</option>
+              <option value="1">{t("config.radio.lora.region.us")}</option>
+              <option value="2">{t("config.radio.lora.region.eu433")}</option>
+              <option value="3">{t("config.radio.lora.region.eu868")}</option>
+              <option value="4">{t("config.radio.lora.region.china")}</option>
+              <option value="5">{t("config.radio.lora.region.japan")}</option>
+              <option value="6">{t("config.radio.lora.region.auNz")}</option>
+              <option value="7">{t("config.radio.lora.region.korea")}</option>
+              <option value="8">{t("config.radio.lora.region.taiwan")}</option>
+              <option value="9">{t("config.radio.lora.region.russia")}</option>
+              <option value="10">{t("config.radio.lora.region.india")}</option>
+              <option value="11">{t("config.radio.lora.region.nz865")}</option>
+              <option value="12">
+                {t("config.radio.lora.region.ukraine")}
+              </option>
+              <option value="13">
+                {t("config.radio.lora.region.thailand")}
+              </option>
+              <option value="14">{t("config.radio.lora.region.24ghz")}</option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="checkbox"
-            text="Use Modem Preset"
+            text={t("config.radio.lora.useModemPreset")}
             error={errors.usePreset?.message}
             {...register("usePreset")}
           />
 
-          <ConfigLabel text="Modem Preset" error={errors.modemPreset?.message}>
+          <ConfigLabel
+            text={t("config.radio.lora.modemPreset.title")}
+            error={errors.modemPreset?.message}
+          >
             <select disabled={!useModemPreset} {...register("modemPreset")}>
-              <option value="0">Long Fast</option>
-              <option value="1">Long Slow</option>
-              <option value="2">Very Long Slow</option>
-              <option value="3">Medium Slow</option>
-              <option value="4">Short Slow</option>
-              <option value="5">Short Fast</option>
-              <option value="6">Long Moderate</option>
+              <option value="0">
+                {t("config.radio.lora.modemPreset.longFast")}
+              </option>
+              <option value="1">
+                {t("config.radio.lora.modemPreset.longSlow")}
+              </option>
+              <option value="2">
+                {t("config.radio.lora.modemPreset.veryLongSlow")}
+              </option>
+              <option value="3">
+                {t("config.radio.lora.modemPreset.medSlow")}
+              </option>
+              <option value="4">
+                {t("config.radio.lora.modemPreset.shortSlow")}
+              </option>
+              <option value="5">
+                {t("config.radio.lora.modemPreset.shortFast")}
+              </option>
+              <option value="6">
+                {t("config.radio.lora.modemPreset.longModerate")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             disabled={useModemPreset}
             type="number"
-            text="Bandwidth (kHz)"
+            text={t("config.radio.lora.bandwidth")}
             error={errors.bandwidth?.message}
             {...register("bandwidth")}
           />
@@ -170,7 +197,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           <ConfigInput
             disabled={useModemPreset}
             type="number"
-            text="Spread Factor (1 << spread_factor)"
+            text={t("config.radio.lora.spreadFactor")}
             error={errors.spreadFactor?.message}
             {...register("spreadFactor")}
           />
@@ -178,28 +205,28 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           <ConfigInput
             disabled={useModemPreset}
             type="number"
-            text="Coding Rate (4 / coding_rate)"
+            text={t("config.radio.lora.codingRate")}
             error={errors.codingRate?.message}
             {...register("codingRate")}
           />
 
           <ConfigInput
             type="number"
-            text="Frequency Offset (Hz)"
+            text={t("config.radio.lora.freqOffset")}
             error={errors.frequencyOffset?.message}
             {...register("frequencyOffset")}
           />
 
           <ConfigInput
             type="number"
-            text="Hop Limit"
+            text={t("config.radio.lora.hopLimit")}
             error={errors.hopLimit?.message}
             {...register("hopLimit")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Transmit Enabled"
+            text={t("config.radio.lora.txEnabled")}
             error={errors.txEnabled?.message}
             {...register("txEnabled")}
           />
@@ -207,7 +234,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           <ConfigInput
             disabled={!txEnabled}
             type="number"
-            text="Transmit Power"
+            text={t("config.radio.lora.txPower")}
             error={errors.txPower?.message}
             {...register("txPower")}
           />
@@ -215,14 +242,14 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           <ConfigInput
             disabled={!txEnabled}
             type="number"
-            text="LoRa Channel Number"
+            text={t("config.radio.lora.loraChannel")}
             error={errors.channelNum?.message}
             {...register("channelNum")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Override EU Duty Cycle"
+            text={t("config.radio.lora.euOverride")}
             error={errors.overrideDutyCycle?.message}
             {...register("overrideDutyCycle")}
           />

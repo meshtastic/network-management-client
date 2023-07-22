@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -41,6 +42,8 @@ const parseDisplayConfigInput = (
 });
 
 const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -93,87 +96,131 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Display Configuration"}
-        subtitle={"Configure device display"}
+        title={t("config.radio.display.title")}
+        subtitle={t("config.radio.display.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="number"
-            text="Screen Auto Scroll (seconds)"
+            text={t("config.radio.display.autoScrollInterval")}
             error={errors.autoScreenCarouselSecs?.message}
             {...register("autoScreenCarouselSecs")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Force North to Screen Top"
+            text={t("config.radio.display.forceNorthToTop")}
             error={errors.compassNorthTop?.message}
             {...register("compassNorthTop")}
           />
 
-          <ConfigLabel text="displaymode" error={errors.displaymode?.message}>
+          <ConfigLabel
+            text={t("config.radio.display.displayMode.title")}
+            error={errors.displaymode?.message}
+          >
             <select {...register("displaymode")}>
-              <option value="0">Default</option>
-              <option value="1">Two Color</option>
-              <option value="2">Inverted</option>
-              <option value="3">Color</option>
+              <option value="0">
+                {t("config.radio.display.displayMode.default")}
+              </option>
+              <option value="1">
+                {t("config.radio.display.displayMode.twoColor")}
+              </option>
+              <option value="2">
+                {t("config.radio.display.displayMode.inverted")}
+              </option>
+              <option value="3">
+                {t("config.radio.display.displayMode.color")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="checkbox"
-            text="Flip Screen"
+            text={t("config.radio.display.flipScreen")}
             error={errors.flipScreen?.message}
             {...register("flipScreen")}
           />
 
-          <ConfigLabel text="gpsFormat" error={errors.gpsFormat?.message}>
+          <ConfigLabel
+            text={t("config.radio.display.gpsFormat.title")}
+            error={errors.gpsFormat?.message}
+          >
             <select {...register("gpsFormat")}>
-              <option value="0">Decimal</option>
-              <option value="1">DMS</option>
-              <option value="2">UTM</option>
-              <option value="3">MGRS</option>
-              <option value="4">OLC</option>
-              <option value="5">OSGR</option>
+              <option value="0">
+                {t("config.radio.display.gpsFormat.decimal")}
+              </option>
+              <option value="1">
+                {t("config.radio.display.gpsFormat.dms")}
+              </option>
+              <option value="2">
+                {t("config.radio.display.gpsFormat.utm")}
+              </option>
+              <option value="3">
+                {t("config.radio.display.gpsFormat.mgrs")}
+              </option>
+              <option value="4">
+                {t("config.radio.display.gpsFormat.olc")}
+              </option>
+              <option value="5">
+                {t("config.radio.display.gpsFormat.osgr")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="checkbox"
-            text="Bold Heading"
+            text={t("config.radio.display.boldHeading")}
             error={errors.headingBold?.message}
             {...register("headingBold")}
           />
 
-          <ConfigLabel text="oled" error={errors.oled?.message}>
+          <ConfigLabel
+            text={t("config.radio.display.oledConfig.title")}
+            error={errors.oled?.message}
+          >
             <select {...register("oled")}>
-              <option value="0">OLED Auto</option>
-              <option value="1">OLED SSD1306</option>
-              <option value="2">OLED SH1106</option>
-              <option value="3">OLED SH1107</option>
+              <option value="0">
+                {t("config.radio.display.oledConfig.autoDetect")}
+              </option>
+              <option value="1">
+                {t("config.radio.display.oledConfig.ssd1306")}
+              </option>
+              <option value="2">
+                {t("config.radio.display.oledConfig.sh1106")}
+              </option>
+              <option value="3">
+                {t("config.radio.display.oledConfig.sh1107")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="number"
-            text="Screen On Duration (sec)"
+            text={t("config.radio.display.screenOnDuration")}
             error={errors.screenOnSecs?.message}
             {...register("screenOnSecs")}
           />
 
-          <ConfigLabel text="units" error={errors.units?.message}>
+          <ConfigLabel
+            text={t("config.radio.display.units.title")}
+            error={errors.units?.message}
+          >
             <select {...register("units")}>
-              <option value="0">Metric</option>
-              <option value="1">Imperial</option>
+              <option value="0">
+                {t("config.radio.display.units.metric")}
+              </option>
+              <option value="1">
+                {t("config.radio.display.units.imperial")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="checkbox"
-            text="Wake on Tap or Motion"
+            text={t("config.radio.display.wakeOnMotion")}
             error={errors.wakeOnTapOrMotion?.message}
             {...register("wakeOnTapOrMotion")}
           />
