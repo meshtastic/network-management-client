@@ -8,8 +8,12 @@
     "unknown": "UNK",
     "wip": "Unimplemented, work in progress"
   },
+  "splashPage": {
+    "photoAttribution": "Photo by <link1>Caleb Riston</link1> on <link2>Unsplash</link2>"
+  },
   "connectPage": {
     "title": "Connect a radio",
+    "photoAttribution": "Photo by <link1>Jordan Steranka</link1> on <link2>Unsplash</link2>",
     "supportedRadioBlurb": "Connect a supported Meshtastic radio to your computer via USB serial or via TCP over Ethernet or WiFi. For more detailed instructions, <linkButton>click here</linkButton>.",
     "tabs": {
       "serial": {

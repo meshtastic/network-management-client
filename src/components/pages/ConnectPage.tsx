@@ -270,24 +270,27 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
           src={Hero_Image}
         />
         <p className="landing-screen-opacity-transition absolute bottom-3 right-3 text-right text-sm text-gray-600">
-          Photo by{" "}
-          <button
-            className="hover:underline"
-            onClick={openExternalLink(
-              "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-            )}
-          >
-            Jordan Steranka
-          </button>{" "}
-          on{" "}
-          <button
-            className="hover:underline"
-            onClick={openExternalLink(
-              "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-            )}
-          >
-            Unsplash
-          </button>
+          <Trans
+            i18nKey={"connectPage.photoAttribution"}
+            components={{
+              link1: (
+                <button
+                  className="hover:underline"
+                  onClick={openExternalLink(
+                    "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                  )}
+                />
+              ),
+              link2: (
+                <button
+                  className="hover:underline"
+                  onClick={openExternalLink(
+                    "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                  )}
+                />
+              ),
+            }}
+          />
         </p>
       </div>
     </div>
