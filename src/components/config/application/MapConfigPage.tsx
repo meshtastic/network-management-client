@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import type { FormEventHandler } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -19,6 +20,8 @@ type MapConfigFormInput = {
 };
 
 const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const { config } = useSelector(selectMapState());
 
@@ -42,16 +45,16 @@ const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title="Map Settings"
-        subtitle="Edit application map settings"
+        title={t("applicationSettings.map.title")}
+        subtitle={t("applicationSettings.map.description")}
         renderIcon={(c) => <Save strokeWidth={1.5} className={`${c}`} />}
-        buttonTooltipText="Save changes"
+        buttonTooltipText={t("applicationSettings.saveChanges")}
         buttonProps={{ type: "submit", form: formId }}
       >
         <form id={formId} onSubmit={handleFormSubmit}>
           <ConfigInput
             type="url"
-            text="Mapbox Map Style"
+            text={t("applicationSettings.map.mapboxStyle")}
             error={errors.style?.message}
             {...register("style")}
           />

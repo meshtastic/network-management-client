@@ -1,15 +1,20 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Construction } from "lucide-react";
+
+import i18next from "@app/i18n";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
-import MapConfigPage from "@app/components/config/application/MapConfigPage";
+import MapConfigPage from "@components/config/application/MapConfigPage";
 
 export const ApplicationSettingsOptions = {
-  map: "Map Settings",
+  map: i18next.t("applicationSettings.options.map"),
 };
 
-const switchActiveOption = (activeOption: string) => {
+const _ActiveOption = ({ activeOption }: { activeOption: string }) => {
+  const { t } = useTranslation();
+
   switch (activeOption) {
     case "map":
       return <MapConfigPage />;
@@ -17,7 +22,7 @@ const switchActiveOption = (activeOption: string) => {
       return (
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
           <p className="m-auto text-base font-normal text-gray-700">
-            Unknown option selected
+            {t("applicationSettings.unknownOption")}
           </p>
         </div>
       );
@@ -25,21 +30,21 @@ const switchActiveOption = (activeOption: string) => {
 };
 
 const ApplicationSettingsPage = () => {
+  const { t } = useTranslation();
+
   const [activeOption, setActiveOption] =
     useState<keyof typeof ApplicationSettingsOptions>("map");
 
   return (
     <div className="flex-1">
       <ConfigLayout
-        title="Settings"
-        backtrace={["Application Settings"]}
+        title={t("applicationSettings.title")}
+        backtrace={[t("sidebar.applicationSettings")]}
         renderTitleIcon={(c) => (
           <Construction strokeWidth={1.5} className={`${c}`} />
         )}
-        titleIconTooltip="Unimplemented, work in progress"
-        onTitleIconClick={() =>
-          console.warn("Radio configuration title icon onClick not implemented")
-        }
+        titleIconTooltip={t("general.wip")}
+        onTitleIconClick={() => console.warn(t("general.wip"))}
         renderOptions={() =>
           Object.entries(ApplicationSettingsOptions).map(([k, displayName]) => (
             <ConfigOption
@@ -54,7 +59,7 @@ const ApplicationSettingsPage = () => {
           ))
         }
       >
-        {switchActiveOption(activeOption)}
+        <_ActiveOption activeOption={activeOption} />
       </ConfigLayout>
     </div>
   );

@@ -1,13 +1,16 @@
 import React from "react";
-import ReactJson from "react-json-view";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
+import ReactJson from "react-json-view";
 
+import NavigationBacktrace from "@components/NavigationBacktrace";
 import { selectRootState } from "@features/device/deviceSelectors";
-import NavigationBacktrace from "../NavigationBacktrace";
 
 const ApplicationStatePage = () => {
+  const { t } = useTranslation();
+
   const rootState = useSelector(selectRootState());
-  const backtrace = ["Application State"];
+  const backtrace = [t("applicationState.title")];
 
   return (
     <div className="flex flex-col w-full h-screen">

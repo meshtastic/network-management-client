@@ -5,7 +5,8 @@
     "client": "Client",
     "notApplicable": "N/A",
     "goHome": "Go home",
-    "unknown": "UNK"
+    "unknown": "UNK",
+    "wip": "Unimplemented, work in progress"
   },
   "connectPage": {
     "title": "Connect a radio",
@@ -49,6 +50,7 @@
     "expand": "Expand Sidebar",
     "collapse": "Collapse Sidebar"
   },
+  "map": {},
   "messaging": {
     "title": "Messaging",
     "configureChannels": "Configure Channels",
@@ -392,6 +394,20 @@
         "uplinkEnabled": "Uplink Enabled (MQTT)",
         "downlinkEnabled": "Downlink Enabled (MQTT`)"
       }
+    }
+  },
+  "applicationState": { "title": "Application State" },
+  "applicationSettings": {
+    "title": "Settings",
+    "saveChanges": "Save Changes",
+    "unknownOption": "Unknown option selected",
+    "options": {
+      "map": "Map Settings"
+    },
+    "map": {
+      "title": "Map Settings",
+      "description": "Edit application map settings",
+      "mapboxStyle": "Mapbox Map Style"
     }
   }
 }
