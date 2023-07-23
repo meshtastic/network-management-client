@@ -99,7 +99,10 @@ const SerialPortOption = ({
             <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-3 pb-3 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg hover:cursor-pointer">
               <XCircleIcon className="text-gray-500 w-6 h-6" />
               <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
-                <Trans i18nKey="portOption">Serial port on {{ name }}</Trans>
+                <Trans
+                  i18nKey="connectPage.tabs.serial.portOption"
+                  values={{ portName: name }}
+                />
               </h1>
             </div>
           </div>

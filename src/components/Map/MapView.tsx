@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { GeoJsonLayer, PickingInfo } from "deck.gl/typed";
 import {
@@ -26,8 +27,9 @@ import { MapPin, X } from "lucide-react";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import AnalyticsPane from "@components/Map/AnalyticsPane";
-import MapInteractionPane from "@components/Map/MapInteractionPane";
+// * Note: hiding until reimplementation
+// import AnalyticsPane from "@components/Map/AnalyticsPane";
+// import MapInteractionPane from "@components/Map/MapInteractionPane";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
 import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
@@ -67,6 +69,8 @@ const DeckGLOverlay = (props: IDeckGLOverlayProps) => {
 };
 
 export const MapView = () => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId());
   const showInfoPane = useSelector(selectInfoPane());
@@ -235,6 +239,7 @@ export const MapView = () => {
         {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
         {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
 
+        {/* Map translation is a pain, assuming users will use translated map tiles https://maplibre.org/maplibre-gl-js/docs/examples/language-switch/ */}
         <Map
           id={MapIDs.MapView}
           reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
@@ -262,7 +267,7 @@ export const MapView = () => {
                 <div className="flex flex-col gap-2 default-overlay p-2">
                   <Dialog.Trigger asChild>
                     <MapContextOption
-                      text="Drop a waypoint here"
+                      text={t("map.contextMenu.dropWaypoint")}
                       renderIcon={(c) => (
                         <MapPin className={c} strokeWidth={1.5} />
                       )}
@@ -276,7 +281,7 @@ export const MapView = () => {
                   />
 
                   <MapContextOption
-                    text="Close menu"
+                    text={t("map.contextMenu.close")}
                     renderIcon={(c) => <X className={c} strokeWidth={1.5} />}
                     onClick={() => setContextMenuEvent(null)}
                   />
@@ -325,13 +330,15 @@ export const MapView = () => {
               setEditingWaypoint(w);
             }}
           />
-        ) : showInfoPane == "algos" ? (
-          <AnalyticsPane />
-        ) : null}
+        ) : // : showInfoPane == "algos" ? (
+        //   <AnalyticsPane />
+        // )
+        null}
 
         <NodeSearchDock />
         <MapSelectedNodeMenu />
-        <MapInteractionPane />
+        {/* Note: hiding algos until reimplementation */}
+        {/* <MapInteractionPane /> */}
       </div>
 
       {(lastRightClickLngLat || editingWaypoint) && (

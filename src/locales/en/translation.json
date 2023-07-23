@@ -50,12 +50,80 @@
     "expand": "Expand Sidebar",
     "collapse": "Collapse Sidebar"
   },
-  "map": {},
+  "map": {
+    "panes": {
+      "search": {
+        "placeholder": "Filter nodes",
+        "noResults": "No results for \"{{query}}\"",
+        "collapseList": "Collapse node list",
+        "expandList": "Expand node list",
+        "selectNode": "Show node on map",
+        "deselectNode": "Deselect node",
+        "noGpsLock": "No GPS lock, hidden from map"
+      },
+      "nodeInfo": {
+        "generalInfo": "General Information",
+        "unknownValue": "Unknown",
+        "copyToClipboard": "Copy value to clipboard",
+        "battery": {
+          "unknown": "Unknown",
+          "powered": "Powered",
+          "discharging": "{{batteryLevel}}%, discharging"
+        },
+        "lastHeard": "Last heard from <timeAgo />"
+      },
+      "waypointInfo": {
+        "description": "Description",
+        "noDescription": "No description set",
+        "details": "Details",
+        "locked": {
+          "onlyYouEdit": "Only you can edit",
+          "onlyNodeEdit": "Only node {{nodeName}} can edit",
+          "anyoneEdit": "Anyone can edit"
+        },
+        "noLocationSet": "No location set",
+        "expires": "Expires {{fromNow}}",
+        "doesNotExpire": "Does not expire",
+        "editWaypoint": "Edit Waypoint",
+        "deleteWaypoint": "Delete Waypoint"
+      },
+      "algos": {}
+    },
+    "contextMenu": {
+      "dropWaypoint": "Drop a waypoint here",
+      "close": "Close menu"
+    },
+    "waypoints": {
+      "createWaypointTitle": "Create Waypoint",
+      "editWaypointTitle": "Edit Waypoint",
+      "centerWaypointTooltip": "Center waypoint on map",
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter a name",
+      "nameTooLong": "Entered name too long ({{currentLength}}/{{maxLength}})",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Enter a description",
+      "descriptionTooLong": "Entered description too long ({{currentLength}}/{{maxLength}})",
+      "blockWaypointEditing": "Block Waypoint Editing",
+      "waypointExpires": "Waypoint Expires",
+      "expireTime": "Expire Time",
+      "deviceChannel": "Device Channel",
+      "channelAriaLabel": "Device channel to send waypoint on",
+      "channelPlaceholder": "Select a channel",
+      "pinEmoji": "Pin Emoji",
+      "createWaypoint": "Create Waypoint",
+      "saveChanges": "Save Changes",
+      "cancel": "Cancel",
+      "closeAriaLabel": "Close waypoint dialog"
+    }
+  },
   "messaging": {
     "title": "Messaging",
     "configureChannels": "Configure Channels",
     "noChannelsSelected": "No channels selected",
+    "unnamedChannel": "Unnamed channel",
     "noMessages": "No messages received on this channel",
+    "oneMessage": "1 message",
+    "manyMessages": "{{numMessages}} messages",
     "channelNumber": "(Ch. {{channelNum}})",
     "unnamedWaypoint": "[Unnamed waypoint]",
     "waypointInfo": "Waypoint \"{{title}}\" ({{latitude}}, {{longitude}})"
