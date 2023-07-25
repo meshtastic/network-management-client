@@ -49,7 +49,7 @@ At the time of writing, this project is currently maintained by a single develop
 - TS frontend testing (unit, integration, e2e, smoke)
 - Adding support for remote node configuration
 - Integrating UI components into the [Storybook](https://storybook.js.org/) framework
-- Adding support for i18n translations within the UI layer
+- ~~Adding support for i18n translations within the UI layer~~ ([completed](https://github.com/ajmcquilkin/meshtastic-network-management-client/pull/423))
 - General reorganization of application file structure to make the project intuitive
 
 ## :rocket: Functionality
