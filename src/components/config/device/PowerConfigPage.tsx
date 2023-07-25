@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -44,6 +45,8 @@ const parsePowerConfigInput = (
 });
 
 const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -96,65 +99,65 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Power Configuration"}
-        subtitle={"Configure device power settings"}
+        title={t("config.radio.power.title")}
+        subtitle={t("config.radio.power.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="Enable Power Saving"
+            text={t("config.radio.power.enablePowerSaving")}
             error={errors.isPowerSaving?.message}
             {...register("isPowerSaving")}
           />
 
           <ConfigInput
             type="number"
-            text="Shutdown After Power Loss (seconds, 0 = disabled)"
+            text={t("config.radio.power.shutdownPowerLoss")}
             error={errors.onBatteryShutdownAfterSecs?.message}
             {...register("onBatteryShutdownAfterSecs")}
           />
 
           <ConfigInput
             type="number"
-            text="ADC Multiplier Override"
+            text={t("config.radio.power.adcMultOverride")}
             error={errors.adcMultiplierOverride?.message}
             {...register("adcMultiplierOverride")}
           />
 
           <ConfigInput
             type="number"
-            text="Bluetooth Timeout (seconds, 0 = 1min)"
+            text={t("config.radio.power.bluetoothTimeout")}
             error={errors.waitBluetoothSecs?.message}
             {...register("waitBluetoothSecs")}
           />
 
           <ConfigInput
             type="number"
-            text="Mesh Super Deep Sleep Timeout (seconds, 0 = 2hrs, MAX_UINT = disabled)"
+            text={t("config.radio.power.sdsTimeout")}
             error={errors.meshSdsTimeoutSecs?.message}
             {...register("meshSdsTimeoutSecs")}
           />
 
           <ConfigInput
             type="number"
-            text="Super Deep Sleep Interval (seconds, 0 = 1yr, MAX_UINT = disabled)"
+            text={t("config.radio.power.sdsInterval")}
             error={errors.sdsSecs?.message}
             {...register("sdsSecs")}
           />
 
           <ConfigInput
             type="number"
-            text="Light Sleep Interval (seconds, 0 = 5min, ESP32 only)"
+            text={t("config.radio.power.lsInterval")}
             error={errors.lsSecs?.message}
             {...register("lsSecs")}
           />
 
           <ConfigInput
             type="number"
-            text="Minimum Wake Interval (seconds, 0 = 10s)"
+            text={t("config.radio.power.minWakeInterval")}
             error={errors.minWakeSecs?.message}
             {...register("minWakeSecs")}
           />

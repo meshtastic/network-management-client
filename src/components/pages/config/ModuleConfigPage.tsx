@@ -1,9 +1,11 @@
 import React, { useLayoutEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Upload } from "lucide-react";
 
 import type { app_protobufs_LocalModuleConfig } from "@app/bindings";
+import i18next from "@app/i18n";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
@@ -26,18 +28,24 @@ import {
 } from "@features/config/configSelectors";
 
 export const ModuleConfigOptions: Record<keyof IModuleConfigState, string> = {
-  // audio: "Audio",
-  cannedMessage: "Canned Message",
-  externalNotification: "External Notification",
-  mqtt: "MQTT",
-  rangeTest: "Range Test",
-  remoteHardware: "Remote Hardware",
-  serial: "Serial Module",
-  storeForward: "Store and Forward",
-  telemetry: "Telemetry",
+  // audio: i18next.t('config.module.options.audio'),
+  cannedMessage: i18next.t("config.module.options.cannedMessage"),
+  externalNotification: i18next.t("config.module.options.externalNotification"),
+  mqtt: i18next.t("config.module.options.mqtt"),
+  rangeTest: i18next.t("config.module.options.rangeTest"),
+  remoteHardware: i18next.t("config.module.options.remoteHardware"),
+  serial: i18next.t("config.module.options.serial"),
+  storeForward: i18next.t("config.module.options.storeAndForward"),
+  telemetry: i18next.t("config.module.options.telemetry"),
 };
 
-const switchActiveDetailView = (activeOption: keyof IModuleConfigState) => {
+const _ActiveDetailView = ({
+  activeOption,
+}: {
+  activeOption: keyof IModuleConfigState;
+}) => {
+  const { t } = useTranslation();
+
   switch (activeOption) {
     // case "audio":
     //   return <AudioConfigPage />;
@@ -60,7 +68,7 @@ const switchActiveDetailView = (activeOption: keyof IModuleConfigState) => {
     default:
       return (
         <p className="m-auto text-base font-normal text-gray-700">
-          Unknown option selected
+          {t("config.unknownOption")}
         </p>
       );
   }
@@ -105,6 +113,8 @@ const getNumberOfPendingChanges = (
 };
 
 const ModuleConfigPage = () => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
 
   const currentModuleConfig = useSelector(selectCurrentModuleConfig());
@@ -123,10 +133,10 @@ const ModuleConfigPage = () => {
   return (
     <div className="flex-1">
       <ConfigLayout
-        title="Module Config"
-        backtrace={["Module Configuration"]}
+        title={t("config.module.title")}
+        backtrace={[t("sidebar.configureModules")]}
         renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
-        titleIconTooltip="Upload config to device"
+        titleIconTooltip={t("config.uploadChanges")}
         onTitleIconClick={() => dispatch(requestCommitConfig(["module"]))}
         renderOptions={() =>
           Object.entries(ModuleConfigOptions).map(([k, displayName]) => {
@@ -143,7 +153,9 @@ const ModuleConfigPage = () => {
               <ConfigOption
                 key={configKey}
                 title={displayName}
-                subtitle={`${pendingChanges} pending changes`}
+                subtitle={t("config.numPendingChanges", {
+                  numChanges: pendingChanges,
+                })}
                 isActive={activeOption === configKey}
                 onClick={() => setActiveOption(configKey)}
               />
@@ -152,7 +164,7 @@ const ModuleConfigPage = () => {
         }
       >
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
-          {switchActiveDetailView(activeOption)}
+          <_ActiveDetailView activeOption={activeOption} />
         </div>
       </ConfigLayout>
     </div>

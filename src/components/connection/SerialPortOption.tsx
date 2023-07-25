@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans } from "react-i18next";
 import {
   CheckCircleIcon,
   XCircleIcon,
@@ -31,7 +32,10 @@ const SerialPortOption = ({
             <div className="flex flex-1 justify-left border rounded-lg border-gray-400 pl-4 pt-5 pb-5 pr-4 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg">
               <Usb className="text-gray-500 w-6 h-6" />
               <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
-                Serial port on {name}
+                <Trans
+                  i18nKey="connectPage.tabs.serial.portOption"
+                  values={{ portName: name }}
+                />
               </h1>
             </div>
           </div>
@@ -44,7 +48,10 @@ const SerialPortOption = ({
           <div className="flex flex-1 justify-left border rounded-lg bg-gray-50 border-gray-500 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:cursor-wait">
             <EllipsisHorizontalCircleIcon className="text-gray-500 w-6 h-6" />
             <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
-              Serial port on {name}
+              <Trans
+                i18nKey="connectPage.tabs.serial.portOption"
+                values={{ portName: name }}
+              />
             </h1>
           </div>
         </div>
@@ -56,7 +63,10 @@ const SerialPortOption = ({
           <div className="flex flex-1 justify-left border rounded-lg border-green-500 bg-green-50 pl-4 pt-5 pb-5 pr-4 w-6/12 ">
             <CheckCircleIcon className="text-green-600 w-6 h-6" />
             <h1 className="ml-4 text-base leading-6 font-normal text-green-600 mt-0.5">
-              Serial port on {name}
+              <Trans
+                i18nKey="connectPage.tabs.serial.portOption"
+                values={{ portName: name }}
+              />
             </h1>
           </div>
         </div>
@@ -69,7 +79,10 @@ const SerialPortOption = ({
             <div className="flex flex-row">
               <XCircleIcon className="text-red-600 w-6 h-6" />
               <h1 className="ml-4 text-base leading-6 font-normal text-red-600">
-                Serial port on {name}
+                <Trans
+                  i18nKey="connectPage.tabs.serial.portOption"
+                  values={{ portName: name }}
+                />
               </h1>
             </div>
             <h2 className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 mt-0.5">
@@ -86,7 +99,10 @@ const SerialPortOption = ({
             <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-3 pb-3 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg hover:cursor-pointer">
               <XCircleIcon className="text-gray-500 w-6 h-6" />
               <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
-                Serial port on {name}
+                <Trans
+                  i18nKey="connectPage.tabs.serial.portOption"
+                  values={{ portName: name }}
+                />
               </h1>
             </div>
           </div>

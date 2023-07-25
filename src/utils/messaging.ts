@@ -1,3 +1,5 @@
+import i18next from "@app/i18n";
+
 import type {
   app_device_MeshChannel,
   app_device_ChannelMessageWithState,
@@ -13,7 +15,7 @@ export const getChannelName = (channel: app_device_MeshChannel): string => {
   }
 
   if (!channel.config.settings?.name) {
-    nameString += "Unnamed Channel";
+    nameString += i18next.t("messaging.unnamedChannel");
     return nameString;
   }
 
@@ -42,15 +44,15 @@ export const formatMessageTime = (time: number): string => {
 };
 
 export const getNumMessagesText = (numMessages: number): string => {
-  if (numMessages === 1) return "1 message";
-  return `${numMessages} messages`;
+  if (numMessages === 1) return i18next.t("messaging.oneMessage");
+  return i18next.t("messaging.manyMessages", { numMessages });
 };
 
 export const getWaypointTitle = (
   waypoint: app_device_NormalizedWaypoint
 ): string => {
   if (waypoint.name) return waypoint.name;
-  return "[Unnamed Waypoint]";
+  return i18next.t("messaging.unnamedWaypoint");
 };
 
 export const getPacketDisplayText = ({
@@ -59,9 +61,11 @@ export const getPacketDisplayText = ({
 }: app_device_ChannelMessagePayload) => {
   if (type === "text") return data;
   const { latitude, longitude } = data;
-  return `Waypoint "${getWaypointTitle(data)}" (${formatLocation(
-    latitude
-  )}, ${formatLocation(longitude)})`;
+  return i18next.t("messaging.waypointInfo", {
+    title: getWaypointTitle(data),
+    latitude: formatLocation(latitude),
+    longitude: formatLocation(longitude),
+  });
 };
 
 export const getLastChannelMessageDisplayText = (
@@ -71,5 +75,5 @@ export const getLastChannelMessageDisplayText = (
     return getPacketDisplayText(lastMessage.payload);
   }
 
-  return "No messages received on this channel.";
+  return i18next.t("messaging.noMessages");
 };

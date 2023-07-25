@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useMap } from "react-map-gl";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
@@ -41,7 +42,7 @@ const _NodeSearchDock = ({
   if (!filteredNodes.length && !!device) {
     return (
       <p className="text-sm font-normal text-gray-500">
-        No results for &quot;{query}&quot;
+        <Trans i18nKey="map.panes.search.noResults" values={{ query }} />
       </p>
     );
   }
@@ -86,6 +87,8 @@ const filterNodes =
   };
 
 const NodeSearchDock = () => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const { [MapIDs.MapView]: map } = useMap();
 
@@ -126,7 +129,7 @@ const NodeSearchDock = () => {
         <NodeSearchInput
           query={query}
           setQuery={setQuery}
-          placeholder="Filter nodes"
+          placeholder={t("map.panes.search.placeholder")}
         />
       </div>
 
@@ -143,7 +146,11 @@ const NodeSearchDock = () => {
       )}
 
       <DefaultTooltip
-        text={searchDockExpanded ? "Collapse node list" : "Expand node list"}
+        text={
+          searchDockExpanded
+            ? t("map.panes.search.collapseList")
+            : t("map.panes.search.expandList")
+        }
         side="right"
       >
         <button

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -34,6 +35,8 @@ const parseRangeTestModuleConfigInput = (
 });
 
 const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -100,23 +103,23 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"RangeTest Configuration"}
-        subtitle={"Configure range test module"}
+        title={t("config.module.rangeTest.title")}
+        subtitle={t("config.module.rangeTest.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="Range Test Enabled"
+            text={t("config.module.rangeTest.rangeTestEnabled")}
             error={errors.enabled?.message}
             {...register("enabled")}
           />
 
           <ConfigInput
             type="number"
-            text="Sender Transmit Interval (sec, 0 = disabled)"
+            text={t("config.module.rangeTest.senderTransmitInterval")}
             disabled={moduleDisabled}
             error={errors.sender?.message}
             {...register("sender")}
@@ -124,7 +127,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
 
           <ConfigInput
             type="checkbox"
-            text="Save to File System (ESP32 Only)"
+            text={t("config.module.rangeTest.saveToFs")}
             disabled={moduleDisabled}
             error={errors.save?.message}
             {...register("save")}

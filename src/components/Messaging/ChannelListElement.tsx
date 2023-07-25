@@ -5,6 +5,7 @@ import {
   getChannelName,
   getLastChannelMessageDisplayText,
 } from "@utils/messaging";
+import { Trans, useTranslation } from "react-i18next";
 
 export interface IChannelListElementProps {
   channel: app_device_MeshChannel;
@@ -17,6 +18,8 @@ const ChannelListElement = ({
   setActiveChannel,
   isSelected,
 }: IChannelListElementProps) => {
+  const { t } = useTranslation();
+
   const lastMessage = channel.messages.at(-1) ?? null;
   const timeLastMessageReceived: string = lastMessage
     ? new Intl.DateTimeFormat("en-us", {
@@ -24,7 +27,7 @@ const ChannelListElement = ({
         minute: "numeric",
         hour12: true,
       }).format(new Date(channel.lastInteraction * 1000))
-    : "N/A";
+    : t("general.notApplicable");
 
   if (isSelected) {
     return (
@@ -43,7 +46,10 @@ const ChannelListElement = ({
               {getChannelName(channel)}
             </span>
             <span className="text-sm font-normal">
-              (ch {channel.config.index})
+              <Trans
+                i18nKey="messaging.channelNumber"
+                values={{ channelNum: channel.config.index }}
+              />
             </span>
           </p>
           <p className="text-xs font-normal text-gray-100">

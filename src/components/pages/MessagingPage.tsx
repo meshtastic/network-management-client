@@ -9,8 +9,11 @@ import ChannelListElement from "@components/Messaging/ChannelListElement";
 import { selectDeviceChannels } from "@features/device/deviceSelectors";
 import { useNavigate } from "react-router-dom";
 import { AppRoutes } from "@utils/routing";
+import { useTranslation } from "react-i18next";
 
 const MessagingPage = () => {
+  const { t } = useTranslation();
+
   const channels = useSelector(selectDeviceChannels());
   const [activeChannelIdx, setActiveChannelIdx] = useState<number | null>(
     channels[0]?.config.index ?? null
@@ -21,10 +24,10 @@ const MessagingPage = () => {
   return (
     <div className="flex-1">
       <ConfigLayout
-        title="Messaging"
-        backtrace={["Messaging"]}
+        title={t("messaging.title")}
+        backtrace={[t("sidebar.messaging")]}
         renderTitleIcon={(c) => <Cog6ToothIcon className={`${c}`} />}
-        titleIconTooltip="Configure Channels"
+        titleIconTooltip={t("messaging.configureChannels")}
         onTitleIconClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}
         renderOptions={() =>
           channels
@@ -44,7 +47,7 @@ const MessagingPage = () => {
         ) : (
           <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
             <p className="m-auto text-base font-normal text-gray-700">
-              No channels selected
+              {t("messaging.noChannelsSelected")}
             </p>
           </div>
         )}

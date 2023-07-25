@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { Trans } from "react-i18next";
 import { open } from "@tauri-apps/api/shell";
 import { Particles } from "react-tsparticles";
 import { loadFull } from "tsparticles";
@@ -127,24 +128,27 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
         className="landing-screen-opacity-transition absolute bottom-3 right-3 text-right text-sm text-gray-600"
         style={{ opacity: isScreenLoaded ? 1 : 0 }}
       >
-        Photo by{" "}
-        <button
-          className="hover:underline"
-          onClick={openExternalLink(
-            "https://unsplash.com/@calebriston?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-          )}
-        >
-          Caleb Riston
-        </button>{" "}
-        on{" "}
-        <button
-          className="hover:underline"
-          onClick={openExternalLink(
-            "https://unsplash.com/photos/TXiBwX0kg-Q?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
-          )}
-        >
-          Unsplash
-        </button>
+        <Trans
+          i18nKey={"splashPage.photoAttribution"}
+          components={{
+            link1: (
+              <button
+                className="hover:underline"
+                onClick={openExternalLink(
+                  "https://unsplash.com/@calebriston?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                )}
+              />
+            ),
+            link2: (
+              <button
+                className="hover:underline"
+                onClick={openExternalLink(
+                  "https://unsplash.com/photos/TXiBwX0kg-Q?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                )}
+              />
+            ),
+          }}
+        />
       </p>
     </div>
   );

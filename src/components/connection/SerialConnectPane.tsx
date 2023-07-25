@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { RowSpacingIcon, Cross2Icon } from "@radix-ui/react-icons";
@@ -39,6 +40,8 @@ const SerialConnectPane = ({
   rts,
   setRts,
 }: ISerialConnectPaneProps) => {
+  const { t } = useTranslation();
+
   return (
     <Collapsible.Root open={isAdvancedOpen} onOpenChange={setAdvancedOpen}>
       <div className="flex flex-col mt-4">
@@ -56,7 +59,7 @@ const SerialConnectPane = ({
             ))
           ) : (
             <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
-              No ports detected.
+              {t("connectPage.tabs.serial.empty")}
             </p>
           )}
         </div>
@@ -68,13 +71,15 @@ const SerialConnectPane = ({
         onClick={() => refreshPorts()}
       >
         <ArrowPathIcon className="text-gray-400 w-6 h-6 hover:cursor-pointer" />
-        <p className="my-auto text-gray-500">Refresh ports</p>
+        <p className="my-auto text-gray-500">
+          {t("connectPage.tabs.serial.refresh")}
+        </p>
       </button>
 
       <Collapsible.Trigger asChild>
         <button className="flex flex-row align-middle justify-between w-full mt-5 mb-2">
           <p className="my-auto text-base font-normal text-gray-500">
-            Advanced connection options
+            {t("connectPage.tabs.serial.advancedTitle")}
           </p>
           <span className="my-auto text-gray-500">
             {isAdvancedOpen ? <Cross2Icon /> : <RowSpacingIcon />}
@@ -86,18 +91,22 @@ const SerialConnectPane = ({
         <div className="flex flex-col gap-4">
           <ConnectionInput
             type="number"
-            placeholder="Baud rate"
+            placeholder={t("connectPage.tabs.serial.baudTitle")}
             value={baudRate}
             onChange={(e) => setBaudRate(parseInt(e.target.value))}
           />
 
           <div className="flex flex-row justify-between">
-            <p className="text-base font-normal text-gray-500">Enable DTR</p>
+            <p className="text-base font-normal text-gray-500">
+              {t("connectPage.tabs.serial.dtrTitle")}
+            </p>
             <ConnectionSwitch checked={dtr} setChecked={setDtr} />
           </div>
 
           <div className="flex flex-row justify-between">
-            <p className="text-base font-normal text-gray-500">Enable RTS</p>
+            <p className="text-base font-normal text-gray-500">
+              {t("connectPage.tabs.serial.rtsTitle")}
+            </p>
             <ConnectionSwitch checked={rts} setChecked={setRts} />
           </div>
         </div>

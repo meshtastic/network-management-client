@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -35,6 +36,8 @@ const parseBluetoothConfigInput = (
 });
 
 const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -106,31 +109,40 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Bluetooth Configuration"}
-        subtitle={"Configure device bluetooth connection"}
+        title={t("config.radio.bluetooth.title")}
+        subtitle={t("config.radio.bluetooth.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="Bluetooth Enabled"
+            text={t("config.radio.bluetooth.bluetoothEnabled")}
             error={errors.enabled?.message}
             {...register("enabled")}
           />
 
-          <ConfigLabel text="Pairing Mode" error={errors.mode?.message}>
+          <ConfigLabel
+            text={t("config.radio.bluetooth.pairingMode.title")}
+            error={errors.mode?.message}
+          >
             <select disabled={bluetoothDisabled} {...register("mode")}>
-              <option value="0">Random Pin</option>
-              <option value="1">Fixed Pin</option>
-              <option value="2">No Pin</option>
+              <option value="0">
+                {t("config.radio.bluetooth.pairingMode.randomPin")}
+              </option>
+              <option value="1">
+                {t("config.radio.bluetooth.pairingMode.fixedPin")}
+              </option>
+              <option value="2">
+                {t("config.radio.bluetooth.pairingMode.noPin")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="number"
-            text="Fixed Pin (if enabled)"
+            text={t("config.radio.bluetooth.fixedPin")}
             disabled={bluetoothDisabled || fixedPinDisabled}
             error={errors.fixedPin?.message}
             {...register("fixedPin")}

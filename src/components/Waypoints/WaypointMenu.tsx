@@ -1,4 +1,5 @@
 import React from "react"; //,  useState, useEffect, useCallback
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { Copy, Lock, Unlock, X, MapPin, Timer, TimerOff } from "lucide-react";
 import moment from "moment";
@@ -26,6 +27,8 @@ export interface IWaypointMenuProps {
 }
 
 const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const activeWaypoint = useSelector(selectActiveWaypoint());
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
@@ -80,15 +83,17 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
         </div>
 
         <div className="text-gray-500 text-base">
-          <h2 className="leading-6 font-semibold pt-2">Description</h2>
+          <h2 className="leading-6 font-semibold pt-2">
+            {t("map.panes.waypointInfo.description")}
+          </h2>
           <h2 className="leading-5 font-normal py-1">
-            {description || "No description"}
+            {description || t("map.panes.waypointInfo.noDescription")}
           </h2>
         </div>
 
         <div>
           <h2 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
-            Details
+            {t("map.panes.waypointInfo.details")}
           </h2>
 
           <div className="flex flex-col gap-1 pt-1">
@@ -101,12 +106,12 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                 )}
                 <h2 className="text-base leading-6 font-normal pl-2">
                   {lockedTo === device?.myNodeInfo.myNodeNum
-                    ? "Only you can edit"
+                    ? t("map.panes.waypointInfo.locked.onlyYouEdit")
                     : lockedTo !== 0
-                    ? `Only node ${
-                        usersMap[lockedTo]?.shortName || lockedTo
-                      } can edit`
-                    : "Anyone can edit"}
+                    ? t("map.panes.waypointInfo.onlyNodeEdit", {
+                        nodeName: usersMap[lockedTo]?.shortName || lockedTo,
+                      })
+                    : t("map.panes.waypointInfo.anyoneEdit")}
                 </h2>
               </div>
 
@@ -115,12 +120,12 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                 onClick={() =>
                   void writeValueToClipboard(
                     lockedTo === device?.myNodeInfo.myNodeNum
-                      ? "Only you can edit"
+                      ? t("map.panes.waypointInfo.locked.onlyYouEdit")
                       : lockedTo !== 0
-                      ? `Only node ${
-                          usersMap[lockedTo]?.shortName || lockedTo
-                        } can edit`
-                      : "Anyone can edit"
+                      ? t("map.panes.waypointInfo.onlyNodeEdit", {
+                          nodeName: usersMap[lockedTo]?.shortName || lockedTo,
+                        })
+                      : t("map.panes.waypointInfo.anyoneEdit")
                   )
                 }
               >
@@ -136,7 +141,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                     ? `(${formatLocation(latitude)}, ${formatLocation(
                         longitude
                       )})`
-                    : "No location set"}
+                    : t("map.panes.waypointInfo.noLocationSet")}
                 </h2>
               </div>
 
@@ -146,7 +151,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                   void writeValueToClipboard(
                     latitude && longitude
                       ? `(${latitude}, ${longitude})`
-                      : "No location set"
+                      : t("map.panes.waypointInfo.noLocationSet")
                   )
                 }
               >
@@ -163,8 +168,10 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                 )}
                 <h2 className="text-base leading-6 font-normal pl-2">
                   {!expire
-                    ? "Does not expire"
-                    : `Expires ${moment(expire * 1000).fromNow()}`}
+                    ? t("map.panes.waypointInfo.doesNotExpire")
+                    : t("map.panes.waypointInfo.expires", {
+                        fromNow: moment(expire * 1000).fromNow(),
+                      })}
                 </h2>
               </div>
 
@@ -173,8 +180,10 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                 onClick={() =>
                   void writeValueToClipboard(
                     !expire
-                      ? "Does not expire"
-                      : `Expires ${moment(expire * 1000).fromNow()}`
+                      ? t("map.panes.waypointInfo.doesNotExpire")
+                      : t("map.panes.waypointInfo.expires", {
+                          fromNow: moment(expire * 1000).fromNow(),
+                        })
                   )
                 }
               >
@@ -191,7 +200,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
             disabled={!!lockedTo && lockedTo !== device?.myNodeInfo.myNodeNum}
             className=" text-gray-500 hover:text-gray-600 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
           >
-            Edit Waypoint
+            {t("map.panes.waypointInfo.editWaypoint")}
           </button>
 
           <button
@@ -199,7 +208,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
             onClick={handleDeleteWaypoint}
             className="text-red-400 hover:text-red-500 transition-colors"
           >
-            Delete Waypoint
+            {t("map.panes.waypointInfo.deleteWaypoint")}
           </button>
         </div>
       </div>

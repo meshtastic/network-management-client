@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -34,6 +35,8 @@ const parseNetworkConfigInput = (
 });
 
 const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -105,16 +108,16 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Network Configuration"}
-        subtitle={"Configure device network connection"}
+        title={t("config.radio.network.title")}
+        subtitle={t("config.radio.network.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="WiFi Enabled"
+            text={t("config.radio.network.wifiEnabled")}
             error={errors.wifiEnabled?.message}
             {...register("wifiEnabled")}
           />
@@ -122,7 +125,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
           <ConfigInput
             disabled={wifiDisabled}
             type="text"
-            text="WiFi SSID"
+            text={t("config.radio.network.wifiSsid")}
             error={errors.wifiSsid?.message}
             {...register("wifiSsid")}
           />
@@ -130,23 +133,28 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
           <ConfigInput
             disabled={wifiDisabled}
             type="text"
-            text="WiFi PSK"
+            text={t("config.radio.network.wifiPsk")}
             error={errors.wifiPsk?.message}
             {...register("wifiPsk")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Ethernet Enabled"
+            text={t("config.radio.network.ethEnabled")}
             error={errors.ethEnabled?.message}
             {...register("ethEnabled")}
           />
 
-          <ConfigLabel text="Address Mode" error={errors.addressMode?.message}>
+          <ConfigLabel
+            text={t("config.radio.network.addressMode.title")}
+            error={errors.addressMode?.message}
+          >
             <select disabled={ethDisabled} {...register("addressMode")}>
-              <option value="0">DHCP</option>
+              <option value="0">
+                {t("config.radio.network.addressMode.dhcp")}
+              </option>
               <option disabled value="1">
-                Static IP
+                {t("config.radio.network.addressMode.static")}
               </option>
             </select>
           </ConfigLabel>
@@ -154,7 +162,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
           <ConfigInput
             disabled={wifiDisabled && ethDisabled}
             type="text"
-            text="NTP Server"
+            text={t("config.radio.network.ntpServerAddress")}
             error={errors.ntpServer?.message}
             {...register("ntpServer")}
           />

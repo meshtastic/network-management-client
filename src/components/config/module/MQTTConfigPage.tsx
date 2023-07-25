@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -33,6 +34,8 @@ const parseMQTTModuleConfigInput = (
 });
 
 const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -99,23 +102,23 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"MQTT Configuration"}
-        subtitle={"Configure MQTT"}
+        title={t("config.module.mqtt.title")}
+        subtitle={t("config.module.mqtt.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="MQTT Enabled"
+            text={t("config.module.mqtt.enableMqtt")}
             error={errors.enabled?.message}
             {...register("enabled")}
           />
 
           <ConfigInput
             type="text"
-            text="Server Address"
+            text={t("config.module.mqtt.serverAddress")}
             disabled={moduleDisabled}
             error={errors.address?.message}
             {...register("address")}
@@ -123,7 +126,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
 
           <ConfigInput
             type="text"
-            text="Username"
+            text={t("config.module.mqtt.username")}
             disabled={moduleDisabled}
             error={errors.username?.message}
             {...register("username")}
@@ -131,7 +134,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
 
           <ConfigInput
             type="password"
-            text="Password"
+            text={t("config.module.mqtt.password")}
             disabled={moduleDisabled}
             error={errors.password?.message}
             {...register("password")}
@@ -139,7 +142,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
 
           <ConfigInput
             type="checkbox"
-            text="Encryption Enabled"
+            text={t("config.module.mqtt.encryptionEnabled")}
             disabled={moduleDisabled}
             error={errors.encryptionEnabled?.message}
             {...register("encryptionEnabled")}
@@ -147,7 +150,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
 
           <ConfigInput
             type="checkbox"
-            text="JSON Enabled"
+            text={t("config.module.mqtt.jsonEnabled")}
             disabled={moduleDisabled}
             error={errors.jsonEnabled?.message}
             {...register("jsonEnabled")}
@@ -155,7 +158,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
 
           <ConfigInput
             type="checkbox"
-            text="TLS Enabled"
+            text={t("config.module.mqtt.tlsEnabled")}
             disabled={moduleDisabled}
             error={errors.tlsEnabled?.message}
             {...register("tlsEnabled")}

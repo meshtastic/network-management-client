@@ -48,28 +48,6 @@ export const getNodeState = (
   return "nominal";
 };
 
-export const getHeadingFromNodeState = (
-  nodeState: NodeState,
-  isBase = false
-): string => {
-  if (isBase) return "Base";
-
-  switch (nodeState) {
-    case "selected":
-      return "Selected";
-
-    case "warning":
-      return "Warning";
-
-    case "error":
-      return "Error";
-
-    // Nominal
-    default:
-      return "";
-  }
-};
-
 export type NodeColorStyleConfig = {
   text: string;
   fill: string;

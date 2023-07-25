@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { listen } from "@tauri-apps/api/event";
@@ -7,6 +7,9 @@ import { MapProvider } from "react-map-gl";
 
 import App from "@app/App";
 import { store } from "@store/index";
+
+// Load translations
+import "./i18n";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./index.css";
@@ -47,12 +50,14 @@ const container = document.getElementById("root");
 const root = createRoot(container as HTMLElement);
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Provider store={store}>
-        <MapProvider>
-          <App />
-        </MapProvider>
-      </Provider>
-    </BrowserRouter>
+    <Suspense fallback={<div>Loading locales...</div>}>
+      <BrowserRouter>
+        <Provider store={store}>
+          <MapProvider>
+            <App />
+          </MapProvider>
+        </Provider>
+      </BrowserRouter>
+    </Suspense>
   </React.StrictMode>
 );

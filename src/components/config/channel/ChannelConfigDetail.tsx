@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -41,6 +42,8 @@ const ChannelConfigDetail = ({
   channelNum,
   className = "",
 }: IChannelConfigDetailProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
 
   const currentMeshChannel = useSelector(
@@ -57,7 +60,7 @@ const ChannelConfigDetail = ({
   );
   const channelName = currentMeshChannel
     ? getChannelName(currentMeshChannel)
-    : "UNK";
+    : t("general.unknown");
 
   const [channelDisabled, setChannelDisabled] = useState(
     currentMeshChannel?.config.role === 0 // DISABLED
@@ -125,24 +128,33 @@ const ChannelConfigDetail = ({
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Channel Configuration"}
-        subtitle={`Configure channel "${channelName}"`}
+        title={t("config.channel.detail.title")}
+        subtitle={t("config.channel.detail.description", { channelName })}
         renderIcon={(c) => <RotateCcw strokeWidth={1.5} className={c} />}
         buttonTooltipText="Discard pending changes"
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
-          <ConfigLabel text="Channel Role" error={errors.role?.message}>
+          <ConfigLabel
+            text={t("config.channel.detail.channelRole.title")}
+            error={errors.role?.message}
+          >
             <select {...register("role")}>
-              <option value="0">Disabled</option>
-              <option value="1">Primary Channel</option>
-              <option value="2">Secondary Channel</option>
+              <option value="0">
+                {t("config.channel.detail.channelRole.disabled")}
+              </option>
+              <option value="1">
+                {t("config.channel.detail.channelRole.primary")}
+              </option>
+              <option value="2">
+                {t("config.channel.detail.channelRole.secondary")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="text"
-            text="Channel Name"
+            text={t("config.channel.detail.channelName")}
             disabled={channelDisabled}
             error={errors.name?.message}
             {...register("name")}
@@ -150,7 +162,7 @@ const ChannelConfigDetail = ({
 
           <ConfigInput
             type="text"
-            text="PSK"
+            text={t("config.channel.detail.psk")}
             disabled={channelDisabled}
             error={errors.psk?.message}
             {...register("psk")}
@@ -158,7 +170,7 @@ const ChannelConfigDetail = ({
 
           <ConfigInput
             type="checkbox"
-            text="Uplink Enabled"
+            text={t("config.channel.detail.uplinkEnabled")}
             disabled={channelDisabled}
             error={errors.uplinkEnabled?.message}
             {...register("uplinkEnabled")}
@@ -166,7 +178,7 @@ const ChannelConfigDetail = ({
 
           <ConfigInput
             type="checkbox"
-            text="Downlink Enabled"
+            text={t("config.channel.detail.downlinkEnabled")}
             disabled={channelDisabled}
             error={errors.downlinkEnabled?.message}
             {...register("downlinkEnabled")}

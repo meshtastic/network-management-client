@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -40,6 +41,8 @@ const parseSerialModuleConfigInput = (
 const SerialModuleConfigPage = ({
   className = "",
 }: ISerialModuleConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -106,41 +109,54 @@ const SerialModuleConfigPage = ({
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"SerialModule Configuration"}
-        subtitle={"Configure serial module"}
+        title={t("config.module.serial.title")}
+        subtitle={t("config.module.serial.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="Serial Module Enabled"
+            text={t("config.module.serial.serialModuleEnabled")}
             error={errors.enabled?.message}
             {...register("enabled")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Echo Sent Packets"
+            text={t("config.module.serial.echoSentPackets")}
             disabled={moduleDisabled}
             error={errors.echo?.message}
             {...register("echo")}
           />
 
-          <ConfigLabel text="Operating Mode" error={errors.mode?.message}>
+          <ConfigLabel
+            text={t("config.module.serial.operatingMode.title")}
+            error={errors.mode?.message}
+          >
             <select disabled={moduleDisabled} {...register("mode")}>
-              <option value="0">Default</option>
-              <option value="1">Simple (UART Tunnel)</option>
-              <option value="2">Protobuf Client API</option>
-              <option value="3">Text Messages</option>
-              <option value="4">NMEA Stream</option>
+              <option value="0">
+                {t("config.module.serial.operatingMode.default")}
+              </option>
+              <option value="1">
+                {t("config.module.serial.operatingMode.simple")}
+              </option>
+              <option value="2">
+                {t("config.module.serial.operatingMode.protobuf")}
+              </option>
+              <option value="3">
+                {t("config.module.serial.operatingMode.text")}
+              </option>
+              <option value="4">
+                {t("config.module.serial.operatingMode.nmea")}
+              </option>
             </select>
           </ConfigLabel>
 
           <ConfigInput
             type="number"
-            text="RX Pin (0 = unset)"
+            text={t("config.module.serial.rxPin")}
             disabled={moduleDisabled}
             error={errors.rxd?.message}
             {...register("rxd")}
@@ -148,15 +164,20 @@ const SerialModuleConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="TX Pin (0 = unset)"
+            text={t("config.module.serial.txPin")}
             disabled={moduleDisabled}
             error={errors.txd?.message}
             {...register("txd")}
           />
 
-          <ConfigLabel text="Baud Rate" error={errors.baud?.message}>
+          <ConfigLabel
+            text={t("config.module.serial.baudRate.title")}
+            error={errors.baud?.message}
+          >
             <select disabled={moduleDisabled} {...register("baud")}>
-              <option value="0">Default</option>
+              <option value="0">
+                {t("config.module.serial.baudRate.default")}
+              </option>
               <option value="1">110 bps</option>
               <option value="2">300 bps</option>
               <option value="3">600 bps</option>
@@ -178,7 +199,7 @@ const SerialModuleConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Serial Timeout (ms, 0 = 250ms)"
+            text={t("config.module.serial.serialTimeout")}
             disabled={moduleDisabled}
             error={errors.timeout?.message}
             {...register("timeout")}

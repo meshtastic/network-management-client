@@ -1,5 +1,6 @@
 import React from "react";
 import type { FormEventHandler } from "react";
+import { useTranslation } from "react-i18next";
 import {
   EllipsisHorizontalCircleIcon,
   LinkIcon,
@@ -25,12 +26,13 @@ const TcpConnectPane = ({
   activeSocketState,
   handleSocketConnect,
 }: ITcpConnectPaneProps) => {
+  const { t } = useTranslation();
+
   return (
     <form className="flex flex-col gap-4 mt-4" onSubmit={handleSocketConnect}>
       <ConnectionInput
         type="text"
-        enterKeyHint="go"
-        placeholder="IP address or host name"
+        placeholder={t("connectPage.tabs.tcp.ip")}
         value={socketAddress}
         onChange={(e) => setSocketAddress(e.target.value)}
         disabled={activeSocketState.status === "PENDING"}
@@ -38,7 +40,7 @@ const TcpConnectPane = ({
 
       <ConnectionInput
         type="text"
-        placeholder="Port"
+        placeholder={t("connectPage.tabs.tcp.port")}
         value={socketPort}
         onChange={(e) => setSocketPort(e.target.value)}
         disabled={activeSocketState.status === "PENDING"}
@@ -52,12 +54,14 @@ const TcpConnectPane = ({
         {activeSocketState.status === "PENDING" ? (
           <>
             <EllipsisHorizontalCircleIcon className="w-6 h-6 text-gray-500" />
-            <p className="text-gray-700">Connecting...</p>
+            <p className="text-gray-700">
+              {t("connectPage.tabs.tcp.connecting")}
+            </p>
           </>
         ) : (
           <>
             <LinkIcon className="w-6 h-6 text-gray-500" />
-            <p className="text-gray-700">Connect</p>
+            <p className="text-gray-700">{t("connectPage.tabs.tcp.connect")}</p>
           </>
         )}
       </button>

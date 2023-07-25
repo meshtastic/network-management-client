@@ -1,4 +1,5 @@
 import React from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import TimeAgo from "timeago-react";
 import {
@@ -13,11 +14,15 @@ import {
   X,
 } from "lucide-react";
 
+import i18next from "@app/i18n";
+
 import { selectActiveNode } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
+
 import { writeValueToClipboard } from "@utils/clipboard";
 import { useComponentReload } from "@utils/hooks";
 import { getLastHeardTime } from "@utils/nodes";
+import { formatLocation } from "@utils/map";
 
 export interface IBatteryLevelIconProps {
   batteryLevel: number | null;
@@ -48,23 +53,27 @@ const BatteryLevelIcon = ({
 };
 
 const getBatteryStateString = (batteryLevel: number | null) => {
-  if (!batteryLevel) return "Unknown";
-  if (batteryLevel > 100) return "Powered";
-  return `${batteryLevel}%, discharging`;
+  if (!batteryLevel) return i18next.t("map.panes.nodeInfo.battery.unknown");
+  if (batteryLevel > 100)
+    return i18next.t("map.panes.nodeInfo.battery.powered");
+  return i18next.t("map.panes.nodeInfo.battery.discharging", { batteryLevel });
 };
 
 const MapSelectedNodeMenu = () => {
+  const { t, i18n } = useTranslation();
+
+  useComponentReload(1000);
+
   const dispatch = useDispatch();
   const activeNode = useSelector(selectActiveNode());
-  useComponentReload(1000);
 
   if (!activeNode) return <></>;
 
   const lastPacketTime = getLastHeardTime(activeNode);
 
-  const deviceName = activeNode.user?.longName ?? "N/A";
-  const deviceLtCoord = activeNode.positionMetrics.at(-1)?.latitude ?? 0;
-  const deviceLgCoord = activeNode.positionMetrics.at(-1)?.longitude ?? 0;
+  const deviceName = activeNode.user?.longName ?? t("general.notApplicable");
+  const deviceLatCoord = activeNode.positionMetrics.at(-1)?.latitude ?? 0;
+  const deviceLngCoord = activeNode.positionMetrics.at(-1)?.longitude ?? 0;
   const batteryLevel =
     activeNode.deviceMetrics.at(-1)?.metrics.batteryLevel ?? null;
 
@@ -84,16 +93,23 @@ const MapSelectedNodeMenu = () => {
       </div>
 
       <p className="text-gray-500 text-sm leading-5 font-normal pt-1">
-        Last heard from{" "}
-        {lastPacketTime ? (
-          <TimeAgo datetime={lastPacketTime * 1000} locale="en_us" />
-        ) : (
-          "Unknown"
-        )}
+        <Trans
+          i18nKey="map.panes.nodeInfo.lastHeard"
+          components={{
+            timeAgo: lastPacketTime ? (
+              <TimeAgo
+                datetime={lastPacketTime * 1000}
+                locale={i18n.language}
+              />
+            ) : (
+              <>{t("map.panes.nodeInfo.unknownValue")}</>
+            ),
+          }}
+        />
       </p>
 
       <h2 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
-        General Information
+        {t("map.panes.nodeInfo.generalInfo")}
       </h2>
       <div className="flex flex-col">
         <div className="flex justify-between pb-1">
@@ -103,11 +119,13 @@ const MapSelectedNodeMenu = () => {
               strokeWidth={1.5}
             />
             <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
-              {!deviceLtCoord || !deviceLgCoord ? (
-                <span>Unknown</span>
+              {!deviceLatCoord || !deviceLngCoord ? (
+                <span>{t("map.panes.nodeInfo.unknownValue")}</span>
               ) : (
                 <span>
-                  {deviceLtCoord}&#176;, {deviceLgCoord}&#176;
+                  {`${formatLocation(deviceLatCoord)}, ${formatLocation(
+                    deviceLngCoord
+                  )}`}
                 </span>
               )}
             </h2>
@@ -116,7 +134,9 @@ const MapSelectedNodeMenu = () => {
             type="button"
             onClick={() =>
               void writeValueToClipboard(
-                `${deviceLtCoord}deg, ${deviceLgCoord}deg`
+                `${formatLocation(deviceLatCoord)}, ${formatLocation(
+                  deviceLngCoord
+                )}`
               )
             }
           >

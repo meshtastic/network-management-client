@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
@@ -38,6 +39,8 @@ const parseStoreAndForwardModuleConfigInput = (
 const StoreAndForwardConfigPage = ({
   className = "",
 }: IStoreAndForwardConfigPageProps) => {
+  const { t } = useTranslation();
+
   const dispatch = useDispatch();
   const device = useSelector(selectDevice());
 
@@ -106,23 +109,23 @@ const StoreAndForwardConfigPage = ({
   return (
     <div className={`${className} flex-1 h-screen`}>
       <ConfigTitlebar
-        title={"Store and Forward Configuration (UNSTABLE)"}
-        subtitle={"Configure packet storage and forwarding"}
+        title={t("config.module.storeAndForward.title")}
+        subtitle={t("config.module.storeAndForward.description")}
         renderIcon={(c) => <RotateCcw className={c} />}
-        buttonTooltipText="Discard pending changes"
+        buttonTooltipText={t("config.discardChanges")}
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
           <ConfigInput
             type="checkbox"
-            text="Store and Forward Enabled"
+            text={t("config.module.storeAndForward.sfEnabled")}
             error={errors.enabled?.message}
             {...register("enabled")}
           />
 
           <ConfigInput
             type="checkbox"
-            text="Heartbeat Broadcast Enabled"
+            text={t("config.module.storeAndForward.heartbeatBroadcastEnabled")}
             disabled={moduleDisabled}
             error={errors.heartbeat?.message}
             {...register("heartbeat")}
@@ -130,7 +133,7 @@ const StoreAndForwardConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Stored Records"
+            text={t("config.module.storeAndForward.storedRecords")}
             disabled={moduleDisabled}
             error={errors.records?.message}
             {...register("records")}
@@ -138,7 +141,7 @@ const StoreAndForwardConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="Max Records to Return"
+            text={t("config.module.storeAndForward.maxRecordsReturn")}
             disabled={moduleDisabled}
             error={errors.historyReturnMax?.message}
             {...register("historyReturnMax")}
@@ -146,7 +149,7 @@ const StoreAndForwardConfigPage = ({
 
           <ConfigInput
             type="number"
-            text="History Return Window (sec)"
+            text={t("config.module.storeAndForward.returnWindow")}
             disabled={moduleDisabled}
             error={errors.historyReturnWindow?.message}
             {...register("historyReturnWindow")}
