@@ -58,7 +58,7 @@ const SerialConnectPane = ({
               />
             ))
           ) : (
-            <p className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
+            <p className="text-base leading-6 font-normal text-gray-500 dark:text-gray-400 pl-40 pr-40 text-center">
               {t("connectPage.tabs.serial.empty")}
             </p>
           )}
@@ -70,18 +70,18 @@ const SerialConnectPane = ({
         className="flex flex-row justify-center align-middle mx-auto gap-4 mt-5"
         onClick={() => refreshPorts()}
       >
-        <ArrowPathIcon className="text-gray-400 w-6 h-6 hover:cursor-pointer" />
-        <p className="my-auto text-gray-500">
+        <ArrowPathIcon className="text-gray-400 dark:text-gray-300 w-6 h-6 hover:cursor-pointer" />
+        <p className="my-auto text-gray-500 dark:text-gray-400">
           {t("connectPage.tabs.serial.refresh")}
         </p>
       </button>
 
       <Collapsible.Trigger asChild>
         <button className="flex flex-row align-middle justify-between w-full mt-5 mb-2">
-          <p className="my-auto text-base font-normal text-gray-500">
+          <p className="my-auto text-base font-normal text-gray-500 dark:text-gray-400">
             {t("connectPage.tabs.serial.advancedTitle")}
           </p>
-          <span className="my-auto text-gray-500">
+          <span className="my-auto text-gray-500 dark:text-gray-400">
             {isAdvancedOpen ? <Cross2Icon /> : <RowSpacingIcon />}
           </span>
         </button>
@@ -97,14 +97,14 @@ const SerialConnectPane = ({
           />
 
           <div className="flex flex-row justify-between">
-            <p className="text-base font-normal text-gray-500">
+            <p className="text-base font-normal text-gray-500 dark:text-gray-400">
               {t("connectPage.tabs.serial.dtrTitle")}
             </p>
             <ConnectionSwitch checked={dtr} setChecked={setDtr} />
           </div>
 
           <div className="flex flex-row justify-between">
-            <p className="text-base font-normal text-gray-500">
+            <p className="text-base font-normal text-gray-500 dark:text-gray-400">
               {t("connectPage.tabs.serial.rtsTitle")}
             </p>
             <ConnectionSwitch checked={rts} setChecked={setRts} />

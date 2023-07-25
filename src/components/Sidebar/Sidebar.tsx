@@ -34,7 +34,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`shrink-0 sidebar-width-transition flex flex-col h-screen box-content shadow-lg border-r border-gray-100 overflow-x-hidden ${
+      className={`shrink-0 sidebar-width-transition flex flex-col h-screen box-content bg-red-50 shadow-lg border-r border-gray-100 overflow-x-hidden ${
         isSidebarExpanded ? "w-[300px] text-gray-500" : "w-20 text-white"
       }`}
     >

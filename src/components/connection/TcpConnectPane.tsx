@@ -47,28 +47,30 @@ const TcpConnectPane = ({
       />
 
       <button
-        className="flex flex-row flex-1 justify-center gap-3 border rounded-lg border-gray-400 mx-auto px-5 py-4 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg disabled:cursor-wait"
+        className="flex flex-row flex-1 justify-center gap-3 border rounded-lg border-gray-400 dark:border-gray-500 mx-auto px-5 py-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-500 dark:hover:border-gray-400 hover:shadow-lg disabled:cursor-wait"
         disabled={activeSocketState.status === "PENDING"}
         type="submit"
       >
         {activeSocketState.status === "PENDING" ? (
           <>
-            <EllipsisHorizontalCircleIcon className="w-6 h-6 text-gray-500" />
-            <p className="text-gray-700">
+            <EllipsisHorizontalCircleIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+            <p className="text-gray-700 dark:text-gray-400">
               {t("connectPage.tabs.tcp.connecting")}
             </p>
           </>
         ) : (
           <>
-            <LinkIcon className="w-6 h-6 text-gray-500" />
-            <p className="text-gray-700">{t("connectPage.tabs.tcp.connect")}</p>
+            <LinkIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
+            <p className="text-gray-700 dark:text-gray-400">
+              {t("connectPage.tabs.tcp.connect")}
+            </p>
           </>
         )}
       </button>
 
       {activeSocketState.status === "FAILED" && (
         <div>
-          <p className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 my-1">
+          <p className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 dark:text-red-400 my-1">
             {activeSocketState.message}
           </p>
         </div>
