@@ -5,7 +5,7 @@ import {
   requestFetchLastTcpConnectionMeta,
   requestPersistLastTcpConnectionMeta,
 } from "@features/appConfig/appConfigActions";
-import { appConfigActions } from "@features/appConfig/appConfigSlice";
+import { appConfigSliceActions } from "@features/appConfig/appConfigSlice";
 import { requestSliceActions } from "@features/requests/requestReducer";
 
 import type { CommandError } from "@utils/errors";
@@ -30,7 +30,9 @@ function* fetchLastTcpConnectionMetaWorker(
       PersistedStateKeys.LastTcpConnection
     )) as IPersistedState[PersistedStateKeys.LastTcpConnection];
 
-    yield put(appConfigActions.setLastTcpConnection(persistedValue ?? null));
+    yield put(
+      appConfigSliceActions.setLastTcpConnection(persistedValue ?? null)
+    );
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {

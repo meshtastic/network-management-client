@@ -8,8 +8,9 @@ import { v4 } from "uuid";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
-import { selectMapState } from "@features/map/mapSelectors";
-import { mapSliceActions } from "@features/map/mapSlice";
+
+import { appConfigSliceActions } from "@features/appConfig/appConfigSlice";
+import { selectMapConfigState } from "@app/features/appConfig/appConfigSelectors";
 
 export interface IMapConfigPageProps {
   className?: string;
@@ -23,16 +24,16 @@ const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
-  const { config } = useSelector(selectMapState());
+  const { style } = useSelector(selectMapConfigState());
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<MapConfigFormInput>({ defaultValues: { style: config.style } });
+  } = useForm<MapConfigFormInput>({ defaultValues: { style } });
 
   const handleSubmitSuccess = (data: MapConfigFormInput) => {
-    dispatch(mapSliceActions.updateConfig(data));
+    dispatch(appConfigSliceActions.setMapStyle(data.style));
   };
 
   const handleFormSubmit: FormEventHandler = (e) => {

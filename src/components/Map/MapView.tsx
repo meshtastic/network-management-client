@@ -40,6 +40,7 @@ import MapNodeTooltip from "@components/Map/MapNodeTooltip";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 
+import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
 import {
   selectActiveNodeId,
   selectActiveWaypoint,
@@ -75,8 +76,10 @@ export const MapView = () => {
   const activeNodeId = useSelector(selectActiveNodeId());
   const showInfoPane = useSelector(selectInfoPane());
 
-  const { nodesFeatureCollection, edgesFeatureCollection, viewState, config } =
+  const { nodesFeatureCollection, edgesFeatureCollection, viewState } =
     useSelector(selectMapState());
+
+  const { style } = useSelector(selectMapConfigState());
 
   const waypoints = useSelector(selectAllWaypoints());
   const activeWaypoint = useSelector(selectActiveWaypoint());
@@ -243,7 +246,7 @@ export const MapView = () => {
         <Map
           id={MapIDs.MapView}
           reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
-          mapStyle={config.style}
+          mapStyle={style}
           mapLib={maplibregl}
           onDragEnd={handleUpdateViewState}
           onZoomEnd={handleUpdateViewState}
