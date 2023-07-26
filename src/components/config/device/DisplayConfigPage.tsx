@@ -7,8 +7,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import {
   DisplayConfigInput,
@@ -117,25 +117,23 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
             {...register("compassNorthTop")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.display.displayMode.title")}
-            error={errors.displaymode?.message}
+            {...register("displaymode")}
           >
-            <select {...register("displaymode")}>
-              <option value="0">
-                {t("config.radio.display.displayMode.default")}
-              </option>
-              <option value="1">
-                {t("config.radio.display.displayMode.twoColor")}
-              </option>
-              <option value="2">
-                {t("config.radio.display.displayMode.inverted")}
-              </option>
-              <option value="3">
-                {t("config.radio.display.displayMode.color")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.radio.display.displayMode.default")}
+            </option>
+            <option value="1">
+              {t("config.radio.display.displayMode.twoColor")}
+            </option>
+            <option value="2">
+              {t("config.radio.display.displayMode.inverted")}
+            </option>
+            <option value="3">
+              {t("config.radio.display.displayMode.color")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="checkbox"
@@ -144,31 +142,23 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
             {...register("flipScreen")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.display.gpsFormat.title")}
-            error={errors.gpsFormat?.message}
+            {...register("gpsFormat")}
           >
-            <select {...register("gpsFormat")}>
-              <option value="0">
-                {t("config.radio.display.gpsFormat.decimal")}
-              </option>
-              <option value="1">
-                {t("config.radio.display.gpsFormat.dms")}
-              </option>
-              <option value="2">
-                {t("config.radio.display.gpsFormat.utm")}
-              </option>
-              <option value="3">
-                {t("config.radio.display.gpsFormat.mgrs")}
-              </option>
-              <option value="4">
-                {t("config.radio.display.gpsFormat.olc")}
-              </option>
-              <option value="5">
-                {t("config.radio.display.gpsFormat.osgr")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.radio.display.gpsFormat.decimal")}
+            </option>
+            <option value="1">{t("config.radio.display.gpsFormat.dms")}</option>
+            <option value="2">{t("config.radio.display.gpsFormat.utm")}</option>
+            <option value="3">
+              {t("config.radio.display.gpsFormat.mgrs")}
+            </option>
+            <option value="4">{t("config.radio.display.gpsFormat.olc")}</option>
+            <option value="5">
+              {t("config.radio.display.gpsFormat.osgr")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="checkbox"
@@ -177,25 +167,23 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
             {...register("headingBold")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.display.oledConfig.title")}
-            error={errors.oled?.message}
+            {...register("oled")}
           >
-            <select {...register("oled")}>
-              <option value="0">
-                {t("config.radio.display.oledConfig.autoDetect")}
-              </option>
-              <option value="1">
-                {t("config.radio.display.oledConfig.ssd1306")}
-              </option>
-              <option value="2">
-                {t("config.radio.display.oledConfig.sh1106")}
-              </option>
-              <option value="3">
-                {t("config.radio.display.oledConfig.sh1107")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.radio.display.oledConfig.autoDetect")}
+            </option>
+            <option value="1">
+              {t("config.radio.display.oledConfig.ssd1306")}
+            </option>
+            <option value="2">
+              {t("config.radio.display.oledConfig.sh1106")}
+            </option>
+            <option value="3">
+              {t("config.radio.display.oledConfig.sh1107")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="number"
@@ -204,19 +192,15 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
             {...register("screenOnSecs")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.display.units.title")}
-            error={errors.units?.message}
+            {...register("units")}
           >
-            <select {...register("units")}>
-              <option value="0">
-                {t("config.radio.display.units.metric")}
-              </option>
-              <option value="1">
-                {t("config.radio.display.units.imperial")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">{t("config.radio.display.units.metric")}</option>
+            <option value="1">
+              {t("config.radio.display.units.imperial")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="checkbox"

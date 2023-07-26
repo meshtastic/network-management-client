@@ -19,8 +19,8 @@ const TableLayout = <T,>({
   backtrace,
 }: ITableLayoutProps<T>) => {
   return (
-    <div className="flex flex-col w-full h-screen">
-      <div className="flex justify-center align-middle px-9 h-20 border-b border-gray-100">
+    <div className="flex flex-col w-full h-screen bg-white dark:bg-gray-800">
+      <div className="flex justify-center align-middle px-9 h-20 border-b border-gray-100 dark:border-gray-700">
         <NavigationBacktrace className="my-auto mr-auto" levels={backtrace} />
       </div>
 

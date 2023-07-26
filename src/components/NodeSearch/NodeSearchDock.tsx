@@ -41,7 +41,7 @@ const _NodeSearchDock = ({
 }: _INodeSearchDockProps) => {
   if (!filteredNodes.length && !!device) {
     return (
-      <p className="text-sm font-normal text-gray-500">
+      <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
         <Trans i18nKey="map.panes.search.noResults" values={{ query }} />
       </p>
     );
@@ -155,7 +155,7 @@ const NodeSearchDock = () => {
       >
         <button
           onClick={() => setNodeSearchDockExpanded(!searchDockExpanded)}
-          className="flex flex-row align-middle justify-center bg-white rounded-full mx-auto p-2 shadow-lg text-gray-700 border border-gray-200"
+          className="flex flex-row align-middle justify-center bg-white dark:bg-gray-800 rounded-full mx-auto p-2 shadow-lg text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
         >
           {searchDockExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
         </button>

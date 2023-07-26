@@ -7,8 +7,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import {
   ChannelConfigInput,
@@ -135,22 +135,20 @@ const ChannelConfigDetail = ({
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.channel.detail.channelRole.title")}
-            error={errors.role?.message}
+            {...register("role")}
           >
-            <select {...register("role")}>
-              <option value="0">
-                {t("config.channel.detail.channelRole.disabled")}
-              </option>
-              <option value="1">
-                {t("config.channel.detail.channelRole.primary")}
-              </option>
-              <option value="2">
-                {t("config.channel.detail.channelRole.secondary")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.channel.detail.channelRole.disabled")}
+            </option>
+            <option value="1">
+              {t("config.channel.detail.channelRole.primary")}
+            </option>
+            <option value="2">
+              {t("config.channel.detail.channelRole.secondary")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="text"

@@ -82,17 +82,20 @@ const MapSelectedNodeMenu = () => {
   };
 
   return (
-    <div className="absolute top-24 right-9 bg-white p-5 pl-4 rounded-lg drop-shadow-lg w-80">
+    <div className="absolute top-24 right-9 bg-white dark:bg-gray-800 p-5 pl-4 rounded-lg drop-shadow-lg w-80">
       <div className="flex justify-between">
-        <h1 className="text-gray-600 text-2xl leading-5 font-semibold">
+        <h1 className="text-gray-600 dark:text-gray-400 text-2xl leading-5 font-semibold">
           {deviceName}
         </h1>
         <button type="button" onClick={clearActiveNode}>
-          <X strokeWidth={1.5} className="w-5 h-5 text-gray-500" />
+          <X
+            strokeWidth={1.5}
+            className="w-5 h-5 text-gray-500 dark:text-gray-400"
+          />
         </button>
       </div>
 
-      <p className="text-gray-500 text-sm leading-5 font-normal pt-1">
+      <p className="text-gray-500 dark:text-gray-400 text-sm leading-5 font-normal pt-1">
         <Trans
           i18nKey="map.panes.nodeInfo.lastHeard"
           components={{
@@ -108,17 +111,17 @@ const MapSelectedNodeMenu = () => {
         />
       </p>
 
-      <h2 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
+      <h2 className="text-gray-500 dark:text-gray-400 text-base leading-6 font-semibold pt-2 pb-1">
         {t("map.panes.nodeInfo.generalInfo")}
       </h2>
       <div className="flex flex-col">
         <div className="flex justify-between pb-1">
           <div className="flex justify-start">
             <MapPin
-              className="w-5 h-5 text-gray-500 mt-0.5"
+              className="w-5 h-5 text-gray-500 dark:text-gray-400 mt-0.5"
               strokeWidth={1.5}
             />
-            <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
+            <h2 className="text-gray-500 dark:text-gray-400 text-base leading-6 font-normal pl-2">
               {!deviceLatCoord || !deviceLngCoord ? (
                 <span>{t("map.panes.nodeInfo.unknownValue")}</span>
               ) : (
@@ -142,7 +145,7 @@ const MapSelectedNodeMenu = () => {
           >
             <Copy
               strokeWidth={1.5}
-              className="w-5 h-5 float-right text-gray-500"
+              className="w-5 h-5 float-right text-gray-500 dark:text-gray-400"
             />
           </button>
         </div>
@@ -151,9 +154,9 @@ const MapSelectedNodeMenu = () => {
           <div className="flex justify-start">
             <BatteryLevelIcon
               batteryLevel={batteryLevel}
-              className="w-5 h-5 text-gray-500 mt-0.5"
+              className="w-5 h-5 text-gray-500 dark:text-gray-400 mt-0.5"
             />
-            <h2 className="text-gray-500 text-base leading-6 font-normal pl-2">
+            <h2 className="text-gray-500 dark:text-gray-400 text-base leading-6 font-normal pl-2">
               {getBatteryStateString(batteryLevel)}
             </h2>
           </div>
@@ -165,7 +168,7 @@ const MapSelectedNodeMenu = () => {
           >
             <Copy
               strokeWidth={1.5}
-              className="w-5 h-5 float-right text-gray-500"
+              className="w-5 h-5 float-right text-gray-500 dark:text-gray-400"
             />
           </button>
         </div>

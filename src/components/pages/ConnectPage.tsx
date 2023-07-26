@@ -4,11 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { open } from "@tauri-apps/api/shell";
 import * as Tabs from "@radix-ui/react-tabs";
 
+import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
+import MeshLogoDark from "@app/assets/Mesh_Logo_Dark.svg";
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
-
-// TODO export these as svg
-import Meshtastic_Logo_Dark from "@app/assets/Mesh_Logo_Black.png";
-import Meshtastic_Logo_Light from "@app/assets/Mesh_Logo_White.svg";
 
 import ConnectTab from "@components/connection/ConnectTab";
 import TcpConnectPane from "@components/connection/TcpConnectPane";
@@ -34,6 +32,7 @@ import {
 import { requestSliceActions } from "@features/requests/requestReducer";
 
 import { ConnectionType } from "@utils/connections";
+import { useIsDarkMode } from "@utils/hooks";
 
 import "@components/SplashScreen/SplashScreen.css";
 
@@ -46,6 +45,8 @@ export interface IOnboardPageProps {
 
 const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const { t } = useTranslation();
+
+  const { isDarkMode } = useIsDarkMode();
 
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
@@ -186,9 +187,8 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
         <div className="flex justify-center">
           <div className="h-1/8">
             <img
-              className="w-11/12 h-11/12"
-              // TODO switch to light mode or get fill working
-              src={Meshtastic_Logo_Dark}
+              className="h-9"
+              src={isDarkMode ? MeshLogoLight : MeshLogoDark}
             ></img>
           </div>
         </div>

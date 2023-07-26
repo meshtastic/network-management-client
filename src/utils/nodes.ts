@@ -61,35 +61,35 @@ export const getColorClassFromNodeState = (
   switch (nodeState) {
     case "selected":
       return {
-        text: "text-blue-500",
-        fill: "fill-blue-500",
-        background: "bg-blue-500",
-        border: "border-blue-500",
+        text: "text-blue-500 dark:text-blue-300",
+        fill: "fill-blue-500 dark:text-blue-300",
+        background: "bg-blue-500 dark:bg-blue-300",
+        border: "border-blue-500 dark:border-blue-300",
       };
 
     case "warning":
       return {
-        text: "text-orange-500",
-        fill: "fill-orange-500",
-        background: "bg-orange-500",
-        border: "border-orange-500",
+        text: "text-orange-500 dark:text-orange-300",
+        fill: "fill-orange-500 dark:text-orange-300",
+        background: "bg-orange-500 dark:bg-orange-300",
+        border: "border-orange-500 dark:border-orange-300",
       };
 
     case "error":
       return {
-        text: "text-red-500",
-        fill: "fill-red-500",
-        background: "bg-red-500",
-        border: "border-red-500",
+        text: "text-red-500 dark:text-red-300",
+        fill: "fill-red-500 dark:text-red-300",
+        background: "bg-red-500 dark:bg-red-300",
+        border: "border-red-500 dark:border-red-300",
       };
 
     // Nominal
     default:
       return {
-        text: "text-gray-500",
-        fill: "fill-gray-500",
-        background: "bg-gray-500",
-        border: "border-gray-500",
+        text: "text-gray-500 dark:text-gray-400",
+        fill: "fill-gray-500 dark:text-gray-400",
+        background: "bg-gray-500 dark:bg-gray-400",
+        border: "border-gray-500 dark:border-gray-400",
       };
   }
 };

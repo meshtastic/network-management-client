@@ -7,8 +7,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import {
   NetworkConfigInput,
@@ -145,19 +145,18 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
             {...register("ethEnabled")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.network.addressMode.title")}
-            error={errors.addressMode?.message}
+            disabled={ethDisabled}
+            {...register("addressMode")}
           >
-            <select disabled={ethDisabled} {...register("addressMode")}>
-              <option value="0">
-                {t("config.radio.network.addressMode.dhcp")}
-              </option>
-              <option disabled value="1">
-                {t("config.radio.network.addressMode.static")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.radio.network.addressMode.dhcp")}
+            </option>
+            <option disabled value="1">
+              {t("config.radio.network.addressMode.static")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             disabled={wifiDisabled && ethDisabled}

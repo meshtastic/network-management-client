@@ -24,7 +24,7 @@ const TableBody = <T,>({ title, data, columns }: ITableBodyProps<T>) => {
     <div>
       <div className="">
         <div className="flex flex-row justify-between">
-          <h1 className="text-4xl leading-10 font-semibold text-gray-700">
+          <h1 className="text-4xl leading-10 font-semibold text-gray-700 dark:text-gray-300">
             {title}
           </h1>
           {/* <input
@@ -37,12 +37,13 @@ const TableBody = <T,>({ title, data, columns }: ITableBodyProps<T>) => {
       <div>
         <table className="mt-9 w-full">
           {/* Header element */}
-          <thead className="text-gray-600 text-xs leading-4 font-semibold">
+          <thead className="text-gray-600 dark:text-gray-400 text-xs leading-4 font-semibold">
             {table.getHeaderGroups().map((headerGroup) => (
               // Row to contain header data
               <tr
                 key={headerGroup.id}
-                className="border-b-2 border-gray-200 border-solid"
+                // TODO how do we update the divider color of a table?
+                className="border-b-2 border-gray-200 dark:border-gray-500 border-solid"
               >
                 {headerGroup.headers.map((header) => (
                   // Mapping each header into the row
@@ -64,7 +65,7 @@ const TableBody = <T,>({ title, data, columns }: ITableBodyProps<T>) => {
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className="p-5 text-gray-500 text-sm leading-5 font-normal border-b"
+                    className="p-5 text-gray-500 dark:text-gray-400 text-sm leading-5 font-normal border-b border-gray-300 dark:border-gray-500"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>

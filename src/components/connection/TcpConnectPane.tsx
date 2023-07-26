@@ -54,14 +54,14 @@ const TcpConnectPane = ({
         {activeSocketState.status === "PENDING" ? (
           <>
             <EllipsisHorizontalCircleIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-            <p className="text-gray-700 dark:text-gray-400">
+            <p className="text-gray-700 dark:text-gray-300">
               {t("connectPage.tabs.tcp.connecting")}
             </p>
           </>
         ) : (
           <>
             <LinkIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-            <p className="text-gray-700 dark:text-gray-400">
+            <p className="text-gray-700 dark:text-gray-300">
               {t("connectPage.tabs.tcp.connect")}
             </p>
           </>

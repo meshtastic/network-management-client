@@ -25,7 +25,7 @@ const SerialPortOption = ({
       return (
         <div className="flex justify-center select-none">
           <div className="flex flex-1 justify-left border rounded-lg border-gray-500 dark:border-gray-200 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:cursor-wait bg-white dark:bg-gray-800">
-            <EllipsisHorizontalCircleIcon className="text-gray-500 dark:text-gray-400 w-6 h-6" />
+            <EllipsisHorizontalCircleIcon className="text-gray-500 dark:text-gray-300 w-6 h-6" />
             <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 dark:text-gray-400 mt-0.5">
               <Trans
                 i18nKey="connectPage.tabs.serial.portOption"
@@ -81,7 +81,7 @@ const SerialPortOption = ({
           <div className="flex justify-center select-none">
             <div className="flex flex-1 justify-left border rounded-lg border-gray-400 dark:border-gray-200 pl-4 pt-5 pb-5 pr-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-500 dark:hover:border-gray-50 hover:shadow-lg">
               <Usb className="text-gray-500 dark:text-gray-400 w-6 h-6" />
-              <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 dark:text-gray-400 mt-0.5">
+              <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 dark:text-gray-300 mt-0.5">
                 <Trans
                   i18nKey="connectPage.tabs.serial.portOption"
                   values={{ portName: name }}

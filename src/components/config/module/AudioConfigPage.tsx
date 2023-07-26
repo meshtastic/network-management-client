@@ -6,8 +6,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import type { AudioModuleConfigInput } from "@features/config/configSlice";
 // import {
@@ -132,19 +132,21 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             {...register("pttPin")}
           />
 
-          <ConfigLabel text="Audio Bitrate" error={errors.bitrate?.message}>
-            <select disabled={codec2Disabled} {...register("bitrate")}>
-              <option value="0">Default (700B)</option>
-              <option value="1">3200 bps</option>
-              <option value="2">2400 bps</option>
-              <option value="3">1600 bps</option>
-              <option value="4">1400 bps</option>
-              <option value="5">1300 bps</option>
-              <option value="6">1200 bps</option>
-              <option value="7">700 bps</option>
-              <option value="8">700B bps</option>
-            </select>
-          </ConfigLabel>
+          <ConfigSelect
+            text="Audio Bitrate"
+            disabled={codec2Disabled}
+            {...register("bitrate")}
+          >
+            <option value="0">Default (700B)</option>
+            <option value="1">3200 bps</option>
+            <option value="2">2400 bps</option>
+            <option value="3">1600 bps</option>
+            <option value="4">1400 bps</option>
+            <option value="5">1300 bps</option>
+            <option value="6">1200 bps</option>
+            <option value="7">700 bps</option>
+            <option value="8">700B bps</option>
+          </ConfigSelect>
 
           <ConfigInput
             type="number"

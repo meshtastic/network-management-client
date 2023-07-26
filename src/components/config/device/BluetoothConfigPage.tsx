@@ -7,8 +7,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import {
   BluetoothConfigInput,
@@ -123,22 +123,21 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
             {...register("enabled")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.bluetooth.pairingMode.title")}
-            error={errors.mode?.message}
+            disabled={bluetoothDisabled}
+            {...register("mode")}
           >
-            <select disabled={bluetoothDisabled} {...register("mode")}>
-              <option value="0">
-                {t("config.radio.bluetooth.pairingMode.randomPin")}
-              </option>
-              <option value="1">
-                {t("config.radio.bluetooth.pairingMode.fixedPin")}
-              </option>
-              <option value="2">
-                {t("config.radio.bluetooth.pairingMode.noPin")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.radio.bluetooth.pairingMode.randomPin")}
+            </option>
+            <option value="1">
+              {t("config.radio.bluetooth.pairingMode.fixedPin")}
+            </option>
+            <option value="2">
+              {t("config.radio.bluetooth.pairingMode.noPin")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="number"
