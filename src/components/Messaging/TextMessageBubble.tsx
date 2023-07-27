@@ -74,10 +74,10 @@ const TextMessageBubble = ({
     return (
       <div className={`${className}`}>
         <p className="flex flex-row justify-end mb-1 gap-2 items-baseline">
-          <span className="text-xs font-semibold text-gray-400">
+          <span className="text-xs font-semibold text-gray-400 dark:text-gray-400">
             {formatMessageTime(packet.rxTime)}
           </span>
-          <span className="text-sm font-semibold text-gray-700">
+          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
             {usernameDisplayText}
           </span>
         </p>
@@ -85,10 +85,10 @@ const TextMessageBubble = ({
         <div
           className={`ml-auto ${
             type === "waypoint" ? "w-2/5" : "w-fit"
-          } max-w-[40%] rounded-l-lg rounded-br-lg border border-gray-200`}
+          } max-w-[40%] rounded-l-lg rounded-br-lg border border-gray-200 dark:border-gray-600`}
         >
           <p
-            className={`px-3 py-2 rounded-tl-lg bg-gray-700 text-sm font-normal text-gray-100 break-words border-b border-gray-400 ${
+            className={`px-3 py-2 rounded-tl-lg bg-gray-700 dark:bg-gray-300 text-sm font-normal text-gray-100 dark:text-gray-600 break-words border-b border-gray-400 dark:border-gray-600 ${
               message.payload.type !== "waypoint" ? "rounded-b-lg" : ""
             }`}
           >
@@ -127,7 +127,10 @@ const TextMessageBubble = ({
                   tooltipText="Show on map"
                   tooltipProps={{ side: "left" }}
                 >
-                  <MapIcon className="text-gray-400" strokeWidth={1.5} />
+                  <MapIcon
+                    className="text-gray-400 dark:text-gray-300"
+                    strokeWidth={1.5}
+                  />
                 </MapOverlayButton>
               </Map>
             </div>
@@ -136,7 +139,9 @@ const TextMessageBubble = ({
 
         <p
           className={`ml-auto mt-1 text-xs text-right ${
-            isError ? "font-semibold text-red-500" : "font-normal text-gray-500"
+            isError
+              ? "font-semibold text-red-500 dark:text-red-400"
+              : "font-normal text-gray-500 dark:text-gray-400"
           }`}
         >
           {text}
@@ -148,10 +153,10 @@ const TextMessageBubble = ({
   return (
     <div className={`${className}`}>
       <p className="flex flex-row justify-start mb-1 gap-2 items-baseline">
-        <span className="text-sm font-semibold text-gray-700">
+        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
           {usernameDisplayText}
         </span>
-        <span className="text-xs font-semibold text-gray-400">
+        <span className="text-xs font-semibold text-gray-400 dark:text-gray-400">
           {formatMessageTime(packet.rxTime)}
         </span>
       </p>
@@ -159,10 +164,10 @@ const TextMessageBubble = ({
       <div
         className={`mr-auto ${
           type === "waypoint" ? "w-2/5" : "w-fit"
-        } max-w-[40%] rounded-r-lg rounded-bl-lg border border-gray-200`}
+        } max-w-[40%] rounded-r-lg rounded-bl-lg border border-gray-200 dark:border-gray-600`}
       >
         <p
-          className={`px-3 py-2 rounded-tr-lg bg-white text-sm font-normal text-gray-600 break-words border-b border-gray-100 ${
+          className={`px-3 py-2 rounded-tr-lg bg-white dark:bg-gray-800 text-sm font-normal text-gray-600 dark:text-gray-300 break-words border-b border-gray-100 dark:border-gray-700 ${
             message.payload.type !== "waypoint" ? "rounded-b-lg" : ""
           }`}
         >

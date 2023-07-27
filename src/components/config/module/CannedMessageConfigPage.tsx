@@ -7,8 +7,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import {
   CannedMessageModuleConfigInput,
@@ -126,28 +126,27 @@ const CannedMessageConfigPage = ({
             {...register("enabled")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.module.cannedMessages.allowInputSource.title")}
-            error={errors.allowInputSource?.message}
+            disabled={moduleDisabled}
+            {...register("allowInputSource")}
           >
-            <select disabled={moduleDisabled} {...register("allowInputSource")}>
-              <option value="">
-                {t("config.module.cannedMessages.allowInputSource.noSelect")}
-              </option>
-              <option value="_any">
-                {t("config.module.cannedMessages.allowInputSource.any")}
-              </option>
-              <option value="rotEnc1">
-                {t("config.module.cannedMessages.allowInputSource.3200bps")}
-              </option>
-              <option value="upDownEnc1">
-                {t("config.module.cannedMessages.allowInputSource.encoder")}
-              </option>
-              <option value="cardkb">
-                {t("config.module.cannedMessages.allowInputSource.cardKb")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="">
+              {t("config.module.cannedMessages.allowInputSource.noSelect")}
+            </option>
+            <option value="_any">
+              {t("config.module.cannedMessages.allowInputSource.any")}
+            </option>
+            <option value="rotEnc1">
+              {t("config.module.cannedMessages.allowInputSource.3200bps")}
+            </option>
+            <option value="upDownEnc1">
+              {t("config.module.cannedMessages.allowInputSource.encoder")}
+            </option>
+            <option value="cardkb">
+              {t("config.module.cannedMessages.allowInputSource.cardKb")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="checkbox"

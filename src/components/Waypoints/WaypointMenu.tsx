@@ -65,24 +65,27 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
     activeWaypoint;
 
   return (
-    <div className="absolute top-24 right-9 bg-white p-6 rounded-lg drop-shadow-lg w-96">
+    <div className="absolute top-24 right-9 bg-white dark:bg-gray-800 p-6 rounded-lg drop-shadow-lg w-96">
       <button
         className="absolute top-6 right-6"
         type="button"
         onClick={() => dispatch(deviceSliceActions.setActiveWaypoint(null))}
       >
-        <X strokeWidth={1.5} className="w-5 h-5 text-gray-500" />
+        <X
+          strokeWidth={1.5}
+          className="w-5 h-5 text-gray-500 dark:text-gray-400"
+        />
       </button>
 
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2">
           {!!icon && <p className="text-2xl">{String.fromCodePoint(icon)}</p>}
-          <h1 className="mr-8 text-gray-600 leading-7 text-2xl font-semibold break-words">
+          <h1 className="mr-8 text-gray-600 dark:text-gray-300 leading-7 text-2xl font-semibold break-words">
             {getWaypointTitle(activeWaypoint)}
           </h1>
         </div>
 
-        <div className="text-gray-500 text-base">
+        <div className="text-gray-500 dark:text-gray-400 text-base">
           <h2 className="leading-6 font-semibold pt-2">
             {t("map.panes.waypointInfo.description")}
           </h2>
@@ -92,12 +95,12 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
         </div>
 
         <div>
-          <h2 className="text-gray-500 text-base leading-6 font-semibold pt-2 pb-1">
+          <h2 className="text-gray-500 dark:text-gray-400 text-base leading-6 font-semibold pt-2 pb-1">
             {t("map.panes.waypointInfo.details")}
           </h2>
 
           <div className="flex flex-col gap-1 pt-1">
-            <div className="flex justify-between pb-1 text-gray-500">
+            <div className="flex justify-between pb-1 text-gray-500 dark:text-gray-400">
               <div className="flex justify-start">
                 {lockedTo ? (
                   <Lock strokeWidth={1.5} />
@@ -111,7 +114,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                     ? t("map.panes.waypointInfo.onlyNodeEdit", {
                         nodeName: usersMap[lockedTo]?.shortName || lockedTo,
                       })
-                    : t("map.panes.waypointInfo.anyoneEdit")}
+                    : t("map.panes.waypointInfo.locked.anyoneEdit")}
                 </h2>
               </div>
 
@@ -133,7 +136,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
               </button>
             </div>
 
-            <div className="flex justify-between pb-1 text-gray-500">
+            <div className="flex justify-between pb-1 text-gray-500 dark:text-gray-400">
               <div className="flex justify-start">
                 <MapPin strokeWidth={1.5} />
                 <h2 className="text-base leading-6 font-normal pl-2">
@@ -159,7 +162,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
               </button>
             </div>
 
-            <div className="flex justify-between pb-1 text-gray-500">
+            <div className="flex justify-between pb-1 text-gray-500 dark:text-gray-400">
               <div className="flex justify-start">
                 {!expire ? (
                   <TimerOff strokeWidth={1.5} />
@@ -198,7 +201,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
             type="button"
             onClick={handleEditWaypoint}
             disabled={!!lockedTo && lockedTo !== device?.myNodeInfo.myNodeNum}
-            className=" text-gray-500 hover:text-gray-600 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+            className=" text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:text-gray-300 dark:disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
           >
             {t("map.panes.waypointInfo.editWaypoint")}
           </button>
@@ -206,7 +209,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
           <button
             type="button"
             onClick={handleDeleteWaypoint}
-            className="text-red-400 hover:text-red-500 transition-colors"
+            className="text-red-400 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors"
           >
             {t("map.panes.waypointInfo.deleteWaypoint")}
           </button>

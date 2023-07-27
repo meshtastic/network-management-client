@@ -1,6 +1,10 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import LogoWhiteSVG from "@app/assets/Mesh_Logo_White.svg";
+
+import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
+import MeshLogoDark from "@app/assets/Mesh_Logo_Dark.svg";
+
+import { useIsDarkMode } from "@utils/hooks";
 
 import "@components/Sidebar/Sidebar.css";
 
@@ -11,20 +15,22 @@ export interface IMeshLogoProps {
 const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
   const { t } = useTranslation();
 
+  const { isDarkMode } = useIsDarkMode();
+
   return (
-    <div className="flex flex-row justify-start align-middle h-20 p-4 border-b border-gray-100">
+    <div className="flex flex-row justify-start align-middle h-20 p-4 border-b border-gray-100 dark:border-gray-700">
       <img
-        className="my-auto p-3 bg-gray-700 rounded-lg h-12 w-12"
-        src={LogoWhiteSVG}
+        className="my-auto p-3 bg-gray-700 dark:bg-gray-200 rounded-lg h-12 w-12"
+        src={isDarkMode ? MeshLogoDark : MeshLogoLight}
       />
       <div
         className="sidebar-opacity-transition my-auto pl-4 whitespace-nowrap"
         style={isSidebarExpanded ? { opacity: 1 } : { opacity: 0 }}
       >
-        <p className="text-gray-700 text-sm font-medium">
+        <p className="text-gray-700 dark:text-gray-300 text-sm font-medium">
           {t("general.meshtastic")}
         </p>
-        <p className="text-gray-400 text-xs font-normal">
+        <p className="text-gray-400 dark:text-gray-400 text-xs font-normal">
           {t("general.networkManagement")}
         </p>
       </div>

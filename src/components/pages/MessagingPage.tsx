@@ -45,8 +45,8 @@ const MessagingPage = () => {
         {activeChannelIdx != null && !!channels[activeChannelIdx] ? (
           <ChannelDetailView channel={channels[activeChannelIdx]} />
         ) : (
-          <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">
-            <p className="m-auto text-base font-normal text-gray-700">
+          <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100 dark:bg-gray-700">
+            <p className="m-auto text-base font-normal text-gray-700 dark:text-gray-300">
               {t("messaging.noChannelsSelected")}
             </p>
           </div>

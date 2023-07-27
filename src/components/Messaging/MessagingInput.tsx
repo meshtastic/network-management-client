@@ -1,5 +1,6 @@
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import React, { FormEventHandler, useState } from "react";
+import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import DefaultTooltip from "@components/DefaultTooltip";
 
 export interface IMessagingInputProps {
   onSubmit: (message: string) => void;
@@ -23,19 +24,21 @@ const MessagingInput = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className={`${className} flex flex-row bg-white rounded-lg gap-3 border h-12 border-gray-200`}
+      className={`${className} flex flex-row bg-white dark:bg-gray-800 rounded-lg gap-3 border h-12 border-gray-200 dark:border-gray-500`}
     >
       <input
         type="text"
         placeholder={placeholder}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="rounded-l-lg flex-1 pl-4 text-sm font-normal text-gray-700 placeholder:text-sm placeholder:font-normal placeholder:text-gray-300"
+        className="rounded-l-lg flex-1 pl-4 text-sm font-normal bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 placeholder:text-sm placeholder:font-normal placeholder:text-gray-300 dark:placeholder:text-gray-500"
       />
-      <div className="my-2 w-[1px] bg-gray-200" />
-      <button type="submit" className="py-2 pr-3">
-        <PaperAirplaneIcon className="w-6 h-6 text-gray-400" />
-      </button>
+      <div className="my-2 w-[1px] bg-gray-200 dark:bg-gray-500" />
+      <DefaultTooltip text="Send message to channel">
+        <button type="submit" className="py-2 pr-3">
+          <PaperAirplaneIcon className="w-6 h-6 text-gray-400 dark:text-gray-400" />
+        </button>
+      </DefaultTooltip>
     </form>
   );
 };

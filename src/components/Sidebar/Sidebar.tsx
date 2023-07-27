@@ -34,8 +34,10 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`shrink-0 sidebar-width-transition flex flex-col h-screen box-content shadow-lg border-r border-gray-100 overflow-x-hidden ${
-        isSidebarExpanded ? "w-[300px] text-gray-500" : "w-20 text-white"
+      className={`shrink-0 sidebar-width-transition flex flex-col h-screen box-content bg-white dark:bg-gray-800 shadow-lg border-r border-gray-100 dark:border-gray-700 overflow-x-hidden ${
+        isSidebarExpanded
+          ? "w-[300px] text-gray-500 dark:text-gray-400"
+          : "w-20 text-white dark:text-gray-800"
       }`}
     >
       <SidebarLogo isSidebarExpanded={isSidebarExpanded} />
@@ -150,7 +152,7 @@ const Sidebar = () => {
       </div>
 
       <div className="flex flex-col mt-auto justify-between px-4 pt-4 pb-1">
-        <hr className="border-gray-100" />
+        <hr className="border-gray-100 dark:border-gray-700" />
 
         <SidebarIcon
           name={isSidebarExpanded ? t("sidebar.expand") : t("sidebar.collapse")}

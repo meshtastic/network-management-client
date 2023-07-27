@@ -26,16 +26,20 @@ const ConfigTitle = ({
   children,
 }: IConfigTitleProps) => {
   return (
-    <div className={`flex flex-col w-full h-full bg-gray-100`}>
-      <div className="flex-initial flex flex-row justify-between items-center px-9 min-h-[5rem] h-20 bg-white border-b border-l border-gray-100">
+    <div className={`flex flex-col w-full h-full bg-gray-100 dark:bg-gray-700`}>
+      <div className="flex-initial flex flex-row justify-between items-center px-9 min-h-[5rem] h-20 bg-white dark:bg-gray-800 border-b border-l border-gray-100 dark:border-gray-700">
         <div>
-          <h2 className="text-sm font-semibold text-gray-700">{title}</h2>
-          <p className="text-xs font-normal text-gray-400">{subtitle}</p>
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            {title}
+          </h2>
+          <p className="text-xs font-normal text-gray-400 dark:text-gray-500">
+            {subtitle}
+          </p>
         </div>
 
         <DefaultTooltip text={buttonTooltipText}>
           <button type="button" onClick={() => onIconClick()} {...buttonProps}>
-            {renderIcon("w-6 h-6 text-gray-400")}
+            {renderIcon("w-6 h-6 text-gray-400 dark:text-gray-400")}
           </button>
         </DefaultTooltip>
       </div>

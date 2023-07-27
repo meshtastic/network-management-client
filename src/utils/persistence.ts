@@ -1,16 +1,22 @@
-import type { TcpConnectionMeta } from "@features/appConfig/appConfigSlice";
+import type {
+  IGeneralConfigState,
+  IMapConfigState,
+  TcpConnectionMeta,
+} from "@features/appConfig/appConfigSlice";
 import type { Store } from "tauri-plugin-store-api";
 
 export const DEFAULT_STORE_FILE_NAME = "config.bin";
 
 export enum PersistedStateKeys {
   LastTcpConnection = "lastTcpConnection",
-  OtherKey = "otherKey",
+  GeneralConfig = "generalConfig",
+  MapConfig = "mapConfig",
 }
 
 export interface IPersistedState {
   [PersistedStateKeys.LastTcpConnection]?: TcpConnectionMeta;
-  [PersistedStateKeys.OtherKey]?: string;
+  [PersistedStateKeys.GeneralConfig]?: IGeneralConfigState;
+  [PersistedStateKeys.MapConfig]?: IMapConfigState;
 }
 
 export function* setValueInPersistedStore<TKey extends keyof IPersistedState>(

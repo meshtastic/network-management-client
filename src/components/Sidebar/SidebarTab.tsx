@@ -17,7 +17,7 @@ const SidebarTab = ({
   return (
     <div>
       <p
-        className="sidebar-opacity-transition mb-2 text-[9px] text-gray-500 uppercase font-semibold"
+        className="sidebar-opacity-transition mb-2 text-[9px] text-gray-500 dark:text-gray-400 uppercase font-semibold"
         style={isSidebarExpanded ? { opacity: 1 } : { opacity: 0 }}
       >
         {title}

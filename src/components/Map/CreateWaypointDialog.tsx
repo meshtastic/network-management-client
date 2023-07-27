@@ -42,6 +42,7 @@ import {
 import { selectMapState } from "@features/map/mapSelectors";
 
 import { dateTimeLocalFormatString } from "@utils/form";
+import { useIsDarkMode } from "@utils/hooks";
 import { MapIDs, formatLocation, getFlyToConfig } from "@utils/map";
 import { getChannelName } from "@utils/messaging";
 
@@ -72,6 +73,8 @@ const CreateWaypointDialog = ({
   existingWaypoint,
 }: ICreateWaypointDialogProps) => {
   const { t } = useTranslation();
+
+  const { isDarkMode } = useIsDarkMode();
 
   const dispatch = useDispatch();
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
@@ -238,8 +241,8 @@ const CreateWaypointDialog = ({
   return (
     <Dialog.Portal>
       {/* Tracking https://github.com/radix-ui/primitives/issues/1159 */}
-      <div className="fixed inset-0 bg-gray-900/[0.4]" />
-      <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col bg-white default-overlay">
+      <div className="fixed inset-0 bg-gray-900/[0.4] dark:bg-gray-600/[0.7]" />
+      <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col bg-white dark:bg-gray-800 default-overlay">
         <div className="flex flex-row max-h-[80vh]">
           <div className="relative w-[600px]">
             <Map
@@ -296,7 +299,10 @@ const CreateWaypointDialog = ({
                 tooltipText={t("map.waypoints.centerWaypointTooltip")}
                 tooltipProps={{ side: "left" }}
               >
-                <Locate strokeWidth={1} className="text-gray-600" />
+                <Locate
+                  strokeWidth={1}
+                  className="text-gray-600 dark:text-gray-400"
+                />
               </MapOverlayButton>
             </Map>
             <div className=" w-[480px] h-full" />
@@ -304,7 +310,7 @@ const CreateWaypointDialog = ({
 
           <div className="flex flex-col gap-4 px-9 py-7 w-96">
             <div className="flex flex-col">
-              <Dialog.Title className="text-base font-medium text-gray-700">
+              <Dialog.Title className="text-base font-medium text-gray-700 dark:text-gray-300">
                 {existingWaypoint
                   ? t("map.waypoints.editWaypointTitle")
                   : t("map.waypoints.createWaypointTitle")}
@@ -322,7 +328,9 @@ const CreateWaypointDialog = ({
                 <label className="flex flex-col flex-1">
                   <p
                     className={`flex flex-row justify-between ${
-                      name.isValid ? "text-gray-600" : "text-red-500"
+                      name.isValid
+                        ? "text-gray-600 dark:text-gray-400"
+                        : "text-red-500 dark:text-red-400"
                     }`}
                   >
                     <span>{t("map.waypoints.nameLabel")}</span>
@@ -332,7 +340,7 @@ const CreateWaypointDialog = ({
                   </p>
 
                   <ConnectionInput
-                    className="w-full invalid:border-red-400 invalid:text-red-400"
+                    className="w-full invalid:border-red-400 dark:invalid:border-red-400 invalid:text-red-400 dark:invalid:text-red-400"
                     placeholder={t("map.waypoints.namePlaceholder")}
                     value={name.value}
                     onChange={handleNameChange}
@@ -345,7 +353,9 @@ const CreateWaypointDialog = ({
                 <label className="flex flex-col flex-1">
                   <p
                     className={`flex flex-row justify-between ${
-                      desc.isValid ? "text-gray-600" : "text-red-500"
+                      desc.isValid
+                        ? "text-gray-600 dark:text-gray-400"
+                        : "text-red-500 dark:text-red-400"
                     }`}
                   >
                     <span>{t("map.waypoints.descriptionLabel")}</span>
@@ -355,7 +365,7 @@ const CreateWaypointDialog = ({
                   </p>
 
                   <ConnectionInput
-                    className="w-full invalid:border-red-400 invalid:text-red-400"
+                    className="w-full invalid:border-red-400 dark:invalid:border-red-400 invalid:text-red-400 dark:invalid:text-red-400"
                     placeholder={t("map.waypoints.descriptionPlaceholder")}
                     value={desc.value}
                     onChange={handleDescChange}
@@ -365,7 +375,7 @@ const CreateWaypointDialog = ({
               </fieldset>
 
               <fieldset className="">
-                <label className="text-gray-600">
+                <label className="text-gray-600 dark:text-gray-400">
                   <p>{t("map.waypoints.blockWaypointEditing")}</p>
                   <ConnectionSwitch
                     checked={waypointLocked}
@@ -375,7 +385,7 @@ const CreateWaypointDialog = ({
               </fieldset>
 
               <fieldset className="">
-                <label className="text-gray-600">
+                <label className="text-gray-600 dark:text-gray-400">
                   <p>{t("map.waypoints.waypointExpires")}</p>
                   <ConnectionSwitch
                     checked={waypointExpires}
@@ -386,11 +396,11 @@ const CreateWaypointDialog = ({
 
               <fieldset className="">
                 <label className="">
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     {t("map.waypoints.expireTime")}
                   </p>
                   <ConnectionInput
-                    className="w-full disabled:cursor-not-allowed disabled:text-gray-300"
+                    className="w-full disabled:cursor-not-allowed disabled:text-gray-300 dark:disabled:text-gray-700"
                     type="datetime-local"
                     disabled={!waypointExpires}
                     min={moment().format(dateTimeLocalFormatString)}
@@ -402,7 +412,7 @@ const CreateWaypointDialog = ({
 
               <fieldset className="">
                 <label className="">
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     {t("map.waypoints.deviceChannel")}
                   </p>
                   <Select.Root
@@ -410,7 +420,7 @@ const CreateWaypointDialog = ({
                     onValueChange={(e) => setChannelNum(parseInt(e))}
                   >
                     <Select.Trigger
-                      className="flex-1 border px-5 py-4 border-gray-400 rounded-lg text-gray-700 h-full bg-transparent focus:outline-none disabled:cursor-wait inline-flex items-center justify-center"
+                      className="flex-1 border px-5 py-4 border-gray-400 rounded-lg text-gray-700 dark:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-wait inline-flex items-center justify-center"
                       aria-label={t("map.waypoints.channelAriaLabel")}
                       asChild
                     >
@@ -431,13 +441,13 @@ const CreateWaypointDialog = ({
                           <ChevronUpIcon />
                         </Select.ScrollUpButton>
 
-                        <Select.Viewport className="bg-white p-2 rounded-lg shadow-lg">
+                        <Select.Viewport className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg">
                           <Select.Group>
                             {deviceChannels.map((c) => (
                               <Select.Item
                                 key={c.config.index}
                                 value={`${c.config.index}`}
-                                className={`relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50`}
+                                className={`relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 dark:text-gray-300 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50 dark:radix-disabled:opacity-100 dark:radix-disabled:text-gray-700`}
                                 disabled={c.config.role === 0} // DISABLED role
                               >
                                 <Select.ItemText>
@@ -461,7 +471,9 @@ const CreateWaypointDialog = ({
               </fieldset>
 
               <div className="mb-2">
-                <p className="text-gray-600">{t("map.waypoints.pinEmoji")}</p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {t("map.waypoints.pinEmoji")}
+                </p>
                 <Popover.Root
                   open={isEmojiPickerOpen}
                   onOpenChange={(e) => setIsEmojiPickerOpen(e)}
@@ -470,14 +482,14 @@ const CreateWaypointDialog = ({
                     <Popover.Trigger asChild>
                       <div className="relative mr-auto">
                         <button
-                          className="relative w-9 h-9 flex align-middle justify-center border border-gray-200 rounded-full"
+                          className="relative w-9 h-9 flex align-middle justify-center border border-gray-200 dark:border-gray-500 rounded-full"
                           aria-label="Select emoji"
                         >
                           <p className="m-auto text-xl">
                             {emoji ?? (
                               <Plus
                                 strokeWidth={1.5}
-                                className="text-gray-400 p-0.5"
+                                className="text-gray-400 dark:text-gray-500 p-0.5"
                               />
                             )}
                           </p>
@@ -492,7 +504,7 @@ const CreateWaypointDialog = ({
                               setEmoji(null);
                             }}
                           >
-                            <Cross2Icon className="w-4 h-4 p-0.5 bg-white rounded-full shadow-md border border-gray-200 text-gray-400" />
+                            <Cross2Icon className="w-4 h-4 p-0.5 bg-white dark:bg-gray-800 rounded-full shadow-md border border-gray-200 dark:border-gray-500 text-gray-400 dark:text-gray-400" />
                           </button>
                         )}
                       </div>
@@ -509,10 +521,10 @@ const CreateWaypointDialog = ({
                             setEmoji(e.native);
                             setIsEmojiPickerOpen(false);
                           }}
-                          theme="light"
+                          theme={isDarkMode ? "dark" : "light"}
                           previewPosition="none"
                         />
-                        <Popover.Arrow className="fill-gray-200" />
+                        <Popover.Arrow className="fill-gray-200 dark:fill-gray-800" />
                       </div>
                     </Popover.Content>
                   </Popover.Portal>
@@ -525,7 +537,7 @@ const CreateWaypointDialog = ({
                 type="button"
                 onClick={handleSubmit}
                 disabled={!(name.isValid && desc.isValid)}
-                className=" text-gray-600 hover:text-gray-700 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+                className=" text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 disabled:text-gray-300 dark:disabled:text-gray-700 disabled:cursor-not-allowed transition-colors"
               >
                 {existingWaypoint
                   ? t("map.waypoints.saveChanges")
@@ -533,7 +545,7 @@ const CreateWaypointDialog = ({
               </button>
 
               <Dialog.Close asChild>
-                <button className="text-red-400 hover:text-red-500 transition-colors">
+                <button className="text-red-400 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors">
                   {t("map.waypoints.cancel")}
                 </button>
               </Dialog.Close>
@@ -543,7 +555,7 @@ const CreateWaypointDialog = ({
 
         <Dialog.Close asChild>
           <button
-            className="fixed top-7 right-9 w-6 h-6 text-gray-500 hover:text-gray-600 transition-colors"
+            className="fixed top-7 right-9 w-6 h-6 text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             aria-label={t("map.waypoints.closeAriaLabel")}
           >
             <X strokeWidth={1.5} />
