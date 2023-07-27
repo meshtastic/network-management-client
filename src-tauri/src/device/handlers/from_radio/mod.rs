@@ -33,6 +33,11 @@ impl MeshDevice {
             protobufs::from_radio::PayloadVariant::ModuleConfig(module_config) => {
                 handlers::handle_module_config_packet(self, &mut update_result, module_config)?;
             }
+            protobufs::from_radio::PayloadVariant::MqttClientProxyMessage(_m) => {
+                return Err(DeviceUpdateError::RadioMessageNotSupported(
+                    "mqtt client proxy message".into(),
+                ));
+            }
             protobufs::from_radio::PayloadVariant::MyInfo(my_node_info) => {
                 handlers::handle_my_node_info_packet(self, &mut update_result, my_node_info)?;
             }
@@ -141,7 +146,6 @@ mod tests {
     #[test]
     fn set_my_node_info() {
         let my_node_info = protobufs::MyNodeInfo {
-            max_channels: 12,
             ..Default::default()
         };
 
@@ -153,8 +157,6 @@ mod tests {
         assert!(result.device_updated);
         assert!(!result.regenerate_graph);
         assert!(result.notification_config.is_none());
-
-        assert_eq!(device.my_node_info.max_channels, 12);
     }
 
     #[test]

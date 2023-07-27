@@ -69,6 +69,9 @@ impl MeshDevice {
 
         if let Some(payload_variant) = module_config.payload_variant {
             match payload_variant {
+                protobufs::module_config::PayloadVariant::AmbientLighting(config) => {
+                    trace!("Not handling ambient lighting module config: {:?}", config);
+                }
                 protobufs::module_config::PayloadVariant::Audio(config) => {
                     trace!("Updated own audio module config: {:?}", config);
                     self.module_config.audio = Some(config);
@@ -87,6 +90,10 @@ impl MeshDevice {
                 protobufs::module_config::PayloadVariant::Mqtt(config) => {
                     trace!("Updated own mqtt module config: {:?}", config);
                     self.module_config.mqtt = Some(config);
+                }
+                protobufs::module_config::PayloadVariant::NeighborInfo(config) => {
+                    trace!("Updated own neighbor info module config: {:?}", config);
+                    self.module_config.neighbor_info = Some(config);
                 }
                 protobufs::module_config::PayloadVariant::RangeTest(config) => {
                     trace!("Updated own range test module config: {:?}", config);
