@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Construction } from "lucide-react";
 
 import i18next from "@app/i18n";
 
@@ -51,11 +50,11 @@ const ApplicationSettingsPage = () => {
       <ConfigLayout
         title={t("applicationSettings.title")}
         backtrace={[t("sidebar.applicationSettings")]}
-        renderTitleIcon={(c) => (
-          <Construction strokeWidth={1.5} className={`${c}`} />
-        )}
-        titleIconTooltip={t("general.wip")}
-        onTitleIconClick={() => console.warn(t("general.wip"))}
+        // Hides the title icon as the user doesn't need to take secondary action
+        // to persist application settings after committing within a pane
+        renderTitleIcon={() => <></>}
+        titleIconTooltip={""}
+        onTitleIconClick={() => null}
         renderOptions={() =>
           Object.entries(ApplicationSettingsOptions).map(([k, displayName]) => (
             <ConfigOption
