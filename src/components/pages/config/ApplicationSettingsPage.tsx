@@ -6,16 +6,27 @@ import i18next from "@app/i18n";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
+
+import GeneralConfigPage from "@components/config/application/GeneralConfigPage";
 import MapConfigPage from "@components/config/application/MapConfigPage";
 
+import type { IAppConfigState } from "@features/appConfig/appConfigSlice";
+
 export const ApplicationSettingsOptions = {
+  general: i18next.t("applicationSettings.options.general"),
   map: i18next.t("applicationSettings.options.map"),
 };
 
-const _ActiveOption = ({ activeOption }: { activeOption: string }) => {
+const _ActiveOption = ({
+  activeOption,
+}: {
+  activeOption: keyof IAppConfigState;
+}) => {
   const { t } = useTranslation();
 
   switch (activeOption) {
+    case "general":
+      return <GeneralConfigPage />;
     case "map":
       return <MapConfigPage />;
     default:
@@ -33,7 +44,7 @@ const ApplicationSettingsPage = () => {
   const { t } = useTranslation();
 
   const [activeOption, setActiveOption] =
-    useState<keyof typeof ApplicationSettingsOptions>("map");
+    useState<keyof typeof ApplicationSettingsOptions>("general");
 
   return (
     <div className="flex-1">

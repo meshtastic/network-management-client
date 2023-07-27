@@ -9,8 +9,8 @@ import { v4 } from "uuid";
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
 
-import { appConfigSliceActions } from "@features/appConfig/appConfigSlice";
-import { selectMapConfigState } from "@app/features/appConfig/appConfigSelectors";
+import { requestPersistMapConfig } from "@features/appConfig/appConfigActions";
+import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
 
 export interface IMapConfigPageProps {
   className?: string;
@@ -33,7 +33,7 @@ const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
   } = useForm<MapConfigFormInput>({ defaultValues: { style } });
 
   const handleSubmitSuccess = (data: MapConfigFormInput) => {
-    dispatch(appConfigSliceActions.setMapStyle(data.style));
+    dispatch(requestPersistMapConfig({ style: data.style }));
   };
 
   const handleFormSubmit: FormEventHandler = (e) => {

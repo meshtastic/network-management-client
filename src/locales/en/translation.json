@@ -474,7 +474,18 @@
     "saveChanges": "Save Changes",
     "unknownOption": "Unknown option selected",
     "options": {
+      "general": "General Settings",
       "map": "Map Settings"
+    },
+    "general": {
+      "title": "General Settings",
+      "description": "Edit general application settings",
+      "colorMode": {
+        "title": "Application Color Mode",
+        "light": "Light Mode",
+        "dark": "Dark Mode",
+        "system": "System Default"
+      }
     },
     "map": {
       "title": "Map Settings",

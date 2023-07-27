@@ -22,7 +22,10 @@ export interface IAppConfigState {
 }
 
 export const initialAppConfigState: IAppConfigState = {
+  // This is not intended to be manually updated by the user
+  // Might be worth adding a new "hidden" object
   lastTcpConnection: null,
+
   map: {
     style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
   },
@@ -41,11 +44,17 @@ export const appConfigSlice = createSlice({
     ) => {
       state.lastTcpConnection = action.payload;
     },
-    setMapStyle: (state, action: PayloadAction<string>) => {
-      state.map.style = action.payload;
+    updateGeneralConfig: (
+      state,
+      action: PayloadAction<Partial<IGeneralConfigState>>
+    ) => {
+      state.general = { ...state.general, ...action.payload };
     },
-    setColorMode: (state, action: PayloadAction<ColorMode>) => {
-      state.general.colorMode = action.payload;
+    updateMapConfig: (
+      state,
+      action: PayloadAction<Partial<IMapConfigState>>
+    ) => {
+      state.map = { ...state.map, ...action.payload };
     },
   },
 });
