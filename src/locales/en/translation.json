@@ -130,7 +130,9 @@
     "manyMessages": "{{numMessages}} messages",
     "channelNumber": "(Ch. {{channelNum}})",
     "unnamedWaypoint": "[Unnamed waypoint]",
-    "waypointInfo": "Waypoint \"{{title}}\" ({{latitude}}, {{longitude}})"
+    "waypointInfo": "Waypoint \"{{title}}\" ({{latitude}}, {{longitude}})",
+    "transmitting": "Transmitting...",
+    "acknowledged": "Acknowledged"
   },
   "manageNodes": {
     "title": "Manage Nodes",

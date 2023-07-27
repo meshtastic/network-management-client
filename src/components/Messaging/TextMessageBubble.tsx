@@ -5,17 +5,19 @@ import maplibregl from "maplibre-gl";
 import { Map, ScaleControl } from "react-map-gl";
 import { MapIcon } from "lucide-react";
 
+import i18next from "@app/i18n";
+
 import type { app_device_ChannelMessageWithState } from "@bindings/index";
 
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import MapOverlayButton from "@components/Map/MapOverlayButton";
 
+import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
 import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
 } from "@features/device/deviceSelectors";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectMapState } from "@features/map/mapSelectors";
 
 import { getWaypointMapId } from "@utils/map";
 import {
@@ -34,11 +36,11 @@ const getAcknowledgementText = (
   message: app_device_ChannelMessageWithState
 ): { text: string; isError: boolean } => {
   if (message.state === "acknowledged") {
-    return { text: "Acknowledged", isError: false };
+    return { text: i18next.t("messaging.transmitting"), isError: false };
   }
 
   if (message.state === "pending") {
-    return { text: "Transmitting...", isError: false };
+    return { text: i18next.t("messaging.acknowledged"), isError: false };
   }
 
   return { text: message.state.error, isError: true };
@@ -54,7 +56,7 @@ const TextMessageBubble = ({
 
   const user = useSelector(selectUserByNodeId(packet.from));
   const ownNodeId = useSelector(selectConnectedDeviceNodeId());
-  const { config } = useSelector(selectMapState());
+  const { style } = useSelector(selectMapConfigState());
 
   const { displayText: usernameDisplayText, isSelf } = formatMessageUsername(
     user?.longName,
@@ -104,7 +106,7 @@ const TextMessageBubble = ({
                 }}
                 id={getWaypointMapId(message.payload.data.id)}
                 mapLib={maplibregl}
-                mapStyle={config.style}
+                mapStyle={style}
                 interactive={false}
                 initialViewState={{
                   latitude: message.payload.data.latitude,
@@ -183,7 +185,7 @@ const TextMessageBubble = ({
               }}
               id={getWaypointMapId(message.payload.data.id)}
               mapLib={maplibregl}
-              mapStyle={config.style}
+              mapStyle={style}
               interactive={false}
               initialViewState={{
                 latitude: message.payload.data.latitude,

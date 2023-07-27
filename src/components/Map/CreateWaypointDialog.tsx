@@ -33,13 +33,13 @@ import ConnectionSwitch from "@components/connection/ConnectionSwitch";
 import MapOverlayButton from "@components/Map/MapOverlayButton";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 
+import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
 import { requestSendWaypoint } from "@features/device/deviceActions";
 import {
   selectDevice,
   selectDeviceChannels,
   selectPrimaryDeviceKey,
 } from "@features/device/deviceSelectors";
-import { selectMapState } from "@features/map/mapSelectors";
 
 import { dateTimeLocalFormatString } from "@utils/form";
 import { useIsDarkMode } from "@utils/hooks";
@@ -79,7 +79,7 @@ const CreateWaypointDialog = ({
   const dispatch = useDispatch();
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
   const deviceChannels = useSelector(selectDeviceChannels());
-  const { config } = useSelector(selectMapState());
+  const { style } = useSelector(selectMapConfigState());
   const device = useSelector(selectDevice());
 
   const { [MapIDs.CreateWaypointDialog]: map } = useMap();
@@ -255,7 +255,7 @@ const CreateWaypointDialog = ({
                 borderRadius: "8px 0px 0px 8px",
               }}
               id={MapIDs.CreateWaypointDialog}
-              mapStyle={config.style}
+              mapStyle={style}
               mapLib={maplibregl}
               initialViewState={{
                 latitude: waypointPosition.lat,
