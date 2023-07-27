@@ -7,8 +7,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import {
   DeviceConfigInput,
@@ -98,34 +98,32 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.device.deviceRole.title")}
-            error={errors.role?.message}
+            {...register("role")}
           >
-            <select {...register("role")}>
-              <option value="0">
-                {t("config.radio.device.deviceRole.client")}
-              </option>
-              <option value="1">
-                {t("config.radio.device.deviceRole.clientMuted")}
-              </option>
-              <option value="2">
-                {t("config.radio.device.deviceRole.router")}
-              </option>
-              <option value="3">
-                {t("config.radio.device.deviceRole.routerClient")}
-              </option>
-              <option value="4">
-                {t("config.radio.device.deviceRole.repeater")}
-              </option>
-              <option value="5">
-                {t("config.radio.device.deviceRole.tracker")}
-              </option>
-              <option value="6">
-                {t("config.radio.device.deviceRole.sensor")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.radio.device.deviceRole.client")}
+            </option>
+            <option value="1">
+              {t("config.radio.device.deviceRole.clientMuted")}
+            </option>
+            <option value="2">
+              {t("config.radio.device.deviceRole.router")}
+            </option>
+            <option value="3">
+              {t("config.radio.device.deviceRole.routerClient")}
+            </option>
+            <option value="4">
+              {t("config.radio.device.deviceRole.repeater")}
+            </option>
+            <option value="5">
+              {t("config.radio.device.deviceRole.tracker")}
+            </option>
+            <option value="6">
+              {t("config.radio.device.deviceRole.sensor")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="checkbox"
@@ -144,22 +142,20 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           {/* TODO BUTTON GPIO */}
           {/* TODO BUZZER GPIO */}
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.device.rebroadcastMode.title")}
-            error={errors.rebroadcastMode?.message}
+            {...register("rebroadcastMode")}
           >
-            <select {...register("rebroadcastMode")}>
-              <option value="0">
-                {t("config.radio.device.rebroadcastMode.all")}
-              </option>
-              <option value="1">
-                {t("config.radio.device.rebroadcastMode.allSkipDecoding")}
-              </option>
-              <option value="2">
-                {t("config.radio.device.rebroadcastMode.localOnly")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.radio.device.rebroadcastMode.all")}
+            </option>
+            <option value="1">
+              {t("config.radio.device.rebroadcastMode.allSkipDecoding")}
+            </option>
+            <option value="2">
+              {t("config.radio.device.rebroadcastMode.localOnly")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="number"

@@ -40,6 +40,7 @@ import MapNodeTooltip from "@components/Map/MapNodeTooltip";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 
+import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
 import {
   selectActiveNodeId,
   selectActiveWaypoint,
@@ -75,8 +76,10 @@ export const MapView = () => {
   const activeNodeId = useSelector(selectActiveNodeId());
   const showInfoPane = useSelector(selectInfoPane());
 
-  const { nodesFeatureCollection, edgesFeatureCollection, viewState, config } =
+  const { nodesFeatureCollection, edgesFeatureCollection, viewState } =
     useSelector(selectMapState());
+
+  const { style } = useSelector(selectMapConfigState());
 
   const waypoints = useSelector(selectAllWaypoints());
   const activeWaypoint = useSelector(selectActiveWaypoint());
@@ -243,7 +246,7 @@ export const MapView = () => {
         <Map
           id={MapIDs.MapView}
           reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
-          mapStyle={config.style}
+          mapStyle={style}
           mapLib={maplibregl}
           onDragEnd={handleUpdateViewState}
           onZoomEnd={handleUpdateViewState}
@@ -261,10 +264,10 @@ export const MapView = () => {
               <div className="translate-y-1/2">
                 {/* https://www.kindacode.com/article/how-to-create-triangles-with-tailwind-css-4-examples/ */}
                 <div className="w-full">
-                  <div className="mx-auto w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px] border-b-gray-200 border-r-[6px] border-r-transparent" />
+                  <div className="mx-auto w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px]  border-b-gray-200 dark:border-b-gray-800 border-r-[6px] border-r-transparent" />
                 </div>
 
-                <div className="flex flex-col gap-2 default-overlay p-2">
+                <div className="flex flex-col gap-2 default-overlay p-2 bg-white dark:bg-gray-800">
                   <Dialog.Trigger asChild>
                     <MapContextOption
                       text={t("map.contextMenu.dropWaypoint")}
@@ -275,7 +278,7 @@ export const MapView = () => {
                   </Dialog.Trigger>
 
                   <Separator.Root
-                    className="h-px w-full bg-gray-200"
+                    className="h-px w-full bg-gray-200 dark:bg-gray-500"
                     decorative
                     orientation="horizontal"
                   />

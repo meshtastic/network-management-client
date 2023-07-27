@@ -24,7 +24,7 @@ const ConfigInput = forwardRef<
       <input
         className={`${
           rest.type === "checkbox" ? "mr-auto" : "w-full"
-        } px-3 py-1 rounded-lg text-base font-normal text-gray-700 border border-gray-200`}
+        } bg-white dark:bg-gray-800 px-3 py-1 rounded-lg text-base font-normal text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-500 disabled:text-gray-400 dark:disabled:text-gray-500 disabled:bg-gray-100 dark:disabled:bg-gray-700`}
         type="url"
         {...rest}
         ref={ref}

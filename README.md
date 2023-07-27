@@ -43,8 +43,8 @@ This application is built using the [Tauri Framework](https://tauri.app/), a mod
 
 At the time of writing, this project is currently maintained by a single developer. As such, the project is looking for developers willing to contribute towards or take lead on the following major initiatives:
 
-- Full offline map support, including region-based downloading and loading of custom maps
-- Persisting application state across client sessions
+- Full offline map support, including region-based downloading and loading of custom maps (will require Meshtastic mirror of the [OSM tile DB](https://tile.openstreetmap.org/))
+- ~~Persisting application state across client sessions~~ ([completed](https://github.com/ajmcquilkin/meshtastic-network-management-client/pull/424))
 - Rust backend testing (unit, integration, e2e, smoke)
 - TS frontend testing (unit, integration, e2e, smoke)
 - Adding support for remote node configuration
@@ -70,7 +70,7 @@ This project is still in early stages of development, but here's a rough roadmap
   - [x] MVP protobuf changes ([link](https://github.com/uhuruhashimoto/protobufs))
   - [x] MVP firmware changes ([link](https://github.com/uhuruhashimoto/firmware))
   - [x] Community protobuf review ([link](https://github.com/meshtastic/protobufs/pull/341))
-  - [ ] Community firmware review (in progress, [link](https://github.com/meshtastic/firmware/issues/2479))
+  - [x] Community firmware review (in progress, [link](https://github.com/meshtastic/firmware/issues/2479))
 - [ ] :nerd_face: Algorithmic analysis
   - [x] Infrastructure
     - [x] Network packet collation
@@ -84,10 +84,10 @@ This project is still in early stages of development, but here's a rough roadmap
   - [x] Node peer table
   - [ ] Network configuration (multi-device)
   - [ ] Remote node configuration
-- [ ] :pushpin: Waypoint management
+- [x] :pushpin: Waypoint management
   - [x] Managed waypoint table
   - [x] In-channel waypoint sending
-  - [ ] On-map waypoint tooltip
+  - [x] On-map waypoint tooltip
 - [ ] :globe_with_meridians: Web client parity (UI)
   - [x] Map node view
   - [x] Text messaging

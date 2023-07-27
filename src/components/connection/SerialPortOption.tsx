@@ -21,33 +21,12 @@ const SerialPortOption = ({
   onClick,
 }: ISerialPortOptions) => {
   switch (connectionState.status) {
-    case "IDLE":
-      return (
-        <button
-          className="hover:cursor-pointer"
-          type="button"
-          onClick={() => onClick(name)}
-        >
-          <div className="flex justify-center select-none">
-            <div className="flex flex-1 justify-left border rounded-lg border-gray-400 pl-4 pt-5 pb-5 pr-4 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg">
-              <Usb className="text-gray-500 w-6 h-6" />
-              <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
-                <Trans
-                  i18nKey="connectPage.tabs.serial.portOption"
-                  values={{ portName: name }}
-                />
-              </h1>
-            </div>
-          </div>
-        </button>
-      );
-
     case "PENDING":
       return (
         <div className="flex justify-center select-none">
-          <div className="flex flex-1 justify-left border rounded-lg bg-gray-50 border-gray-500 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:cursor-wait">
-            <EllipsisHorizontalCircleIcon className="text-gray-500 w-6 h-6" />
-            <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
+          <div className="flex flex-1 justify-left border rounded-lg border-gray-500 dark:border-gray-200 pl-4 pt-5 pb-5 pr-4 w-6/12 hover:cursor-wait bg-white dark:bg-gray-800">
+            <EllipsisHorizontalCircleIcon className="text-gray-500 dark:text-gray-300 w-6 h-6" />
+            <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 dark:text-gray-400 mt-0.5">
               <Trans
                 i18nKey="connectPage.tabs.serial.portOption"
                 values={{ portName: name }}
@@ -60,9 +39,9 @@ const SerialPortOption = ({
     case "SUCCESSFUL":
       return (
         <div className="flex justify-center select-none">
-          <div className="flex flex-1 justify-left border rounded-lg border-green-500 bg-green-50 pl-4 pt-5 pb-5 pr-4 w-6/12 ">
-            <CheckCircleIcon className="text-green-600 w-6 h-6" />
-            <h1 className="ml-4 text-base leading-6 font-normal text-green-600 mt-0.5">
+          <div className="flex flex-1 justify-left border rounded-lg border-green-500 dark:border-green-400 bg-green-50 dark:bg-green-900 pl-4 pt-5 pb-5 pr-4 w-6/12">
+            <CheckCircleIcon className="text-green-600 dark:text-green-500 w-6 h-6" />
+            <h1 className="ml-4 text-base leading-6 font-normal text-green-600 dark:text-green-500 mt-0.5">
               <Trans
                 i18nKey="connectPage.tabs.serial.portOption"
                 values={{ portName: name }}
@@ -75,30 +54,34 @@ const SerialPortOption = ({
     case "FAILED":
       return (
         <div className="flex justify-center select-none">
-          <div className="flex-1 border rounded-lg border-red-500 bg-red-50 pl-4 pt-5 pb-5 pr-4 w-6/12 ">
+          <div className="flex-1 border rounded-lg border-red-500 dark:border-red-400 bg-red-50 dark:bg-red-900 pl-4 pt-5 pb-5 pr-4 w-6/12">
             <div className="flex flex-row">
-              <XCircleIcon className="text-red-600 w-6 h-6" />
-              <h1 className="ml-4 text-base leading-6 font-normal text-red-600">
+              <XCircleIcon className="text-red-600 dark:text-red-400 w-6 h-6" />
+              <h1 className="ml-4 text-base leading-6 font-normal text-red-600 dark:text-red-400">
                 <Trans
                   i18nKey="connectPage.tabs.serial.portOption"
                   values={{ portName: name }}
                 />
               </h1>
             </div>
-            <h2 className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 mt-0.5">
+            <h2 className="pl-6 pr-2 ml-4 text-sm leading-5 font-light text-red-600 dark:text-red-500 mt-0.5">
               <i>{connectionState.message}</i>
             </h2>
           </div>
         </div>
       );
 
-    default:
+    default: // "IDLE"
       return (
-        <div>
+        <button
+          className="hover:cursor-pointer"
+          type="button"
+          onClick={() => onClick(name)}
+        >
           <div className="flex justify-center select-none">
-            <div className="flex justify-left border rounded-lg border-gray-400 pl-4 pt-3 pb-3 pr-4 w-6/12 hover:bg-gray-50 hover:border-gray-500 hover:shadow-lg hover:cursor-pointer">
-              <XCircleIcon className="text-gray-500 w-6 h-6" />
-              <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 mt-0.5">
+            <div className="flex flex-1 justify-left border rounded-lg border-gray-400 dark:border-gray-200 pl-4 pt-5 pb-5 pr-4 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-500 dark:hover:border-gray-50 hover:shadow-lg">
+              <Usb className="text-gray-500 dark:text-gray-400 w-6 h-6" />
+              <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 dark:text-gray-300 mt-0.5">
                 <Trans
                   i18nKey="connectPage.tabs.serial.portOption"
                   values={{ portName: name }}
@@ -106,7 +89,7 @@ const SerialPortOption = ({
               </h1>
             </div>
           </div>
-        </div>
+        </button>
       );
   }
 };

@@ -7,8 +7,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import {
   LoRaConfigInput,
@@ -123,32 +123,26 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
         onIconClick={handleFormReset}
       >
         <div className="flex flex-col gap-6">
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.lora.region.title")}
-            error={errors.region?.message}
+            {...register("region")}
           >
-            <select {...register("region")}>
-              <option value="0">{t("config.radio.lora.region.unset")}</option>
-              <option value="1">{t("config.radio.lora.region.us")}</option>
-              <option value="2">{t("config.radio.lora.region.eu433")}</option>
-              <option value="3">{t("config.radio.lora.region.eu868")}</option>
-              <option value="4">{t("config.radio.lora.region.china")}</option>
-              <option value="5">{t("config.radio.lora.region.japan")}</option>
-              <option value="6">{t("config.radio.lora.region.auNz")}</option>
-              <option value="7">{t("config.radio.lora.region.korea")}</option>
-              <option value="8">{t("config.radio.lora.region.taiwan")}</option>
-              <option value="9">{t("config.radio.lora.region.russia")}</option>
-              <option value="10">{t("config.radio.lora.region.india")}</option>
-              <option value="11">{t("config.radio.lora.region.nz865")}</option>
-              <option value="12">
-                {t("config.radio.lora.region.ukraine")}
-              </option>
-              <option value="13">
-                {t("config.radio.lora.region.thailand")}
-              </option>
-              <option value="14">{t("config.radio.lora.region.24ghz")}</option>
-            </select>
-          </ConfigLabel>
+            <option value="0">{t("config.radio.lora.region.unset")}</option>
+            <option value="1">{t("config.radio.lora.region.us")}</option>
+            <option value="2">{t("config.radio.lora.region.eu433")}</option>
+            <option value="3">{t("config.radio.lora.region.eu868")}</option>
+            <option value="4">{t("config.radio.lora.region.china")}</option>
+            <option value="5">{t("config.radio.lora.region.japan")}</option>
+            <option value="6">{t("config.radio.lora.region.auNz")}</option>
+            <option value="7">{t("config.radio.lora.region.korea")}</option>
+            <option value="8">{t("config.radio.lora.region.taiwan")}</option>
+            <option value="9">{t("config.radio.lora.region.russia")}</option>
+            <option value="10">{t("config.radio.lora.region.india")}</option>
+            <option value="11">{t("config.radio.lora.region.nz865")}</option>
+            <option value="12">{t("config.radio.lora.region.ukraine")}</option>
+            <option value="13">{t("config.radio.lora.region.thailand")}</option>
+            <option value="14">{t("config.radio.lora.region.24ghz")}</option>
+          </ConfigSelect>
 
           <ConfigInput
             type="checkbox"
@@ -157,34 +151,33 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             {...register("usePreset")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.radio.lora.modemPreset.title")}
-            error={errors.modemPreset?.message}
+            disabled={!useModemPreset}
+            {...register("modemPreset")}
           >
-            <select disabled={!useModemPreset} {...register("modemPreset")}>
-              <option value="0">
-                {t("config.radio.lora.modemPreset.longFast")}
-              </option>
-              <option value="1">
-                {t("config.radio.lora.modemPreset.longSlow")}
-              </option>
-              <option value="2">
-                {t("config.radio.lora.modemPreset.veryLongSlow")}
-              </option>
-              <option value="3">
-                {t("config.radio.lora.modemPreset.medSlow")}
-              </option>
-              <option value="4">
-                {t("config.radio.lora.modemPreset.shortSlow")}
-              </option>
-              <option value="5">
-                {t("config.radio.lora.modemPreset.shortFast")}
-              </option>
-              <option value="6">
-                {t("config.radio.lora.modemPreset.longModerate")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.radio.lora.modemPreset.longFast")}
+            </option>
+            <option value="1">
+              {t("config.radio.lora.modemPreset.longSlow")}
+            </option>
+            <option value="2">
+              {t("config.radio.lora.modemPreset.veryLongSlow")}
+            </option>
+            <option value="3">
+              {t("config.radio.lora.modemPreset.medSlow")}
+            </option>
+            <option value="4">
+              {t("config.radio.lora.modemPreset.shortSlow")}
+            </option>
+            <option value="5">
+              {t("config.radio.lora.modemPreset.shortFast")}
+            </option>
+            <option value="6">
+              {t("config.radio.lora.modemPreset.longModerate")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             disabled={useModemPreset}

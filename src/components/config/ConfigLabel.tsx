@@ -17,7 +17,9 @@ const ConfigLabel = ({
   return (
     <div className={className}>
       <label className="">
-        <p className="m-0 mb-1 text-xs font-semibold text-gray-500">{text}</p>
+        <p className="m-0 mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
+          {text}
+        </p>
         <div>{children}</div>
       </label>
       {error && <p>{error}</p>}

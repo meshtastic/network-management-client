@@ -18,10 +18,12 @@ const ConfigOption = ({
       <button
         type="button"
         onClick={onClick}
-        className="flex flex-row justify-between items-baseline px-3 py-4 bg-gray-700 rounded-lg"
+        className="flex flex-row justify-between items-baseline px-3 py-4 bg-gray-700 dark:bg-gray-300 rounded-lg"
       >
-        <p className="text-sm font-semibold text-gray-100 text-left">{title}</p>
-        <p className="text-xs font-normal text-gray-200 text-right">
+        <p className="text-sm font-semibold text-gray-100 dark:text-gray-700 text-left">
+          {title}
+        </p>
+        <p className="text-xs font-normal text-gray-200 dark:text-gray-500 text-right">
           {subtitle}
         </p>
       </button>
@@ -31,10 +33,14 @@ const ConfigOption = ({
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-row justify-between items-baseline px-3 py-4 bg-white rounded-lg"
+      className="flex flex-row justify-between items-baseline px-3 py-4 bg-white dark:bg-gray-800 rounded-lg"
     >
-      <p className="text-sm font-semibold text-gray-600 text-left">{title}</p>
-      <p className="text-xs font-normal text-gray-500 text-right">{subtitle}</p>
+      <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 text-left">
+        {title}
+      </p>
+      <p className="text-xs font-normal text-gray-500 dark:text-gray-500 text-right">
+        {subtitle}
+      </p>
     </button>
   );
 };

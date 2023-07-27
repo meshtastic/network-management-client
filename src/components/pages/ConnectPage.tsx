@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { open } from "@tauri-apps/api/shell";
 import * as Tabs from "@radix-ui/react-tabs";
 
+import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
+import MeshLogoDark from "@app/assets/Mesh_Logo_Dark.svg";
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
-import Meshtastic_Logo from "@app/assets/Mesh_Logo_Black.png";
 
 import ConnectTab from "@components/connection/ConnectTab";
 import TcpConnectPane from "@components/connection/TcpConnectPane";
@@ -31,6 +32,7 @@ import {
 import { requestSliceActions } from "@features/requests/requestReducer";
 
 import { ConnectionType } from "@utils/connections";
+import { useIsDarkMode } from "@utils/hooks";
 
 import "@components/SplashScreen/SplashScreen.css";
 
@@ -43,6 +45,8 @@ export interface IOnboardPageProps {
 
 const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const { t } = useTranslation();
+
+  const { isDarkMode } = useIsDarkMode();
 
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
@@ -176,27 +180,27 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   return (
     <div
-      className="landing-screen-opacity-transition absolute flex flex-row h-screen w-screen z-40 bg-white"
+      className="landing-screen-opacity-transition absolute flex flex-row h-screen w-screen z-40 bg-white dark:bg-gray-800"
       style={{ opacity: isScreenActive ? 1 : 0 }}
     >
-      <div className="flex flex-col flex-1 py-24 overflow-auto no-gutter">
+      <div className="flex flex-col flex-1 py-24 overflow-auto no-gutter hide-scrollbar">
         <div className="flex justify-center">
           <div className="h-1/8">
             <img
-              className="w-11/12 h-11/12 text-gray-800"
-              src={Meshtastic_Logo}
+              className="h-9"
+              src={isDarkMode ? MeshLogoLight : MeshLogoDark}
             ></img>
           </div>
         </div>
 
         <div className="flex justify-center mt-10">
-          <h1 className="text-4xl font-semibold leading-10 text-gray-800">
+          <h1 className="text-4xl font-semibold leading-10 text-gray-800 dark:text-gray-300">
             {t("connectPage.title")}
           </h1>
         </div>
 
         <div className="flex justify-center mt-5">
-          <h2 className="text-base leading-6 font-normal text-gray-500 pl-40 pr-40 text-center">
+          <h2 className="text-base leading-6 font-normal text-gray-500 dark:text-gray-400 pl-40 pr-40 text-center">
             <Trans
               i18nKey={"connectPage.supportedRadioBlurb"}
               components={{
@@ -206,7 +210,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                     onClick={() =>
                       void open("https://meshtastic.org/docs/introduction")
                     }
-                    className="hover:cursor-pointer hover:text-gray-600 underline"
+                    className="hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 underline transition-colors"
                   />
                 ),
               }}

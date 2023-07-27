@@ -7,8 +7,8 @@ import { RotateCcw } from "lucide-react";
 import debounce from "lodash.debounce";
 
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigSelect from "@components/config/ConfigSelect";
 
 import {
   SerialModuleConfigInput,
@@ -131,28 +131,27 @@ const SerialModuleConfigPage = ({
             {...register("echo")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.module.serial.operatingMode.title")}
-            error={errors.mode?.message}
+            disabled={moduleDisabled}
+            {...register("mode")}
           >
-            <select disabled={moduleDisabled} {...register("mode")}>
-              <option value="0">
-                {t("config.module.serial.operatingMode.default")}
-              </option>
-              <option value="1">
-                {t("config.module.serial.operatingMode.simple")}
-              </option>
-              <option value="2">
-                {t("config.module.serial.operatingMode.protobuf")}
-              </option>
-              <option value="3">
-                {t("config.module.serial.operatingMode.text")}
-              </option>
-              <option value="4">
-                {t("config.module.serial.operatingMode.nmea")}
-              </option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.module.serial.operatingMode.default")}
+            </option>
+            <option value="1">
+              {t("config.module.serial.operatingMode.simple")}
+            </option>
+            <option value="2">
+              {t("config.module.serial.operatingMode.protobuf")}
+            </option>
+            <option value="3">
+              {t("config.module.serial.operatingMode.text")}
+            </option>
+            <option value="4">
+              {t("config.module.serial.operatingMode.nmea")}
+            </option>
+          </ConfigSelect>
 
           <ConfigInput
             type="number"
@@ -170,32 +169,31 @@ const SerialModuleConfigPage = ({
             {...register("txd")}
           />
 
-          <ConfigLabel
+          <ConfigSelect
             text={t("config.module.serial.baudRate.title")}
-            error={errors.baud?.message}
+            disabled={moduleDisabled}
+            {...register("baud")}
           >
-            <select disabled={moduleDisabled} {...register("baud")}>
-              <option value="0">
-                {t("config.module.serial.baudRate.default")}
-              </option>
-              <option value="1">110 bps</option>
-              <option value="2">300 bps</option>
-              <option value="3">600 bps</option>
-              <option value="4">1200 bps</option>
-              <option value="5">2400 bps</option>
-              <option value="6">4800 bps</option>
-              <option value="7">9600 bps</option>
-              <option value="8">14400 bps</option>
-              <option value="9">19200 bps</option>
-              <option value="10">38400 bps</option>
-              <option value="11">57600 bps</option>
-              <option value="12">115200 bps</option>
-              <option value="13">230400 bps</option>
-              <option value="14">460800 bps</option>
-              <option value="15">576000 bps</option>
-              <option value="16">921600 bps</option>
-            </select>
-          </ConfigLabel>
+            <option value="0">
+              {t("config.module.serial.baudRate.default")}
+            </option>
+            <option value="1">110 bps</option>
+            <option value="2">300 bps</option>
+            <option value="3">600 bps</option>
+            <option value="4">1200 bps</option>
+            <option value="5">2400 bps</option>
+            <option value="6">4800 bps</option>
+            <option value="7">9600 bps</option>
+            <option value="8">14400 bps</option>
+            <option value="9">19200 bps</option>
+            <option value="10">38400 bps</option>
+            <option value="11">57600 bps</option>
+            <option value="12">115200 bps</option>
+            <option value="13">230400 bps</option>
+            <option value="14">460800 bps</option>
+            <option value="15">576000 bps</option>
+            <option value="16">921600 bps</option>
+          </ConfigSelect>
 
           <ConfigInput
             type="number"

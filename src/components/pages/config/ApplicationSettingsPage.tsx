@@ -1,21 +1,31 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Construction } from "lucide-react";
 
 import i18next from "@app/i18n";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
+
+import GeneralConfigPage from "@components/config/application/GeneralConfigPage";
 import MapConfigPage from "@components/config/application/MapConfigPage";
 
+import type { IAppConfigState } from "@features/appConfig/appConfigSlice";
+
 export const ApplicationSettingsOptions = {
+  general: i18next.t("applicationSettings.options.general"),
   map: i18next.t("applicationSettings.options.map"),
 };
 
-const _ActiveOption = ({ activeOption }: { activeOption: string }) => {
+const _ActiveOption = ({
+  activeOption,
+}: {
+  activeOption: keyof IAppConfigState;
+}) => {
   const { t } = useTranslation();
 
   switch (activeOption) {
+    case "general":
+      return <GeneralConfigPage />;
     case "map":
       return <MapConfigPage />;
     default:
@@ -33,18 +43,18 @@ const ApplicationSettingsPage = () => {
   const { t } = useTranslation();
 
   const [activeOption, setActiveOption] =
-    useState<keyof typeof ApplicationSettingsOptions>("map");
+    useState<keyof typeof ApplicationSettingsOptions>("general");
 
   return (
     <div className="flex-1">
       <ConfigLayout
         title={t("applicationSettings.title")}
         backtrace={[t("sidebar.applicationSettings")]}
-        renderTitleIcon={(c) => (
-          <Construction strokeWidth={1.5} className={`${c}`} />
-        )}
-        titleIconTooltip={t("general.wip")}
-        onTitleIconClick={() => console.warn(t("general.wip"))}
+        // Hides the title icon as the user doesn't need to take secondary action
+        // to persist application settings after committing within a pane
+        renderTitleIcon={() => <></>}
+        titleIconTooltip={""}
+        onTitleIconClick={() => null}
         renderOptions={() =>
           Object.entries(ApplicationSettingsOptions).map(([k, displayName]) => (
             <ConfigOption

@@ -31,7 +31,9 @@ const MapOverlayButton = ({
         type="button"
         onClick={handleClick}
         className={`p-2 default-overlay ${
-          selected ? "!bg-gray-700 !border-gray-500" : ""
+          selected
+            ? "!bg-gray-700 dark:!bg-gray-300 !border-gray-500 dark:!border-gray-400"
+            : "!bg-white dark:!bg-gray-800"
         } ${className}`}
       >
         {children}
