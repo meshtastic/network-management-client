@@ -60,14 +60,14 @@ const GeneralConfigPage = ({ className = "" }: IGeneralConfigPageProps) => {
             error={errors.colorMode?.message}
             {...register("colorMode")}
           >
-            <option value="system">
-              {t("applicationSettings.general.colorMode.system")}
-            </option>
             <option value="light">
               {t("applicationSettings.general.colorMode.light")}
             </option>
             <option value="dark">
               {t("applicationSettings.general.colorMode.dark")}
+            </option>
+            <option value="system">
+              {t("applicationSettings.general.colorMode.system")}
             </option>
           </ConfigSelect>
         </form>
