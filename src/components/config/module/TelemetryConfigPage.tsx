@@ -80,7 +80,7 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
     watch,
     formState: { errors },
   } = useForm<TelemetryModuleConfigInput>({
-    defaultValues: device?.moduleConfig.telemetry ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(

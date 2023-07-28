@@ -74,7 +74,7 @@ const RemoteHardwareConfigPage = ({
     watch,
     formState: { errors },
   } = useForm<RemoteHardwareModuleConfigInput>({
-    defaultValues: device?.moduleConfig.remoteHardware ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(

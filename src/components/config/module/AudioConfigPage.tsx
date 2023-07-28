@@ -76,7 +76,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
     watch,
     formState: { errors },
   } = useForm<AudioModuleConfigInput>({
-    defaultValues: device?.moduleConfig.audio ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(

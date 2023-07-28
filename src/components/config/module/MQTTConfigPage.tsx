@@ -70,7 +70,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
     watch,
     formState: { errors },
   } = useForm<MQTTModuleConfigInput>({
-    defaultValues: device?.moduleConfig.mqtt ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(

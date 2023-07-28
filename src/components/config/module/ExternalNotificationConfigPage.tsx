@@ -89,7 +89,7 @@ const ExternalNotificationConfigPage = ({
     watch,
     formState: { errors },
   } = useForm<ExternalNotificationModuleConfigInput>({
-    defaultValues: device?.moduleConfig.externalNotification ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(

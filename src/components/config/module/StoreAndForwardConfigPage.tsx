@@ -75,7 +75,7 @@ const StoreAndForwardConfigPage = ({
     watch,
     formState: { errors },
   } = useForm<StoreForwardModuleConfigInput>({
-    defaultValues: device?.moduleConfig.storeForward ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(

@@ -77,7 +77,7 @@ const SerialModuleConfigPage = ({
     watch,
     formState: { errors },
   } = useForm<SerialModuleConfigInput>({
-    defaultValues: device?.moduleConfig.serial ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(

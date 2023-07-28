@@ -78,7 +78,7 @@ const CannedMessageConfigPage = ({
     watch,
     formState: { errors },
   } = useForm<CannedMessageModuleConfigInput>({
-    defaultValues: device?.moduleConfig.cannedMessage ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(

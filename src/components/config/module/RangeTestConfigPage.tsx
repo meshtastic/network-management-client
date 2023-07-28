@@ -71,7 +71,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
     watch,
     formState: { errors },
   } = useForm<RangeTestModuleConfigInput>({
-    defaultValues: device?.moduleConfig.rangeTest ?? undefined,
+    defaultValues,
   });
 
   const updateConfigHander = useMemo(
