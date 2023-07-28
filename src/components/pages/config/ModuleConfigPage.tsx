@@ -14,6 +14,7 @@ import ConfigOption from "@components/config/ConfigOption";
 import CannedMessageConfigPage from "@components/config/module/CannedMessageConfigPage";
 import ExternalNotificationConfigPage from "@components/config/module/ExternalNotificationConfigPage";
 import MQTTConfigPage from "@components/config/module/MQTTConfigPage";
+import NeighborInfoConfigPage from "@components/config/module/NeighborInfoConfigPage";
 import RangeTestConfigPage from "@components/config/module/RangeTestConfigPage";
 import RemoteHardwareConfigPage from "@components/config/module/RemoteHardwareConfigPage";
 import SerialModuleConfigPage from "@components/config/module/SerialModuleConfigPage";
@@ -32,6 +33,7 @@ export const ModuleConfigOptions: Record<keyof IModuleConfigState, string> = {
   cannedMessage: i18next.t("config.module.options.cannedMessage"),
   externalNotification: i18next.t("config.module.options.externalNotification"),
   mqtt: i18next.t("config.module.options.mqtt"),
+  neighborInfo: i18next.t("config.module.options.neighborInfo"),
   rangeTest: i18next.t("config.module.options.rangeTest"),
   remoteHardware: i18next.t("config.module.options.remoteHardware"),
   serial: i18next.t("config.module.options.serial"),
@@ -55,6 +57,8 @@ const _ActiveDetailView = ({
       return <ExternalNotificationConfigPage />;
     case "mqtt":
       return <MQTTConfigPage />;
+    case "neighborInfo":
+      return <NeighborInfoConfigPage />;
     case "rangeTest":
       return <RangeTestConfigPage />;
     case "remoteHardware":

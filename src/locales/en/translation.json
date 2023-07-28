@@ -337,6 +337,7 @@
         "cannedMessage": "Canned Messages",
         "externalNotification": "External Notification",
         "mqtt": "MQTT",
+        "neighborInfo": "Neighbor Info",
         "rangeTest": "Range Test",
         "remoteHardware": "Remote Hardware",
         "serial": "Serial Module",
@@ -393,6 +394,12 @@
         "encryptionEnabled": "Encryption Enabled",
         "jsonEnabled": "JSON Enabled",
         "tlsEnabled": "TLS Enabled"
+      },
+      "neighborInfo": {
+        "title": "Neighbor Info Configuration",
+        "description": "Configure neighbor information module",
+        "neighborInfoEnabled": "Neighbor Info Enabled",
+        "updateInterval": "Neighbor Info Transmission Interval (seconds, 0 = disabled)"
       },
       "rangeTest": {
         "title": "Range Test Configuration",

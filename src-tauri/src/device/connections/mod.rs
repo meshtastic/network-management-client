@@ -471,6 +471,18 @@ pub trait MeshConnection {
             .await?;
         }
 
+        if let Some(c) = module_config.neighbor_info {
+            self.update_device_module_config(
+                device,
+                protobufs::ModuleConfig {
+                    payload_variant: Some(protobufs::module_config::PayloadVariant::NeighborInfo(
+                        c,
+                    )),
+                },
+            )
+            .await?;
+        }
+
         if let Some(c) = module_config.range_test {
             self.update_device_module_config(
                 device,

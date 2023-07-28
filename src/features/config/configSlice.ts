@@ -22,6 +22,7 @@ import type {
   app_protobufs_module_config_TelemetryConfig,
   app_protobufs_Channel,
   app_protobufs_ChannelSettings,
+  app_protobufs_module_config_NeighborInfoConfig,
 } from "@bindings/index";
 
 export type BluetoothConfigInput = app_protobufs_config_BluetoothConfig;
@@ -38,6 +39,8 @@ export type CannedMessageModuleConfigInput =
 export type ExternalNotificationModuleConfigInput =
   app_protobufs_module_config_ExternalNotificationConfig;
 export type MQTTModuleConfigInput = app_protobufs_module_config_MqttConfig;
+export type NeighborInfoConfigInput =
+  app_protobufs_module_config_NeighborInfoConfig;
 export type RangeTestModuleConfigInput =
   app_protobufs_module_config_RangeTestConfig;
 export type RemoteHardwareModuleConfigInput =
@@ -69,6 +72,7 @@ export interface IModuleConfigState {
   cannedMessage: CannedMessageModuleConfigInput | null;
   externalNotification: ExternalNotificationModuleConfigInput | null;
   mqtt: MQTTModuleConfigInput | null;
+  neighborInfo: NeighborInfoConfigInput | null;
   rangeTest: RangeTestModuleConfigInput | null;
   remoteHardware: RemoteHardwareModuleConfigInput | null;
   serial: SerialModuleConfigInput | null;
@@ -103,6 +107,7 @@ export const initialConfigState: IConfigState = {
     cannedMessage: null,
     externalNotification: null,
     mqtt: null,
+    neighborInfo: null,
     rangeTest: null,
     remoteHardware: null,
     serial: null,

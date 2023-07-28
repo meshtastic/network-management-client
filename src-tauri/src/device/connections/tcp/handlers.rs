@@ -98,7 +98,7 @@ async fn start_tcp_read_worker(
             },
         };
 
-        if !incoming_tcp_buf.is_empty() {
+        if !incoming_tcp_buf.is_empty() && read_bytes > 0 {
             trace!(
                 "Received info from radio: {:?}",
                 incoming_tcp_buf[..read_bytes].to_vec()
