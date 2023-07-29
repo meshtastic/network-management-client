@@ -4,19 +4,20 @@
 use super::super::data_structures::cut::Cut;
 use super::super::data_structures::union_find::UnionFind;
 use crate::graph::graph_ds::Graph;
+use crate::state::NodeKey;
 use std::collections::HashSet;
 
 pub struct StoerWagnerGraph {
     pub graph: Graph,
     pub uf: UnionFind,
-    pub uncontracted: HashSet<String>,
+    pub uncontracted: HashSet<NodeKey>,
 }
 
 impl StoerWagnerGraph {
     pub fn new(g: Graph) -> StoerWagnerGraph {
         let mut node_ids_list = Vec::new();
         for node_id in g.get_nodes() {
-            node_ids_list.push(node_id.name.clone());
+            node_ids_list.push(node_id.num.clone());
         }
 
         let uf = UnionFind::new(node_ids_list.clone());
@@ -49,10 +50,10 @@ impl StoerWagnerGraph {
 
         let weight = t_node.optimal_weighted_degree;
 
-        Cut::new(weight, s.to_string(), t.to_string())
+        Cut::new(weight, s.clone(), t.clone())
     }
 
-    pub fn contract_edge(&mut self, v1: &String, v2: &String) {
+    pub fn contract_edge(&mut self, v1: &NodeKey, v2: &NodeKey) {
         let start_idx = self.graph.get_node_idx(v1);
         let finish_idx = self.graph.get_node_idx(v2);
 
@@ -68,24 +69,24 @@ impl StoerWagnerGraph {
 
         self.uf.union(v1, v2);
 
-        for mut node in self.graph.get_neighbors(finish.name.clone()) {
-            if !node.name.eq(&start.name) {
+        for mut node in self.graph.get_neighbors(finish.num.clone()) {
+            if !node.num.eq(&start.num) {
                 let weight = self
                     .graph
-                    .get_edge_weight(&finish.name, &node.name, None, None)
+                    .get_edge_weight(&finish.num, &node.num, None, None)
                     + self
                         .graph
-                        .get_edge_weight(&start.name, &node.name, None, None);
+                        .get_edge_weight(&start.num, &node.num, None, None);
 
                 self.graph
-                    .update_edge(start.name.clone(), node.name.clone(), weight, None, None);
+                    .update_edge(start.num.clone(), node.num.clone(), weight, None, None);
 
                 start.optimal_weighted_degree +=
                     self.graph
-                        .get_edge_weight(&finish.name, &node.name, None, None);
+                        .get_edge_weight(&finish.num, &node.num, None, None);
                 node.optimal_weighted_degree +=
                     self.graph
-                        .get_edge_weight(&finish.name, &node.name, None, None);
+                        .get_edge_weight(&finish.num, &node.num, None, None);
             }
         }
 
@@ -96,7 +97,7 @@ impl StoerWagnerGraph {
     pub fn clone(&self) -> StoerWagnerGraph {
         let mut node_ids_list = Vec::new();
         for node_id in self.graph.get_nodes() {
-            node_ids_list.push(node_id.name.clone());
+            node_ids_list.push(node_id.num.clone());
         }
 
         let uf = UnionFind::new(node_ids_list.clone());

@@ -207,7 +207,7 @@ pub fn handle_neighbor_info_mesh_packet(
     let data = protobufs::NeighborInfo::decode(data.payload.as_slice())
         .map_err(DeviceUpdateError::DecodeFailure)?;
 
-    device.add_neighborinfo(NeighborInfoPacket { packet, data });
+    device.add_neighbor_info(NeighborInfoPacket { packet, data });
 
     update_result.device_updated = true;
     update_result.regenerate_graph = true;

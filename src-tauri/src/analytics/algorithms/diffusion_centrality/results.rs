@@ -3,7 +3,9 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub type DiffCenMap = HashMap<String, HashMap<String, HashMap<String, f64>>>;
+use crate::state::NodeKey;
+
+pub type DiffCenMap = HashMap<NodeKey, HashMap<NodeKey, HashMap<NodeKey, f64>>>;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum DiffCenError {

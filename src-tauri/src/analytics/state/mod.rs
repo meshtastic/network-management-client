@@ -1,17 +1,17 @@
 #![allow(dead_code)]
 
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use std::time::SystemTime;
 
-use log::warn;
+// use log::warn;
 
 use self::configuration::{AlgorithmConfigFlags, AlgorithmConfiguration};
 use self::controller::AlgoController;
 use self::history::AlgorithmRunHistory;
 use self::store::ResultsStore;
-use super::data_structures::timeline::NetworkTimeline;
+// use super::data_structures::timeline::NetworkTimeline;
 
-use crate::graph::graph_ds::Graph;
+// use crate::graph::graph_ds::Graph;
 
 pub mod configuration;
 pub mod controller;
@@ -31,7 +31,7 @@ pub mod store;
 /// * `time` - A SystemTime object.
 /// * `auto_run_algos` - A boolean indicating whether the algorithms should be run automatically or not.
 pub struct AnalyticsState {
-    timeline: NetworkTimeline,
+    // timeline: NetworkTimeline,
     history: AlgorithmRunHistory,
     time: SystemTime,
     algo_configs: AlgorithmConfiguration,
@@ -51,9 +51,10 @@ impl AnalyticsState {
     /// # Returns
     ///
     /// * `AnalyticsState` - A new AnalyticsState object.
-    pub fn new(config_fields: HashMap<&str, &str>, is_save: bool) -> AnalyticsState {
+    // config_fields: HashMap<&str, &str>, is_save: bool
+    pub fn new() -> AnalyticsState {
         AnalyticsState {
-            timeline: NetworkTimeline::new(config_fields, is_save),
+            // timeline: NetworkTimeline::new(config_fields, is_save),
             history: AlgorithmRunHistory::new(),
             time: SystemTime::now(),
             algo_configs: AlgorithmConfiguration::new(),
@@ -63,14 +64,14 @@ impl AnalyticsState {
         }
     }
 
-    /// Adds a graph snapshot to the timeline.
-    ///
-    /// # Arguments
-    ///
-    /// * `graph` - A Graph object.
-    pub fn add_graph_snapshot(&mut self, graph: &Graph) {
-        self.timeline.add_snapshot(graph);
-    }
+    // /// Adds a graph snapshot to the timeline.
+    // ///
+    // /// # Arguments
+    // ///
+    // /// * `graph` - A Graph object.
+    // pub fn add_graph_snapshot(&mut self, graph: &Graph) {
+    //     self.timeline.add_snapshot(graph);
+    // }
 
     /// Sets which algorithms should be run.
     ///
@@ -81,22 +82,22 @@ impl AnalyticsState {
         self.algo_configs.set_algorithm_flags(flags);
     }
 
-    pub fn run_algos(&mut self) {
-        let curr_graph_opt = self.timeline.get_curr_snapshot();
-        match curr_graph_opt {
-            Some(curr_graph) => {
-                self.algo_controller.run_algos(
-                    curr_graph,
-                    &self.algo_configs,
-                    &mut self.history,
-                    &mut self.algo_store,
-                );
-            }
-            None => {
-                warn!("No graph to run algorithms on.");
-            }
-        }
-    }
+    // pub fn run_algos(&mut self) {
+    //     let curr_graph_opt = self.timeline.get_curr_snapshot();
+    //     match curr_graph_opt {
+    //         Some(curr_graph) => {
+    //             self.algo_controller.run_algos(
+    //                 curr_graph,
+    //                 &self.algo_configs,
+    //                 &mut self.history,
+    //                 &mut self.algo_store,
+    //             );
+    //         }
+    //         None => {
+    //             warn!("No graph to run algorithms on.");
+    //         }
+    //     }
+    // }
 
     /// Returns the algorithm result store. Frontend may use this to get the results of the algorithms.
     ///
@@ -108,108 +109,110 @@ impl AnalyticsState {
     }
 }
 
-/// Unit test
-#[cfg(test)]
-mod tests {
-    use super::super::algorithms::{
-        articulation_point::results::APResult, diffusion_centrality::results::DiffCenResult,
-    };
-    use super::*;
+// /// Unit test
+// #[cfg(test)]
+// mod tests {
+//     use crate::state::NodeKey;
 
-    #[test]
-    fn test_state() {
-        let mut state = AnalyticsState::new(HashMap::new(), false);
+//     use super::super::algorithms::{
+//         articulation_point::results::APResult, diffusion_centrality::results::DiffCenResult,
+//     };
+//     use super::*;
 
-        let mut graph1 = Graph::new();
+//     #[test]
+//     fn test_state() {
+//         let mut state = AnalyticsState::new(HashMap::new(), false);
 
-        // Create a few nodes and edges and add to graph
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
+//         let mut graph1 = Graph::new();
 
-        let _u_idx = graph1.add_node(u.clone());
-        let _v_idx = graph1.add_node(v.clone());
-        let _w_idx = graph1.add_node(w.clone());
+//         // Create a few nodes and edges and add to graph
+//         let u: NodeKey = 1;
+//         let v: NodeKey = 2;
+//         let w: NodeKey = 3;
 
-        graph1.add_edge(u.clone(), v.clone(), 1_f64);
-        graph1.add_edge(u, w.clone(), 7_f64);
-        graph1.add_edge(v, w, 35_f64);
+//         let _u_idx = graph1.add_node(u.clone());
+//         let _v_idx = graph1.add_node(v.clone());
+//         let _w_idx = graph1.add_node(w.clone());
 
-        state.add_graph_snapshot(&graph1);
+//         graph1.add_edge(u.clone(), v.clone(), 1_f64);
+//         graph1.add_edge(u, w.clone(), 7_f64);
+//         graph1.add_edge(v, w, 35_f64);
 
-        state.set_algorithm_flags(AlgorithmConfigFlags {
-            articulation_point: Some(true),
-            diffusion_centrality: None,
-            global_mincut: None,
-            most_similar_timeline: None,
-            predicted_state: None,
-        });
+//         state.add_graph_snapshot(&graph1);
 
-        state.run_algos();
+//         state.set_algorithm_flags(AlgorithmConfigFlags {
+//             articulation_point: Some(true),
+//             diffusion_centrality: None,
+//             global_mincut: None,
+//             most_similar_timeline: None,
+//             predicted_state: None,
+//         });
 
-        let algo_results = state.get_algo_results();
-        let ap_algo_res = algo_results.get_aps();
-        match ap_algo_res {
-            APResult::Success(aps) => {
-                println!("AP algorithm returned: {:?}", aps);
-                assert_eq!(aps.len(), 0);
-            }
-            APResult::Error(err_str) => {
-                panic!("Error running AP algorithm: {}", err_str);
-            }
-            APResult::Empty(b) => {
-                panic!("AP algorithm returned empty result: {}", b);
-            }
-        }
-    }
+//         state.run_algos();
 
-    #[test]
-    fn test_diffusion_centrality() {
-        let mut state = AnalyticsState::new(HashMap::new(), false);
+//         let algo_results = state.get_algo_results();
+//         let ap_algo_res = algo_results.get_aps();
+//         match ap_algo_res {
+//             APResult::Success(aps) => {
+//                 println!("AP algorithm returned: {:?}", aps);
+//                 assert_eq!(aps.len(), 0);
+//             }
+//             APResult::Error(err_str) => {
+//                 panic!("Error running AP algorithm: {}", err_str);
+//             }
+//             APResult::Empty(b) => {
+//                 panic!("AP algorithm returned empty result: {}", b);
+//             }
+//         }
+//     }
 
-        let mut graph1 = Graph::new();
+//     #[test]
+//     fn test_diffusion_centrality() {
+//         let mut state = AnalyticsState::new(HashMap::new(), false);
 
-        // Create a few nodes and edges and add to graph
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
+//         let mut graph1 = Graph::new();
 
-        let _u_idx = graph1.add_node(u.clone());
-        let _v_idx = graph1.add_node(v.clone());
-        let _w_idx = graph1.add_node(w.clone());
+//         // Create a few nodes and edges and add to graph
+//         let u: NodeKey = 1;
+//         let v: NodeKey = 2;
+//         let w: NodeKey = 3;
 
-        graph1.add_edge(u.clone(), v.clone(), 1_f64);
-        graph1.add_edge(u, w.clone(), 7_f64);
-        graph1.add_edge(v, w, 35_f64);
+//         let _u_idx = graph1.add_node(u.clone());
+//         let _v_idx = graph1.add_node(v.clone());
+//         let _w_idx = graph1.add_node(w.clone());
 
-        state.add_graph_snapshot(&graph1);
+//         graph1.add_edge(u.clone(), v.clone(), 1_f64);
+//         graph1.add_edge(u, w.clone(), 7_f64);
+//         graph1.add_edge(v, w, 35_f64);
 
-        state.set_algorithm_flags(AlgorithmConfigFlags {
-            articulation_point: None,
-            diffusion_centrality: Some(true),
-            global_mincut: None,
-            most_similar_timeline: None,
-            predicted_state: None,
-        });
+//         state.add_graph_snapshot(&graph1);
 
-        state.run_algos();
+//         state.set_algorithm_flags(AlgorithmConfigFlags {
+//             articulation_point: None,
+//             diffusion_centrality: Some(true),
+//             global_mincut: None,
+//             most_similar_timeline: None,
+//             predicted_state: None,
+//         });
 
-        let algo_results = state.get_algo_results();
+//         state.run_algos();
 
-        let diff_cents_res = algo_results.get_diff_cent();
-        match diff_cents_res {
-            DiffCenResult::Success(diff_cents) => {
-                println!("Diffusion centrality algorithm returned: {:?}", diff_cents);
-            }
-            DiffCenResult::Error(err) => {
-                panic!("Error running diffusion centrality algorithm: {:?}", err);
-            }
-            DiffCenResult::Empty(b) => {
-                panic!(
-                    "Diffusion centrality algorithm returned empty result: {}",
-                    b
-                );
-            }
-        }
-    }
-}
+//         let algo_results = state.get_algo_results();
+
+//         let diff_cents_res = algo_results.get_diff_cent();
+//         match diff_cents_res {
+//             DiffCenResult::Success(diff_cents) => {
+//                 println!("Diffusion centrality algorithm returned: {:?}", diff_cents);
+//             }
+//             DiffCenResult::Error(err) => {
+//                 panic!("Error running diffusion centrality algorithm: {:?}", err);
+//             }
+//             DiffCenResult::Empty(b) => {
+//                 panic!(
+//                     "Diffusion centrality algorithm returned empty result: {}",
+//                     b
+//                 );
+//             }
+//         }
+//     }
+// }

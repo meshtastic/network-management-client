@@ -62,9 +62,8 @@ pub fn add_node_and_location_to_graph(
     graph: &mut Graph,
     node_loc: Option<&MeshNode>,
 ) -> NodeIndex {
-    let name: String = node_id.to_string();
-    if !graph.contains_node(name.clone()) {
-        let mut node = Node::new(name.clone());
+    if !graph.contains_node(node_id.clone()) {
+        let mut node = Node::new(node_id.clone());
         if let Some(node_loc) = node_loc {
             let node_pos = &node_loc.position_metrics.last();
             if let Some(node_pos) = node_pos {
@@ -74,14 +73,14 @@ pub fn add_node_and_location_to_graph(
                 node.speed = node_pos.ground_speed as f64 * SPEED_CONVERSION_FACTOR;
                 node.direction = node_pos.ground_track as f64;
             } else {
-                warn!("We do not have position info for node {}", name);
+                warn!("We do not have position info for node {}", node_id);
             }
         }
 
         return graph.add_node_from_struct(node);
     }
 
-    let node_idx = graph.get_node_idx(&name);
+    let node_idx = graph.get_node_idx(&node_id);
     let node = graph
         .get_node_mut(node_idx)
         .expect("Index from edge should exist");
@@ -96,7 +95,7 @@ pub fn add_node_and_location_to_graph(
         }
     }
 
-    graph.get_node_idx(&name)
+    graph.get_node_idx(&node_id)
 }
 
 #[cfg(test)]
@@ -253,12 +252,8 @@ mod tests {
 
         // Check the edge weights to check that they are both the weight of the 1-2 edge, which has neighbor 2's SNR
         // Assert that the 1-2 edge is the correct (smaller) SNR
-        let first_edge_weight = graph.get_edge_weight(
-            &neighbor_1.id.to_string(),
-            &neighbor_2.id.to_string(),
-            None,
-            Some(false),
-        );
+        let first_edge_weight =
+            graph.get_edge_weight(&neighbor_1.id, &neighbor_2.id, None, Some(false));
         // The correct weight should a sum of the two distances normalized w 0.1 radio quality, which is this float
         assert_eq!(first_edge_weight, 1.0);
     }

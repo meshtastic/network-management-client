@@ -5,13 +5,11 @@ use log::{debug, trace, warn};
 
 use super::helpers::get_current_time_u32;
 use super::{
-    ChannelMessagePayload, ChannelMessageWithState, MeshChannel, MeshDevice, MeshGraph, MeshNode,
+    ChannelMessagePayload, ChannelMessageWithState, MeshChannel, MeshDevice, MeshNode,
     MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, NeighborInfoPacket, NormalizedWaypoint,
     PositionPacket, SerialDeviceStatus, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 
-use crate::constructors::init::init_edge_map::init_edge_map;
-use crate::constructors::init::init_graph::init_graph;
 use crate::device::{ChannelMessageState, LastHeardMetadata};
 
 impl MeshDevice {
@@ -280,7 +278,7 @@ impl MeshDevice {
         }
     }
 
-    pub fn add_neighborinfo(&mut self, neighborinfo: NeighborInfoPacket) {
+    pub fn add_neighbor_info(&mut self, neighborinfo: NeighborInfoPacket) {
         let existing_node = self.neighbors.get_mut(&neighborinfo.packet.from);
 
         warn!("NOT FULLY IMPLEMENTED");
@@ -359,13 +357,5 @@ impl MeshDevice {
                 m.state = state;
             }
         }
-    }
-}
-
-impl MeshGraph {
-    pub fn regenerate_graph_from_device_info(&mut self, device: &MeshDevice) {
-        let edge_hashmap = init_edge_map(&device.neighbors);
-        self.graph = init_graph(&edge_hashmap, &device.nodes);
-        trace!("Graph: {:?}", self.graph);
     }
 }

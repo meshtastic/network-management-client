@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use std::time::Duration;
 
 use app::protobufs;
@@ -47,10 +47,7 @@ pub fn generate_graph_edges_geojson(graph: &mut device::MeshGraph) -> geojson::F
                 .expect("Index from edge should exist");
 
             geojson::Feature {
-                id: Some(geojson::feature::Id::String(format!(
-                    "{}-{}",
-                    u.name, v.name
-                ))),
+                id: Some(geojson::feature::Id::String(format!("{}-{}", u.num, v.num))),
                 properties: None,
                 geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
                     vec![u.longitude, u.latitude, u.altitude],
@@ -74,8 +71,9 @@ pub fn node_index_to_node_id(
 ) -> Option<u32> {
     graph.node_idx_map.iter().find_map(|(key, &val)| {
         if val == *nodeindex {
-            return key.parse::<u32>().ok();
+            return Some(*key);
         }
+
         None
     })
 }
@@ -85,7 +83,8 @@ pub async fn initialize_graph_state(
     algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<(), CommandError> {
     let new_graph = device::MeshGraph::new();
-    let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
+    // let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
+    let state = analytics::state::AnalyticsState::new();
     let mesh_graph_arc = mesh_graph.inner.clone();
     let algo_state_arc = algo_state.inner.clone();
 

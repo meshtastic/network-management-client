@@ -3,14 +3,16 @@
 
 use std::collections::{HashMap, HashSet};
 
+use crate::state::NodeKey;
+
 pub struct UnionFind {
-    pub sets: HashMap<String, String>,
-    pub reps: HashSet<String>,
+    pub sets: HashMap<NodeKey, NodeKey>,
+    pub reps: HashSet<NodeKey>,
     pub size: i32,
 }
 
 impl UnionFind {
-    pub fn new(v: Vec<String>) -> UnionFind {
+    pub fn new(v: Vec<NodeKey>) -> UnionFind {
         let mut uf_ds = UnionFind {
             sets: HashMap::new(),
             reps: HashSet::new(),
@@ -25,24 +27,24 @@ impl UnionFind {
         uf_ds
     }
 
-    pub fn find(&mut self, v: &String) -> String {
+    pub fn find(&mut self, v: &NodeKey) -> NodeKey {
         if self.sets.get(v).unwrap() == v {
             return v.clone();
         }
 
         let set_find_result = self.sets.get(v).unwrap().clone();
         let parent = self.find(&set_find_result);
-        self.sets.insert(v.clone(), parent.to_string());
+        self.sets.insert(v.clone(), parent);
         parent
     }
 
-    pub fn union(&mut self, v1: &String, v2: &String) {
+    pub fn union(&mut self, v1: &NodeKey, v2: &NodeKey) {
         let v1_rep = self.find(v1);
         self.sets.insert(v2.clone(), v1_rep);
         self.reps.remove(v2);
     }
 
-    pub fn get_sets(&self) -> &HashSet<String> {
+    pub fn get_sets(&self) -> &HashSet<NodeKey> {
         &self.reps
     }
 
@@ -63,9 +65,9 @@ mod tests {
     #[test]
     fn test_unionfind() {
         // Create a few nodes and edges and add to graph
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
+        let u: NodeKey = 1;
+        let v: NodeKey = 2;
+        let w: NodeKey = 3;
 
         let mut uf = UnionFind::new(vec![u.clone(), v.clone(), w]);
         uf.union(&u, &v);

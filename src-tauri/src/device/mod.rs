@@ -1,11 +1,18 @@
+#![allow(non_snake_case)]
+
 use app::protobufs;
+use log::trace;
+use petgraph::stable_graph::{EdgeIndex, NodeIndex};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use tokio_util::time::DelayQueue;
 
 use self::helpers::{
     convert_location_field_to_protos, generate_rand_id, get_current_time_u32,
     normalize_location_field,
 };
+use crate::constructors::init::init_edge_map::init_edge_map;
+use crate::constructors::init::init_graph::init_graph;
 use crate::graph::graph_ds::Graph;
 
 pub mod connections;
@@ -370,15 +377,25 @@ impl MeshDevice {
  * results (see analytics).
  */
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct MeshGraph {
     pub graph: Graph,
+    node_expirations: DelayQueue<NodeIndex>,
+    edge_expirations: DelayQueue<EdgeIndex>,
 }
 
 impl MeshGraph {
     pub fn new() -> Self {
         Self {
             graph: Graph::new(),
+            node_expirations: DelayQueue::new(),
+            edge_expirations: DelayQueue::new(),
         }
+    }
+
+    pub fn regenerate_graph_from_device_info(&mut self, device: &MeshDevice) {
+        let edge_hashmap = init_edge_map(&device.neighbors);
+        self.graph = init_graph(&edge_hashmap, &device.nodes);
+        trace!("Graph: {:?}", self.graph);
     }
 }

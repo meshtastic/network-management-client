@@ -1,10 +1,9 @@
-#![allow(dead_code)]
 #![allow(clippy::too_many_arguments)]
 
 pub mod results;
 
 use super::AlgorithmRunner;
-use crate::graph::graph_ds::Graph;
+use crate::{graph::graph_ds::Graph, state::NodeKey};
 use defaultdict::DefaultHashMap;
 use results::APResult;
 use std::cmp::min;
@@ -22,18 +21,18 @@ impl AlgorithmRunner for ArticulationPointRunner {
     }
 
     fn run(&mut self, graph: &crate::graph::graph_ds::Graph) -> Self::Result {
-        let mut disc = DefaultHashMap::<String, i32>::new();
-        let mut low = DefaultHashMap::<String, i32>::new();
-        let mut visited = DefaultHashMap::<String, bool>::new();
-        let mut ap = DefaultHashMap::<String, bool>::new();
+        let mut disc = DefaultHashMap::<NodeKey, i32>::new();
+        let mut low = DefaultHashMap::<NodeKey, i32>::new();
+        let mut visited = DefaultHashMap::<NodeKey, bool>::new();
+        let mut ap = DefaultHashMap::<NodeKey, bool>::new();
         let mut time = 0;
-        let parent = "-1".to_string();
+        let parent = u32::MAX; // This could fail, but would be extremely unlikely
 
         for node in graph.get_nodes() {
-            if !visited.get(&node.name) {
+            if !visited.get(&node.num) {
                 articulation_point_helper(
                     graph,
-                    node.name,
+                    node.num,
                     &mut visited,
                     &mut disc,
                     &mut low,
@@ -57,13 +56,13 @@ impl AlgorithmRunner for ArticulationPointRunner {
 
 fn articulation_point_helper(
     graph: &Graph,
-    node_idx: String,
-    visited: &mut DefaultHashMap<String, bool>,
-    disc: &mut DefaultHashMap<String, i32>,
-    low: &mut DefaultHashMap<String, i32>,
+    node_idx: NodeKey,
+    visited: &mut DefaultHashMap<NodeKey, bool>,
+    disc: &mut DefaultHashMap<NodeKey, i32>,
+    low: &mut DefaultHashMap<NodeKey, i32>,
     time: &mut usize,
-    parent: String,
-    ap: &mut DefaultHashMap<String, bool>,
+    parent: NodeKey,
+    ap: &mut DefaultHashMap<NodeKey, bool>,
 ) {
     let mut children = 0;
     visited.insert(node_idx.clone(), true);
@@ -74,11 +73,11 @@ fn articulation_point_helper(
 
     let neighbors = graph.get_neighbors(node_idx.clone());
     for neighbor in neighbors {
-        if !visited.get(&neighbor.name) {
+        if !visited.get(&neighbor.num) {
             children += 1;
             articulation_point_helper(
                 graph,
-                neighbor.name.clone(),
+                neighbor.num.clone(),
                 visited,
                 disc,
                 low,
@@ -88,21 +87,21 @@ fn articulation_point_helper(
             );
             low.insert(
                 node_idx.clone(),
-                min(*low.get(&node_idx), *low.get(&neighbor.name)),
+                min(*low.get(&node_idx), *low.get(&neighbor.num)),
             );
 
-            if !parent.eq("-1") && low.get(&neighbor.name) >= disc.get(&node_idx) {
+            if !parent.eq(&u32::MAX) && low.get(&neighbor.num) >= disc.get(&node_idx) {
                 ap.insert(node_idx.clone(), true);
             }
-        } else if !neighbor.name.eq(&parent) {
+        } else if !neighbor.num.eq(&parent) {
             low.insert(
                 node_idx.clone(),
-                min(*low.get(&node_idx), *disc.get(&neighbor.name)),
+                min(*low.get(&node_idx), *disc.get(&neighbor.num)),
             );
         }
     }
 
-    if parent.eq("-1") && children > 1 {
+    if parent.eq(&u32::MAX) && children > 1 {
         ap.insert(node_idx, true);
     }
 }
@@ -118,14 +117,14 @@ mod tests {
         let mut g = Graph::new();
 
         // Add nodes
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
-        let x: String = "x".to_string();
-        let y: String = "y".to_string();
-        let z: String = "z".to_string();
-        let a: String = "a".to_string();
-        let b: String = "b".to_string();
+        let u: NodeKey = 1;
+        let v: NodeKey = 2;
+        let w: NodeKey = 3;
+        let x: NodeKey = 4;
+        let y: NodeKey = 5;
+        let z: NodeKey = 6;
+        let a: NodeKey = 7;
+        let b: NodeKey = 8;
 
         g.add_node(u.clone());
         g.add_node(v.clone());

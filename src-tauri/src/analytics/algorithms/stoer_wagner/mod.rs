@@ -1,13 +1,11 @@
-#![allow(dead_code)]
-
 pub mod results;
+
+use crate::{analytics::data_structures::binary_heap::BinaryHeap, state::NodeKey};
 
 use self::results::MinCutResult;
 
 use super::{
-    super::data_structures::{
-        binary_heap::BinaryHeap, cut::Cut, stoer_wagner_ds::StoerWagnerGraph,
-    },
+    super::data_structures::{cut::Cut, stoer_wagner_ds::StoerWagnerGraph},
     AlgorithmRunner,
 };
 use results::SWCutResult;
@@ -34,7 +32,7 @@ impl AlgorithmRunner for GlobalMinCutRunner {
             SWCutResult::Empty(b) => return MinCutResult::Empty(b),
         }
 
-        let node_names = graph.get_nodes().iter().map(|n| n.name.clone()).collect();
+        let node_names = graph.get_nodes().iter().map(|n| n.num.clone()).collect();
         recover_mincut(sw_graph, node_names)
     }
 }
@@ -50,9 +48,7 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> SWCutResult {
         a.push(max.clone());
 
         for node_id in g.uncontracted.clone() {
-            let w = g
-                .graph
-                .get_edge_weight(&node_id, &max.node.name, None, None);
+            let w = g.graph.get_edge_weight(&node_id, &max.node.num, None, None);
             bheap.update(node_id.clone(), w);
         }
         bheap.build_heap();
@@ -62,8 +58,8 @@ pub fn st_mincut(g: &mut StoerWagnerGraph) -> SWCutResult {
     }
     let weight = a[a.len() - 1].weight;
 
-    let s = a[a.len() - 1].node.name.clone();
-    let t = a[a.len() - 2].node.name.clone();
+    let s = a[a.len() - 1].node.num.clone();
+    let t = a[a.len() - 2].node.num.clone();
 
     SWCutResult::Success(Cut::new(weight, s, t))
 }
@@ -95,12 +91,12 @@ pub fn stoer_wagner(graph: &mut StoerWagnerGraph) -> SWCutResult {
     }
 }
 
-pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> MinCutResult {
+pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<NodeKey>) -> MinCutResult {
     let mut parent_map = HashMap::new();
 
     for node in all_nodes {
         let parent = graph.uf.find(&node);
-        let children: &mut Vec<String> = parent_map.entry(parent.clone()).or_default();
+        let children: &mut Vec<NodeKey> = parent_map.entry(parent.clone()).or_default();
         children.push(node.clone());
     }
 
@@ -130,7 +126,7 @@ pub fn recover_mincut(graph: &mut StoerWagnerGraph, all_nodes: Vec<String>) -> M
 // Create a unit test for the stoer-wagner algorithm
 #[cfg(test)]
 mod tests {
-    use crate::graph::graph_ds::Graph;
+    use crate::{graph::graph_ds::Graph, state::NodeKey};
 
     use super::*;
 
@@ -140,14 +136,14 @@ mod tests {
         let mut g = Graph::new();
 
         // Add nodes
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
-        let x: String = "x".to_string();
-        let y: String = "y".to_string();
-        let z: String = "z".to_string();
-        let a: String = "a".to_string();
-        let b: String = "b".to_string();
+        let u: NodeKey = 1;
+        let v: NodeKey = 2;
+        let w: NodeKey = 3;
+        let x: NodeKey = 4;
+        let y: NodeKey = 5;
+        let z: NodeKey = 6;
+        let a: NodeKey = 7;
+        let b: NodeKey = 8;
 
         g.add_node(u.clone());
         g.add_node(v.clone());
@@ -229,14 +225,14 @@ mod tests {
         let mut g = Graph::new();
 
         // Add nodes
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
-        let x: String = "x".to_string();
-        let y: String = "y".to_string();
-        let z: String = "z".to_string();
-        let a: String = "a".to_string();
-        let b: String = "b".to_string();
+        let u: NodeKey = 1;
+        let v: NodeKey = 2;
+        let w: NodeKey = 3;
+        let x: NodeKey = 4;
+        let y: NodeKey = 5;
+        let z: NodeKey = 6;
+        let a: NodeKey = 7;
+        let b: NodeKey = 8;
 
         g.add_node(u.clone());
         g.add_node(v.clone());

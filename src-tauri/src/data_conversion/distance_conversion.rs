@@ -67,11 +67,3 @@ fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
     let c = 2.0 * a.sqrt().atan2((1.0 - a).sqrt());
     r * c
 }
-
-// Convert gps degrees to protobuf position field
-pub fn gps_degrees_to_protobuf_field(lat: f64, lon: f64, alt: f64) -> (i32, i32, i32) {
-    let lat_i = (lat / LAT_CONVERSION_FACTOR) as i32;
-    let lon_i = (lon / LON_CONVERSION_FACTOR) as i32;
-    let alt_i: i32 = (alt / ALT_CONVERSION_FACTOR) as i32;
-    (lat_i, lon_i, alt_i)
-}

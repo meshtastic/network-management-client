@@ -5,6 +5,8 @@ pub mod results;
 
 use results::DiffCenError;
 
+use crate::state::NodeKey;
+
 use self::results::{DiffCenResult, EigenvalsResult};
 
 use super::AlgorithmRunner;
@@ -99,7 +101,7 @@ impl AlgorithmRunner for DiffusionCentralityRunner {
                 node_to_diffcen_at_t.insert(node_id_i, node_to_diffcen_inner);
             }
 
-            node_to_diffcen.insert(t.to_string(), node_to_diffcen_at_t);
+            node_to_diffcen.insert(t, node_to_diffcen_at_t);
         }
 
         DiffCenResult::Success(node_to_diffcen)
@@ -108,8 +110,8 @@ impl AlgorithmRunner for DiffusionCentralityRunner {
 
 fn query_node_id(
     id: usize,
-    int_to_node_id: &HashMap<usize, String>,
-) -> Result<String, DiffCenError> {
+    int_to_node_id: &HashMap<usize, NodeKey>,
+) -> Result<NodeKey, DiffCenError> {
     let id = int_to_node_id
         .get(&id)
         .ok_or(DiffCenError::NodeIdLookupError(id as u32))?;

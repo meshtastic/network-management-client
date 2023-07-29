@@ -1,9 +1,8 @@
-#![allow(dead_code)]
 #![allow(non_snake_case)]
 
 use std::collections::HashMap;
 
-use crate::graph::node::Node;
+use crate::{graph::node::Node, state::NodeKey};
 
 use super::stoer_wagner_ds::StoerWagnerGraph;
 
@@ -13,24 +12,11 @@ pub struct Vertex {
     pub weight: f64,
 }
 
-impl Vertex {
-    pub fn new(node: Node, weight: f64) -> Vertex {
-        Vertex { node, weight }
-    }
-
-    pub fn clone(&self) -> Vertex {
-        Vertex {
-            node: self.node.clone(),
-            weight: self.weight,
-        }
-    }
-}
-
 #[derive(Clone, Debug)]
 pub struct BinaryHeap {
     heap: Vec<Vertex>,
     size: i32,
-    node_to_idx: HashMap<String, i32>,
+    node_to_idx: HashMap<NodeKey, i32>,
 }
 
 impl BinaryHeap {
@@ -68,8 +54,8 @@ impl BinaryHeap {
 
         let root = self.heap[0].clone();
         let leaf = self.heap[self.size as usize - 1].clone();
-        self.node_to_idx.insert(root.node.name.clone(), -1);
-        self.node_to_idx.insert(leaf.node.name, 0);
+        self.node_to_idx.insert(root.node.num.clone(), -1);
+        self.node_to_idx.insert(leaf.node.num, 0);
         self.heap[0] = self.heap[self.size as usize - 1].clone();
         self.size -= 1;
         self.heapify(None);
@@ -101,8 +87,8 @@ impl BinaryHeap {
         self.heap[ind1 as usize] = self.heap[ind2 as usize].clone();
         self.heap[ind2 as usize] = tmp;
 
-        self.node_to_idx.insert(v1.node.name, ind2);
-        self.node_to_idx.insert(v2.node.name, ind1);
+        self.node_to_idx.insert(v1.node.num, ind2);
+        self.node_to_idx.insert(v2.node.num, ind1);
     }
 
     pub fn heapify(&mut self, root: Option<i32>) {
@@ -136,7 +122,7 @@ impl BinaryHeap {
         }
     }
 
-    pub fn update(&mut self, node: String, weight: f64) {
+    pub fn update(&mut self, node: NodeKey, weight: f64) {
         let idx = self.node_to_idx.get(&node).unwrap();
         if *idx == -1 {
             return;

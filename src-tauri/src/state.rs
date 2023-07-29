@@ -5,7 +5,8 @@ use crate::{
 use std::{collections::HashMap, sync::Arc};
 use tauri::async_runtime;
 
-pub type DeviceKey = String;
+pub type DeviceKey = String; // "COM3" or "localhost:4403"
+pub type NodeKey = u32; // Node number
 
 pub type MeshDevicesInner = Arc<async_runtime::Mutex<HashMap<DeviceKey, device::MeshDevice>>>;
 

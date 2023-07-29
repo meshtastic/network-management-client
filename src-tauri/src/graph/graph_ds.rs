@@ -2,22 +2,21 @@
 use crate::analytics::algorithms::diffusion_centrality::results::EigenvalsResult;
 use crate::graph::edge::Edge;
 use crate::graph::node::Node;
+use crate::state::NodeKey;
 
 use log::warn;
 use nalgebra::DMatrix;
 use petgraph::prelude::*;
-use petgraph::stable_graph::StableUnGraph;
+use petgraph::stable_graph::{EdgeIndex, NodeIndex, StableUnGraph};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fmt::Display};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Graph {
-    pub g: StableGraph<Node, Edge, Undirected>,
-    pub node_idx_map: HashMap<String, petgraph::graph::NodeIndex>,
-    pub edge_idx_map: HashMap<
-        (petgraph::graph::NodeIndex, petgraph::graph::NodeIndex),
-        Vec<petgraph::graph::EdgeIndex>,
-    >,
+    pub g: StableUnGraph<Node, Edge>,
+
+    pub node_idx_map: HashMap<NodeKey, NodeIndex>,
+    pub edge_idx_map: HashMap<(NodeIndex, NodeIndex), Vec<EdgeIndex>>,
 }
 
 impl Graph {
@@ -34,11 +33,11 @@ impl Graph {
     ///
     /// # Arguments
     ///
-    /// * `name` - String identifier of the node.
-    pub fn add_node(&mut self, name: String) -> petgraph::graph::NodeIndex {
-        let node = Node::new(name);
+    /// * `num` - String identifier of the node.
+    pub fn add_node(&mut self, num: NodeKey) -> NodeIndex {
+        let node = Node::new(num);
         let node_idx = self.g.add_node(node.clone());
-        self.node_idx_map.insert(node.name, node_idx);
+        self.node_idx_map.insert(node.num, node_idx);
         node_idx
     }
 
@@ -47,9 +46,9 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node` - Node struct.
-    pub fn add_node_from_struct(&mut self, node: Node) -> petgraph::graph::NodeIndex {
+    pub fn add_node_from_struct(&mut self, node: Node) -> NodeIndex {
         let node_idx = self.g.add_node(node.clone());
-        self.node_idx_map.insert(node.name, node_idx);
+        self.node_idx_map.insert(node.num, node_idx);
         node_idx
     }
 
@@ -58,12 +57,12 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node_idx` - Node index of the node to be removed.
-    pub fn remove_node(&mut self, node: petgraph::graph::NodeIndex) {
+    pub fn remove_node(&mut self, node: NodeIndex) {
         let node_u = self.g.node_weight(node).unwrap().clone();
 
-        for neighbor_node in self.get_neighbors_idx(node_u.name.clone()) {
+        for neighbor_node in self.get_neighbors_idx(node_u.num.clone()) {
             let node_v = self.g.node_weight(neighbor_node).unwrap();
-            self.remove_edge(node_u.name.clone(), node_v.name.clone(), None, Some(false));
+            self.remove_edge(node_u.num.clone(), node_v.num.clone(), None, Some(false));
         }
 
         self.g.remove_node(node);
@@ -75,8 +74,8 @@ impl Graph {
     ///
     /// * `idx` - Index of the node we want to update, represented as NodeIndex
     /// * `new_weight` - New weight of the node
-    pub fn change_node_opt_weight(&mut self, idx: petgraph::graph::NodeIndex, new_weight: f64) {
-        let mut node = self.g.node_weight_mut(idx).unwrap();
+    pub fn change_node_opt_weight(&mut self, idx: NodeIndex, new_weight: f64) {
+        let node = self.g.node_weight_mut(idx).unwrap();
         node.optimal_weighted_degree = new_weight;
     }
 
@@ -84,18 +83,18 @@ impl Graph {
     ///
     /// # Arguments
     ///
-    /// * `name` - Name of the node
-    pub fn contains_node(&mut self, name: String) -> bool {
-        self.node_idx_map.contains_key(&name)
+    /// * `num` - Number of the node
+    pub fn contains_node(&mut self, num: NodeKey) -> bool {
+        self.node_idx_map.contains_key(&num)
     }
 
     /// Returns whether the graph contains an edge
     ///
     /// # Arguments
     ///
-    /// * `node1` - Name of the first node
-    /// * `node2` - Name of the second node
-    pub fn contains_edge(&mut self, node1: &String, node2: &String) -> bool {
+    /// * `node1` - Number of the first node
+    /// * `node2` - Number of the second node
+    pub fn contains_edge(&mut self, node1: &NodeKey, node2: &NodeKey) -> bool {
         let node1_idx = self.get_node_idx(node1);
         let node2_idx = self.get_node_idx(node2);
 
@@ -113,13 +112,13 @@ impl Graph {
     ///
     /// # Arguments
     ///
-    /// * `node1` - Name of the first node
-    /// * `node2` - Name of the second node
+    /// * `node1` - Number of the first node
+    /// * `node2` - Number of the second node
     ///
     /// # Returns
     ///
     /// * `Option<Edge>` - The edge between the two nodes if it exists
-    pub fn get_edge(&mut self, node1: &String, node2: &String) -> Option<Edge> {
+    pub fn get_edge(&mut self, node1: &NodeKey, node2: &NodeKey) -> Option<Edge> {
         if self.contains_edge(node1, node2) {
             let node1_idx = self.get_node_idx(node1);
             let node2_idx = self.get_node_idx(node2);
@@ -137,10 +136,10 @@ impl Graph {
     ///
     /// # Arguments
     ///
-    /// * `u` - String identifier of the first node
-    /// * `v` - String identifier of the second node
+    /// * `u` - NodeKey identifier of the first node
+    /// * `v` - NodeKey identifier of the second node
     /// * `weight` - Float weight of the edge
-    pub fn add_edge(&mut self, u: String, v: String, weight: f64) {
+    pub fn add_edge(&mut self, u: NodeKey, v: NodeKey, weight: f64) {
         if !self.node_idx_map.contains_key(&u) {
             let error_message = format!("Node {} does not exist", u);
             return print_error_and_return(&error_message);
@@ -218,14 +217,14 @@ impl Graph {
     ///
     /// # Arguments
     ///
-    /// * `u` - String identifier of the first node
-    /// * `v` - String identifier of the second node
+    /// * `u` - NodeKey identifier of the first node
+    /// * `v` - NodeKey identifier of the second node
     /// * `weight` - Float weight of the edge
     /// * `parallel_edge_idx` - Optional usize index of the parallel edge we want to update.
     pub fn update_edge(
         &mut self,
-        u: String,
-        v: String,
+        u: NodeKey,
+        v: NodeKey,
         weight: f64,
         parallel_edge_idx: Option<usize>,
         update_all_parallel: Option<bool>,
@@ -311,8 +310,8 @@ impl Graph {
     /// * `get_all_parallel` - Optional bool flag to get weight sum of all parallel edges.
     pub fn get_edge_weight(
         &mut self,
-        u: &String,
-        v: &String,
+        u: &NodeKey,
+        v: &NodeKey,
         parallel_edge_idx: Option<usize>,
         get_all_parallel: Option<bool>,
     ) -> f64 {
@@ -371,8 +370,8 @@ impl Graph {
     /// * `remove_all_parallel` - Optional bool flag to remove all parallel edges.
     pub fn remove_edge(
         &mut self,
-        u: String,
-        v: String,
+        u: NodeKey,
+        v: NodeKey,
         parallel_edge_idx: Option<usize>,
         remove_all_parallel: Option<bool>,
     ) {
@@ -457,18 +456,18 @@ impl Graph {
     /// # Returns
     ///
     /// * `Vec<Vec<f64>>` - an adjacency matrix
-    pub fn convert_to_adj_matrix(&self) -> (Vec<Vec<f64>>, HashMap<usize, String>, DMatrix<f64>) {
+    pub fn convert_to_adj_matrix(&self) -> (Vec<Vec<f64>>, HashMap<usize, NodeKey>, DMatrix<f64>) {
         let mut adj_matrix = Vec::new();
 
         let nodes = self.get_nodes();
         let edges = self.get_edges();
 
-        let mut node_id_to_int = HashMap::new();
-        let mut int_to_node_id = HashMap::new();
+        let mut node_id_to_int = HashMap::<NodeKey, usize>::new();
+        let mut int_to_node_id = HashMap::<usize, NodeKey>::new();
 
         for (idx, node) in nodes.iter().enumerate() {
-            node_id_to_int.insert(node.name.clone(), idx);
-            int_to_node_id.insert(idx, node.name.clone());
+            node_id_to_int.insert(node.num.clone(), idx);
+            int_to_node_id.insert(idx, node.num.clone());
         }
 
         for _ in 0..nodes.len() {
@@ -476,23 +475,23 @@ impl Graph {
         }
 
         for edge in edges {
-            let u_name = self
+            let u_num = self
                 .get_node(edge.get_u())
                 .expect("Index from edge should exist")
-                .name;
+                .num;
 
-            let v_name = self
+            let v_num = self
                 .get_node(edge.get_v())
                 .expect("Index from edge should exist")
-                .name;
+                .num;
 
             let u_id = node_id_to_int
-                .get(&u_name)
-                .expect("Name from edge should exist");
+                .get(&u_num)
+                .expect("num from edge should exist");
 
             let v_id = node_id_to_int
-                .get(&v_name)
-                .expect("Name from edge should exist");
+                .get(&v_num)
+                .expect("Number from edge should exist");
 
             let weight = edge.get_weight();
 
@@ -535,15 +534,6 @@ impl Graph {
         self.g.edge_count()
     }
 
-    /// Clones the graph and returns it.
-    pub fn clone(&self) -> Graph {
-        Graph {
-            g: self.g.clone(),
-            node_idx_map: self.node_idx_map.clone(),
-            edge_idx_map: self.edge_idx_map.clone(),
-        }
-    }
-
     /// Returns all the nodes in the graph.
     pub fn get_nodes(&self) -> Vec<Node> {
         let mut nodes = Vec::new();
@@ -558,7 +548,7 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node_idx` - NodeIndex of the node we want to get.
-    pub fn get_node(&self, idx: petgraph::graph::NodeIndex) -> Option<Node> {
+    pub fn get_node(&self, idx: NodeIndex) -> Option<Node> {
         Some(self.g.node_weight(idx)?.clone())
     }
 
@@ -567,7 +557,7 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node_idx` - NodeIndex of the node we want to get.
-    pub fn get_node_mut(&mut self, idx: petgraph::graph::NodeIndex) -> Option<&mut Node> {
+    pub fn get_node_mut(&mut self, idx: NodeIndex) -> Option<&mut Node> {
         self.g.node_weight_mut(idx)
     }
 
@@ -576,7 +566,7 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node_id` - String identifier of the node we want to get.
-    pub fn get_node_idx(&self, node: &String) -> petgraph::graph::NodeIndex {
+    pub fn get_node_idx(&self, node: &NodeKey) -> NodeIndex {
         *self.node_idx_map.get(node).unwrap()
     }
 
@@ -594,7 +584,7 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node` - String identifier of the node we want to get the neighbors of.
-    pub fn get_neighbors(&self, node: String) -> Vec<Node> {
+    pub fn get_neighbors(&self, node: NodeKey) -> Vec<Node> {
         let node_weight = self.node_idx_map.get(&node).unwrap();
         let mut neighbors = Vec::new();
         for neighbor in self.g.neighbors_undirected(*node_weight) {
@@ -608,8 +598,8 @@ impl Graph {
     ///
     /// # Arguments
     ///
-    /// * `node` - String identifier of the node we want to get the neighbors of.
-    pub fn get_neighbors_idx(&self, node: String) -> Vec<petgraph::graph::NodeIndex> {
+    /// * `node` - NodeKey identifier of the node we want to get the neighbors of.
+    pub fn get_neighbors_idx(&self, node: NodeKey) -> Vec<NodeIndex> {
         let node_weight = self.node_idx_map.get(&node).unwrap();
         let mut neighbors = Vec::new();
         for neighbor in self.g.neighbors_undirected(*node_weight) {
@@ -623,8 +613,8 @@ impl Graph {
     ///
     /// # Arguments
     ///
-    /// * `node` - String identifier of the node we want to get the degree of.
-    pub fn degree_of(&self, node: String) -> f64 {
+    /// * `node` - NodeKey identifier of the node we want to get the degree of.
+    pub fn degree_of(&self, node: NodeKey) -> f64 {
         if !self.node_idx_map.contains_key(&node) {
             let error_message = format!("Node {} does not exist", node);
             println!("{}", error_message);
@@ -663,8 +653,8 @@ impl Display for Graph {
 
             s.push_str(&format!(
                 "{} - {} {}\n",
-                node_u.name.clone(),
-                node_v.name.clone(),
+                node_u.num.clone(),
+                node_v.num.clone(),
                 edge.weight
             ));
         }
@@ -689,9 +679,9 @@ mod tests {
         let mut g = super::Graph::new();
 
         // Create a few nodes and edges and add to graph
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
+        let u: NodeKey = 1;
+        let v: NodeKey = 2;
+        let w: NodeKey = 3;
 
         let _u_idx = g.add_node(u.clone());
         let _v_idx = g.add_node(v.clone());
@@ -715,8 +705,8 @@ mod tests {
     fn test_parallel_edges() {
         let mut g = super::Graph::new();
 
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
+        let u: NodeKey = 1;
+        let v: NodeKey = 2;
 
         let _u_idx = g.add_node(u.clone());
         let _v_idx = g.add_node(v.clone());
@@ -735,10 +725,10 @@ mod tests {
         let mut g1 = super::Graph::new();
 
         // Create a few nodes and edges and add to graph
-        let a = "a".to_string();
-        let b = "b".to_string();
-        let c = "c".to_string();
-        let d = "d".to_string();
+        let a: NodeKey = 1;
+        let b: NodeKey = 2;
+        let c: NodeKey = 3;
+        let d: NodeKey = 4;
 
         let mut a_node = Node::new(a);
         a_node.set_gps(-72.28486, 43.71489, 1.0);

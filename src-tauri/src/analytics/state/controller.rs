@@ -127,6 +127,7 @@ mod tests {
     use super::*;
     use crate::analytics::state::configuration::AlgorithmConfigFlags;
     use crate::graph::graph_ds::Graph;
+    use crate::state::NodeKey;
 
     #[test]
     fn test_run_controller() {
@@ -134,9 +135,9 @@ mod tests {
         let mut graph1 = Graph::new();
 
         // Create a few nodes and edges and add to graph
-        let u: String = "u".to_string();
-        let v: String = "v".to_string();
-        let w: String = "w".to_string();
+        let u: NodeKey = 1;
+        let v: NodeKey = 2;
+        let w: NodeKey = 3;
 
         let _u_idx = graph1.add_node(u.clone());
         let _v_idx = graph1.add_node(v.clone());

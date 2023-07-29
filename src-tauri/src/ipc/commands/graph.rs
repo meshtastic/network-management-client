@@ -145,9 +145,9 @@ pub async fn run_algorithms(
     let graph_struct = guard.as_mut().ok_or("Graph not initialized")?;
     let state = state_guard.as_mut().ok_or("State not initialized")?;
 
-    state.add_graph_snapshot(&graph_struct.graph);
+    // state.add_graph_snapshot(&graph_struct.graph);
     state.set_algorithm_flags(flags);
-    state.run_algos();
+    // state.run_algos();
 
     let algo_result = state.get_algo_results();
 
@@ -181,22 +181,16 @@ pub async fn run_algorithms(
         DiffCenResult::Success(diff_cen_res) => diff_cen_res
             .iter()
             .map(|(key, val)| {
-                let key = key.parse::<u32>().unwrap_or(0);
                 let val = val
                     .iter()
                     .map(|(k, v)| {
-                        let k = k.parse::<u32>().unwrap_or(0);
-                        let v: HashMap<u32, f64> = v
-                            .iter()
-                            .map(|(k1, v1)| {
-                                let k1 = k1.parse::<u32>().unwrap_or(0);
-                                (k1, *v1)
-                            })
-                            .collect();
-                        (k, v)
+                        let v: HashMap<u32, f64> = v.iter().map(|(k1, v1)| (*k1, *v1)).collect();
+
+                        (*k, v)
                     })
                     .collect();
-                (key, val)
+
+                (*key, val)
             })
             .collect(),
         DiffCenResult::Error(err) => {
