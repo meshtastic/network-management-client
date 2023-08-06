@@ -17,7 +17,7 @@ import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
 } from "@features/device/deviceSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
+import { uiSliceActions } from "@features/ui/slice";
 
 import { getWaypointMapId } from "@utils/map";
 import {
@@ -66,7 +66,7 @@ const TextMessageBubble = ({
 
   const handleShowOnMapClick = () => {
     if (type !== "waypoint") return;
-    dispatch(deviceSliceActions.setActiveWaypoint(message.payload.data.id));
+    dispatch(uiSliceActions.setActiveWaypoint(message.payload.data.id));
     navigateTo(AppRoutes.MAP);
   };
 

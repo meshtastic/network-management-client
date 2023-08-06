@@ -33,7 +33,8 @@ import {
   requestDeleteWaypoint,
 } from "@features/device/deviceActions";
 import { deviceSliceActions } from "@features/device/deviceSlice";
-import { requestSliceActions } from "@features/requests/requestReducer";
+import { requestSliceActions } from "@features/requests/requestSlice";
+import { uiSliceActions } from "@features/ui/slice";
 
 import { ConnectionType, DeviceKey } from "@utils/connections";
 import type { CommandError } from "@utils/errors";
@@ -246,7 +247,7 @@ function* disconnectFromDeviceWorker(
       deviceKey: action.payload,
     });
     yield put(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
-    yield put(deviceSliceActions.setActiveNode(null));
+    yield put(uiSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
   } catch (error) {
     yield put({ type: "GENERAL_ERROR", payload: error });
@@ -257,7 +258,7 @@ function* disconnectFromAllDevicesWorker() {
   try {
     yield call(invoke, "drop_all_device_connections");
     yield put(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
-    yield put(deviceSliceActions.setActiveNode(null));
+    yield put(uiSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
   } catch (error) {
     yield put({ type: "GENERAL_ERROR", payload: error });

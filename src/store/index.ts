@@ -2,14 +2,16 @@ import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import { logger } from "redux-logger";
 
+import { requestInitializeApplication } from "@features/device/deviceActions";
+
 import { algorithmsReducer } from "@features/algorithms/algorithmsSlice";
 import { appConfigReducer } from "@features/appConfig/appConfigSlice";
 import { configReducer } from "@features/config/configSlice";
 import { connectionReducer } from "@features/connection/connectionSlice";
-import { requestInitializeApplication } from "@features/device/deviceActions";
 import { deviceReducer } from "@features/device/deviceSlice";
 import { mapReducer } from "@features/map/mapSlice";
-import { requestReducer } from "@features/requests/requestReducer";
+import { requestReducer } from "@features/requests/requestSlice";
+import { uiReducer } from "@features/ui/slice";
 
 import rootSaga from "@store/saga";
 
@@ -25,6 +27,7 @@ export const store = configureStore({
     devices: deviceReducer,
     map: mapReducer,
     requests: requestReducer,
+    ui: uiReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(middleware),

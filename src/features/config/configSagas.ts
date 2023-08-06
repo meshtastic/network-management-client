@@ -22,7 +22,7 @@ import {
 import { configSliceActions } from "@features/config/configSlice";
 
 import { selectPrimaryDeviceKey } from "@features/device/deviceSelectors";
-import { requestSliceActions } from "@features/requests/requestReducer";
+import { requestSliceActions } from "@features/requests/requestSlice";
 
 import type { CommandError } from "@utils/errors";
 import { getMeshChannelFromCurrentConfig } from "@utils/form";

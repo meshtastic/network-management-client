@@ -1,29 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import type {
-  app_device_MeshDevice,
-  app_device_MeshNode,
-  app_device_NormalizedWaypoint,
-} from "@bindings/index";
+import type { app_device_MeshDevice } from "@bindings/index";
 
 export interface IDeviceState {
   device: app_device_MeshDevice | null;
-  activeNode: app_device_MeshNode["nodeNum"] | null;
   availableSerialPorts: string[] | null;
   primaryDeviceKey: string | null; // port or socket ddress
-  activeWaypoint: app_device_NormalizedWaypoint["id"] | null;
   autoConnectPort: string | null; // Port to automatically connect to on startup
-  infoPane: "waypoint" | "algos" | null;
 }
 
 export const initialDeviceState: IDeviceState = {
   device: null,
-  activeNode: null,
   availableSerialPorts: null,
   primaryDeviceKey: null,
-  activeWaypoint: null,
   autoConnectPort: null,
-  infoPane: null,
 };
 
 export const deviceSlice = createSlice({
@@ -46,43 +36,6 @@ export const deviceSlice = createSlice({
 
     setDevice: (state, action: PayloadAction<app_device_MeshDevice | null>) => {
       state.device = action.payload;
-    },
-
-    setActiveNode: (
-      state,
-      action: PayloadAction<app_device_MeshNode["nodeNum"] | null>
-    ) => {
-      state.activeNode = action.payload;
-      if (action.payload) {
-        // If whatever is passed in when this is called is not null
-        state.activeWaypoint = null;
-        state.infoPane = null;
-      }
-    },
-
-    setActiveWaypoint: (
-      state,
-      action: PayloadAction<app_device_NormalizedWaypoint["id"] | null>
-    ) => {
-      state.activeWaypoint = action.payload;
-      if (action.payload) {
-        // If there is an active waypoint then we don't want another info screen
-        state.infoPane = "waypoint";
-        state.activeNode = null;
-      }
-    },
-
-    setInfoPane: (
-      state,
-      action: PayloadAction<"waypoint" | "algos" | null>
-    ) => {
-      state.infoPane = action.payload;
-
-      if (action.payload) {
-        state.activeNode = null;
-      } else {
-        state.activeWaypoint = null;
-      }
     },
 
     setAutoConnectPort: (state, action: PayloadAction<string | null>) => {

@@ -12,7 +12,7 @@ import {
   appConfigSliceActions,
 } from "@features/appConfig/appConfigSlice";
 import { requestInitializeApplication } from "@features/device/deviceActions";
-import { requestSliceActions } from "@features/requests/requestReducer";
+import { requestSliceActions } from "@features/requests/requestSlice";
 
 import type { CommandError } from "@utils/errors";
 import {

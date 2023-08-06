@@ -6,7 +6,7 @@ import {
   algorithmsSliceActions,
   IAlgorithmsState,
 } from "@features/algorithms/algorithmsSlice";
-import { requestSliceActions } from "@features/requests/requestReducer";
+import { requestSliceActions } from "@features/requests/requestSlice";
 
 import type { CommandError } from "@utils/errors";
 

@@ -29,7 +29,7 @@ import {
   selectAutoConnectPort,
   selectAvailablePorts,
 } from "@features/device/deviceSelectors";
-import { requestSliceActions } from "@features/requests/requestReducer";
+import { requestSliceActions } from "@features/requests/requestSlice";
 
 import { ConnectionType } from "@utils/connections";
 import { useIsDarkMode } from "@utils/hooks";

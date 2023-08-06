@@ -1,5 +1,5 @@
 import type { RootState } from "@app/store";
-import type { RequestStatus } from "@features/requests/requestReducer";
+import type { RequestStatus } from "@features/requests/requestSlice";
 
 export const selectConnectionStatus =
   (portName: string) =>
