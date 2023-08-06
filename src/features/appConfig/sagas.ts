@@ -6,13 +6,10 @@ import {
   requestPersistLastTcpConnectionMeta,
   requestPersistGeneralConfig,
   requestPersistMapConfig,
-} from "@features/appConfig/appConfigActions";
-import {
-  ColorMode,
-  appConfigSliceActions,
-} from "@features/appConfig/appConfigSlice";
-import { requestInitializeApplication } from "@features/device/deviceActions";
-import { requestSliceActions } from "@features/requests/requestReducer";
+} from "@features/appConfig/actions";
+import { ColorMode, appConfigSliceActions } from "@features/appConfig/slice";
+import { requestInitializeApplication } from "@features/device/actions";
+import { requestSliceActions } from "@features/requests/slice";
 
 import type { CommandError } from "@utils/errors";
 import {

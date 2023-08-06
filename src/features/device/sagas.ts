@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api";
 import { all, call, cancel, fork, put, takeEvery } from "redux-saga/effects";
 import type { Task } from "redux-saga";
 
-import { connectionSliceActions } from "@features/connection/connectionSlice";
+import { connectionSliceActions } from "@features/connection/slice";
 import {
   ConfigStatusChannel,
   createConfigStatusChannel,
@@ -19,7 +19,7 @@ import {
   handleGraphUpdateChannel,
   handleRebootChannel,
   RebootChannel,
-} from "@features/device/deviceConnectionHandlerSagas";
+} from "@features/device/connectionHandlerSagas";
 import {
   requestAutoConnectPort,
   requestAvailablePorts,
@@ -31,9 +31,10 @@ import {
   requestSendMessage,
   requestUpdateUser,
   requestDeleteWaypoint,
-} from "@features/device/deviceActions";
-import { deviceSliceActions } from "@features/device/deviceSlice";
-import { requestSliceActions } from "@features/requests/requestReducer";
+} from "@features/device/actions";
+import { deviceSliceActions } from "@features/device/slice";
+import { requestSliceActions } from "@features/requests/slice";
+import { uiSliceActions } from "@features/ui/slice";
 
 import { ConnectionType, DeviceKey } from "@utils/connections";
 import type { CommandError } from "@utils/errors";
@@ -246,7 +247,7 @@ function* disconnectFromDeviceWorker(
       deviceKey: action.payload,
     });
     yield put(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
-    yield put(deviceSliceActions.setActiveNode(null));
+    yield put(uiSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
   } catch (error) {
     yield put({ type: "GENERAL_ERROR", payload: error });
@@ -257,7 +258,7 @@ function* disconnectFromAllDevicesWorker() {
   try {
     yield call(invoke, "drop_all_device_connections");
     yield put(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
-    yield put(deviceSliceActions.setActiveNode(null));
+    yield put(uiSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
   } catch (error) {
     yield put({ type: "GENERAL_ERROR", payload: error });

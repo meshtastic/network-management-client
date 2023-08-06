@@ -10,7 +10,7 @@ import type {
   app_ipc_DeviceBulkConfig,
 } from "@bindings/index";
 
-import { requestCommitConfig } from "@features/config/configActions";
+import { requestCommitConfig } from "@features/config/actions";
 import {
   selectCurrentAllChannelConfig,
   selectCurrentModuleConfig,
@@ -18,11 +18,11 @@ import {
   selectEditedAllChannelConfig,
   selectEditedModuleConfig,
   selectEditedRadioConfig,
-} from "@features/config/configSelectors";
-import { configSliceActions } from "@features/config/configSlice";
+} from "@features/config/selectors";
+import { configSliceActions } from "@features/config/slice";
 
-import { selectPrimaryDeviceKey } from "@features/device/deviceSelectors";
-import { requestSliceActions } from "@features/requests/requestReducer";
+import { selectPrimaryDeviceKey } from "@features/device/selectors";
+import { requestSliceActions } from "@features/requests/slice";
 
 import type { CommandError } from "@utils/errors";
 import { getMeshChannelFromCurrentConfig } from "@utils/form";

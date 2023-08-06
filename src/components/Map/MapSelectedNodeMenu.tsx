@@ -16,8 +16,8 @@ import {
 
 import i18next from "@app/i18n";
 
-import { selectActiveNode } from "@features/device/deviceSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
+import { selectActiveNode } from "@features/ui/selectors";
+import { uiSliceActions } from "@features/ui/slice";
 
 import { writeValueToClipboard } from "@utils/clipboard";
 import { useComponentReload } from "@utils/hooks";
@@ -78,7 +78,7 @@ const MapSelectedNodeMenu = () => {
     activeNode.deviceMetrics.at(-1)?.metrics.batteryLevel ?? null;
 
   const clearActiveNode = () => {
-    dispatch(deviceSliceActions.setActiveNode(null));
+    dispatch(uiSliceActions.setActiveNode(null));
   };
 
   return (

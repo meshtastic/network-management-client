@@ -10,9 +10,9 @@ import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigInput from "@components/config/ConfigInput";
 import ConfigSelect from "@components/config/ConfigSelect";
 
-import { requestPersistGeneralConfig } from "@features/appConfig/appConfigActions";
-import { selectGeneralConfigState } from "@features/appConfig/appConfigSelectors";
-import type { ColorMode } from "@features/appConfig/appConfigSlice";
+import { requestPersistGeneralConfig } from "@features/appConfig/actions";
+import { selectGeneralConfigState } from "@features/appConfig/selectors";
+import type { ColorMode } from "@features/appConfig/slice";
 
 export interface IGeneralConfigPageProps {
   className?: string;

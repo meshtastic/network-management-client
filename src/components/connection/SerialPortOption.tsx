@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Usb } from "lucide-react";
 
-import type { RequestStatus } from "@features/requests/requestReducer";
+import type { RequestStatus } from "@features/requests/slice";
 
 export interface ISerialPortOptions {
   name: string;

@@ -9,7 +9,7 @@ import ConfigOption from "@components/config/ConfigOption";
 import GeneralConfigPage from "@components/config/application/GeneralConfigPage";
 import MapConfigPage from "@components/config/application/MapConfigPage";
 
-import type { IAppConfigState } from "@features/appConfig/appConfigSlice";
+import type { IAppConfigState } from "@features/appConfig/slice";
 
 export const ApplicationSettingsOptions = {
   general: i18next.t("applicationSettings.options.general"),

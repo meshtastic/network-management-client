@@ -1,12 +1,12 @@
 import { invoke } from "@tauri-apps/api";
 import { all, call, put, takeEvery } from "redux-saga/effects";
 
-import { requestRunAllAlgorithms } from "@features/algorithms/algorithmsActions";
+import { requestRunAllAlgorithms } from "@features/algorithms/actions";
 import {
   algorithmsSliceActions,
   IAlgorithmsState,
-} from "@features/algorithms/algorithmsSlice";
-import { requestSliceActions } from "@features/requests/requestReducer";
+} from "@features/algorithms/slice";
+import { requestSliceActions } from "@features/requests/slice";
 
 import type { CommandError } from "@utils/errors";
 

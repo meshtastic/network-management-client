@@ -13,14 +13,11 @@ import DefaultTooltip from "@components/DefaultTooltip";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
-import {
-  selectActiveNodeId,
-  selectDevice,
-  selectAllNodes,
-} from "@features/device/deviceSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectMapUIState } from "@features/map/mapSelectors";
-import { mapSliceActions } from "@features/map/mapSlice";
+import { selectDevice, selectAllNodes } from "@features/device/selectors";
+import { selectMapUIState } from "@features/map/selectors";
+import { mapSliceActions } from "@features/map/slice";
+import { selectActiveNodeId } from "@features/ui/selectors";
+import { uiSliceActions } from "@features/ui/slice";
 
 import { MapIDs, getFlyToConfig } from "@utils/map";
 
@@ -101,7 +98,7 @@ const NodeSearchDock = () => {
 
   const handleNodeSelect = (nodeId: number) => {
     const isNodeActive = activeNodeId === nodeId;
-    dispatch(deviceSliceActions.setActiveNode(isNodeActive ? null : nodeId));
+    dispatch(uiSliceActions.setActiveNode(isNodeActive ? null : nodeId));
 
     // Only animate when node is not currently active
     if (isNodeActive) return;

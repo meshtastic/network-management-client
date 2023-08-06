@@ -7,7 +7,7 @@ import { RowSpacingIcon, Cross2Icon } from "@radix-ui/react-icons";
 import SerialPortOption from "@components/connection/SerialPortOption";
 import ConnectionInput from "@components/connection/ConnectionInput";
 import ConnectionSwitch from "@components/connection/ConnectionSwitch";
-import type { RequestStatus } from "@features/requests/requestReducer";
+import type { RequestStatus } from "@features/requests/slice";
 
 export interface ISerialConnectPaneProps {
   availableSerialPorts: string[] | null;

@@ -10,16 +10,16 @@ import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation"
 import {
   AlgorithmConfigFlags,
   requestRunAllAlgorithms,
-} from "@features/algorithms/algorithmsActions";
-import { selectAlgorithmsResults } from "@features/algorithms/algorithmsSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
+} from "@features/algorithms/actions";
+import { selectAlgorithmsResults } from "@features/algorithms/selectors";
+import { uiSliceActions } from "@features/ui/slice";
 
 const AnalyticsPane = () => {
   const dispatch = useDispatch();
   const { apResult, mincutResult } = useSelector(selectAlgorithmsResults());
 
   const handleClosePane = () => {
-    dispatch(deviceSliceActions.setInfoPane(null));
+    dispatch(uiSliceActions.setInfoPane(null));
   };
 
   const diffcen = new Map();

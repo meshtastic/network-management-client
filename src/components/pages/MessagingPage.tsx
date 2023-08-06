@@ -6,7 +6,7 @@ import ConfigLayout from "@components/config/ConfigLayout";
 import ChannelDetailView from "@components/Messaging/ChannelDetailView";
 import ChannelListElement from "@components/Messaging/ChannelListElement";
 
-import { selectDeviceChannels } from "@features/device/deviceSelectors";
+import { selectDeviceChannels } from "@features/device/selectors";
 import { useNavigate } from "react-router-dom";
 import { AppRoutes } from "@utils/routing";
 import { useTranslation } from "react-i18next";

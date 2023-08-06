@@ -6,7 +6,7 @@ import TimeAgo from "timeago-react";
 import type { app_device_MeshNode } from "@bindings/index";
 
 import TableLayout from "@components/Table/TableLayout";
-import { selectAllNodes } from "@features/device/deviceSelectors";
+import { selectAllNodes } from "@features/device/selectors";
 import { getLastHeardTime } from "@utils/nodes";
 import { formatLocation } from "@utils/map";
 import { useTranslation } from "react-i18next";

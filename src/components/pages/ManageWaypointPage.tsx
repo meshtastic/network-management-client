@@ -8,7 +8,7 @@ import TableLayout from "@components/Table/TableLayout";
 import {
   selectAllUsersByNodeIds,
   selectAllWaypoints,
-} from "@features/device/deviceSelectors";
+} from "@features/device/selectors";
 import { formatLocation } from "@utils/map";
 import { useTranslation } from "react-i18next";
 

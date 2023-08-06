@@ -1,58 +1,32 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import type {
-  app_device_MeshDevice,
   app_device_MeshNode,
   app_device_NormalizedWaypoint,
 } from "@bindings/index";
 
-export interface IDeviceState {
-  device: app_device_MeshDevice | null;
+export interface IUiState {
   activeNode: app_device_MeshNode["nodeNum"] | null;
-  availableSerialPorts: string[] | null;
-  primaryDeviceKey: string | null; // port or socket ddress
   activeWaypoint: app_device_NormalizedWaypoint["id"] | null;
-  autoConnectPort: string | null; // Port to automatically connect to on startup
   infoPane: "waypoint" | "algos" | null;
 }
 
-export const initialDeviceState: IDeviceState = {
-  device: null,
+export const initialUiState: IUiState = {
   activeNode: null,
-  availableSerialPorts: null,
-  primaryDeviceKey: null,
   activeWaypoint: null,
-  autoConnectPort: null,
   infoPane: null,
 };
 
-export const deviceSlice = createSlice({
-  name: "device",
-  initialState: initialDeviceState,
+export const uiSlice = createSlice({
+  name: "ui",
+  initialState: initialUiState,
   reducers: {
-    setAvailableSerialPorts: (
-      state,
-      action: PayloadAction<string[] | null>
-    ) => {
-      state.availableSerialPorts = action.payload;
-    },
-
-    setPrimaryDeviceConnectionKey: (
-      state,
-      action: PayloadAction<string | null>
-    ) => {
-      state.primaryDeviceKey = action.payload;
-    },
-
-    setDevice: (state, action: PayloadAction<app_device_MeshDevice | null>) => {
-      state.device = action.payload;
-    },
-
     setActiveNode: (
       state,
       action: PayloadAction<app_device_MeshNode["nodeNum"] | null>
     ) => {
       state.activeNode = action.payload;
+
       if (action.payload) {
         // If whatever is passed in when this is called is not null
         state.activeWaypoint = null;
@@ -65,6 +39,7 @@ export const deviceSlice = createSlice({
       action: PayloadAction<app_device_NormalizedWaypoint["id"] | null>
     ) => {
       state.activeWaypoint = action.payload;
+
       if (action.payload) {
         // If there is an active waypoint then we don't want another info screen
         state.infoPane = "waypoint";
@@ -84,12 +59,7 @@ export const deviceSlice = createSlice({
         state.activeWaypoint = null;
       }
     },
-
-    setAutoConnectPort: (state, action: PayloadAction<string | null>) => {
-      state.autoConnectPort = action.payload;
-    },
   },
 });
 
-export const { actions: deviceSliceActions, reducer: deviceReducer } =
-  deviceSlice;
+export const { actions: uiSliceActions, reducer: uiReducer } = uiSlice;

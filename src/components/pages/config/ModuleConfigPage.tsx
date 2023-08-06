@@ -21,12 +21,12 @@ import SerialModuleConfigPage from "@components/config/module/SerialModuleConfig
 import StoreAndForwardConfigPage from "@components/config/module/StoreAndForwardConfigPage";
 import TelemetryConfigPage from "@components/config/module/TelemetryConfigPage";
 
-import { requestCommitConfig } from "@features/config/configActions";
-import type { IModuleConfigState } from "@features/config/configSlice";
+import { requestCommitConfig } from "@features/config/actions";
+import type { IModuleConfigState } from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
-} from "@features/config/configSelectors";
+} from "@features/config/selectors";
 
 export const ModuleConfigOptions: Record<keyof IModuleConfigState, string> = {
   // audio: i18next.t('config.module.options.audio'),

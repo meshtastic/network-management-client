@@ -4,15 +4,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { Lightbulb } from "lucide-react";
 
 import MapOverlayButton from "@components/Map/MapOverlayButton";
-import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectInfoPane } from "@features/device/deviceSelectors";
+import { selectInfoPane } from "@features/ui/selectors";
+import { uiSliceActions } from "@features/ui/slice";
 
 const MapInteractionPane = () => {
   const dispatch = useDispatch();
   const accordionShown = useSelector(selectInfoPane()) === "algos";
 
   const handleClickStacks = () => {
-    dispatch(deviceSliceActions.setInfoPane(accordionShown ? null : "algos"));
+    dispatch(uiSliceActions.setInfoPane(accordionShown ? null : "algos"));
   };
 
   return (

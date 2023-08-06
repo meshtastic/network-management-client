@@ -3,7 +3,7 @@ import type {
   IGeneralConfigState,
   IMapConfigState,
   TcpConnectionMeta,
-} from "@features/appConfig/appConfigSlice";
+} from "@features/appConfig/slice";
 
 export const requestFetchLastTcpConnectionMeta = createAction(
   "@appConfig/fetch-last-tcp-connection-meta"

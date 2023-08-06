@@ -21,9 +21,9 @@ import PowerConfigPage from "@components/config/device/PowerConfigPage";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
-} from "@features/config/configSelectors";
-import { requestCommitConfig } from "@features/config/configActions";
-import type { IRadioConfigState } from "@features/config/configSlice";
+} from "@features/config/selectors";
+import { requestCommitConfig } from "@features/config/actions";
+import type { IRadioConfigState } from "@features/config/slice";
 
 export const RadioConfigOptions: Record<keyof IRadioConfigState, string> = {
   bluetooth: i18next.t("config.radio.options.bluetooth"),

@@ -2,7 +2,7 @@ import type {
   IGeneralConfigState,
   IMapConfigState,
   TcpConnectionMeta,
-} from "@features/appConfig/appConfigSlice";
+} from "@features/appConfig/slice";
 import type { Store } from "tauri-plugin-store-api";
 
 export const DEFAULT_STORE_FILE_NAME = "config.bin";
