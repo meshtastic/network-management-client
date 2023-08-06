@@ -2,15 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import { logger } from "redux-logger";
 
-import { requestInitializeApplication } from "@features/device/deviceActions";
+import { requestInitializeApplication } from "@features/device/actions";
 
-import { algorithmsReducer } from "@features/algorithms/algorithmsSlice";
-import { appConfigReducer } from "@features/appConfig/appConfigSlice";
-import { configReducer } from "@features/config/configSlice";
-import { connectionReducer } from "@features/connection/connectionSlice";
-import { deviceReducer } from "@features/device/deviceSlice";
-import { mapReducer } from "@features/map/mapSlice";
-import { requestReducer } from "@features/requests/requestSlice";
+import { algorithmsReducer } from "@features/algorithms/slice";
+import { appConfigReducer } from "@features/appConfig/slice";
+import { configReducer } from "@features/config/slice";
+import { connectionReducer } from "@features/connection/slice";
+import { deviceReducer } from "@features/device/slice";
+import { mapReducer } from "@features/map/slice";
+import { requestReducer } from "@features/requests/slice";
 import { uiReducer } from "@features/ui/slice";
 
 import rootSaga from "@store/saga";

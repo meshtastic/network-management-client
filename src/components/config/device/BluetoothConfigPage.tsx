@@ -13,13 +13,13 @@ import ConfigSelect from "@components/config/ConfigSelect";
 import {
   BluetoothConfigInput,
   configSliceActions,
-} from "@features/config/configSlice";
+} from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
-} from "@features/config/configSelectors";
+} from "@features/config/selectors";
 
-import { selectDevice } from "@features/device/deviceSelectors";
+import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
 
 export interface IBluetoothConfigPageProps {

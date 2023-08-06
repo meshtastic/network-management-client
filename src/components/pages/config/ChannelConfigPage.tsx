@@ -8,10 +8,10 @@ import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
 import ChannelConfigDetail from "@components/config/channel/ChannelConfigDetail";
 
-import { requestCommitConfig } from "@features/config/configActions";
-import type { ChannelConfigInput } from "@features/config/configSlice";
-import { selectEditedAllChannelConfig } from "@features/config/configSelectors";
-import { selectDeviceChannels } from "@features/device/deviceSelectors";
+import { requestCommitConfig } from "@features/config/actions";
+import type { ChannelConfigInput } from "@features/config/slice";
+import { selectEditedAllChannelConfig } from "@features/config/selectors";
+import { selectDeviceChannels } from "@features/device/selectors";
 
 import { getCurrentConfigFromMeshChannel } from "@utils/form";
 import { getChannelName } from "@utils/messaging";

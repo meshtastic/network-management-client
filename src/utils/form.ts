@@ -1,10 +1,10 @@
 import { fromByteArray, toByteArray } from "base64-js";
 import merge from "lodash.merge";
 import cloneDeep from "lodash.clonedeep";
+import type { DeepPartial } from "react-hook-form";
 
 import type { app_device_MeshChannel } from "@bindings/index";
-import type { ChannelConfigInput } from "@features/config/configSlice";
-import type { DeepPartial } from "react-hook-form";
+import type { ChannelConfigInput } from "@features/config/slice";
 
 export const dateTimeLocalFormatString = "YYYY-MM-DDThh:mm";
 

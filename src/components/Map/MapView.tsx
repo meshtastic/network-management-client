@@ -40,10 +40,10 @@ import MapNodeTooltip from "@components/Map/MapNodeTooltip";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 
-import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
-import { selectAllWaypoints } from "@features/device/deviceSelectors";
-import { selectMapState } from "@features/map/mapSelectors";
-import { mapSliceActions } from "@features/map/mapSlice";
+import { selectMapConfigState } from "@features/appConfig/selectors";
+import { selectAllWaypoints } from "@features/device/selectors";
+import { selectMapState } from "@features/map/selectors";
+import { mapSliceActions } from "@features/map/slice";
 import {
   selectActiveNodeId,
   selectActiveWaypoint,

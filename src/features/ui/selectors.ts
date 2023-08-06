@@ -5,10 +5,7 @@ import type {
   app_device_NormalizedWaypoint,
 } from "@bindings/index";
 
-import {
-  selectNodeById,
-  selectWaypointById,
-} from "@features/device/deviceSelectors";
+import { selectNodeById, selectWaypointById } from "@features/device/selectors";
 
 export const selectRootState = () => (state: RootState) => state;
 

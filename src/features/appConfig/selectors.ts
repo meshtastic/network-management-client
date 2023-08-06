@@ -3,7 +3,7 @@ import type {
   IGeneralConfigState,
   IMapConfigState,
   TcpConnectionMeta,
-} from "@features/appConfig/appConfigSlice";
+} from "@features/appConfig/slice";
 
 export const selectPersistedTCPConnectionMeta =
   () =>

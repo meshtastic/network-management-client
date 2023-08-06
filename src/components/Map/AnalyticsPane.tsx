@@ -10,8 +10,8 @@ import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation"
 import {
   AlgorithmConfigFlags,
   requestRunAllAlgorithms,
-} from "@features/algorithms/algorithmsActions";
-import { selectAlgorithmsResults } from "@features/algorithms/algorithmsSelectors";
+} from "@features/algorithms/actions";
+import { selectAlgorithmsResults } from "@features/algorithms/selectors";
 import { uiSliceActions } from "@features/ui/slice";
 
 const AnalyticsPane = () => {

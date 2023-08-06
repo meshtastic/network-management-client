@@ -33,13 +33,13 @@ import ConnectionSwitch from "@components/connection/ConnectionSwitch";
 import MapOverlayButton from "@components/Map/MapOverlayButton";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 
-import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
-import { requestSendWaypoint } from "@features/device/deviceActions";
+import { selectMapConfigState } from "@features/appConfig/selectors";
+import { requestSendWaypoint } from "@features/device/actions";
 import {
   selectDevice,
   selectDeviceChannels,
   selectPrimaryDeviceKey,
-} from "@features/device/deviceSelectors";
+} from "@features/device/selectors";
 
 import { dateTimeLocalFormatString } from "@utils/form";
 import { useIsDarkMode } from "@utils/hooks";

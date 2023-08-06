@@ -12,11 +12,11 @@ import type { app_device_ChannelMessageWithState } from "@bindings/index";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import MapOverlayButton from "@components/Map/MapOverlayButton";
 
-import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
+import { selectMapConfigState } from "@features/appConfig/selectors";
 import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
-} from "@features/device/deviceSelectors";
+} from "@features/device/selectors";
 import { uiSliceActions } from "@features/ui/slice";
 
 import { getWaypointMapId } from "@utils/map";

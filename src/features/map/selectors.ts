@@ -1,5 +1,5 @@
 import type { RootState } from "@app/store";
-import type { IMapState, IMapUIState } from "@features/map/mapSlice";
+import type { IMapState, IMapUIState } from "@features/map/slice";
 
 export const selectMapState =
   () =>

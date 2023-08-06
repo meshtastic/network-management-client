@@ -6,12 +6,12 @@ import moment from "moment";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import { requestDeleteWaypoint } from "@features/device/deviceActions";
+import { requestDeleteWaypoint } from "@features/device/actions";
 import {
   selectAllUsersByNodeIds,
   selectDevice,
   selectPrimaryDeviceKey,
-} from "@features/device/deviceSelectors";
+} from "@features/device/selectors";
 import { selectActiveWaypoint } from "@features/ui/selectors";
 import { uiSliceActions } from "@features/ui/slice";
 

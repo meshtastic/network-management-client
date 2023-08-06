@@ -1,5 +1,5 @@
 import type { RootState } from "@app/store";
-import type { RequestStatus } from "@features/requests/requestSlice";
+import type { RequestStatus } from "@features/requests/slice";
 
 export const selectRequestStateByName =
   (name: string) =>

@@ -7,7 +7,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import ConnectionInput from "@components/connection/ConnectionInput";
-import type { RequestStatus } from "@features/requests/requestSlice";
+import type { RequestStatus } from "@features/requests/slice";
 
 export interface ITcpConnectPaneProps {
   socketAddress: string;
