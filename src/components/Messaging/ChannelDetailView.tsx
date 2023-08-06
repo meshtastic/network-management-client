@@ -9,8 +9,8 @@ import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import TextMessageBubble from "@components/Messaging/TextMessageBubble";
 import MessagingInput from "@components/Messaging/MessagingInput";
 
-import { requestSendMessage } from "@features/device/deviceActions";
-import { selectPrimaryDeviceKey } from "@features/device/deviceSelectors";
+import { requestSendMessage } from "@features/device/actions";
+import { selectPrimaryDeviceKey } from "@features/device/selectors";
 
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
 import { AppRoutes } from "@utils/routing";

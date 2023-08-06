@@ -40,16 +40,16 @@ import MapNodeTooltip from "@components/Map/MapNodeTooltip";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 
-import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
+import { selectMapConfigState } from "@features/appConfig/selectors";
+import { selectAllWaypoints } from "@features/device/selectors";
+import { selectMapState } from "@features/map/selectors";
+import { mapSliceActions } from "@features/map/slice";
 import {
   selectActiveNodeId,
   selectActiveWaypoint,
-  selectAllWaypoints,
   selectInfoPane,
-} from "@features/device/deviceSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
-import { selectMapState } from "@features/map/mapSelectors";
-import { mapSliceActions } from "@features/map/mapSlice";
+} from "@features/ui/selectors";
+import { uiSliceActions } from "@features/ui/slice";
 
 import { MapIDs } from "@utils/map";
 
@@ -106,11 +106,11 @@ export const MapView = () => {
       const nodeId: number | null = info.object?.properties?.num ?? null;
 
       if (nodeId === activeNodeId) {
-        dispatch(deviceSliceActions.setActiveNode(null));
+        dispatch(uiSliceActions.setActiveNode(null));
         return;
       }
 
-      dispatch(deviceSliceActions.setActiveNode(nodeId));
+      dispatch(uiSliceActions.setActiveNode(nodeId));
     },
     [activeNodeId, dispatch]
   );
@@ -316,7 +316,7 @@ export const MapView = () => {
                 isSelected={activeWaypoint?.id === w.id}
                 onClick={() =>
                   dispatch(
-                    deviceSliceActions.setActiveWaypoint(
+                    uiSliceActions.setActiveWaypoint(
                       activeWaypoint?.id === w.id ? null : w.id
                     )
                   )

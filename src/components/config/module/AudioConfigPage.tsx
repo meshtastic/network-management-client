@@ -9,7 +9,7 @@ import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
 import ConfigSelect from "@components/config/ConfigSelect";
 
-import type { AudioModuleConfigInput } from "@features/config/configSlice";
+import type { AudioModuleConfigInput } from "@features/config/slice";
 // import {
 //   AudioModuleConfigInput,
 //   configSliceActions,
@@ -17,9 +17,9 @@ import type { AudioModuleConfigInput } from "@features/config/configSlice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
-} from "@features/config/configSelectors";
+} from "@features/config/selectors";
 
-import { selectDevice } from "@features/device/deviceSelectors";
+import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
 
 export interface IAudioConfigPageProps {

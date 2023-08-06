@@ -4,10 +4,10 @@ import { listen } from "@tauri-apps/api/event";
 
 import type { app_device_MeshDevice } from "@bindings/index";
 
-import { connectionSliceActions } from "@features/connection/connectionSlice";
-import { deviceSliceActions } from "@features/device/deviceSlice";
-import { requestDisconnectFromDevice } from "@features/device/deviceActions";
-import { mapSliceActions } from "@features/map/mapSlice";
+import { connectionSliceActions } from "@features/connection/slice";
+import { deviceSliceActions } from "@features/device/slice";
+import { requestDisconnectFromDevice } from "@features/device/actions";
+import { mapSliceActions } from "@features/map/slice";
 
 import type { DeviceKey } from "@utils/connections";
 

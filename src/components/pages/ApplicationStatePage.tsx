@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import ReactJson from "react-json-view";
 
 import NavigationBacktrace from "@components/NavigationBacktrace";
-import { selectRootState } from "@features/device/deviceSelectors";
+import { selectRootState } from "@features/ui/selectors";
 import { useIsDarkMode } from "@utils/hooks";
 
 const ApplicationStatePage = () => {

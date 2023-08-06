@@ -1,9 +1,9 @@
 import { all, fork } from "redux-saga/effects";
 
-import { algorithmsSaga } from "@features/algorithms/algorithmsSagas";
-import { appConfigSaga } from "@app/features/appConfig/appConfigSagas";
-import { configSaga } from "@features/config/configSagas";
-import { devicesSaga } from "@features/device/deviceSagas";
+import { algorithmsSaga } from "@features/algorithms/sagas";
+import { appConfigSaga } from "@features/appConfig/sagas";
+import { configSaga } from "@features/config/sagas";
+import { devicesSaga } from "@features/device/sagas";
 
 export default function* rootSaga() {
   yield all([

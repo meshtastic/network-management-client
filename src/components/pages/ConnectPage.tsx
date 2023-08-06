@@ -15,21 +15,21 @@ import SerialConnectPane from "@components/connection/SerialConnectPane";
 import {
   requestFetchLastTcpConnectionMeta,
   requestPersistLastTcpConnectionMeta,
-} from "@features/appConfig/appConfigActions";
-import { selectPersistedTCPConnectionMeta } from "@features/appConfig/appConfigSelectors";
-import { selectConnectionStatus } from "@features/connection/connectionSelectors";
-import { connectionSliceActions } from "@features/connection/connectionSlice";
+} from "@features/appConfig/actions";
+import { selectPersistedTCPConnectionMeta } from "@features/appConfig/selectors";
+import { selectConnectionStatus } from "@features/connection/selectors";
+import { connectionSliceActions } from "@features/connection/slice";
 import {
   requestAutoConnectPort,
   requestAvailablePorts,
   requestConnectToDevice,
   requestDisconnectFromAllDevices,
-} from "@features/device/deviceActions";
+} from "@features/device/actions";
 import {
   selectAutoConnectPort,
   selectAvailablePorts,
-} from "@features/device/deviceSelectors";
-import { requestSliceActions } from "@features/requests/requestReducer";
+} from "@features/device/selectors";
+import { requestSliceActions } from "@features/requests/slice";
 
 import { ConnectionType } from "@utils/connections";
 import { useIsDarkMode } from "@utils/hooks";

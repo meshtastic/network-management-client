@@ -8,8 +8,6 @@ import type {
   app_device_NormalizedWaypoint,
 } from "@bindings/index";
 
-export const selectRootState = () => (state: RootState) => state;
-
 export const selectAvailablePorts =
   () =>
   (state: RootState): string[] | null =>
@@ -45,17 +43,6 @@ export const selectNodeById =
   (id: number | null) =>
   (state: RootState): app_device_MeshNode | null =>
     id ? selectAllNodes()(state).find((n) => n.nodeNum === id) ?? null : null;
-
-export const selectActiveNodeId = () => (state: RootState) =>
-  state.devices.activeNode;
-
-export const selectActiveNode =
-  () =>
-  (state: RootState): app_device_MeshNode | null => {
-    const activeNodeId = selectActiveNodeId()(state);
-    if (!activeNodeId) return null;
-    return selectNodeById(activeNodeId)(state);
-  };
 
 export const selectAllUsersByNodeIds =
   () =>
@@ -93,23 +80,6 @@ export const selectWaypointById =
     }
     return null;
   };
-
-// Get ID of the active waypoint
-export const selectActiveWaypointID = () => (state: RootState) =>
-  state.devices.activeWaypoint;
-
-// Get actual Waypoint object
-export const selectActiveWaypoint =
-  () =>
-  (state: RootState): app_device_NormalizedWaypoint | null => {
-    const activeID = selectActiveWaypointID()(state);
-    if (activeID === null) return null;
-    return selectWaypointById(activeID)(state);
-  };
-
-// What info pane are we showing
-export const selectInfoPane = () => (state: RootState) =>
-  state.devices.infoPane;
 
 export const selectWaypointByLocation =
   (lat: number, long: number) =>

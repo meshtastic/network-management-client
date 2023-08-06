@@ -12,12 +12,12 @@ import type { app_device_ChannelMessageWithState } from "@bindings/index";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import MapOverlayButton from "@components/Map/MapOverlayButton";
 
-import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
+import { selectMapConfigState } from "@features/appConfig/selectors";
 import {
   selectUserByNodeId,
   selectConnectedDeviceNodeId,
-} from "@features/device/deviceSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
+} from "@features/device/selectors";
+import { uiSliceActions } from "@features/ui/slice";
 
 import { getWaypointMapId } from "@utils/map";
 import {
@@ -66,7 +66,7 @@ const TextMessageBubble = ({
 
   const handleShowOnMapClick = () => {
     if (type !== "waypoint") return;
-    dispatch(deviceSliceActions.setActiveWaypoint(message.payload.data.id));
+    dispatch(uiSliceActions.setActiveWaypoint(message.payload.data.id));
     navigateTo(AppRoutes.MAP);
   };
 

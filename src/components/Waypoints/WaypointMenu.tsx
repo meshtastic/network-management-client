@@ -6,14 +6,14 @@ import moment from "moment";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import { requestDeleteWaypoint } from "@features/device/deviceActions";
+import { requestDeleteWaypoint } from "@features/device/actions";
 import {
-  selectActiveWaypoint,
   selectAllUsersByNodeIds,
   selectDevice,
   selectPrimaryDeviceKey,
-} from "@features/device/deviceSelectors";
-import { deviceSliceActions } from "@features/device/deviceSlice";
+} from "@features/device/selectors";
+import { selectActiveWaypoint } from "@features/ui/selectors";
+import { uiSliceActions } from "@features/ui/slice";
 
 import { writeValueToClipboard } from "@utils/clipboard";
 import { formatLocation } from "@utils/map";
@@ -69,7 +69,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
       <button
         className="absolute top-6 right-6"
         type="button"
-        onClick={() => dispatch(deviceSliceActions.setActiveWaypoint(null))}
+        onClick={() => dispatch(uiSliceActions.setActiveWaypoint(null))}
       >
         <X
           strokeWidth={1.5}

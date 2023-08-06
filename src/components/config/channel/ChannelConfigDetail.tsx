@@ -10,14 +10,11 @@ import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
 import ConfigSelect from "@components/config/ConfigSelect";
 
-import {
-  ChannelConfigInput,
-  configSliceActions,
-} from "@features/config/configSlice";
+import { ChannelConfigInput, configSliceActions } from "@features/config/slice";
 import {
   selectCurrentChannelConfig,
   selectEditedChannelConfig,
-} from "@features/config/configSelectors";
+} from "@features/config/selectors";
 
 import {
   getCurrentConfigFromMeshChannel,

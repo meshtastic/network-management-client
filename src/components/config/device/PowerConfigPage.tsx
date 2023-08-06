@@ -10,16 +10,13 @@ import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
 
-import {
-  PowerConfigInput,
-  configSliceActions,
-} from "@features/config/configSlice";
+import { PowerConfigInput, configSliceActions } from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
-} from "@features/config/configSelectors";
+} from "@features/config/selectors";
 
-import { selectDevice } from "@features/device/deviceSelectors";
+import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
 
 export interface IPowerConfigPageProps {

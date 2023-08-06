@@ -9,8 +9,8 @@ import { v4 } from "uuid";
 import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
 
-import { requestPersistMapConfig } from "@features/appConfig/appConfigActions";
-import { selectMapConfigState } from "@features/appConfig/appConfigSelectors";
+import { requestPersistMapConfig } from "@features/appConfig/actions";
+import { selectMapConfigState } from "@features/appConfig/selectors";
 
 export interface IMapConfigPageProps {
   className?: string;
