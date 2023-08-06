@@ -13,13 +13,13 @@ import ConfigInput from "@components/config/ConfigInput";
 import {
   NeighborInfoConfigInput,
   configSliceActions,
-} from "@features/config/configSlice";
+} from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
-} from "@features/config/configSelectors";
+} from "@features/config/selectors";
 
-import { selectDevice } from "@features/device/deviceSelectors";
+import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
 
 export interface INeighborInfoConfigPageProps {
