@@ -1,11 +1,14 @@
 use app::protobufs;
-use log::debug;
+use log::{debug, warn};
 
-use crate::device::{
-    handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
-    helpers::{get_channel_name, get_node_user_name},
-    ChannelMessageState, MeshDevice, NeighborInfoPacket, NormalizedWaypoint, PositionPacket,
-    TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
+use crate::{
+    device::{
+        handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
+        helpers::{get_channel_name, get_node_user_name},
+        ChannelMessageState, MeshDevice, NeighborInfoPacket, NormalizedWaypoint, PositionPacket,
+        TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
+    },
+    state::NetworkGraph,
 };
 use prost::Message;
 
@@ -208,6 +211,8 @@ pub fn handle_neighbor_info_mesh_packet(
         .map_err(DeviceUpdateError::DecodeFailure)?;
 
     device.add_neighbor_info(NeighborInfoPacket { packet, data });
+
+    warn!("NOT FULLY IMPLEMENTED");
 
     update_result.device_updated = true;
     update_result.regenerate_graph = true;

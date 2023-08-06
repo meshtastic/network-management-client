@@ -278,24 +278,23 @@ impl MeshDevice {
         }
     }
 
-    pub fn add_neighbor_info(&mut self, neighborinfo: NeighborInfoPacket) {
-        let existing_node = self.neighbors.get_mut(&neighborinfo.packet.from);
-
-        warn!("NOT FULLY IMPLEMENTED");
+    pub fn add_neighbor_info(&mut self, neighborInfo: NeighborInfoPacket) {
+        let existing_node = self.neighbors.get_mut(&neighborInfo.packet.from);
 
         if existing_node.is_some() {
             debug!(
                 "Updating neighborinfo of existing node {:?}: {:?}",
-                neighborinfo.packet.from, neighborinfo.data
+                neighborInfo.packet.from, neighborInfo.data
             );
         } else {
             debug!(
                 "Adding neighborinfo to new node {:?}: {:?}",
-                neighborinfo.packet.from, neighborinfo.data
+                neighborInfo.packet.from, neighborInfo.data
             );
         }
+
         self.neighbors
-            .insert(neighborinfo.packet.from, neighborinfo);
+            .insert(neighborInfo.packet.from, neighborInfo);
     }
 
     pub fn add_text_message(&mut self, message: TextPacket) {
