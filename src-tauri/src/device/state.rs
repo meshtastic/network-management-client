@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use app::protobufs;
-use log::{debug, trace, warn};
+use log::{debug, trace};
 
 use super::helpers::get_current_time_u32;
 use super::{

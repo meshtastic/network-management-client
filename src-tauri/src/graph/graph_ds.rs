@@ -4,7 +4,7 @@ use crate::graph::edge::Edge;
 use crate::graph::node::Node;
 use crate::state::NodeKey;
 
-use log::warn;
+use log::{error, warn};
 use nalgebra::DMatrix;
 use petgraph::prelude::*;
 use petgraph::stable_graph::{EdgeIndex, NodeIndex, StableUnGraph};
@@ -13,8 +13,8 @@ use std::{collections::HashMap, fmt::Display};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Graph {
+    // TODO don't expose any of these fields as public
     pub g: StableUnGraph<Node, Edge>,
-
     pub node_idx_map: HashMap<NodeKey, NodeIndex>,
     pub edge_idx_map: HashMap<(NodeIndex, NodeIndex), Vec<EdgeIndex>>,
 }
@@ -98,14 +98,7 @@ impl Graph {
         let node1_idx = self.get_node_idx(node1);
         let node2_idx = self.get_node_idx(node2);
 
-        let contains_key = self.edge_idx_map.contains_key(&(node1_idx, node2_idx));
-        let is_empty = self
-            .edge_idx_map
-            .get(&(node1_idx, node2_idx))
-            .unwrap_or(&vec![])
-            .is_empty();
-
-        contains_key && !is_empty
+        self.g.contains_edge(node1_idx, node2_idx)
     }
 
     /// Returns the edge between two nodes
@@ -120,12 +113,22 @@ impl Graph {
     /// * `Option<Edge>` - The edge between the two nodes if it exists
     pub fn get_edge(&mut self, node1: &NodeKey, node2: &NodeKey) -> Option<Edge> {
         if self.contains_edge(node1, node2) {
+            let edge_idx = self.get_edge_index(node1, node2)?;
+            return Some(self.g.edge_weight(edge_idx)?.clone());
+        }
+
+        None
+    }
+
+    pub fn get_edge_index(&mut self, node1: &NodeKey, node2: &NodeKey) -> Option<EdgeIndex> {
+        if self.contains_edge(node1, node2) {
             let node1_idx = self.get_node_idx(node1);
             let node2_idx = self.get_node_idx(node2);
 
             let edge_idx = self.edge_idx_map.get(&(node1_idx, node2_idx)).unwrap()[0];
-            return Some(self.g.edge_weight(edge_idx).unwrap().clone());
+            return Some(edge_idx);
         }
+
         None
     }
 
@@ -139,14 +142,17 @@ impl Graph {
     /// * `u` - NodeKey identifier of the first node
     /// * `v` - NodeKey identifier of the second node
     /// * `weight` - Float weight of the edge
-    pub fn add_edge(&mut self, u: NodeKey, v: NodeKey, weight: f64) {
+    pub fn add_edge(&mut self, u: NodeKey, v: NodeKey, weight: f64) -> Option<EdgeIndex> {
         if !self.node_idx_map.contains_key(&u) {
             let error_message = format!("Node {} does not exist", u);
-            return print_error_and_return(&error_message);
+            print_error_and_return(&error_message);
+            return None;
         }
+
         if !self.node_idx_map.contains_key(&v) {
             let error_message = format!("Node {} does not exist", v);
-            return print_error_and_return(&error_message);
+            print_error_and_return(&error_message);
+            return None;
         }
 
         let u_idx = *self.node_idx_map.get(&u).unwrap();
@@ -176,6 +182,8 @@ impl Graph {
 
         self.change_node_opt_weight(u_idx, updated_weight_u);
         self.change_node_opt_weight(v_idx, updated_weight_v);
+
+        Some(edge_idx)
     }
 
     /// Does the same thing as add_edge but accepts edge struct as input.
@@ -563,6 +571,10 @@ impl Graph {
 
     /// Returns the node index associated with the given node identifier.
     ///
+    /// # Panics
+    ///
+    /// Panics if the node does not exist.
+    ///
     /// # Arguments
     ///
     /// * `node_id` - String identifier of the node we want to get.
@@ -665,6 +677,7 @@ impl Display for Graph {
 
 // Function to print given error and return
 fn print_error_and_return(error: &str) {
+    error!("{}", error);
     eprintln!("{}", error);
 }
 

@@ -92,7 +92,7 @@ mod tests {
         // Assert channel initialized correctly
 
         assert!(result1.device_updated);
-        assert!(!result1.regenerate_graph);
+        assert!(result1.graph_update.is_none());
         assert!(result1.notification_config.is_none());
 
         assert!(device.channels.get(&1).is_some());
@@ -137,7 +137,7 @@ mod tests {
         let result = device.handle_packet_from_radio(variant).unwrap();
 
         assert!(result.device_updated);
-        assert!(!result.regenerate_graph);
+        assert!(result.graph_update.is_none());
         assert!(result.notification_config.is_none());
 
         assert!(device.config.display.is_some());
@@ -155,7 +155,7 @@ mod tests {
         let result = device.handle_packet_from_radio(variant).unwrap();
 
         assert!(result.device_updated);
-        assert!(!result.regenerate_graph);
+        assert!(result.graph_update.is_none());
         assert!(result.notification_config.is_none());
     }
 
@@ -177,7 +177,7 @@ mod tests {
         // Assert NodeInfo initialized correctly
 
         assert!(result1.device_updated);
-        assert!(!result1.regenerate_graph);
+        assert!(result1.graph_update.is_none());
         assert!(result1.notification_config.is_none());
 
         assert!(device.nodes.get(&1).is_some());

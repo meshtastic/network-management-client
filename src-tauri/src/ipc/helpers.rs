@@ -8,6 +8,7 @@ use tokio::sync::broadcast;
 
 use crate::device::connections::serial::{SerialConnection, SerialConnectionError};
 use crate::device::connections::MeshConnection;
+use crate::device::handlers::GraphUpdate;
 use crate::device::SerialDeviceStatus;
 use crate::ipc::events::{dispatch_configuration_status, dispatch_rebooting_event};
 use crate::ipc::{events, ConfigurationStatus};
@@ -16,6 +17,31 @@ use crate::{analytics, device};
 use crate::{graph, state};
 
 use super::CommandError;
+
+pub fn generate_graph_nodes_geojson(graph: &mut device::MeshGraph) -> geojson::FeatureCollection {
+    let node_features: Vec<geojson::Feature> = graph
+        .graph
+        .get_nodes()
+        .iter()
+        .filter(|n| n.longitude != 0.0 && n.latitude != 0.0)
+        .map(|n| geojson::Feature {
+            id: Some(geojson::feature::Id::String(n.num.to_string())),
+            properties: None,
+            geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
+                n.longitude,
+                n.latitude,
+                n.altitude,
+            ]))),
+            ..Default::default()
+        })
+        .collect();
+
+    geojson::FeatureCollection {
+        bbox: None,
+        foreign_members: None,
+        features: node_features,
+    }
+}
 
 pub fn generate_graph_edges_geojson(graph: &mut device::MeshGraph) -> geojson::FeatureCollection {
     let edge_features: Vec<geojson::Feature> = graph
@@ -296,8 +322,25 @@ pub fn spawn_decoded_handler(
                 };
             }
 
-            if update_result.regenerate_graph {
-                graph.regenerate_graph_from_device_info(device);
+            if let Some(graph_update) = update_result.graph_update {
+                match graph_update {
+                    GraphUpdate::NeighborInfo(neighbor_info_packet) => {
+                        debug!(
+                            "Updating graph from neighbor information packet from node {:?}",
+                            neighbor_info_packet.packet.from
+                        );
+                        trace!("{:?}", neighbor_info_packet);
+                        graph.update_from_neighbor_info(neighbor_info_packet);
+                    }
+                    GraphUpdate::Position(position_packet) => {
+                        debug!(
+                            "Updating graph from position packet from node {:?}",
+                            position_packet.packet.from
+                        );
+                        trace!("{:?}", position_packet);
+                        graph.update_from_position(position_packet);
+                    }
+                }
 
                 match events::dispatch_updated_edges(&handle, graph) {
                     Ok(_) => (),

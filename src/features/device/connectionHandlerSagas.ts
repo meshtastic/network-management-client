@@ -86,6 +86,7 @@ export function* handleDeviceDisconnectChannel(
 export const createGraphUpdateChannel = (): GraphUpdateChannel => {
   return eventChannel((emitter) => {
     listen<GraphGeoJSONResult>("graph_update", (event) => {
+      console.warn("graph_update", event.payload);
       emitter(event.payload);
     })
       // .then((unlisten) => {

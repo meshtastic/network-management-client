@@ -1,5 +1,7 @@
 use std::{error::Error, fmt};
 
+use super::{NeighborInfoPacket, PositionPacket};
+
 mod from_radio;
 mod mesh_packet;
 
@@ -17,10 +19,16 @@ impl NotificationConfig {
     }
 }
 
+#[derive(Clone, Debug)]
+pub enum GraphUpdate {
+    Position(PositionPacket), // Heard a node location
+    NeighborInfo(NeighborInfoPacket),
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct DeviceUpdateMetadata {
     pub device_updated: bool,
-    pub regenerate_graph: bool,
+    pub graph_update: Option<GraphUpdate>,
     pub configuration_success: bool,
     pub notification_config: Option<NotificationConfig>,
     pub rebooting: bool,

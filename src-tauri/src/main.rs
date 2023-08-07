@@ -29,7 +29,7 @@ fn setup_logger() -> Result<(), fern::InitError> {
                 message
             ))
         })
-        .level(log::LevelFilter::Trace)
+        .level(log::LevelFilter::Debug)
         .chain(std::io::stderr())
         .chain(fern::log_file("output.log")?)
         .apply()?;

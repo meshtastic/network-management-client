@@ -1,4 +1,10 @@
-use crate::device;
+use crate::{
+    device,
+    ipc::{
+        commands::graph::GraphGeoJSONResult,
+        helpers::{generate_graph_edges_geojson, generate_graph_nodes_geojson},
+    },
+};
 // use crate::{ipc::commands::GraphGeoJSONResult};
 use log::{debug, trace};
 use tauri::Manager;
@@ -19,20 +25,16 @@ pub fn dispatch_updated_device(
 }
 
 pub fn dispatch_updated_edges(
-    _handle: &tauri::AppHandle,
+    handle: &tauri::AppHandle,
     graph: &mut device::MeshGraph,
 ) -> tauri::Result<()> {
     debug!("Dispatching updated edges");
 
-    let _edges = super::helpers::generate_graph_edges_geojson(graph);
-    let _nodes = geojson::FeatureCollection {
-        bbox: None,
-        features: vec![],
-        foreign_members: None,
-    };
+    let nodes = generate_graph_nodes_geojson(graph);
+    let edges = generate_graph_edges_geojson(graph);
 
     // * This is temporarily disabled until we can figure out how to get the graph to update in-place
-    // handle.emit_all::<GraphGeoJSONResult>("graph_update", GraphGeoJSONResult { nodes, edges })?;
+    handle.emit_all::<GraphGeoJSONResult>("graph_update", GraphGeoJSONResult { nodes, edges })?;
 
     debug!("Dispatched updated edges");
 

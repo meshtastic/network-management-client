@@ -1,14 +1,11 @@
 use app::protobufs;
-use log::{debug, warn};
+use log::debug;
 
-use crate::{
-    device::{
-        handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
-        helpers::{get_channel_name, get_node_user_name},
-        ChannelMessageState, MeshDevice, NeighborInfoPacket, NormalizedWaypoint, PositionPacket,
-        TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
-    },
-    state::NetworkGraph,
+use crate::device::{
+    handlers::{DeviceUpdateError, DeviceUpdateMetadata, GraphUpdate, NotificationConfig},
+    helpers::{get_channel_name, get_node_user_name},
+    ChannelMessageState, MeshDevice, NeighborInfoPacket, NormalizedPosition, NormalizedWaypoint,
+    PositionPacket, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 use prost::Message;
 
@@ -37,10 +34,17 @@ pub fn handle_position_mesh_packet(
     let data = protobufs::Position::decode(data.payload.as_slice())
         .map_err(DeviceUpdateError::DecodeFailure)?;
 
-    device.add_position(PositionPacket { packet, data });
+    let converted_data: NormalizedPosition = data.into();
 
+    let position_packet = PositionPacket {
+        packet,
+        data: converted_data,
+    };
+
+    device.add_position(position_packet.clone());
+
+    update_result.graph_update = Some(GraphUpdate::Position(position_packet));
     update_result.device_updated = true;
-    update_result.regenerate_graph = true;
 
     Ok(())
 }
@@ -158,7 +162,6 @@ pub fn handle_text_message_mesh_packet(
     notification.title = format!("{} in {}", from_user_name, channel_name);
     notification.body = data;
 
-    // Always keep updates at bottom in case of failure during functions
     update_result.device_updated = true;
     update_result.notification_config = Some(notification);
 
@@ -210,12 +213,12 @@ pub fn handle_neighbor_info_mesh_packet(
     let data = protobufs::NeighborInfo::decode(data.payload.as_slice())
         .map_err(DeviceUpdateError::DecodeFailure)?;
 
-    device.add_neighbor_info(NeighborInfoPacket { packet, data });
+    let neighbor_info_packet = NeighborInfoPacket { packet, data };
 
-    warn!("NOT FULLY IMPLEMENTED");
+    device.add_neighbor_info(neighbor_info_packet.clone());
 
+    update_result.graph_update = Some(GraphUpdate::NeighborInfo(neighbor_info_packet));
     update_result.device_updated = true;
-    update_result.regenerate_graph = true;
 
     Ok(())
 }
