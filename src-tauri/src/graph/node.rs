@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::state::NodeKey;
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct Node {
     pub num: u32,
     pub optimal_weighted_degree: f64,
@@ -16,28 +16,10 @@ impl Node {
     pub fn new(num: NodeKey) -> Node {
         Node {
             num,
-            optimal_weighted_degree: 0.0,
-            longitude: 0.0,
-            latitude: 0.0,
-            altitude: 0.0,
-            speed: 0.0,
-            direction: 0.0,
+            ..Default::default()
         }
     }
-
-    pub fn set_gps(&mut self, longitude: f64, latitude: f64, altitude: f64) {
-        self.longitude = longitude;
-        self.latitude = latitude;
-        self.altitude = altitude;
-    }
 }
-
-// /// Add hash to Node so that we can use it as a key in a HashMap
-// impl std::hash::Hash for Node {
-//     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-//         self.name.hash(state);
-//     }
-// }
 
 // Add equality operator to Node
 impl std::cmp::Eq for Node {}

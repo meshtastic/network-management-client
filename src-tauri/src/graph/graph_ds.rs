@@ -744,19 +744,27 @@ mod tests {
         let d: NodeKey = 4;
 
         let mut a_node = Node::new(a);
-        a_node.set_gps(-72.28486, 43.71489, 1.0);
+        a_node.latitude = 43.71489;
+        a_node.longitude = -72.28486;
+        a_node.altitude = 1.0;
         let a_idx = g1.add_node_from_struct(a_node);
 
         let mut b_node = Node::new(b);
-        b_node.set_gps(-72.28239, 43.71584, 1.0);
+        b_node.latitude = 43.71584;
+        b_node.longitude = -72.28239;
+        b_node.altitude = 1.0;
         let b_idx = g1.add_node_from_struct(b_node);
 
         let mut c_node = Node::new(c);
-        c_node.set_gps(-72.28332, 43.7114, 1.0);
+        c_node.latitude = 43.7114;
+        c_node.longitude = -72.28332;
+        c_node.altitude = 1.0;
         let c_idx = g1.add_node_from_struct(c_node);
 
         let mut d_node = Node::new(d);
-        d_node.set_gps(-72.28085, 43.71235, 1.0);
+        d_node.latitude = 43.71235;
+        d_node.longitude = -72.28085;
+        d_node.altitude = 1.0;
         let d_idx = g1.add_node_from_struct(d_node);
 
         let a_b = Edge::new(a_idx, b_idx, 0.51);
