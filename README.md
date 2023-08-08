@@ -65,12 +65,12 @@ This project is still in early stages of development, but here's a rough roadmap
   - [x] Tauri command management
   - [x] Tauri event management
   - [x] Redux saga dataflow
-- [ ] :artificial_satellite: Network topology collection
-  - [x] RFC for novel packet ([link](https://www.adammcquilkin.com/Adam_McQuilkin_-_Meshtastic_Network_Centralization_Proposal.pdf))
-  - [x] MVP protobuf changes ([link](https://github.com/uhuruhashimoto/protobufs))
-  - [x] MVP firmware changes ([link](https://github.com/uhuruhashimoto/firmware))
-  - [x] Community protobuf review ([link](https://github.com/meshtastic/protobufs/pull/341))
-  - [x] Community firmware review (in progress, [link](https://github.com/meshtastic/firmware/issues/2479))
+- [x] :artificial_satellite: Network topology collection
+  - [x] RFC for novel packet ([completed](https://www.adammcquilkin.com/Adam_McQuilkin_-_Meshtastic_Network_Centralization_Proposal.pdf))
+  - [x] MVP protobuf changes ([completed](https://github.com/uhuruhashimoto/protobufs))
+  - [x] MVP firmware changes ([completed](https://github.com/uhuruhashimoto/firmware))
+  - [x] Community protobuf review ([completed](https://github.com/meshtastic/protobufs/pull/341))
+  - [x] Community firmware review ([completed](https://github.com/meshtastic/firmware/pull/2535))
 - [ ] :nerd_face: Algorithmic analysis
   - [x] Infrastructure
     - [x] Network packet collation
