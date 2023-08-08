@@ -2,80 +2,28 @@
 
 /**
  * 
- * How the altitude was acquired: manual, GPS int/ext, etc
- * Default: same as location_source if present
+ * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
+ * details on the type of failure).
  */
-export type app_protobufs_position_AltSource = "altUnset" | "altManual" | "altInternal" | "altExternal" | "altBarometric"
+export type app_protobufs_routing_Error = "none" | "noRoute" | "gotNak" | "timeout" | "noInterface" | "maxRetransmit" | "noChannel" | "tooLarge" | "noResponse" | "dutyCycleLimit" | "badRequest" | "notAuthorized"
+
+export type app_protobufs_config_network_config_IpV4Config = { ip: number; gateway: number; subnet: number; dns: number }
 
 /**
  * 
- * Note: these enum names must EXACTLY match the string used in the device
- * bin/build-all.sh script.
- * Because they will be used to find firmware filenames in the android app for OTA updates.
- * To match the old style filenames, _ is converted to -, p is converted to .
+ * Air quality metrics
  */
-export type app_protobufs_HardwareModel = "unset" | "tloraV2" | "tloraV1" | "tloraV211P6" | "tbeam" | "heltecV20" | "tbeamV0P7" | "techo" | "tloraV11P3" | "rak4631" | "heltecV21" | "heltecV1" | "lilygoTbeamS3Core" | "rak11200" | "nanoG1" | "tloraV211P8" | "tloraT3S3" | "nanoG1Explorer" | "stationG1" | "rak11310" | "loraRelayV1" | "nrf52840Dk" | "ppr" | "genieblocks" | "nrf52Unknown" | "portduino" | "androidSim" | "diyV1" | "nrf52840Pca10059" | "drDev" | "m5Stack" | "heltecV3" | "heltecWslV3" | "betafpv2400Tx" | "betafpv900NanoTx" | "rpiPico" | "heltecWirelessTracker" | "heltecWirelessPaper" | "tdeck" | "twatchS3" | "privateHw"
+export type app_protobufs_AirQualityMetrics = { pm10Standard: number; pm25Standard: number; pm100Standard: number; pm10Environmental: number; pm25Environmental: number; pm100Environmental: number; particles03Um: number; particles05Um: number; particles10Um: number; particles25Um: number; particles50Um: number; particles100Um: number }
+
+export type app_device_MeshChannel = { config: app_protobufs_Channel; lastInteraction: number; messages: app_device_ChannelMessageWithState[] }
+
+export type app_protobufs_config_display_config_DisplayMode = "default" | "twocolor" | "inverted" | "color"
 
 /**
  * 
- * Store and Forward Module Config
+ * Lora Config
  */
-export type app_protobufs_module_config_StoreForwardConfig = { enabled: boolean; heartbeat: boolean; records: number; historyReturnMax: number; historyReturnWindow: number }
-
-export type app_protobufs_RemoteHardwarePinType = "unknown" | "digitalRead" | "digitalWrite"
-
-/**
- * 
- * Key native device metrics such as battery level
- */
-export type app_protobufs_DeviceMetrics = { batteryLevel: number; voltage: number; channelUtilization: number; airUtilTx: number }
-
-/**
- * 
- * The priority of this message for sending.
- * Higher priorities are sent first (when managing the transmit queue).
- * This field is never sent over the air, it is only used internally inside of a local device node.
- * API clients (either on the local node or connected directly to the node)
- * can set this parameter if necessary.
- * (values must be <= 127 to keep protobuf field to one byte in size.
- * Detailed background on this field:
- * I noticed a funny side effect of lora being so slow: Usually when making
- * a protocol there isn’t much need to use message priority to change the order
- * of transmission (because interfaces are fairly fast).
- * But for lora where packets can take a few seconds each, it is very important
- * to make sure that critical packets are sent ASAP.
- * In the case of meshtastic that means we want to send protocol acks as soon as possible
- * (to prevent unneeded retransmissions), we want routing messages to be sent next,
- * then messages marked as reliable and finally ‘background’ packets like periodic position updates.
- * So I bit the bullet and implemented a new (internal - not sent over the air)
- * field in MeshPacket called ‘priority’.
- * And the transmission queue in the router object is now a priority queue.
- */
-export type app_protobufs_mesh_packet_Priority = "unset" | "min" | "background" | "default" | "reliable" | "ack" | "max"
-
-/**
- * 
- * Module Config
- */
-export type app_protobufs_ModuleConfig = { payloadVariant: app_protobufs_module_config_PayloadVariant | null }
-
-/**
- * 
- * Device metadata response
- */
-export type app_protobufs_DeviceMetadata = { firmwareVersion: string; deviceStateVersion: number; canShutdown: boolean; hasWifi: boolean; hasBluetooth: boolean; hasEthernet: boolean; role: number; positionFlags: number; hwModel: number; hasRemoteHardware: boolean }
-
-/**
- * 
- * TODO: REPLACE
- */
-export type app_protobufs_store_and_forward_Heartbeat = { period: number; secondary: number }
-
-/**
- * 
- * WiFi connection status
- */
-export type app_protobufs_WifiConnectionStatus = { status: app_protobufs_NetworkConnectionStatus | null; ssid: string; rssi: number }
+export type app_protobufs_config_LoRaConfig = { usePreset: boolean; modemPreset: number; bandwidth: number; spreadFactor: number; codingRate: number; frequencyOffset: number; region: number; hopLimit: number; txEnabled: boolean; txPower: number; channelNum: number; overrideDutyCycle: boolean; sx126XRxBoostedGain: boolean; overrideFrequency: number; ignoreIncoming: number[] }
 
 /**
  * 
@@ -83,58 +31,18 @@ export type app_protobufs_WifiConnectionStatus = { status: app_protobufs_Network
  */
 export type app_protobufs_NetworkConnectionStatus = { ipAddress: number; isConnected: boolean; isMqttConnected: boolean; isSyslogConnected: boolean }
 
-export type app_device_MeshNode = { nodeNum: number; lastHeard: app_device_LastHeardMetadata | null; user: app_protobufs_User | null; deviceMetrics: app_device_MeshNodeDeviceMetrics[]; environmentMetrics: app_device_MeshNodeEnvironmentMetrics[]; positionMetrics: app_device_NormalizedPosition[] }
+/**
+ * 
+ * This can be used for customizing the firmware distribution. If populated,
+ * show a secondary bootup screen with custom logo and text for 2.5 seconds.
+ */
+export type app_protobufs_OemStore = { oemIconWidth: number; oemIconHeight: number; oemIconBits: number[]; oemFont: number; oemText: string; oemAesKey: number[]; oemLocalConfig: app_protobufs_LocalConfig | null; oemLocalModuleConfig: app_protobufs_LocalModuleConfig | null }
 
 /**
  * 
- * Error codes for critical errors
- * The device might report these fault codes on the screen.
- * If you encounter a fault code, please post on the meshtastic.discourse.group
- * and we'll try to help.
+ * This message will be proxied over the PhoneAPI for the client to deliver to the MQTT server
  */
-export type app_protobufs_CriticalErrorCode = "none" | "txWatchdog" | "sleepEnterWait" | "noRadio" | "unspecified" | "ubloxUnitFailed" | "noAxp192" | "invalidRadioSetting" | "transmitFailed" | "brownout" | "sx1262Failure" | "radioSpiBug"
-
-export type app_device_WaypointPacket = { packet: app_protobufs_MeshPacket; data: app_device_NormalizedWaypoint }
-
-/**
- * 
- * Configuration
- */
-export type app_protobufs_config_DeviceConfig = { role: number; serialEnabled: boolean; debugLogEnabled: boolean; buttonGpio: number; buzzerGpio: number; rebroadcastMode: number; nodeInfoBroadcastSecs: number; doubleTapAsButtonPress: boolean; isManaged: boolean }
-
-export type app_protobufs_config_bluetooth_config_PairingMode = "randomPin" | "fixedPin" | "noPin"
-
-/**
- * 
- * Unit display preference
- */
-export type app_protobufs_config_display_config_DisplayUnits = "metric" | "imperial"
-
-/**
- * 
- * Payload Variant
- */
-export type app_protobufs_config_PayloadVariant = { device: app_protobufs_config_DeviceConfig } | { position: app_protobufs_config_PositionConfig } | { power: app_protobufs_config_PowerConfig } | { network: app_protobufs_config_NetworkConfig } | { display: app_protobufs_config_DisplayConfig } | { lora: app_protobufs_config_LoRaConfig } | { bluetooth: app_protobufs_config_BluetoothConfig }
-
-/**
- * 
- * TODO: REPLACE
- */
-export type app_protobufs_module_config_serial_config_SerialMode = "default" | "simple" | "proto" | "textmsg" | "nmea" | "caltopo"
-
-/**
- * 
- * Position with static location information only for NodeDBLite
- */
-export type app_protobufs_PositionLite = { latitudeI: number; longitudeI: number; altitude: number; time: number; locationSource: number }
-
-/**
- * 
- * A GPIO pin definition for remote hardware module
- */
-export type app_protobufs_RemoteHardwarePin = { gpioPin: number; name: string; type: number }
-
-export type app_device_PositionPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_Position }
+export type app_protobufs_MqttClientProxyMessage = { topic: string; retained: boolean; payloadVariant: app_protobufs_mqtt_client_proxy_message_PayloadVariant | null }
 
 /**
  * 
@@ -146,81 +54,62 @@ export type app_protobufs_MyNodeInfo = { myNodeNum: number; rebootCount: number;
 
 /**
  * 
- * Standard predefined channel settings
- * Note: these mappings must match ModemPreset Choice in the device code.
+ * NeighborInfoModule Config
  */
-export type app_protobufs_config_lo_ra_config_ModemPreset = "longFast" | "longSlow" | "veryLongSlow" | "mediumSlow" | "mediumFast" | "shortSlow" | "shortFast" | "longModerate"
+export type app_protobufs_module_config_NeighborInfoConfig = { enabled: boolean; updateInterval: number }
 
 /**
  * 
- * Lora Config
+ * Preferences for the RangeTestModule
  */
-export type app_protobufs_config_LoRaConfig = { usePreset: boolean; modemPreset: number; bandwidth: number; spreadFactor: number; codingRate: number; frequencyOffset: number; region: number; hopLimit: number; txEnabled: boolean; txPower: number; channelNum: number; overrideDutyCycle: boolean; sx126XRxBoostedGain: boolean; overrideFrequency: number; ignoreIncoming: number[] }
-
-/**
- * Currently a re-export of `protobufs::Position` with normalized lat, long
- */
-export type app_device_NormalizedPosition = { latitude: number; longitude: number; altitude: number; time: number; locationSource: app_protobufs_position_LocSource; altitudeSource: app_protobufs_position_AltSource; timestamp: number; timestampMillisAdjust: number; altitudeHae: number; altitudeGeoidalSeparation: number; pdop: number; hdop: number; vdop: number; gpsAccuracy: number; groundSpeed: number; groundTrack: number; fixQuality: number; fixType: number; satsInView: number; sensorId: number; nextUpdate: number; seqNumber: number }
-
-export type app_protobufs_config_BluetoothConfig = { enabled: boolean; mode: number; fixedPin: number }
+export type app_protobufs_module_config_RangeTestConfig = { enabled: boolean; sender: number; save: boolean }
 
 /**
  * 
- * Log levels, chosen to match python logging conventions.
+ * Ethernet connection status
  */
-export type app_protobufs_from_radio_PayloadVariant = { packet: app_protobufs_MeshPacket } | { myInfo: app_protobufs_MyNodeInfo } | { nodeInfo: app_protobufs_NodeInfo } | { config: app_protobufs_Config } | { logRecord: app_protobufs_LogRecord } | { configCompleteId: number } | { rebooted: boolean } | { moduleConfig: app_protobufs_ModuleConfig } | { channel: app_protobufs_Channel } | { queueStatus: app_protobufs_QueueStatus } | { xmodemPacket: app_protobufs_XModem } | { metadata: app_protobufs_DeviceMetadata } | { mqttClientProxyMessage: app_protobufs_MqttClientProxyMessage }
-
-export type app_protobufs_mesh_packet_PayloadVariant = { decoded: app_protobufs_Data } | { encrypted: number[] }
-
-export type app_protobufs_config_display_config_DisplayMode = "default" | "twocolor" | "inverted" | "color"
-
-export type app_device_NormalizedNodeInfo = { num: number; user: app_protobufs_User | null; position: app_protobufs_Position | null; snr: number; lastHeard: number; deviceMetrics: app_protobufs_DeviceMetrics | null; channel: number }
+export type app_protobufs_EthernetConnectionStatus = { status: app_protobufs_NetworkConnectionStatus | null }
 
 /**
  * 
- * TODO: REPLACE
+ * External Notifications Config
  */
-export type app_protobufs_admin_message_PayloadVariant = { getChannelRequest: number } | { getChannelResponse: app_protobufs_Channel } | { getOwnerRequest: boolean } | { getOwnerResponse: app_protobufs_User } | { getConfigRequest: number } | { getConfigResponse: app_protobufs_Config } | { getModuleConfigRequest: number } | { getModuleConfigResponse: app_protobufs_ModuleConfig } | { getCannedMessageModuleMessagesRequest: boolean } | { getCannedMessageModuleMessagesResponse: string } | { getDeviceMetadataRequest: boolean } | { getDeviceMetadataResponse: app_protobufs_DeviceMetadata } | { getRingtoneRequest: boolean } | { getRingtoneResponse: string } | { getDeviceConnectionStatusRequest: boolean } | { getDeviceConnectionStatusResponse: app_protobufs_DeviceConnectionStatus } | { setHamMode: app_protobufs_HamParameters } | { getNodeRemoteHardwarePinsRequest: boolean } | { getNodeRemoteHardwarePinsResponse: app_protobufs_NodeRemoteHardwarePinsResponse } | { setOwner: app_protobufs_User } | { setChannel: app_protobufs_Channel } | { setConfig: app_protobufs_Config } | { setModuleConfig: app_protobufs_ModuleConfig } | { setCannedMessageModuleMessages: string } | { setRingtoneMessage: string } | { beginEditSettings: boolean } | { commitEditSettings: boolean } | { rebootOtaSeconds: number } | { exitSimulator: boolean } | { rebootSeconds: number } | { shutdownSeconds: number } | { factoryReset: number } | { nodedbReset: number }
+export type app_protobufs_module_config_ExternalNotificationConfig = { enabled: boolean; outputMs: number; output: number; outputVibra: number; outputBuzzer: number; active: boolean; alertMessage: boolean; alertMessageVibra: boolean; alertMessageBuzzer: boolean; alertBell: boolean; alertBellVibra: boolean; alertBellBuzzer: boolean; usePwm: boolean; nagTimeout: number }
+
+export type app_device_LastHeardMetadata = { timestamp: number; snr: number; channel: number }
 
 /**
  * 
- * Canned message module configuration.
+ * Configuration
  */
-export type app_protobufs_RtttlConfig = { ringtone: string }
-
-export type app_device_ChannelMessageState = "pending" | "acknowledged" | { error: string }
+export type app_protobufs_config_DeviceConfig = { role: number; serialEnabled: boolean; debugLogEnabled: boolean; buttonGpio: number; buzzerGpio: number; rebroadcastMode: number; nodeInfoBroadcastSecs: number; doubleTapAsButtonPress: boolean; isManaged: boolean }
 
 /**
  * 
- * A pair of a channel number, mode and the (sharable) settings for that channel
+ * Serial connection status
  */
-export type app_protobufs_Channel = { index: number; settings: app_protobufs_ChannelSettings | null; role: number }
+export type app_protobufs_SerialConnectionStatus = { baud: number; isConnected: boolean }
 
 /**
  * 
- * TODO: REPLACE
+ * a gps position
  */
-export type app_protobufs_hardware_message_Type = "unset" | "writeGpios" | "watchGpios" | "gpiosChanged" | "readGpios" | "readGpiosReply"
-
-export type app_protobufs_XModem = { control: number; seq: number; crc16: number; buffer: number[] }
+export type app_protobufs_Position = { latitudeI: number; longitudeI: number; altitude: number; time: number; locationSource: number; altitudeSource: number; timestamp: number; timestampMillisAdjust: number; altitudeHae: number; altitudeGeoidalSeparation: number; pdop: number; hdop: number; vdop: number; gpsAccuracy: number; groundSpeed: number; groundTrack: number; fixQuality: number; fixType: number; satsInView: number; sensorId: number; nextUpdate: number; seqNumber: number }
 
 /**
  * 
- * Defines the device's behavior for how messages are rebroadcast
+ * Packets from the radio to the phone will appear on the fromRadio characteristic.
+ * It will support READ and NOTIFY. When a new packet arrives the device will BLE notify?
+ * It will sit in that descriptor until consumed by the phone,
+ * at which point the next item in the FIFO will be populated.
  */
-export type app_protobufs_config_device_config_RebroadcastMode = "all" | "allSkipDecoding" | "localOnly"
+export type app_protobufs_FromRadio = { id: number; payloadVariant: app_protobufs_from_radio_PayloadVariant | null }
 
 /**
  * 
- * Types of Measurements the telemetry module is equipped to handle
+ * RemoteHardwarePins associated with a node
  */
-export type app_protobufs_Telemetry = { time: number; variant: app_protobufs_telemetry_Variant | null }
-
-/**
- * 
- * Serial Config
- */
-export type app_protobufs_module_config_SerialConfig = { enabled: boolean; echo: boolean; rxd: number; txd: number; baud: number; timeout: number; mode: number; overrideConsoleSerialPort: boolean }
+export type app_protobufs_NodeRemoteHardwarePin = { nodeNum: number; pin: app_protobufs_RemoteHardwarePin | null }
 
 /**
  * 
@@ -243,29 +132,9 @@ export type app_protobufs_module_config_SerialConfig = { enabled: boolean; echo:
  */
 export type app_protobufs_NodeInfo = { num: number; user: app_protobufs_User | null; position: app_protobufs_Position | null; snr: number; lastHeard: number; deviceMetrics: app_protobufs_DeviceMetrics | null; channel: number }
 
-/**
- * 
- * MQTT Client Config
- */
-export type app_protobufs_module_config_MqttConfig = { enabled: boolean; address: string; username: string; password: string; encryptionEnabled: boolean; jsonEnabled: boolean; tlsEnabled: boolean; root: string; proxyToClientEnabled: boolean }
+export type app_device_ChannelMessageState = "pending" | "acknowledged" | { error: string }
 
-/**
- * 
- * TODO: REPLACE
- */
-export type app_protobufs_module_config_PayloadVariant = { mqtt: app_protobufs_module_config_MqttConfig } | { serial: app_protobufs_module_config_SerialConfig } | { externalNotification: app_protobufs_module_config_ExternalNotificationConfig } | { storeForward: app_protobufs_module_config_StoreForwardConfig } | { rangeTest: app_protobufs_module_config_RangeTestConfig } | { telemetry: app_protobufs_module_config_TelemetryConfig } | { cannedMessage: app_protobufs_module_config_CannedMessageConfig } | { audio: app_protobufs_module_config_AudioConfig } | { remoteHardware: app_protobufs_module_config_RemoteHardwareConfig } | { neighborInfo: app_protobufs_module_config_NeighborInfoConfig } | { ambientLighting: app_protobufs_module_config_AmbientLightingConfig }
-
-/**
- * 
- * This message will be proxied over the PhoneAPI for the client to deliver to the MQTT server
- */
-export type app_protobufs_MqttClientProxyMessage = { topic: string; retained: boolean; payloadVariant: app_protobufs_mqtt_client_proxy_message_PayloadVariant | null }
-
-/**
- * 
- * External Notifications Config
- */
-export type app_protobufs_module_config_ExternalNotificationConfig = { enabled: boolean; outputMs: number; output: number; outputVibra: number; outputBuzzer: number; active: boolean; alertMessage: boolean; alertMessageVibra: boolean; alertMessageBuzzer: boolean; alertBell: boolean; alertBellVibra: boolean; alertBellBuzzer: boolean; usePwm: boolean; nagTimeout: number }
+export type app_protobufs_config_BluetoothConfig = { enabled: boolean; mode: number; fixedPin: number }
 
 /**
  * 
@@ -273,34 +142,59 @@ export type app_protobufs_module_config_ExternalNotificationConfig = { enabled: 
  */
 export type app_protobufs_config_NetworkConfig = { wifiEnabled: boolean; wifiSsid: string; wifiPsk: string; ntpServer: string; ethEnabled: boolean; addressMode: number; ipv4Config: app_protobufs_config_network_config_IpV4Config | null; rsyslogServer: string }
 
+export type app_protobufs_LocalConfig = { device: app_protobufs_config_DeviceConfig | null; position: app_protobufs_config_PositionConfig | null; power: app_protobufs_config_PowerConfig | null; network: app_protobufs_config_NetworkConfig | null; display: app_protobufs_config_DisplayConfig | null; lora: app_protobufs_config_LoRaConfig | null; bluetooth: app_protobufs_config_BluetoothConfig | null; version: number }
+
+/**
+ * 
+ * Canned message module configuration.
+ */
+export type app_protobufs_RtttlConfig = { ringtone: string }
+
+/**
+ * 
+ * A pair of a channel number, mode and the (sharable) settings for that channel
+ */
+export type app_protobufs_Channel = { index: number; settings: app_protobufs_ChannelSettings | null; role: number }
+
+/**
+ * 
+ * The on-disk saved channels
+ */
+export type app_protobufs_ChannelFile = { channels: app_protobufs_Channel[]; version: number }
+
+export type app_device_NormalizedWaypoint = { id: number; latitude: number; longitude: number; expire: number; lockedTo: number; name: string; description: string; icon: number }
+
+/**
+ * 
+ * Defines the device's behavior for how messages are rebroadcast
+ */
+export type app_protobufs_config_device_config_RebroadcastMode = "all" | "allSkipDecoding" | "localOnly"
+
+/**
+ * 
+ * Key native device metrics such as battery level
+ */
+export type app_protobufs_DeviceMetrics = { batteryLevel: number; voltage: number; channelUtilization: number; airUtilTx: number }
+
+export type app_protobufs_config_lo_ra_config_RegionCode = "unset" | "us" | "eu433" | "eu868" | "cn" | "jp" | "anz" | "kr" | "tw" | "ru" | "in" | "nz865" | "th" | "lora24" | "ua433" | "ua868"
+
+/**
+ * 
+ * Waypoint message, used to share arbitrary locations across the mesh
+ */
+export type app_protobufs_Waypoint = { id: number; latitudeI: number; longitudeI: number; expire: number; lockedTo: number; name: string; description: string; icon: number }
+
 /**
  * 
  * TODO: REPLACE
  */
-export type app_protobufs_module_config_CannedMessageConfig = { rotary1Enabled: boolean; inputbrokerPinA: number; inputbrokerPinB: number; inputbrokerPinPress: number; inputbrokerEventCw: number; inputbrokerEventCcw: number; inputbrokerEventPress: number; updown1Enabled: boolean; enabled: boolean; allowInputSource: string; sendBell: boolean }
-
-/**
- * 
- * This abstraction is used to contain any configuration for provisioning a node on any client.
- * It is useful for importing and exporting configurations.
- */
-export type app_protobufs_DeviceProfile = { longName: string | null; shortName: string | null; channelUrl: string | null; config: app_protobufs_LocalConfig | null; moduleConfig: app_protobufs_LocalModuleConfig | null }
+export type app_protobufs_store_and_forward_History = { historyMessages: number; window: number; lastRequest: number }
 
 /**
  * 
  * TODO: REPLACE
  */
-export type app_protobufs_admin_message_ConfigType = "deviceConfig" | "positionConfig" | "powerConfig" | "networkConfig" | "displayConfig" | "loraConfig" | "bluetoothConfig"
-
-/**
- * 
- * This is the most compact possible representation for a set of channels.
- * It includes only one PRIMARY channel (which must be first) and
- * any SECONDARY channels.
- * No DISABLED channels are included.
- * This abstraction is used only on the the 'app side' of the world (ie python, javascript and android etc) to show a group of Channels as a (long) URL
- */
-export type app_protobufs_ChannelSet = { settings: app_protobufs_ChannelSettings[]; loraConfig: app_protobufs_config_LoRaConfig | null }
+export type app_protobufs_admin_message_PayloadVariant = { getChannelRequest: number } | { getChannelResponse: app_protobufs_Channel } | { getOwnerRequest: boolean } | { getOwnerResponse: app_protobufs_User } | { getConfigRequest: number } | { getConfigResponse: app_protobufs_Config } | { getModuleConfigRequest: number } | { getModuleConfigResponse: app_protobufs_ModuleConfig } | { getCannedMessageModuleMessagesRequest: boolean } | { getCannedMessageModuleMessagesResponse: string } | { getDeviceMetadataRequest: boolean } | { getDeviceMetadataResponse: app_protobufs_DeviceMetadata } | { getRingtoneRequest: boolean } | { getRingtoneResponse: string } | { getDeviceConnectionStatusRequest: boolean } | { getDeviceConnectionStatusResponse: app_protobufs_DeviceConnectionStatus } | { setHamMode: app_protobufs_HamParameters } | { getNodeRemoteHardwarePinsRequest: boolean } | { getNodeRemoteHardwarePinsResponse: app_protobufs_NodeRemoteHardwarePinsResponse } | { setOwner: app_protobufs_User } | { setChannel: app_protobufs_Channel } | { setConfig: app_protobufs_Config } | { setModuleConfig: app_protobufs_ModuleConfig } | { setCannedMessageModuleMessages: string } | { setRingtoneMessage: string } | { beginEditSettings: boolean } | { commitEditSettings: boolean } | { rebootOtaSeconds: number } | { exitSimulator: boolean } | { rebootSeconds: number } | { shutdownSeconds: number } | { factoryReset: number } | { nodedbReset: number }
 
 /**
  * 
@@ -312,13 +206,7 @@ export type app_protobufs_ChannelSet = { settings: app_protobufs_ChannelSettings
  */
 export type app_protobufs_config_position_config_PositionFlags = "unset" | "altitude" | "altitudeMsl" | "geoidalSeparation" | "dop" | "hvdop" | "satinview" | "seqNo" | "timestamp" | "heading" | "speed"
 
-/**
- * 
- * This message is handled by the Admin module and is responsible for all settings/channel read/write operations.
- * This message is used to do settings operations to both remote AND local nodes.
- * (Prior to 1.2 these operations were done via special ToRadio operations)
- */
-export type app_protobufs_AdminMessage = { payloadVariant: app_protobufs_admin_message_PayloadVariant | null }
+export type app_protobufs_telemetry_Variant = { deviceMetrics: app_protobufs_DeviceMetrics } | { environmentMetrics: app_protobufs_EnvironmentMetrics } | { airQualityMetrics: app_protobufs_AirQualityMetrics }
 
 /**
  * 
@@ -335,16 +223,17 @@ export type app_protobufs_AdminMessage = { payloadVariant: app_protobufs_admin_m
 export type app_protobufs_channel_Role = "disabled" | "primary" | "secondary"
 
 /**
- * 
- * Ethernet connection status
+ * Currently a re-export of `protobufs::Position` with normalized lat, long
  */
-export type app_protobufs_EthernetConnectionStatus = { status: app_protobufs_NetworkConnectionStatus | null }
+export type app_device_NormalizedPosition = { latitude: number; longitude: number; altitude: number; time: number; locationSource: app_protobufs_position_LocSource; altitudeSource: app_protobufs_position_AltSource; timestamp: number; timestampMillisAdjust: number; altitudeHae: number; altitudeGeoidalSeparation: number; pdop: number; hdop: number; vdop: number; gpsAccuracy: number; groundSpeed: number; groundTrack: number; fixQuality: number; fixType: number; satsInView: number; sensorId: number; nextUpdate: number; seqNumber: number }
+
+export type app_protobufs_routing_Variant = { routeRequest: app_protobufs_RouteDiscovery } | { routeReply: app_protobufs_RouteDiscovery } | { errorReason: number }
 
 /**
  * 
- * Waypoint message, used to share arbitrary locations across the mesh
+ * Position with static location information only for NodeDBLite
  */
-export type app_protobufs_Waypoint = { id: number; latitudeI: number; longitudeI: number; expire: number; lockedTo: number; name: string; description: string; icon: number }
+export type app_protobufs_PositionLite = { latitudeI: number; longitudeI: number; altitude: number; time: number; locationSource: number }
 
 /**
  * 
@@ -354,11 +243,15 @@ export type app_protobufs_config_device_config_Role = "client" | "clientMute" | 
 
 /**
  * 
- * NeighborInfoModule Config
+ * TODO: REPLACE
  */
-export type app_protobufs_module_config_NeighborInfoConfig = { enabled: boolean; updateInterval: number }
+export type app_protobufs_admin_message_ModuleConfigType = "mqttConfig" | "serialConfig" | "extnotifConfig" | "storeforwardConfig" | "rangetestConfig" | "telemetryConfig" | "cannedmsgConfig" | "audioConfig" | "remotehardwareConfig" | "neighborinfoConfig" | "ambientlightingConfig"
 
-export type app_device_ChannelMessagePayload = ({ type: "text" } & app_device_TextPacket) | ({ type: "waypoint" } & app_device_WaypointPacket)
+/**
+ * 
+ * TODO: REPLACE
+ */
+export type app_protobufs_store_and_forward_Variant = { stats: app_protobufs_store_and_forward_Statistics } | { history: app_protobufs_store_and_forward_History } | { heartbeat: app_protobufs_store_and_forward_Heartbeat } | { empty: boolean }
 
 /**
  * 
@@ -369,83 +262,11 @@ export type app_protobufs_config_PowerConfig = { isPowerSaving: boolean; onBatte
 
 /**
  * 
- * Parameters for setting up Meshtastic for ameteur radio usage
+ * Payload Variant
  */
-export type app_protobufs_HamParameters = { callSign: string; txPower: number; frequency: number; shortName: string }
+export type app_protobufs_config_PayloadVariant = { device: app_protobufs_config_DeviceConfig } | { position: app_protobufs_config_PositionConfig } | { power: app_protobufs_config_PowerConfig } | { network: app_protobufs_config_NetworkConfig } | { display: app_protobufs_config_DisplayConfig } | { lora: app_protobufs_config_LoRaConfig } | { bluetooth: app_protobufs_config_BluetoothConfig }
 
-/**
- * 
- * Position Config
- */
-export type app_protobufs_config_PositionConfig = { positionBroadcastSecs: number; positionBroadcastSmartEnabled: boolean; fixedPosition: boolean; gpsEnabled: boolean; gpsUpdateInterval: number; gpsAttemptTime: number; positionFlags: number; rxGpio: number; txGpio: number; broadcastSmartMinimumDistance: number; broadcastSmartMinimumIntervalSecs: number }
-
-export type app_protobufs_routing_Variant = { routeRequest: app_protobufs_RouteDiscovery } | { routeReply: app_protobufs_RouteDiscovery } | { errorReason: number }
-
-export type app_device_MeshDevice = { configId: number; ready: boolean; status: app_device_SerialDeviceStatus; channels: { [key: number]: app_device_MeshChannel }; config: app_protobufs_LocalConfig; moduleConfig: app_protobufs_LocalModuleConfig; myNodeInfo: app_protobufs_MyNodeInfo; nodes: { [key: number]: app_device_MeshNode }; regionUnset: boolean; deviceMetrics: app_protobufs_DeviceMetrics; waypoints: { [key: number]: app_device_NormalizedWaypoint }; neighbors: { [key: number]: app_device_NeighborInfoPacket }; configInProgress: boolean }
-
-export type app_device_TextPacket = { packet: app_protobufs_MeshPacket; data: string }
-
-export type app_protobufs_QueueStatus = { res: number; free: number; maxlen: number; meshPacketId: number }
-
-/**
- * 
- * The on-disk saved channels
- */
-export type app_protobufs_ChannelFile = { channels: app_protobufs_Channel[]; version: number }
-
-/**
- * 
- * Canned message module configuration.
- */
-export type app_protobufs_CannedMessageModuleConfig = { messages: string }
-
-export type app_protobufs_config_network_config_AddressMode = "dhcp" | "static"
-
-/**
- * 
- * How the location was acquired: manual, onboard GPS, external (EUD) GPS
- */
-export type app_protobufs_position_LocSource = "locUnset" | "locManual" | "locInternal" | "locExternal"
-
-/**
- * 
- * For any new 'apps' that run on the device or via sister apps on phones/PCs they should pick and use a
- * unique 'portnum' for their application.
- * If you are making a new app using meshtastic, please send in a pull request to add your 'portnum' to this
- * master table.
- * PortNums should be assigned in the following range:
- * 0-63   Core Meshtastic use, do not use for third party apps
- * 64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to  register your application
- * 256-511 Use one of these portnums for your private applications that you don't want to register publically
- * All other values are reserved.
- * Note: This was formerly a Type enum named 'typ' with the same id #
- * We have change to this 'portnum' based scheme for specifying app handlers for particular payloads.
- * This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT values identically.
- */
-export type app_protobufs_PortNum = "unknownApp" | "textMessageApp" | "remoteHardwareApp" | "positionApp" | "nodeinfoApp" | "routingApp" | "adminApp" | "textMessageCompressedApp" | "waypointApp" | "audioApp" | "replyApp" | "ipTunnelApp" | "serialApp" | "storeForwardApp" | "rangeTestApp" | "telemetryApp" | "zpsApp" | "simulatorApp" | "tracerouteApp" | "neighborinfoApp" | "privateApp" | "atakForwarder" | "max"
-
-/**
- * 
- * How the GPS coordinates are displayed on the OLED screen.
- */
-export type app_protobufs_config_display_config_GpsCoordinateFormat = "dec" | "dms" | "utm" | "mgrs" | "olc" | "osgr"
-
-export type app_protobufs_x_modem_Control = "nul" | "soh" | "stx" | "eot" | "ack" | "nak" | "can" | "ctrlz"
-
-/**
- * 
- * Packets from the radio to the phone will appear on the fromRadio characteristic.
- * It will support READ and NOTIFY. When a new packet arrives the device will BLE notify?
- * It will sit in that descriptor until consumed by the phone,
- * at which point the next item in the FIFO will be populated.
- */
-export type app_protobufs_FromRadio = { id: number; payloadVariant: app_protobufs_from_radio_PayloadVariant | null }
-
-/**
- * 
- * The actual service envelope payload or text for mqtt pub / sub
- */
-export type app_protobufs_mqtt_client_proxy_message_PayloadVariant = { data: number[] } | { text: string }
+export type app_device_ChannelMessageWithState = { payload: app_device_ChannelMessagePayload; state: app_device_ChannelMessageState }
 
 /**
  * 
@@ -453,120 +274,31 @@ export type app_protobufs_mqtt_client_proxy_message_PayloadVariant = { data: num
  */
 export type app_protobufs_store_and_forward_Statistics = { messagesTotal: number; messagesSaved: number; messagesMax: number; upTime: number; requests: number; requestsHistory: number; heartbeat: boolean; returnMax: number; returnWindow: number }
 
-export type app_protobufs_LocalConfig = { device: app_protobufs_config_DeviceConfig | null; position: app_protobufs_config_PositionConfig | null; power: app_protobufs_config_PowerConfig | null; network: app_protobufs_config_NetworkConfig | null; display: app_protobufs_config_DisplayConfig | null; lora: app_protobufs_config_LoRaConfig | null; bluetooth: app_protobufs_config_BluetoothConfig | null; version: number }
-
-/**
- * 
- * Log levels, chosen to match python logging conventions.
- */
-export type app_protobufs_log_record_Level = "unset" | "critical" | "error" | "warning" | "info" | "debug" | "trace"
-
-/**
- * Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
- * Initially created for the RAK14001 RGB LED module.
- */
-export type app_protobufs_module_config_AmbientLightingConfig = { ledState: boolean; current: number; red: number; green: number; blue: number }
-
-export type app_device_ChannelMessageWithState = { payload: app_device_ChannelMessagePayload; state: app_device_ChannelMessageState }
-
-export type app_device_MeshChannel = { config: app_protobufs_Channel; lastInteraction: number; messages: app_device_ChannelMessageWithState[] }
-
-export type app_device_SerialDeviceStatus = "restarting" | "disconnected" | "connecting" | "reconnecting" | "connected" | "configuring" | "configured"
-
-/**
- * 
- * Response envelope for node_remote_hardware_pins
- */
-export type app_protobufs_NodeRemoteHardwarePinsResponse = { nodeRemoteHardwarePins: app_protobufs_NodeRemoteHardwarePin[] }
-
-/**
- * 
- * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
- */
-export type app_protobufs_ServiceEnvelope = { packet: app_protobufs_MeshPacket | null; channelId: string; gatewayId: string }
-
-/**
- * 
- * a gps position
- */
-export type app_protobufs_Position = { latitudeI: number; longitudeI: number; altitude: number; time: number; locationSource: number; altitudeSource: number; timestamp: number; timestampMillisAdjust: number; altitudeHae: number; altitudeGeoidalSeparation: number; pdop: number; hdop: number; vdop: number; gpsAccuracy: number; groundSpeed: number; groundTrack: number; fixQuality: number; fixType: number; satsInView: number; sensorId: number; nextUpdate: number; seqNumber: number }
-
-/**
- * 
- * TODO: REPLACE
- */
-export type app_protobufs_module_config_serial_config_SerialBaud = "baudDefault" | "baud110" | "baud300" | "baud600" | "baud1200" | "baud2400" | "baud4800" | "baud9600" | "baud19200" | "baud38400" | "baud57600" | "baud115200" | "baud230400" | "baud460800" | "baud576000" | "baud921600"
-
-/**
- * 
- * Log levels, chosen to match python logging conventions.
- */
-export type app_protobufs_to_radio_PayloadVariant = { packet: app_protobufs_MeshPacket } | { wantConfigId: number } | { disconnect: boolean } | { xmodemPacket: app_protobufs_XModem } | { mqttClientProxyMessage: app_protobufs_MqttClientProxyMessage }
-
-/**
- * 
- * TODO: REPLACE
- */
-export type app_protobufs_store_and_forward_History = { historyMessages: number; window: number; lastRequest: number }
-
-/**
- * 
- * Full info on edges for a single node
- */
-export type app_protobufs_NeighborInfo = { nodeId: number; lastSentById: number; nodeBroadcastIntervalSecs: number; neighbors: app_protobufs_Neighbor[] }
-
 /**
  * 
  * A single edge in the mesh
  */
-export type app_protobufs_Neighbor = { nodeId: number; snr: number }
+export type app_protobufs_Neighbor = { nodeId: number; snr: number; lastRxTime: number; nodeBroadcastIntervalSecs: number }
 
 /**
  * 
- * Baudrate for codec2 voice
+ * This message is never sent over the wire, but it is used for serializing DB
+ * state to flash in the device code
+ * FIXME, since we write this each time we enter deep sleep (and have infinite
+ * flash) it would be better to use some sort of append only data structure for
+ * the receive queue and use the preferences store for the other stuff
  */
-export type app_protobufs_module_config_audio_config_AudioBaud = "codec2Default" | "codec23200" | "codec22400" | "codec21600" | "codec21400" | "codec21300" | "codec21200" | "codec2700" | "codec2700B"
-
-export type app_protobufs_NodeInfoLite = { num: number; user: app_protobufs_User | null; position: app_protobufs_PositionLite | null; snr: number; lastHeard: number; deviceMetrics: app_protobufs_DeviceMetrics | null; channel: number }
-
-export type app_ipc_DeviceBulkConfig = { radio: app_protobufs_LocalConfig | null; module: app_protobufs_LocalModuleConfig | null; channels: app_protobufs_Channel[] | null }
+export type app_protobufs_DeviceState = { myNode: app_protobufs_MyNodeInfo | null; owner: app_protobufs_User | null; receiveQueue: app_protobufs_MeshPacket[]; version: number; rxTextMessage: app_protobufs_MeshPacket | null; noSave: boolean; didGpsReset: boolean; rxWaypoint: app_protobufs_MeshPacket | null; nodeRemoteHardwarePins: app_protobufs_NodeRemoteHardwarePin[]; nodeDbLite: app_protobufs_NodeInfoLite[] }
 
 /**
  * 
- * Audio Config for codec2 voice
+ * Position Config
  */
-export type app_protobufs_module_config_AudioConfig = { codec2Enabled: boolean; pttPin: number; bitrate: number; i2SWs: number; i2SSd: number; i2SDin: number; i2SSck: number }
+export type app_protobufs_config_PositionConfig = { positionBroadcastSecs: number; positionBroadcastSmartEnabled: boolean; fixedPosition: boolean; gpsEnabled: boolean; gpsUpdateInterval: number; gpsAttemptTime: number; positionFlags: number; rxGpio: number; txGpio: number; broadcastSmartMinimumDistance: number; broadcastSmartMinimumIntervalSecs: number }
 
-export type app_device_TelemetryPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_Telemetry }
+export type app_protobufs_config_bluetooth_config_PairingMode = "randomPin" | "fixedPin" | "noPin"
 
-/**
- * 
- * A Routing control Data packet handled by the routing module
- */
-export type app_protobufs_Routing = { variant: app_protobufs_routing_Variant | null }
-
-/**
- * 
- * TODO: REPLACE
- */
-export type app_protobufs_ScreenFonts = "fontSmall" | "fontMedium" | "fontLarge"
-
-/**
- * 
- * A failure in delivering a message (usually used for routing control messages, but might be provided in addition to ack.fail_id to provide
- * details on the type of failure).
- */
-export type app_protobufs_routing_Error = "none" | "noRoute" | "gotNak" | "timeout" | "noInterface" | "maxRetransmit" | "noChannel" | "tooLarge" | "noResponse" | "dutyCycleLimit" | "badRequest" | "notAuthorized"
-
-/**
- * 
- * Preferences for the RangeTestModule
- */
-export type app_protobufs_module_config_RangeTestConfig = { enabled: boolean; sender: number; save: boolean }
-
-export type app_protobufs_telemetry_Variant = { deviceMetrics: app_protobufs_DeviceMetrics } | { environmentMetrics: app_protobufs_EnvironmentMetrics } | { airQualityMetrics: app_protobufs_AirQualityMetrics }
-
-export type app_protobufs_Config = { payloadVariant: app_protobufs_config_PayloadVariant | null }
+export type app_device_MeshNodeDeviceMetrics = { metrics: app_protobufs_DeviceMetrics; timestamp: number; snr: number }
 
 /**
  * 
@@ -595,44 +327,61 @@ export type app_protobufs_User = { id: string; longName: string; shortName: stri
 
 /**
  * 
+ * Standard predefined channel settings
+ * Note: these mappings must match ModemPreset Choice in the device code.
+ */
+export type app_protobufs_config_lo_ra_config_ModemPreset = "longFast" | "longSlow" | "veryLongSlow" | "mediumSlow" | "mediumFast" | "shortSlow" | "shortFast" | "longModerate"
+
+export type app_device_NormalizedNodeInfo = { num: number; user: app_protobufs_User | null; position: app_protobufs_Position | null; snr: number; lastHeard: number; deviceMetrics: app_protobufs_DeviceMetrics | null; channel: number }
+
+/**
+ * 
+ * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
+ */
+export type app_protobufs_ServiceEnvelope = { packet: app_protobufs_MeshPacket | null; channelId: string; gatewayId: string }
+
+/**
+ * 
+ * Store and Forward Module Config
+ */
+export type app_protobufs_module_config_StoreForwardConfig = { enabled: boolean; heartbeat: boolean; records: number; historyReturnMax: number; historyReturnWindow: number }
+
+/**
+ * 
+ * For any new 'apps' that run on the device or via sister apps on phones/PCs they should pick and use a
+ * unique 'portnum' for their application.
+ * If you are making a new app using meshtastic, please send in a pull request to add your 'portnum' to this
+ * master table.
+ * PortNums should be assigned in the following range:
+ * 0-63   Core Meshtastic use, do not use for third party apps
+ * 64-127 Registered 3rd party apps, send in a pull request that adds a new entry to portnums.proto to  register your application
+ * 256-511 Use one of these portnums for your private applications that you don't want to register publically
+ * All other values are reserved.
+ * Note: This was formerly a Type enum named 'typ' with the same id #
+ * We have change to this 'portnum' based scheme for specifying app handlers for particular payloads.
+ * This change is backwards compatible by treating the legacy OPAQUE/CLEAR_TEXT values identically.
+ */
+export type app_protobufs_PortNum = "unknownApp" | "textMessageApp" | "remoteHardwareApp" | "positionApp" | "nodeinfoApp" | "routingApp" | "adminApp" | "textMessageCompressedApp" | "waypointApp" | "audioApp" | "replyApp" | "ipTunnelApp" | "serialApp" | "storeForwardApp" | "rangeTestApp" | "telemetryApp" | "zpsApp" | "simulatorApp" | "tracerouteApp" | "neighborinfoApp" | "privateApp" | "atakForwarder" | "max"
+
+/**
+ * 
  * TODO: REPLACE
  */
-export type app_protobufs_admin_message_ModuleConfigType = "mqttConfig" | "serialConfig" | "extnotifConfig" | "storeforwardConfig" | "rangetestConfig" | "telemetryConfig" | "cannedmsgConfig" | "audioConfig" | "remotehardwareConfig" | "neighborinfoConfig"
+export type app_protobufs_admin_message_ConfigType = "deviceConfig" | "positionConfig" | "powerConfig" | "networkConfig" | "displayConfig" | "loraConfig" | "bluetoothConfig"
 
 /**
  * 
- * RemoteHardwareModule Config
+ * A packet envelope sent/received over the mesh
+ * only payload_variant is sent in the payload portion of the LORA packet.
+ * The other fields are either not sent at all, or sent in the special 16 byte LORA header.
  */
-export type app_protobufs_module_config_RemoteHardwareConfig = { enabled: boolean; allowUndefinedPinAccess: boolean; availablePins: app_protobufs_RemoteHardwarePin[] }
+export type app_protobufs_MeshPacket = { from: number; to: number; channel: number; id: number; rxTime: number; rxSnr: number; hopLimit: number; wantAck: boolean; priority: number; rxRssi: number; delayed: number; payloadVariant: app_protobufs_mesh_packet_PayloadVariant | null }
 
 /**
  * 
- * This message is never sent over the wire, but it is used for serializing DB
- * state to flash in the device code
- * FIXME, since we write this each time we enter deep sleep (and have infinite
- * flash) it would be better to use some sort of append only data structure for
- * the receive queue and use the preferences store for the other stuff
+ * TODO: REPLACE
  */
-export type app_protobufs_DeviceState = { myNode: app_protobufs_MyNodeInfo | null; owner: app_protobufs_User | null; receiveQueue: app_protobufs_MeshPacket[]; version: number; rxTextMessage: app_protobufs_MeshPacket | null; noSave: boolean; didGpsReset: boolean; rxWaypoint: app_protobufs_MeshPacket | null; nodeRemoteHardwarePins: app_protobufs_NodeRemoteHardwarePin[]; nodeDbLite: app_protobufs_NodeInfoLite[] }
-
-/**
- * 
- * This can be used for customizing the firmware distribution. If populated,
- * show a secondary bootup screen with custom logo and text for 2.5 seconds.
- */
-export type app_protobufs_OemStore = { oemIconWidth: number; oemIconHeight: number; oemIconBits: number[]; oemFont: number; oemText: string; oemAesKey: number[]; oemLocalConfig: app_protobufs_LocalConfig | null; oemLocalModuleConfig: app_protobufs_LocalModuleConfig | null }
-
-export type app_ipc_APMincutStringResults = { apResult: number[]; mincutResult: ([number, number])[]; diffcenResult: { [key: number]: { [key: number]: { [key: number]: number } } } }
-
-/**
- * 
- * RemoteHardwarePins associated with a node
- */
-export type app_protobufs_NodeRemoteHardwarePin = { nodeNum: number; pin: app_protobufs_RemoteHardwarePin | null }
-
-export type app_device_MeshNodePositionMetrics = { metrics: app_device_NormalizedPosition; timestamp: number; snr: number }
-
-export type app_ipc_ConfigurationStatus = { deviceKey: string; successful: boolean; message: string | null }
+export type app_protobufs_module_config_serial_config_SerialBaud = "baudDefault" | "baud110" | "baud300" | "baud600" | "baud1200" | "baud2400" | "baud4800" | "baud9600" | "baud19200" | "baud38400" | "baud57600" | "baud115200" | "baud230400" | "baud460800" | "baud576000" | "baud921600"
 
 /**
  * 
@@ -640,11 +389,33 @@ export type app_ipc_ConfigurationStatus = { deviceKey: string; successful: boole
  */
 export type app_protobufs_module_config_canned_message_config_InputEventChar = "none" | "up" | "down" | "left" | "right" | "select" | "back" | "cancel"
 
-export type app_device_LastHeardMetadata = { timestamp: number; snr: number; channel: number }
+/**
+ * 
+ * TODO: REPLACE
+ */
+export type app_protobufs_ScreenFonts = "fontSmall" | "fontMedium" | "fontLarge"
 
-export type app_protobufs_config_network_config_IpV4Config = { ip: number; gateway: number; subnet: number; dns: number }
+/**
+ * 
+ * TODO: REPLACE
+ */
+export type app_protobufs_hardware_message_Type = "unset" | "writeGpios" | "watchGpios" | "gpiosChanged" | "readGpios" | "readGpiosReply"
 
-export type app_protobufs_DeviceConnectionStatus = { wifi: app_protobufs_WifiConnectionStatus | null; ethernet: app_protobufs_EthernetConnectionStatus | null; bluetooth: app_protobufs_BluetoothConnectionStatus | null; serial: app_protobufs_SerialConnectionStatus | null }
+export type app_protobufs_QueueStatus = { res: number; free: number; maxlen: number; meshPacketId: number }
+
+export type app_protobufs_XModem = { control: number; seq: number; crc16: number; buffer: number[] }
+
+/**
+ * 
+ * Log levels, chosen to match python logging conventions.
+ */
+export type app_protobufs_log_record_Level = "unset" | "critical" | "error" | "warning" | "info" | "debug" | "trace"
+
+/**
+ * 
+ * Canned message module configuration.
+ */
+export type app_protobufs_CannedMessageModuleConfig = { messages: string }
 
 /**
  * 
@@ -652,39 +423,40 @@ export type app_protobufs_DeviceConnectionStatus = { wifi: app_protobufs_WifiCon
  */
 export type app_protobufs_StoreAndForward = { rr: number; variant: app_protobufs_store_and_forward_Variant | null }
 
-/**
- * 
- * Override OLED outo detect with this if it fails.
- */
-export type app_protobufs_config_display_config_OledType = "oledAuto" | "oledSsd1306" | "oledSh1106" | "oledSh1107"
+export type app_device_WaypointPacket = { packet: app_protobufs_MeshPacket; data: app_device_NormalizedWaypoint }
 
 /**
  * 
- * Shared constants between device and phone
+ * An example app to show off the module system. This message is used for
+ * REMOTE_HARDWARE_APP PortNums.
+ * Also provides easy remote access to any GPIO.
+ * In the future other remote hardware operations can be added based on user interest
+ * (i.e. serial output, spi/i2c input/output).
+ * FIXME - currently this feature is turned on by default which is dangerous
+ * because no security yet (beyond the channel mechanism).
+ * It should be off by default and then protected based on some TBD mechanism
+ * (a special channel once multichannel support is included?)
  */
-export type app_protobufs_Constants = "zero" | "dataPayloadLen"
-
-export type app_device_NormalizedWaypoint = { id: number; latitude: number; longitude: number; expire: number; lockedTo: number; name: string; description: string; icon: number }
+export type app_protobufs_HardwareMessage = { type: number; gpioMask: string; gpioValue: string }
 
 /**
  * 
- * A message used in our Dynamic Source Routing protocol (RFC 4728 based)
+ * 001 - 063 = From Router
+ * 064 - 127 = From Client
  */
-export type app_protobufs_RouteDiscovery = { route: number[] }
-
-/**
- * 
- * Supported I2C Sensors for telemetry in Meshtastic
- */
-export type app_protobufs_TelemetrySensorType = "sensorUnset" | "bme280" | "bme680" | "mcp9808" | "ina260" | "ina219" | "bmp280" | "shtc3" | "lps22" | "qmc6310" | "qmi8658" | "qmc5883L" | "sht31" | "pmsa003I"
-
-export type app_device_NeighborInfoPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_NeighborInfo }
+export type app_protobufs_store_and_forward_RequestResponse = "unset" | "routerError" | "routerHeartbeat" | "routerPing" | "routerPong" | "routerBusy" | "routerHistory" | "routerStats" | "clientError" | "clientHistory" | "clientStats" | "clientPing" | "clientPong" | "clientAbort"
 
 /**
  * 
  * Bluetooth connection status
  */
 export type app_protobufs_BluetoothConnectionStatus = { pin: number; rssi: number; isConnected: boolean }
+
+/**
+ * 
+ * A Routing control Data packet handled by the routing module
+ */
+export type app_protobufs_Routing = { variant: app_protobufs_routing_Variant | null }
 
 /**
  * 
@@ -698,10 +470,118 @@ export type app_protobufs_LogRecord = { message: string; time: number; source: s
 
 /**
  * 
- * 001 - 063 = From Router
- * 064 - 127 = From Client
+ * (Formerly called SubPacket)
+ * The payload portion fo a packet, this is the actual bytes that are sent
+ * inside a radio packet (because from/to are broken out by the comms library)
  */
-export type app_protobufs_store_and_forward_RequestResponse = "unset" | "routerError" | "routerHeartbeat" | "routerPing" | "routerPong" | "routerBusy" | "routerHistory" | "routerStats" | "clientError" | "clientHistory" | "clientStats" | "clientPing" | "clientPong" | "clientAbort"
+export type app_protobufs_Data = { portnum: number; payload: number[]; wantResponse: boolean; dest: number; source: number; requestId: number; replyId: number; emoji: number }
+
+/**
+ * 
+ * The actual service envelope payload or text for mqtt pub / sub
+ */
+export type app_protobufs_mqtt_client_proxy_message_PayloadVariant = { data: number[] } | { text: string }
+
+export type app_device_MeshDevice = { configId: number; ready: boolean; status: app_device_SerialDeviceStatus; channels: { [key: number]: app_device_MeshChannel }; config: app_protobufs_LocalConfig; moduleConfig: app_protobufs_LocalModuleConfig; myNodeInfo: app_protobufs_MyNodeInfo; nodes: { [key: number]: app_device_MeshNode }; regionUnset: boolean; deviceMetrics: app_protobufs_DeviceMetrics; waypoints: { [key: number]: app_device_NormalizedWaypoint }; neighbors: { [key: number]: app_device_NeighborInfoPacket }; configInProgress: boolean }
+
+/**
+ * 
+ * Device metadata response
+ */
+export type app_protobufs_DeviceMetadata = { firmwareVersion: string; deviceStateVersion: number; canShutdown: boolean; hasWifi: boolean; hasBluetooth: boolean; hasEthernet: boolean; role: number; positionFlags: number; hwModel: number; hasRemoteHardware: boolean }
+
+export type app_protobufs_x_modem_Control = "nul" | "soh" | "stx" | "eot" | "ack" | "nak" | "can" | "ctrlz"
+
+/**
+ * 
+ * MQTT Client Config
+ */
+export type app_protobufs_module_config_MqttConfig = { enabled: boolean; address: string; username: string; password: string; encryptionEnabled: boolean; jsonEnabled: boolean; tlsEnabled: boolean; root: string; proxyToClientEnabled: boolean }
+
+/**
+ * 
+ * TODO: REPLACE
+ */
+export type app_protobufs_module_config_CannedMessageConfig = { rotary1Enabled: boolean; inputbrokerPinA: number; inputbrokerPinB: number; inputbrokerPinPress: number; inputbrokerEventCw: number; inputbrokerEventCcw: number; inputbrokerEventPress: number; updown1Enabled: boolean; enabled: boolean; allowInputSource: string; sendBell: boolean }
+
+/**
+ * 
+ * Error codes for critical errors
+ * The device might report these fault codes on the screen.
+ * If you encounter a fault code, please post on the meshtastic.discourse.group
+ * and we'll try to help.
+ */
+export type app_protobufs_CriticalErrorCode = "none" | "txWatchdog" | "sleepEnterWait" | "noRadio" | "unspecified" | "ubloxUnitFailed" | "noAxp192" | "invalidRadioSetting" | "transmitFailed" | "brownout" | "sx1262Failure" | "radioSpiBug"
+
+/**
+ * 
+ * How the location was acquired: manual, onboard GPS, external (EUD) GPS
+ */
+export type app_protobufs_position_LocSource = "locUnset" | "locManual" | "locInternal" | "locExternal"
+
+/**
+ * 
+ * A message used in our Dynamic Source Routing protocol (RFC 4728 based)
+ */
+export type app_protobufs_RouteDiscovery = { route: number[] }
+
+export type app_ipc_DeviceBulkConfig = { radio: app_protobufs_LocalConfig | null; module: app_protobufs_LocalModuleConfig | null; channels: app_protobufs_Channel[] | null }
+
+export type app_device_MeshNode = { nodeNum: number; lastHeard: app_device_LastHeardMetadata | null; user: app_protobufs_User | null; deviceMetrics: app_device_MeshNodeDeviceMetrics[]; environmentMetrics: app_device_MeshNodeEnvironmentMetrics[]; positionMetrics: app_device_NormalizedPosition[] }
+
+/**
+ * 
+ * Parameters for setting up Meshtastic for ameteur radio usage
+ */
+export type app_protobufs_HamParameters = { callSign: string; txPower: number; frequency: number; shortName: string }
+
+/**
+ * 
+ * The priority of this message for sending.
+ * Higher priorities are sent first (when managing the transmit queue).
+ * This field is never sent over the air, it is only used internally inside of a local device node.
+ * API clients (either on the local node or connected directly to the node)
+ * can set this parameter if necessary.
+ * (values must be <= 127 to keep protobuf field to one byte in size.
+ * Detailed background on this field:
+ * I noticed a funny side effect of lora being so slow: Usually when making
+ * a protocol there isn’t much need to use message priority to change the order
+ * of transmission (because interfaces are fairly fast).
+ * But for lora where packets can take a few seconds each, it is very important
+ * to make sure that critical packets are sent ASAP.
+ * In the case of meshtastic that means we want to send protocol acks as soon as possible
+ * (to prevent unneeded retransmissions), we want routing messages to be sent next,
+ * then messages marked as reliable and finally 'background' packets like periodic position updates.
+ * So I bit the bullet and implemented a new (internal - not sent over the air)
+ * field in MeshPacket called 'priority'.
+ * And the transmission queue in the router object is now a priority queue.
+ */
+export type app_protobufs_mesh_packet_Priority = "unset" | "min" | "background" | "default" | "reliable" | "ack" | "max"
+
+export type app_protobufs_RemoteHardwarePinType = "unknown" | "digitalRead" | "digitalWrite"
+
+export type app_device_MeshNodeEnvironmentMetrics = { metrics: app_protobufs_EnvironmentMetrics; timestamp: number; snr: number }
+
+/**
+ * Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
+ * Initially created for the RAK14001 RGB LED module.
+ */
+export type app_protobufs_module_config_AmbientLightingConfig = { ledState: boolean; current: number; red: number; green: number; blue: number }
+
+/**
+ * 
+ * This message is handled by the Admin module and is responsible for all settings/channel read/write operations.
+ * This message is used to do settings operations to both remote AND local nodes.
+ * (Prior to 1.2 these operations were done via special ToRadio operations)
+ */
+export type app_protobufs_AdminMessage = { payloadVariant: app_protobufs_admin_message_PayloadVariant | null }
+
+/**
+ * 
+ * How the altitude was acquired: manual, GPS int/ext, etc
+ * Default: same as location_source if present
+ */
+export type app_protobufs_position_AltSource = "altUnset" | "altManual" | "altInternal" | "altExternal" | "altBarometric"
 
 /**
  * 
@@ -710,33 +590,59 @@ export type app_protobufs_store_and_forward_RequestResponse = "unset" | "routerE
  */
 export type app_protobufs_ToRadio = { payloadVariant: app_protobufs_to_radio_PayloadVariant | null }
 
-/**
- * 
- * Serial connection status
- */
-export type app_protobufs_SerialConnectionStatus = { baud: number; isConnected: boolean }
+export type app_device_TelemetryPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_Telemetry }
 
-export type app_device_MeshNodeEnvironmentMetrics = { metrics: app_protobufs_EnvironmentMetrics; timestamp: number; snr: number }
+export type app_protobufs_Config = { payloadVariant: app_protobufs_config_PayloadVariant | null }
 
 /**
  * 
- * TODO: REPLACE
+ * Types of Measurements the telemetry module is equipped to handle
  */
-export type app_protobufs_store_and_forward_Variant = { stats: app_protobufs_store_and_forward_Statistics } | { history: app_protobufs_store_and_forward_History } | { heartbeat: app_protobufs_store_and_forward_Heartbeat } | { empty: boolean }
+export type app_protobufs_Telemetry = { time: number; variant: app_protobufs_telemetry_Variant | null }
+
+export type app_device_ChannelMessagePayload = ({ type: "text" } & app_device_TextPacket) | ({ type: "waypoint" } & app_device_WaypointPacket)
 
 /**
  * 
- * Compressed message payload
+ * Supported I2C Sensors for telemetry in Meshtastic
  */
-export type app_protobufs_Compressed = { portnum: number; data: number[] }
+export type app_protobufs_TelemetrySensorType = "sensorUnset" | "bme280" | "bme680" | "mcp9808" | "ina260" | "ina219" | "bmp280" | "shtc3" | "lps22" | "qmc6310" | "qmi8658" | "qmc5883L" | "sht31" | "pmsa003I"
 
 /**
  * 
- * (Formerly called SubPacket)
- * The payload portion fo a packet, this is the actual bytes that are sent
- * inside a radio packet (because from/to are broken out by the comms library)
+ * WiFi connection status
  */
-export type app_protobufs_Data = { portnum: number; payload: number[]; wantResponse: boolean; dest: number; source: number; requestId: number; replyId: number; emoji: number }
+export type app_protobufs_WifiConnectionStatus = { status: app_protobufs_NetworkConnectionStatus | null; ssid: string; rssi: number }
+
+export type app_device_NeighborInfoPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_NeighborInfo }
+
+export type app_ipc_APMincutStringResults = { apResult: number[]; mincutResult: ([number, number])[]; diffcenResult: { [key: number]: { [key: number]: { [key: number]: number } } } }
+
+/**
+ * 
+ * A GPIO pin definition for remote hardware module
+ */
+export type app_protobufs_RemoteHardwarePin = { gpioPin: number; name: string; type: number }
+
+export type app_ipc_ConfigurationStatus = { deviceKey: string; successful: boolean; message: string | null }
+
+export type app_device_UserPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_User }
+
+/**
+ * 
+ * Serial Config
+ */
+export type app_protobufs_module_config_SerialConfig = { enabled: boolean; echo: boolean; rxd: number; txd: number; baud: number; timeout: number; mode: number; overrideConsoleSerialPort: boolean }
+
+export type app_device_TextPacket = { packet: app_protobufs_MeshPacket; data: string }
+
+export type app_protobufs_config_network_config_AddressMode = "dhcp" | "static"
+
+/**
+ * 
+ * Weather station or other environmental metrics
+ */
+export type app_protobufs_EnvironmentMetrics = { temperature: number; relativeHumidity: number; barometricPressure: number; gasResistance: number; voltage: number; current: number }
 
 export type app_protobufs_LocalModuleConfig = { mqtt: app_protobufs_module_config_MqttConfig | null; serial: app_protobufs_module_config_SerialConfig | null; externalNotification: app_protobufs_module_config_ExternalNotificationConfig | null; storeForward: app_protobufs_module_config_StoreForwardConfig | null; rangeTest: app_protobufs_module_config_RangeTestConfig | null; telemetry: app_protobufs_module_config_TelemetryConfig | null; cannedMessage: app_protobufs_module_config_CannedMessageConfig | null; audio: app_protobufs_module_config_AudioConfig | null; remoteHardware: app_protobufs_module_config_RemoteHardwareConfig | null; neighborInfo: app_protobufs_module_config_NeighborInfoConfig | null; version: number }
 
@@ -748,23 +654,137 @@ export type app_protobufs_mesh_packet_Delayed = "noDelay" | "broadcast" | "direc
 
 /**
  * 
- * Air quality metrics
+ * This is the most compact possible representation for a set of channels.
+ * It includes only one PRIMARY channel (which must be first) and
+ * any SECONDARY channels.
+ * No DISABLED channels are included.
+ * This abstraction is used only on the the 'app side' of the world (ie python, javascript and android etc) to show a group of Channels as a (long) URL
  */
-export type app_protobufs_AirQualityMetrics = { pm10Standard: number; pm25Standard: number; pm100Standard: number; pm10Environmental: number; pm25Environmental: number; pm100Environmental: number; particles03Um: number; particles05Um: number; particles10Um: number; particles25Um: number; particles50Um: number; particles100Um: number }
+export type app_protobufs_ChannelSet = { settings: app_protobufs_ChannelSettings[]; loraConfig: app_protobufs_config_LoRaConfig | null }
 
 /**
  * 
- * Weather station or other environmental metrics
+ * Override OLED outo detect with this if it fails.
  */
-export type app_protobufs_EnvironmentMetrics = { temperature: number; relativeHumidity: number; barometricPressure: number; gasResistance: number; voltage: number; current: number }
-
-export type app_device_UserPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_User }
+export type app_protobufs_config_display_config_OledType = "oledAuto" | "oledSsd1306" | "oledSh1106" | "oledSh1107"
 
 /**
  * 
  * Configuration for both device and environment metrics
  */
 export type app_protobufs_module_config_TelemetryConfig = { deviceUpdateInterval: number; environmentUpdateInterval: number; environmentMeasurementEnabled: boolean; environmentScreenEnabled: boolean; environmentDisplayFahrenheit: boolean; airQualityEnabled: boolean; airQualityInterval: number }
+
+/**
+ * 
+ * TODO: REPLACE
+ */
+export type app_protobufs_store_and_forward_Heartbeat = { period: number; secondary: number }
+
+export type app_protobufs_DeviceConnectionStatus = { wifi: app_protobufs_WifiConnectionStatus | null; ethernet: app_protobufs_EthernetConnectionStatus | null; bluetooth: app_protobufs_BluetoothConnectionStatus | null; serial: app_protobufs_SerialConnectionStatus | null }
+
+/**
+ * 
+ * Log levels, chosen to match python logging conventions.
+ */
+export type app_protobufs_to_radio_PayloadVariant = { packet: app_protobufs_MeshPacket } | { wantConfigId: number } | { disconnect: boolean } | { xmodemPacket: app_protobufs_XModem } | { mqttClientProxyMessage: app_protobufs_MqttClientProxyMessage }
+
+/**
+ * 
+ * Display Config
+ */
+export type app_protobufs_config_DisplayConfig = { screenOnSecs: number; gpsFormat: number; autoScreenCarouselSecs: number; compassNorthTop: boolean; flipScreen: boolean; units: number; oled: number; displaymode: number; headingBold: boolean; wakeOnTapOrMotion: boolean }
+
+/**
+ * 
+ * TODO: REPLACE
+ */
+export type app_protobufs_module_config_serial_config_SerialMode = "default" | "simple" | "proto" | "textmsg" | "nmea" | "caltopo"
+
+/**
+ * 
+ * Full info on edges for a single node
+ */
+export type app_protobufs_NeighborInfo = { nodeId: number; lastSentById: number; nodeBroadcastIntervalSecs: number; neighbors: app_protobufs_Neighbor[] }
+
+/**
+ * 
+ * Compressed message payload
+ */
+export type app_protobufs_Compressed = { portnum: number; data: number[] }
+
+/**
+ * 
+ * Unit display preference
+ */
+export type app_protobufs_config_display_config_DisplayUnits = "metric" | "imperial"
+
+/**
+ * 
+ * Response envelope for node_remote_hardware_pins
+ */
+export type app_protobufs_NodeRemoteHardwarePinsResponse = { nodeRemoteHardwarePins: app_protobufs_NodeRemoteHardwarePin[] }
+
+export type app_protobufs_NodeInfoLite = { num: number; user: app_protobufs_User | null; position: app_protobufs_PositionLite | null; snr: number; lastHeard: number; deviceMetrics: app_protobufs_DeviceMetrics | null; channel: number }
+
+export type app_protobufs_mesh_packet_PayloadVariant = { decoded: app_protobufs_Data } | { encrypted: number[] }
+
+/**
+ * 
+ * Module Config
+ */
+export type app_protobufs_ModuleConfig = { payloadVariant: app_protobufs_module_config_PayloadVariant | null }
+
+/**
+ * 
+ * Note: these enum names must EXACTLY match the string used in the device
+ * bin/build-all.sh script.
+ * Because they will be used to find firmware filenames in the android app for OTA updates.
+ * To match the old style filenames, _ is converted to -, p is converted to .
+ */
+export type app_protobufs_HardwareModel = "unset" | "tloraV2" | "tloraV1" | "tloraV211P6" | "tbeam" | "heltecV20" | "tbeamV0P7" | "techo" | "tloraV11P3" | "rak4631" | "heltecV21" | "heltecV1" | "lilygoTbeamS3Core" | "rak11200" | "nanoG1" | "tloraV211P8" | "tloraT3S3" | "nanoG1Explorer" | "nanoG2Ultra" | "stationG1" | "rak11310" | "loraRelayV1" | "nrf52840Dk" | "ppr" | "genieblocks" | "nrf52Unknown" | "portduino" | "androidSim" | "diyV1" | "nrf52840Pca10059" | "drDev" | "m5Stack" | "heltecV3" | "heltecWslV3" | "betafpv2400Tx" | "betafpv900NanoTx" | "rpiPico" | "heltecWirelessTracker" | "heltecWirelessPaper" | "tdeck" | "twatchS3" | "picomputerS3" | "privateHw"
+
+/**
+ * 
+ * Baudrate for codec2 voice
+ */
+export type app_protobufs_module_config_audio_config_AudioBaud = "codec2Default" | "codec23200" | "codec22400" | "codec21600" | "codec21400" | "codec21300" | "codec21200" | "codec2700" | "codec2700B"
+
+/**
+ * 
+ * This abstraction is used to contain any configuration for provisioning a node on any client.
+ * It is useful for importing and exporting configurations.
+ */
+export type app_protobufs_DeviceProfile = { longName: string | null; shortName: string | null; channelUrl: string | null; config: app_protobufs_LocalConfig | null; moduleConfig: app_protobufs_LocalModuleConfig | null }
+
+export type app_device_MeshNodePositionMetrics = { metrics: app_device_NormalizedPosition; timestamp: number; snr: number }
+
+export type app_device_PositionPacket = { packet: app_protobufs_MeshPacket; data: app_device_NormalizedPosition }
+
+/**
+ * 
+ * Audio Config for codec2 voice
+ */
+export type app_protobufs_module_config_AudioConfig = { codec2Enabled: boolean; pttPin: number; bitrate: number; i2SWs: number; i2SSd: number; i2SDin: number; i2SSck: number }
+
+/**
+ * 
+ * Shared constants between device and phone
+ */
+export type app_protobufs_Constants = "zero" | "dataPayloadLen"
+
+/**
+ * 
+ * Log levels, chosen to match python logging conventions.
+ */
+export type app_protobufs_from_radio_PayloadVariant = { packet: app_protobufs_MeshPacket } | { myInfo: app_protobufs_MyNodeInfo } | { nodeInfo: app_protobufs_NodeInfo } | { config: app_protobufs_Config } | { logRecord: app_protobufs_LogRecord } | { configCompleteId: number } | { rebooted: boolean } | { moduleConfig: app_protobufs_ModuleConfig } | { channel: app_protobufs_Channel } | { queueStatus: app_protobufs_QueueStatus } | { xmodemPacket: app_protobufs_XModem } | { metadata: app_protobufs_DeviceMetadata } | { mqttClientProxyMessage: app_protobufs_MqttClientProxyMessage }
+
+export type app_device_SerialDeviceStatus = "restarting" | "disconnected" | "connecting" | "reconnecting" | "connected" | "configuring" | "configured"
+
+/**
+ * 
+ * How the GPS coordinates are displayed on the OLED screen.
+ */
+export type app_protobufs_config_display_config_GpsCoordinateFormat = "dec" | "dms" | "utm" | "mgrs" | "olc" | "osgr"
 
 /**
  * 
@@ -786,35 +806,15 @@ export type app_protobufs_module_config_TelemetryConfig = { deviceUpdateInterval
  */
 export type app_protobufs_ChannelSettings = { channelNum: number; psk: number[]; name: string; id: number; uplinkEnabled: boolean; downlinkEnabled: boolean }
 
-export type app_device_MeshNodeDeviceMetrics = { metrics: app_protobufs_DeviceMetrics; timestamp: number; snr: number }
+/**
+ * 
+ * TODO: REPLACE
+ */
+export type app_protobufs_module_config_PayloadVariant = { mqtt: app_protobufs_module_config_MqttConfig } | { serial: app_protobufs_module_config_SerialConfig } | { externalNotification: app_protobufs_module_config_ExternalNotificationConfig } | { storeForward: app_protobufs_module_config_StoreForwardConfig } | { rangeTest: app_protobufs_module_config_RangeTestConfig } | { telemetry: app_protobufs_module_config_TelemetryConfig } | { cannedMessage: app_protobufs_module_config_CannedMessageConfig } | { audio: app_protobufs_module_config_AudioConfig } | { remoteHardware: app_protobufs_module_config_RemoteHardwareConfig } | { neighborInfo: app_protobufs_module_config_NeighborInfoConfig } | { ambientLighting: app_protobufs_module_config_AmbientLightingConfig }
 
 /**
  * 
- * Display Config
+ * RemoteHardwareModule Config
  */
-export type app_protobufs_config_DisplayConfig = { screenOnSecs: number; gpsFormat: number; autoScreenCarouselSecs: number; compassNorthTop: boolean; flipScreen: boolean; units: number; oled: number; displaymode: number; headingBold: boolean; wakeOnTapOrMotion: boolean }
-
-/**
- * 
- * An example app to show off the module system. This message is used for
- * REMOTE_HARDWARE_APP PortNums.
- * Also provides easy remote access to any GPIO.
- * In the future other remote hardware operations can be added based on user interest
- * (i.e. serial output, spi/i2c input/output).
- * FIXME - currently this feature is turned on by default which is dangerous
- * because no security yet (beyond the channel mechanism).
- * It should be off by default and then protected based on some TBD mechanism
- * (a special channel once multichannel support is included?)
- */
-export type app_protobufs_HardwareMessage = { type: number; gpioMask: string; gpioValue: string }
-
-export type app_protobufs_config_lo_ra_config_RegionCode = "unset" | "us" | "eu433" | "eu868" | "cn" | "jp" | "anz" | "kr" | "tw" | "ru" | "in" | "nz865" | "th" | "lora24" | "ua433" | "ua868"
-
-/**
- * 
- * A packet envelope sent/received over the mesh
- * only payload_variant is sent in the payload portion of the LORA packet.
- * The other fields are either not sent at all, or sent in the special 16 byte LORA header.
- */
-export type app_protobufs_MeshPacket = { from: number; to: number; channel: number; id: number; rxTime: number; rxSnr: number; hopLimit: number; wantAck: boolean; priority: number; rxRssi: number; delayed: number; payloadVariant: app_protobufs_mesh_packet_PayloadVariant | null }
+export type app_protobufs_module_config_RemoteHardwareConfig = { enabled: boolean; allowUndefinedPinAccess: boolean; availablePins: app_protobufs_RemoteHardwarePin[] }
 
