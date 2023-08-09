@@ -1,5 +1,6 @@
 use app::protobufs;
 use async_trait::async_trait;
+use log::trace;
 use prost::Message;
 
 use super::{
@@ -350,6 +351,8 @@ pub trait MeshConnection {
         config: protobufs::LocalConfig,
     ) -> Result<(), String> {
         if let Some(c) = config.bluetooth {
+            trace!("Updating bluetooth config {:?}", c);
+
             self.update_device_config(
                 device,
                 protobufs::Config {
@@ -360,6 +363,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = config.device {
+            trace!("Updating device config {:?}", c);
+
             self.update_device_config(
                 device,
                 protobufs::Config {
@@ -370,6 +375,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = config.display {
+            trace!("Updating display config {:?}", c);
+
             self.update_device_config(
                 device,
                 protobufs::Config {
@@ -380,6 +387,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = config.lora {
+            trace!("Updating lora config {:?}", c);
+
             self.update_device_config(
                 device,
                 protobufs::Config {
@@ -390,6 +399,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = config.network {
+            trace!("Updating network config {:?}", c);
+
             self.update_device_config(
                 device,
                 protobufs::Config {
@@ -400,6 +411,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = config.position {
+            trace!("Updating position config {:?}", c);
+
             self.update_device_config(
                 device,
                 protobufs::Config {
@@ -410,6 +423,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = config.power {
+            trace!("Updating power config {:?}", c);
+
             self.update_device_config(
                 device,
                 protobufs::Config {
@@ -428,6 +443,8 @@ pub trait MeshConnection {
         module_config: protobufs::LocalModuleConfig,
     ) -> Result<(), String> {
         if let Some(c) = module_config.audio {
+            trace!("Updating audio module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -438,6 +455,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.canned_message {
+            trace!("Updating canned message module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -450,6 +469,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.external_notification {
+            trace!("Updating external notification module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -462,6 +483,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.mqtt {
+            trace!("Updating MQTT module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -472,6 +495,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.neighbor_info {
+            trace!("Updating neighbor info module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -484,6 +509,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.range_test {
+            trace!("Updating range test module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -494,6 +521,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.remote_hardware {
+            trace!("Updating remote hardware module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -506,6 +535,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.serial {
+            trace!("Updating serial module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -516,6 +547,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.store_forward {
+            trace!("Updating store and forward module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -528,6 +561,8 @@ pub trait MeshConnection {
         }
 
         if let Some(c) = module_config.telemetry {
+            trace!("Updating telemetry module config {:?}", c);
+
             self.update_device_module_config(
                 device,
                 protobufs::ModuleConfig {
@@ -546,6 +581,8 @@ pub trait MeshConnection {
         channel_config: Vec<protobufs::Channel>,
     ) -> Result<(), String> {
         for channel in channel_config {
+            trace!("Updating channel config for channel {:?}", channel);
+
             self.update_device_channel(device, channel).await?;
         }
 

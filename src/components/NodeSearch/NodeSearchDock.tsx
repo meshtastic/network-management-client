@@ -13,7 +13,7 @@ import DefaultTooltip from "@components/DefaultTooltip";
 import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
 import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
 
-import { selectDevice, selectAllNodes } from "@features/device/selectors";
+import { selectDevice, selectAllNodesList } from "@features/device/selectors";
 import { selectMapUIState } from "@features/map/selectors";
 import { mapSliceActions } from "@features/map/slice";
 import { selectActiveNodeId } from "@features/ui/selectors";
@@ -89,7 +89,7 @@ const NodeSearchDock = () => {
   const dispatch = useDispatch();
   const { [MapIDs.MapView]: map } = useMap();
 
-  const nodes = useSelector(selectAllNodes());
+  const nodes = useSelector(selectAllNodesList());
   const device = useSelector(selectDevice());
   const activeNodeId = useSelector(selectActiveNodeId());
   const { searchDockExpanded } = useSelector(selectMapUIState());

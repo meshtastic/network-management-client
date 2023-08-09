@@ -135,7 +135,6 @@ fn main() {
             ipc::commands::connections::drop_device_connection,
             ipc::commands::connections::drop_all_device_connections,
             ipc::commands::graph::initialize_graph_state,
-            ipc::commands::graph::get_node_edges,
             ipc::commands::graph::run_algorithms,
             ipc::commands::mesh::send_text,
             ipc::commands::mesh::send_waypoint,

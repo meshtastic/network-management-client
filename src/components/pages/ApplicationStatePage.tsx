@@ -13,7 +13,7 @@ const ApplicationStatePage = () => {
   const { isDarkMode } = useIsDarkMode();
 
   const rootState = useSelector(selectRootState());
-  const backtrace = [t("applicationState.title")];
+  const backtrace = [t("sidebar.applicationState")];
 
   return (
     <div className="flex flex-col w-full h-screen bg-white dark:bg-gray-800">

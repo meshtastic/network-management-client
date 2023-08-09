@@ -6,7 +6,7 @@ import TimeAgo from "timeago-react";
 import type { app_device_MeshNode } from "@bindings/index";
 
 import TableLayout from "@components/Table/TableLayout";
-import { selectAllNodes } from "@features/device/selectors";
+import { selectAllNodesList } from "@features/device/selectors";
 import { getLastHeardTime } from "@utils/nodes";
 import { formatLocation } from "@utils/map";
 import { useTranslation } from "react-i18next";
@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 const ManageNodePage = () => {
   const { t, i18n } = useTranslation();
 
-  const nodes = useSelector(selectAllNodes());
+  const nodes = useSelector(selectAllNodesList());
 
   const columns = useMemo<ColumnDef<app_device_MeshNode, unknown>[]>(
     () => [

@@ -14,6 +14,7 @@ import RadioConfigPage from "@components/pages/config/RadioConfigPage";
 import ModuleConfigPage from "@app/components/pages/config/ModuleConfigPage";
 import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
 import ApplicationStatePage from "@components/pages/ApplicationStatePage";
+import ApplicationGraphPage from "@components/pages/ApplicationGraphPage";
 import ApplicationSettingsPage from "@components/pages/config/ApplicationSettingsPage";
 
 import { AppRoutes } from "@utils/routing";
@@ -44,9 +45,7 @@ const App = () => {
     <div className="flex flex-row relative">
       {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
 
-      {isOnboardMounted && (
-        <ConnectPage unmountSelf={handleOnboardUnmount} />
-      )}
+      {isOnboardMounted && <ConnectPage unmountSelf={handleOnboardUnmount} />}
 
       <Routes>
         <Route path="/" element={<AppWrapper />}>
@@ -74,6 +73,10 @@ const App = () => {
           <Route
             path={AppRoutes.APPLICATION_STATE}
             element={<ApplicationStatePage />}
+          />
+          <Route
+            path={AppRoutes.APPLICATION_GRAPH}
+            element={<ApplicationGraphPage />}
           />
 
           <Route

@@ -48,8 +48,10 @@
     "configureRadio": "Configure Radio",
     "configureModules": "Configure Modules",
     "configureChannels": "Configure Channels",
-    "settingsGroup": "Settings",
+    "debugGroup": "Debug",
     "applicationState": "Application State",
+    "applicationGraph": "Application Graph",
+    "settingsGroup": "Settings",
     "applicationSettings": "Application Settings",
     "expand": "Expand Sidebar",
     "collapse": "Collapse Sidebar"
@@ -478,6 +480,7 @@
     }
   },
   "applicationState": { "title": "Application State" },
+  "applicationGraph": { "title": "Application Graph" },
   "applicationSettings": {
     "title": "Settings",
     "saveChanges": "Save Changes",

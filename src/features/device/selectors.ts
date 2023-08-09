@@ -6,6 +6,7 @@ import type {
   app_protobufs_User,
   app_device_MeshChannel,
   app_device_NormalizedWaypoint,
+  app_device_NeighborInfoPacket,
 } from "@bindings/index";
 
 export const selectAvailablePorts =
@@ -34,20 +35,27 @@ export const selectDeviceConnected =
   (state: RootState): boolean =>
     !!state.devices.device;
 
-export const selectAllNodes =
+export const selectAllNodesList =
   () =>
   (state: RootState): app_device_MeshNode[] =>
     Object.values(state.devices.device?.nodes ?? []);
 
+export const selectAllNodesRecord =
+  () =>
+  (state: RootState): Record<number, app_device_MeshNode> =>
+    state.devices.device?.nodes ?? {};
+
 export const selectNodeById =
   (id: number | null) =>
   (state: RootState): app_device_MeshNode | null =>
-    id ? selectAllNodes()(state).find((n) => n.nodeNum === id) ?? null : null;
+    id
+      ? selectAllNodesList()(state).find((n) => n.nodeNum === id) ?? null
+      : null;
 
 export const selectAllUsersByNodeIds =
   () =>
   (state: RootState): Record<number, app_protobufs_User | null> =>
-    selectAllNodes()(state).reduce((accum, n) => {
+    selectAllNodesList()(state).reduce((accum, n) => {
       const { user } = n;
       return user ? { ...accum, [n.nodeNum]: user } : accum;
     }, [] as app_protobufs_User[]);
@@ -93,3 +101,8 @@ export const selectWaypointByLocation =
 
 export const selectAutoConnectPort = () => (state: RootState) =>
   state.devices.autoConnectPort;
+
+export const selectNeighbors =
+  () =>
+  (state: RootState): Record<number, app_device_NeighborInfoPacket> | null =>
+    state.devices.device?.neighbors ?? null;

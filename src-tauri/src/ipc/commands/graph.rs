@@ -2,7 +2,6 @@ use crate::analytics::algorithms::articulation_point::results::APResult;
 use crate::analytics::algorithms::diffusion_centrality::results::DiffCenResult;
 use crate::analytics::algorithms::stoer_wagner::results::MinCutResult;
 use crate::analytics::state::configuration::AlgorithmConfigFlags;
-use crate::device::NormalizedPosition;
 use crate::ipc;
 use crate::ipc::helpers::node_index_to_node_id;
 use crate::ipc::APMincutStringResults;
@@ -12,7 +11,6 @@ use crate::state;
 use log::{debug, error, trace};
 use serde::Deserialize;
 use serde::Serialize;
-use serde_json::json;
 use std::collections::HashMap;
 
 #[tauri::command]
@@ -28,106 +26,6 @@ pub async fn initialize_graph_state(
 pub struct GraphGeoJSONResult {
     pub nodes: geojson::FeatureCollection,
     pub edges: geojson::FeatureCollection,
-}
-
-pub fn generate_node_properties(num: u32) -> serde_json::Map<String, serde_json::Value> {
-    let mut properties = serde_json::Map::new();
-    properties.insert("num".into(), json!(num));
-    properties
-}
-
-pub fn generate_edge_properties(snr: f64) -> serde_json::Map<String, serde_json::Value> {
-    let mut properties = serde_json::Map::new();
-    properties.insert("snr".into(), json!(snr));
-    properties
-}
-
-#[tauri::command]
-pub async fn get_node_edges(
-    mesh_graph: tauri::State<'_, state::NetworkGraph>,
-    connected_devices: tauri::State<'_, state::MeshDevices>,
-) -> Result<GraphGeoJSONResult, CommandError> {
-    trace!("Called get_node_edges command");
-
-    let mut graph_guard = mesh_graph.inner.lock().await;
-    let _graph = graph_guard.as_mut().ok_or("Graph edges not initialized")?;
-
-    // Generate nodes and edges from connected devices
-    // * Note: this makes the false assumption that all nodes are fully connected
-
-    let devices_guard = connected_devices.inner.lock().await;
-    let device_edge_info = devices_guard.values().fold(vec![], |accum, d| {
-        let filtered_nodes = d
-            .nodes
-            .iter()
-            .filter_map(|(num, node)| {
-                let NormalizedPosition {
-                    latitude,
-                    longitude,
-                    ..
-                } = node.position_metrics.last()?;
-
-                if latitude == &0.0 || longitude == &0.0 {
-                    return None;
-                }
-
-                Some((
-                    *num,
-                    vec![longitude.clone() as f64, latitude.clone() as f64],
-                ))
-            })
-            .collect::<Vec<(u32, geojson::Position)>>();
-
-        let mut result = vec![];
-        result.extend(accum);
-        result.extend(filtered_nodes);
-        result
-    });
-
-    let mut node_features = vec![];
-    let mut edge_features = vec![];
-
-    for (index, (num, position)) in device_edge_info.iter().enumerate() {
-        node_features.push(geojson::Feature {
-            id: Some(geojson::feature::Id::String(num.to_string())),
-            geometry: Some(geojson::Geometry::new(geojson::Value::Point(
-                position.clone(),
-            ))),
-            properties: Some(generate_node_properties(num.to_owned())),
-            ..Default::default()
-        });
-
-        for (idx, (_n, pos)) in device_edge_info.iter().enumerate() {
-            edge_features.push(geojson::Feature {
-                id: Some(geojson::feature::Id::String(
-                    (index * device_edge_info.len() + idx).to_string(),
-                )),
-                geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
-                    position.clone(),
-                    pos.clone(),
-                ]))),
-                properties: Some(generate_edge_properties(1.)),
-                ..Default::default()
-            });
-        }
-    }
-
-    let nodes = geojson::FeatureCollection {
-        bbox: None,
-        foreign_members: None,
-        features: node_features,
-    };
-
-    let edges = geojson::FeatureCollection {
-        bbox: None,
-        foreign_members: None,
-        // features: vec![],
-        features: edge_features, // * enable to see fully-connected network
-    };
-
-    trace!("Found edges {:?}", edges);
-
-    Ok(GraphGeoJSONResult { nodes, edges })
 }
 
 #[tauri::command]

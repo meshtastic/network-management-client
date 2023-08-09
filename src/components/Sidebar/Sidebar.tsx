@@ -11,6 +11,7 @@ import {
   Map,
   MapPin,
   MessagesSquare,
+  Network,
   RadioTower,
   Router,
   Settings,
@@ -125,9 +126,9 @@ const Sidebar = () => {
           </SidebarTab>
         </div>
 
-        <div className="">
+        <div className="flex flex-col gap-6">
           <SidebarTab
-            title={t("sidebar.settingsGroup")}
+            title={t("sidebar.debugGroup")}
             isSidebarExpanded={isSidebarExpanded}
           >
             <SidebarIcon
@@ -139,6 +140,20 @@ const Sidebar = () => {
               <FileDigit strokeWidth={1.5} className="w-6 h-6" />
             </SidebarIcon>
 
+            <SidebarIcon
+              name={t("sidebar.applicationGraph")}
+              isActive={location.pathname === AppRoutes.APPLICATION_GRAPH}
+              isSidebarExpanded={isSidebarExpanded}
+              onClick={() => navigateTo(AppRoutes.APPLICATION_GRAPH)}
+            >
+              <Network strokeWidth={1.5} className="w-6 h-6" />
+            </SidebarIcon>
+          </SidebarTab>
+
+          <SidebarTab
+            title={t("sidebar.settingsGroup")}
+            isSidebarExpanded={isSidebarExpanded}
+          >
             <SidebarIcon
               name={t("sidebar.applicationSettings")}
               isActive={location.pathname === AppRoutes.APPLICATION_SETTINGS}

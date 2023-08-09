@@ -65,6 +65,7 @@
     "react-table": "^7.8.0",
     "react-tsparticles": "^2.7.1",
     "react-use": "^17.4.0",
+    "reagraph": "^4.12.0",
     "redux-logger": "^3.0.6",
     "redux-saga": "^1.2.1",
     "tailwindcss-radix": "^2.8.0",

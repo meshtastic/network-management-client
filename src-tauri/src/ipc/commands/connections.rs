@@ -3,6 +3,7 @@ use crate::device::connections;
 use crate::device::connections::serial::SerialConnection;
 use crate::device::connections::MeshConnection;
 use crate::device::SerialDeviceStatus;
+use crate::graph::handlers::spawn_graph_node_timeout_handler;
 use crate::ipc::helpers::initialize_serial_connection_handlers;
 use crate::ipc::helpers::spawn_configuration_timeout_handler;
 use crate::ipc::helpers::spawn_decoded_handler;
@@ -11,6 +12,7 @@ use crate::state;
 use crate::state::DeviceKey;
 
 use log::debug;
+use log::error;
 use std::time::Duration;
 
 #[tauri::command]
@@ -79,6 +81,13 @@ pub async fn connect_to_tcp_port(
         address
     );
 
+    // Initialize state ARCs
+    let handle = app_handle.clone();
+    let mesh_devices_arc = mesh_devices.inner.clone();
+    let radio_connections_arc = radio_connections.inner.clone();
+    let graph_arc = mesh_graph.inner.clone();
+
+    // Initialize connection and device structs
     let mut connection = connections::tcp::TcpConnection::new();
     let mut device = device::MeshDevice::new();
 
@@ -93,6 +102,13 @@ pub async fn connect_to_tcp_port(
         }
     };
 
+    // Start graph timeout handler
+    if let Some(token) = connection.get_cancellation_token() {
+        spawn_graph_node_timeout_handler(token, graph_arc.clone());
+    } else {
+        error!("Graph timeout handler not started because of missing cancellation token");
+    }
+
     // Get copy of decoded_listener by resubscribing
     let decoded_listener = connection
         .on_decoded_packet
@@ -102,11 +118,6 @@ pub async fn connect_to_tcp_port(
 
     device.set_status(SerialDeviceStatus::Configuring);
     connection.configure(device.config_id).await?;
-
-    let handle = app_handle.clone();
-    let mesh_devices_arc = mesh_devices.inner.clone();
-    let radio_connections_arc = radio_connections.inner.clone();
-    let graph_arc = mesh_graph.inner.clone();
 
     // Save device into Tauri state
     {

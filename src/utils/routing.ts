@@ -7,5 +7,6 @@ export enum AppRoutes {
   CONFIGURE_MODULES = "/config/modules",
   CONFIGURE_CHANNELS = "/config/channels",
   APPLICATION_STATE = "/app-state",
+  APPLICATION_GRAPH = "/app-graph",
   APPLICATION_SETTINGS = "/settings",
 }

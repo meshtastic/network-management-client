@@ -4,7 +4,9 @@ use app::protobufs;
 use petgraph::stable_graph::{EdgeIndex, NodeIndex};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::future::Future;
 use std::time::Duration;
+use tokio_util::time::delay_queue::Expired;
 use tokio_util::time::{delay_queue, DelayQueue};
 
 use self::helpers::{
@@ -369,6 +371,32 @@ impl MeshDevice {
     }
 }
 
+#[derive(Debug)]
+pub struct TimeoutQueue<T> {
+    pub queue: DelayQueue<T>,
+    pub key_map: HashMap<T, delay_queue::Key>,
+}
+
+impl<T: std::marker::Unpin> Future for TimeoutQueue<T> {
+    type Output = Option<Expired<T>>;
+
+    fn poll(
+        self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Self::Output> {
+        self.get_mut().queue.poll_expired(cx)
+    }
+}
+
+impl<T> TimeoutQueue<T> {
+    pub fn new() -> Self {
+        Self {
+            queue: DelayQueue::new(),
+            key_map: HashMap::new(),
+        }
+    }
+}
+
 /*
  * Just as the MeshDevice struct contains all the information about a device (in raw packet form)
  * the MeshGraph struct contains the network info in raw graph form. This is synchronized with
@@ -380,11 +408,8 @@ impl MeshDevice {
 pub struct MeshGraph {
     pub graph: Graph,
 
-    node_expirations: DelayQueue<NodeIndex>,
-    node_key_map: HashMap<NodeIndex, delay_queue::Key>,
-
-    edge_expirations: DelayQueue<EdgeIndex>,
-    edge_key_map: HashMap<EdgeIndex, delay_queue::Key>,
+    pub node_timeout_queue: TimeoutQueue<NodeIndex>,
+    pub edge_timeout_queue: TimeoutQueue<EdgeIndex>,
 }
 
 impl MeshGraph {
@@ -392,11 +417,8 @@ impl MeshGraph {
         Self {
             graph: Graph::new(),
 
-            node_expirations: DelayQueue::new(),
-            edge_key_map: HashMap::new(),
-
-            edge_expirations: DelayQueue::new(),
-            node_key_map: HashMap::new(),
+            node_timeout_queue: TimeoutQueue::new(),
+            edge_timeout_queue: TimeoutQueue::new(),
         }
     }
 
@@ -408,14 +430,23 @@ impl MeshGraph {
     ) {
         if is_node_in_graph {
             let timeout_key = self
-                .node_key_map
+                .node_timeout_queue
+                .key_map
                 .get(&node_index)
                 .expect("Timeout key not found for node in graph");
 
-            self.node_expirations.reset(timeout_key, timeout_duration);
+            self.node_timeout_queue
+                .queue
+                .reset(timeout_key, timeout_duration);
         } else {
-            let inserted_node_key = self.node_expirations.insert(node_index, timeout_duration);
-            self.node_key_map.insert(node_index, inserted_node_key);
+            let inserted_node_key = self
+                .node_timeout_queue
+                .queue
+                .insert(node_index, timeout_duration);
+
+            self.node_timeout_queue
+                .key_map
+                .insert(node_index, inserted_node_key);
         }
     }
 
@@ -440,14 +471,23 @@ impl MeshGraph {
     ) {
         if is_edge_in_graph {
             let timeout_key = self
-                .edge_key_map
+                .edge_timeout_queue
+                .key_map
                 .get(&edge_index)
                 .expect("Timeout key not found for edge in graph");
 
-            self.edge_expirations.reset(timeout_key, timeout_duration);
+            self.edge_timeout_queue
+                .queue
+                .reset(timeout_key, timeout_duration);
         } else {
-            let inserted_edge_key = self.edge_expirations.insert(edge_index, timeout_duration);
-            self.edge_key_map.insert(edge_index, inserted_edge_key);
+            let inserted_edge_key = self
+                .edge_timeout_queue
+                .queue
+                .insert(edge_index, timeout_duration);
+
+            self.edge_timeout_queue
+                .key_map
+                .insert(edge_index, inserted_edge_key);
         }
     }
 

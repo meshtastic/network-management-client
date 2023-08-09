@@ -85,6 +85,10 @@ impl TcpConnection {
         TcpConnection::default()
     }
 
+    pub fn get_cancellation_token(&self) -> Option<CancellationToken> {
+        self.cancellation_token.clone()
+    }
+
     pub async fn write_to_radio(
         write_stream: &mut tokio::net::tcp::OwnedWriteHalf,
         data: Vec<u8>,
