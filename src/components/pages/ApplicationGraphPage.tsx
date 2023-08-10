@@ -5,6 +5,7 @@ import { GraphCanvas, GraphNode, GraphEdge } from "reagraph";
 
 import NavigationBacktrace from "@components/NavigationBacktrace";
 import {
+  selectAllNodesRecord,
   selectAllUsersByNodeIds,
   selectNeighbors,
 } from "@features/device/selectors";
@@ -14,16 +15,28 @@ const ApplicationGraphPage = () => {
 
   const neighbors = useSelector(selectNeighbors());
   const users = useSelector(selectAllUsersByNodeIds());
+  const nodes = useSelector(selectAllNodesRecord());
 
   const backtrace = [t("sidebar.applicationGraph")];
 
   const graphNodes: GraphNode[] = useMemo(
     () =>
       neighbors
-        ? Object.entries(neighbors).map(([id, _packet]) => ({
-            id,
-            label: users?.[parseInt(id) ?? 0]?.longName ?? `Unknown node ${id}`,
-          }))
+        ? Object.entries(neighbors).map(([id, _packet]) => {
+            const longName = users?.[parseInt(id) ?? 0]?.longName;
+            const position = nodes?.[parseInt(id) ?? 0]?.positionMetrics.at(-1);
+
+            const latitude = position?.latitude.toFixed(4) ?? 0;
+            const longitude = position?.longitude.toFixed(4) ?? 0;
+
+            return {
+              id,
+              label:
+                longName && position
+                  ? `${longName}\n(${latitude}, ${longitude})`
+                  : `Unknown node ${id}`,
+            };
+          })
         : [],
     [neighbors, users]
   );
@@ -38,7 +51,6 @@ const ApplicationGraphPage = () => {
                 id: `${id}-${n.nodeId}`,
                 source: id,
                 target: n.nodeId.toString(),
-                label: `Hello ${id}-${n.nodeId}!`,
                 labelVisible: true,
               },
               {

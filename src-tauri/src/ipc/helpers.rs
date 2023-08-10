@@ -1,8 +1,8 @@
-// use std::collections::HashMap;
 use std::time::Duration;
 
 use app::protobufs;
 use log::{debug, error, trace, warn};
+use serde_json::json;
 use tauri::api::notification::Notification;
 use tokio::sync::broadcast;
 
@@ -23,16 +23,21 @@ pub fn generate_graph_nodes_geojson(graph: &mut device::MeshGraph) -> geojson::F
         .graph
         .get_nodes()
         .iter()
-        .filter(|n| n.longitude != 0.0 && n.latitude != 0.0)
-        .map(|n| geojson::Feature {
-            id: Some(geojson::feature::Id::String(n.num.to_string())),
-            properties: None,
-            geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
-                n.longitude,
-                n.latitude,
-                n.altitude,
-            ]))),
-            ..Default::default()
+        .filter(|n| n.longitude != 0.0 || n.latitude != 0.0) // Don't want (0,0)
+        .map(|n| {
+            let mut node_properties = serde_json::Map::new();
+            node_properties.insert("num".to_string(), json!(n.num));
+
+            geojson::Feature {
+                id: Some(geojson::feature::Id::String(n.num.to_string())),
+                properties: Some(node_properties),
+                geometry: Some(geojson::Geometry::new(geojson::Value::Point(vec![
+                    n.longitude,
+                    n.latitude,
+                    n.altitude,
+                ]))),
+                ..Default::default()
+            }
         })
         .collect();
 
@@ -59,7 +64,8 @@ pub fn generate_graph_edges_geojson(graph: &mut device::MeshGraph) -> geojson::F
                 .get_node(e.v)
                 .expect("Index from edge should exist");
 
-            u.longitude != 0.0 && u.latitude != 0.0 && v.latitude != 0.0 && v.longitude != 0.0
+            // Don't want (0,0) from either node
+            (u.longitude != 0.0 || u.latitude != 0.0) && (v.latitude != 0.0 || v.longitude != 0.0)
         })
         .map(|e| {
             let u = graph
@@ -341,6 +347,8 @@ pub fn spawn_decoded_handler(
                         graph.update_from_position(position_packet);
                     }
                 }
+
+                trace!("Dispatching updated graph: {:#?}", graph.graph);
 
                 match events::dispatch_updated_edges(&handle, graph) {
                     Ok(_) => (),

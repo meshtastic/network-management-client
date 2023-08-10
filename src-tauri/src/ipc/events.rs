@@ -36,7 +36,7 @@ pub fn dispatch_updated_edges(
     // * This is temporarily disabled until we can figure out how to get the graph to update in-place
     handle.emit_all::<GraphGeoJSONResult>("graph_update", GraphGeoJSONResult { nodes, edges })?;
 
-    debug!("Dispatched updated edges");
+    trace!("Dispatched updated edges");
 
     Ok(())
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { GeoJsonLayer, PickingInfo } from "deck.gl/typed";
@@ -40,11 +40,7 @@ import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import WaypointMenu from "@components/Waypoints/WaypointMenu";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
-import {
-  selectAllNodesRecord,
-  selectAllWaypoints,
-  selectNeighbors,
-} from "@features/device/selectors";
+import { selectAllWaypoints } from "@features/device/selectors";
 import { selectMapState } from "@features/map/selectors";
 import { mapSliceActions } from "@features/map/slice";
 import {
@@ -86,8 +82,6 @@ export const MapView = () => {
 
   const waypoints = useSelector(selectAllWaypoints());
   const activeWaypoint = useSelector(selectActiveWaypoint());
-  const neighbors = useSelector(selectNeighbors());
-  const nodes = useSelector(selectAllNodesRecord());
 
   const [nodeHoverInfo, setNodeHoverInfo] = useState<PickingInfo | null>(null);
   const [edgeHoverInfo, setEdgeHoverInfo] = useState<PickingInfo | null>(null);
@@ -119,94 +113,6 @@ export const MapView = () => {
     },
     [activeNodeId, dispatch]
   );
-
-  useEffect(() => {
-    const nodesFeature: GeoJSON.FeatureCollection = {
-      type: "FeatureCollection",
-      features: neighbors
-        ? Object.entries(neighbors).reduce<GeoJSON.Feature[]>(
-            (accum, [id, _packet]) => {
-              const node = nodes?.[parseInt(id) ?? 0];
-              const lastPosition = node?.positionMetrics.at(-1);
-
-              if (!lastPosition) return accum;
-              if (!lastPosition.latitude || !lastPosition.longitude)
-                return accum;
-
-              const feature: GeoJSON.Feature = {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [
-                    lastPosition?.longitude ?? 0,
-                    lastPosition?.latitude ?? 0,
-                  ],
-                },
-                properties: {
-                  num: node.nodeNum,
-                },
-              };
-
-              return [...accum, feature];
-            },
-            []
-          )
-        : [],
-    };
-
-    const edgesFeature: GeoJSON.FeatureCollection = {
-      type: "FeatureCollection",
-      features: neighbors
-        ? Object.entries(neighbors).reduce<GeoJSON.Feature[]>(
-            (accum, [id, packet]) => {
-              const packetNode = nodes?.[parseInt(id) ?? 0];
-              const lastPacketNodePosition = packetNode?.positionMetrics.at(-1);
-
-              if (!lastPacketNodePosition) return accum;
-              if (
-                !lastPacketNodePosition.latitude ||
-                !lastPacketNodePosition.longitude
-              )
-                return accum;
-
-              const neighborEdges = packet.data.neighbors.map<GeoJSON.Feature>(
-                (n) => {
-                  const neighborNode = nodes?.[n.nodeId];
-                  const lastNeighborNodePosition =
-                    neighborNode?.positionMetrics.at(-1);
-
-                  return {
-                    type: "Feature",
-                    geometry: {
-                      type: "LineString",
-                      coordinates: [
-                        [
-                          lastPacketNodePosition?.longitude ?? 0,
-                          lastPacketNodePosition?.latitude ?? 0,
-                        ],
-                        [
-                          lastNeighborNodePosition?.longitude ?? 0,
-                          lastNeighborNodePosition?.latitude ?? 0,
-                        ],
-                      ],
-                    },
-                    properties: {
-                      snr: n.snr,
-                    },
-                  };
-                }
-              );
-
-              return [...accum, ...neighborEdges];
-            },
-            []
-          )
-        : [],
-    };
-
-    dispatch(mapSliceActions.setNodesFeatureCollection(nodesFeature));
-    dispatch(mapSliceActions.setEdgesFeatureCollection(edgesFeature));
-  }, [nodes, neighbors]);
 
   const layers = useMemo(
     () => [
@@ -382,8 +288,8 @@ export const MapView = () => {
 
           {/* Visualize all waypoints */}
           {waypoints
-            // Filter invalid locations (falsy lat or long, includes 0,0)
-            .filter((w) => !!w.latitude && !!w.longitude)
+            // Filter invalid locations (lat and long both being 0)
+            .filter((w) => !!w.latitude || !!w.longitude)
             .map((w) => (
               <MeshWaypoint
                 key={w.id}

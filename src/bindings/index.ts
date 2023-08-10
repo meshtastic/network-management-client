@@ -78,6 +78,8 @@ export type app_protobufs_module_config_ExternalNotificationConfig = { enabled: 
 
 export type app_device_LastHeardMetadata = { timestamp: number; snr: number; channel: number }
 
+export type app_device_ChannelMessageState = "pending" | "acknowledged" | { error: string }
+
 /**
  * 
  * Configuration
@@ -132,8 +134,6 @@ export type app_protobufs_NodeRemoteHardwarePin = { nodeNum: number; pin: app_pr
  */
 export type app_protobufs_NodeInfo = { num: number; user: app_protobufs_User | null; position: app_protobufs_Position | null; snr: number; lastHeard: number; deviceMetrics: app_protobufs_DeviceMetrics | null; channel: number }
 
-export type app_device_ChannelMessageState = "pending" | "acknowledged" | { error: string }
-
 export type app_protobufs_config_BluetoothConfig = { enabled: boolean; mode: number; fixedPin: number }
 
 /**
@@ -150,6 +150,8 @@ export type app_protobufs_LocalConfig = { device: app_protobufs_config_DeviceCon
  */
 export type app_protobufs_RtttlConfig = { ringtone: string }
 
+export type app_device_WaypointPacket = { packet: app_protobufs_MeshPacket; data: app_device_NormalizedWaypoint }
+
 /**
  * 
  * A pair of a channel number, mode and the (sharable) settings for that channel
@@ -161,8 +163,6 @@ export type app_protobufs_Channel = { index: number; settings: app_protobufs_Cha
  * The on-disk saved channels
  */
 export type app_protobufs_ChannelFile = { channels: app_protobufs_Channel[]; version: number }
-
-export type app_device_NormalizedWaypoint = { id: number; latitude: number; longitude: number; expire: number; lockedTo: number; name: string; description: string; icon: number }
 
 /**
  * 
@@ -265,8 +265,6 @@ export type app_protobufs_config_PowerConfig = { isPowerSaving: boolean; onBatte
  * Payload Variant
  */
 export type app_protobufs_config_PayloadVariant = { device: app_protobufs_config_DeviceConfig } | { position: app_protobufs_config_PositionConfig } | { power: app_protobufs_config_PowerConfig } | { network: app_protobufs_config_NetworkConfig } | { display: app_protobufs_config_DisplayConfig } | { lora: app_protobufs_config_LoRaConfig } | { bluetooth: app_protobufs_config_BluetoothConfig }
-
-export type app_device_ChannelMessageWithState = { payload: app_device_ChannelMessagePayload; state: app_device_ChannelMessageState }
 
 /**
  * 
@@ -411,6 +409,10 @@ export type app_protobufs_XModem = { control: number; seq: number; crc16: number
  */
 export type app_protobufs_log_record_Level = "unset" | "critical" | "error" | "warning" | "info" | "debug" | "trace"
 
+export type app_device_NormalizedWaypoint = { id: number; latitude: number; longitude: number; expire: number; lockedTo: number; name: string; description: string; icon: number }
+
+export type app_device_MeshDevice = { configId: number; ready: boolean; status: app_device_SerialDeviceStatus; channels: { [key: number]: app_device_MeshChannel }; config: app_protobufs_LocalConfig; moduleConfig: app_protobufs_LocalModuleConfig; myNodeInfo: app_protobufs_MyNodeInfo; nodes: { [key: number]: app_device_MeshNode }; regionUnset: boolean; deviceMetrics: app_protobufs_DeviceMetrics; waypoints: { [key: number]: app_device_NormalizedWaypoint }; neighbors: { [key: number]: app_device_NeighborInfoPacket }; configInProgress: boolean }
+
 /**
  * 
  * Canned message module configuration.
@@ -422,8 +424,6 @@ export type app_protobufs_CannedMessageModuleConfig = { messages: string }
  * TODO: REPLACE
  */
 export type app_protobufs_StoreAndForward = { rr: number; variant: app_protobufs_store_and_forward_Variant | null }
-
-export type app_device_WaypointPacket = { packet: app_protobufs_MeshPacket; data: app_device_NormalizedWaypoint }
 
 /**
  * 
@@ -481,8 +481,6 @@ export type app_protobufs_Data = { portnum: number; payload: number[]; wantRespo
  * The actual service envelope payload or text for mqtt pub / sub
  */
 export type app_protobufs_mqtt_client_proxy_message_PayloadVariant = { data: number[] } | { text: string }
-
-export type app_device_MeshDevice = { configId: number; ready: boolean; status: app_device_SerialDeviceStatus; channels: { [key: number]: app_device_MeshChannel }; config: app_protobufs_LocalConfig; moduleConfig: app_protobufs_LocalModuleConfig; myNodeInfo: app_protobufs_MyNodeInfo; nodes: { [key: number]: app_device_MeshNode }; regionUnset: boolean; deviceMetrics: app_protobufs_DeviceMetrics; waypoints: { [key: number]: app_device_NormalizedWaypoint }; neighbors: { [key: number]: app_device_NeighborInfoPacket }; configInProgress: boolean }
 
 /**
  * 
@@ -592,6 +590,8 @@ export type app_protobufs_ToRadio = { payloadVariant: app_protobufs_to_radio_Pay
 
 export type app_device_TelemetryPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_Telemetry }
 
+export type app_device_ChannelMessageWithState = { payload: app_device_ChannelMessagePayload; state: app_device_ChannelMessageState }
+
 export type app_protobufs_Config = { payloadVariant: app_protobufs_config_PayloadVariant | null }
 
 /**
@@ -599,8 +599,6 @@ export type app_protobufs_Config = { payloadVariant: app_protobufs_config_Payloa
  * Types of Measurements the telemetry module is equipped to handle
  */
 export type app_protobufs_Telemetry = { time: number; variant: app_protobufs_telemetry_Variant | null }
-
-export type app_device_ChannelMessagePayload = ({ type: "text" } & app_device_TextPacket) | ({ type: "waypoint" } & app_device_WaypointPacket)
 
 /**
  * 
@@ -624,6 +622,8 @@ export type app_ipc_APMincutStringResults = { apResult: number[]; mincutResult: 
  */
 export type app_protobufs_RemoteHardwarePin = { gpioPin: number; name: string; type: number }
 
+export type app_device_TextPacket = { packet: app_protobufs_MeshPacket; data: string }
+
 export type app_ipc_ConfigurationStatus = { deviceKey: string; successful: boolean; message: string | null }
 
 export type app_device_UserPacket = { packet: app_protobufs_MeshPacket; data: app_protobufs_User }
@@ -633,8 +633,6 @@ export type app_device_UserPacket = { packet: app_protobufs_MeshPacket; data: ap
  * Serial Config
  */
 export type app_protobufs_module_config_SerialConfig = { enabled: boolean; echo: boolean; rxd: number; txd: number; baud: number; timeout: number; mode: number; overrideConsoleSerialPort: boolean }
-
-export type app_device_TextPacket = { packet: app_protobufs_MeshPacket; data: string }
 
 export type app_protobufs_config_network_config_AddressMode = "dhcp" | "static"
 
@@ -777,6 +775,8 @@ export type app_protobufs_Constants = "zero" | "dataPayloadLen"
  * Log levels, chosen to match python logging conventions.
  */
 export type app_protobufs_from_radio_PayloadVariant = { packet: app_protobufs_MeshPacket } | { myInfo: app_protobufs_MyNodeInfo } | { nodeInfo: app_protobufs_NodeInfo } | { config: app_protobufs_Config } | { logRecord: app_protobufs_LogRecord } | { configCompleteId: number } | { rebooted: boolean } | { moduleConfig: app_protobufs_ModuleConfig } | { channel: app_protobufs_Channel } | { queueStatus: app_protobufs_QueueStatus } | { xmodemPacket: app_protobufs_XModem } | { metadata: app_protobufs_DeviceMetadata } | { mqttClientProxyMessage: app_protobufs_MqttClientProxyMessage }
+
+export type app_device_ChannelMessagePayload = ({ type: "text" } & app_device_TextPacket) | ({ type: "waypoint" } & app_device_WaypointPacket)
 
 export type app_device_SerialDeviceStatus = "restarting" | "disconnected" | "connecting" | "reconnecting" | "connected" | "configuring" | "configured"
 

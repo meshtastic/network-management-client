@@ -52,7 +52,7 @@ const NodeSearchResult = ({
           </span>
         </p>
         <p className="text-sm font-light">
-          {!!node.positionMetrics.at(-1)?.latitude &&
+          {!!node.positionMetrics.at(-1)?.latitude ||
           !!node.positionMetrics.at(-1)?.longitude
             ? `${formatLocation(
                 node.positionMetrics.at(-1)?.latitude ?? 0

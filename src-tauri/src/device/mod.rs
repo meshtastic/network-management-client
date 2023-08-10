@@ -243,6 +243,7 @@ pub struct NeighborInfoPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::NeighborInfo,
 }
+
 #[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
 #[serde(rename_all = "camelCase")]
 pub struct TextPacket {

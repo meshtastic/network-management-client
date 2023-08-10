@@ -47,16 +47,16 @@ const ManageNodePage = () => {
         id: t("manageNodes.latitude"),
         accessorFn: (n) => {
           const latitude = n.positionMetrics.at(-1)?.latitude;
-          if (!latitude) return t("manageNodes.noGpsLock");
-          return formatLocation(latitude);
+          // if (!latitude) return t("manageNodes.noGpsLock"); // TODO only state no lock if (0,0
+          return formatLocation(latitude ?? 0);
         },
       },
       {
         id: t("manageNodes.longitude"),
         accessorFn: (n) => {
           const longitude = n.positionMetrics.at(-1)?.longitude;
-          if (!longitude) return t("manageNodes.noGpsLock");
-          return formatLocation(longitude);
+          // if (!longitude) return t("manageNodes.noGpsLock"); // TODO only state no lock if (0,0)
+          return formatLocation(longitude ?? 0);
         },
       },
       {
