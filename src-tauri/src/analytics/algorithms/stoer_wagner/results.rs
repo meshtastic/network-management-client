@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use crate::analytics::data_structures::cut::Cut;
-use crate::graph::edge::Edge;
+use crate::graph::edge::GraphEdge;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -13,7 +13,7 @@ pub enum SWCutResult {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum MinCutResult {
-    Success(Vec<Edge>),
+    Success(Vec<GraphEdge>),
     Error(String),
     Empty(bool),
 }

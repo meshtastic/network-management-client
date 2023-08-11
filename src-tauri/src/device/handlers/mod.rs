@@ -3,6 +3,7 @@ use std::{error::Error, fmt};
 use super::{NeighborInfoPacket, PositionPacket};
 
 mod from_radio;
+pub mod graph;
 mod mesh_packet;
 
 #[derive(Clone, Debug, Default)]

@@ -1,31 +1,39 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Edge {
-    pub u: petgraph::graph::NodeIndex,
-    pub v: petgraph::graph::NodeIndex,
+pub struct GraphEdge {
+    pub source: petgraph::graph::NodeIndex,
+    pub target: petgraph::graph::NodeIndex,
     pub weight: f64,
 }
 
 // Add hash operator to Edge
-impl std::hash::Hash for Edge {
+impl std::hash::Hash for GraphEdge {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.u.hash(state);
-        self.v.hash(state);
+        self.source.hash(state);
+        self.target.hash(state);
     }
 }
 
-impl Edge {
-    pub fn new(u: petgraph::graph::NodeIndex, v: petgraph::graph::NodeIndex, weight: f64) -> Edge {
-        Edge { u, v, weight }
+impl GraphEdge {
+    pub fn new(
+        source: petgraph::graph::NodeIndex,
+        target: petgraph::graph::NodeIndex,
+        weight: f64,
+    ) -> GraphEdge {
+        GraphEdge {
+            source,
+            target,
+            weight,
+        }
     }
 
-    pub fn get_u(&self) -> petgraph::graph::NodeIndex {
-        self.u
+    pub fn get_source(&self) -> petgraph::graph::NodeIndex {
+        self.source
     }
 
-    pub fn get_v(&self) -> petgraph::graph::NodeIndex {
-        self.v
+    pub fn get_target(&self) -> petgraph::graph::NodeIndex {
+        self.target
     }
 
     pub fn get_weight(&self) -> f64 {
@@ -34,22 +42,22 @@ impl Edge {
 }
 
 /// Add clone trait to Edge
-impl Clone for Edge {
+impl Clone for GraphEdge {
     fn clone(&self) -> Self {
-        Edge {
-            u: self.u,
-            v: self.v,
+        GraphEdge {
+            source: self.source,
+            target: self.target,
             weight: self.weight,
         }
     }
 }
 
 /// Add eq operator to Edge
-impl std::cmp::Eq for Edge {}
+impl std::cmp::Eq for GraphEdge {}
 
 /// Add equality operator to Edge
-impl PartialEq for Edge {
+impl PartialEq for GraphEdge {
     fn eq(&self, other: &Self) -> bool {
-        self.u == other.u && self.v == other.v
+        self.source == other.source && self.target == other.target
     }
 }

@@ -1,5 +1,5 @@
 use crate::{
-    device,
+    device::{self, mesh_graph::MeshGraph},
     ipc::{
         commands::graph::GraphGeoJSONResult,
         helpers::{generate_graph_edges_geojson, generate_graph_nodes_geojson},
@@ -26,7 +26,7 @@ pub fn dispatch_updated_device(
 
 pub fn dispatch_updated_edges(
     handle: &tauri::AppHandle,
-    graph: &mut device::MeshGraph,
+    graph: &mut MeshGraph,
 ) -> tauri::Result<()> {
     debug!("Dispatching updated edges");
 

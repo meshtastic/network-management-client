@@ -3,7 +3,6 @@ use crate::device::connections;
 use crate::device::connections::serial::SerialConnection;
 use crate::device::connections::MeshConnection;
 use crate::device::SerialDeviceStatus;
-use crate::graph::handlers::spawn_graph_node_timeout_handler;
 use crate::ipc::helpers::initialize_serial_connection_handlers;
 use crate::ipc::helpers::spawn_configuration_timeout_handler;
 use crate::ipc::helpers::spawn_decoded_handler;
@@ -12,7 +11,6 @@ use crate::state;
 use crate::state::DeviceKey;
 
 use log::debug;
-use log::error;
 use std::time::Duration;
 
 #[tauri::command]
@@ -94,20 +92,16 @@ pub async fn connect_to_tcp_port(
     device.set_status(SerialDeviceStatus::Connecting);
 
     // Ensure TCP connection is established
-    match connection.connect(address.clone()).await {
+    match connection
+        .connect(mesh_graph.inner.clone(), address.clone())
+        .await
+    {
         Ok(_) => (),
         Err(e) => {
             device.set_status(SerialDeviceStatus::Disconnected);
             return Err(e.into());
         }
     };
-
-    // Start graph timeout handler
-    if let Some(token) = connection.get_cancellation_token() {
-        spawn_graph_node_timeout_handler(token, graph_arc.clone());
-    } else {
-        error!("Graph timeout handler not started because of missing cancellation token");
-    }
 
     // Get copy of decoded_listener by resubscribing
     let decoded_listener = connection

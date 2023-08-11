@@ -2,13 +2,13 @@
 
 use std::collections::HashMap;
 
-use crate::{graph::node::Node, state::NodeKey};
+use crate::{graph::node::GraphNode, state::NodeKey};
 
 use super::stoer_wagner_ds::StoerWagnerGraph;
 
 #[derive(Clone, Debug)]
 pub struct Vertex {
-    pub node: Node,
+    pub node: GraphNode,
     pub weight: f64,
 }
 
@@ -28,7 +28,7 @@ impl BinaryHeap {
         };
 
         for node_id in G.uncontracted.clone() {
-            let node_idx = G.graph.get_node_idx(&node_id);
+            let node_idx = G.graph.get_node_idx(&node_id).unwrap().to_owned();
             let node = G
                 .graph
                 .get_node(node_idx)

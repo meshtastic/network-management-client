@@ -1,6 +1,6 @@
 use crate::{
     analytics,
-    device::{self, connections::MeshConnection},
+    device::{self, connections::MeshConnection, mesh_graph},
 };
 use std::{collections::HashMap, sync::Arc};
 use tauri::async_runtime;
@@ -22,7 +22,7 @@ pub struct RadioConnections {
     pub inner: RadioConnectionsInner,
 }
 
-pub type NetworkGraphInner = Arc<async_runtime::Mutex<Option<device::MeshGraph>>>;
+pub type NetworkGraphInner = Arc<async_runtime::Mutex<Option<mesh_graph::MeshGraph>>>;
 
 #[derive(Debug)]
 pub struct NetworkGraph {

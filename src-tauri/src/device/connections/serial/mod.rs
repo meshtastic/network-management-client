@@ -11,6 +11,11 @@ use tauri::async_runtime;
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
 
+use crate::{
+    device::handlers::graph::spawn_graph_update_handler,
+    state::{NetworkGraph, NetworkGraphInner},
+};
+
 use super::{helpers::format_data_packet, MeshConnection};
 
 #[derive(Debug, Default)]
@@ -20,6 +25,7 @@ pub struct SerialConnection {
 
     serial_read_handle: Option<async_runtime::JoinHandle<()>>,
     serial_write_handle: Option<async_runtime::JoinHandle<()>>,
+    graph_update_handle: Option<async_runtime::JoinHandle<()>>,
     message_processing_handle: Option<async_runtime::JoinHandle<()>>,
 
     cancellation_token: Option<CancellationToken>,
@@ -120,6 +126,7 @@ impl SerialConnection {
     pub async fn connect(
         &mut self,
         app_handle: tauri::AppHandle,
+        graph_arc: NetworkGraphInner,
         port_name: String,
         baud_rate: u32,
         dtr: bool,
@@ -186,7 +193,9 @@ impl SerialConnection {
             decoded_packet_tx,
         ));
 
-        self.cancellation_token = Some(cancellation_token);
+        self.cancellation_token = Some(cancellation_token.clone());
+
+        self.graph_update_handle = Some(spawn_graph_update_handler(graph_arc, cancellation_token));
 
         // Sleep for device stability (from web client, not positive we need this)
         tokio::time::sleep(Duration::from_millis(200)).await;

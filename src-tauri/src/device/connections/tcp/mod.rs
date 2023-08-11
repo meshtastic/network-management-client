@@ -9,7 +9,12 @@ use tauri::async_runtime;
 use tokio::{io::AsyncWriteExt, sync::broadcast};
 use tokio_util::sync::CancellationToken;
 
-use crate::device::connections::helpers::format_data_packet;
+use crate::{
+    device::{
+        connections::helpers::format_data_packet, handlers::graph::spawn_graph_update_handler,
+    },
+    state::NetworkGraphInner,
+};
 
 use super::MeshConnection;
 
@@ -20,6 +25,7 @@ pub struct TcpConnection {
 
     serial_read_handle: Option<async_runtime::JoinHandle<()>>,
     serial_write_handle: Option<async_runtime::JoinHandle<()>>,
+    graph_update_handle: Option<async_runtime::JoinHandle<()>>,
     message_processing_handle: Option<async_runtime::JoinHandle<()>>,
 
     cancellation_token: Option<CancellationToken>,
@@ -85,10 +91,6 @@ impl TcpConnection {
         TcpConnection::default()
     }
 
-    pub fn get_cancellation_token(&self) -> Option<CancellationToken> {
-        self.cancellation_token.clone()
-    }
-
     pub async fn write_to_radio(
         write_stream: &mut tokio::net::tcp::OwnedWriteHalf,
         data: Vec<u8>,
@@ -105,7 +107,11 @@ impl TcpConnection {
     }
 
     // TODO need a way to kill timed out connections
-    pub async fn connect(&mut self, address: String) -> Result<(), String> {
+    pub async fn connect(
+        &mut self,
+        graph_arc: NetworkGraphInner,
+        address: String,
+    ) -> Result<(), String> {
         // Create TCP connection
 
         let connection_future = tokio::net::TcpStream::connect(address.clone());
@@ -154,7 +160,9 @@ impl TcpConnection {
             decoded_packet_tx,
         ));
 
-        self.cancellation_token = Some(cancellation_token);
+        self.cancellation_token = Some(cancellation_token.clone());
+
+        self.graph_update_handle = Some(spawn_graph_update_handler(graph_arc, cancellation_token));
 
         Ok(())
     }

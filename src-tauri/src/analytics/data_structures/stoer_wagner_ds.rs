@@ -42,7 +42,7 @@ impl StoerWagnerGraph {
         let s = sets[0];
         let t = sets[1];
 
-        let t_idx = self.graph.get_node_idx(t);
+        let t_idx = self.graph.get_node_idx(t).unwrap().to_owned();
         let t_node = self
             .graph
             .get_node(t_idx)
@@ -54,8 +54,8 @@ impl StoerWagnerGraph {
     }
 
     pub fn contract_edge(&mut self, v1: &NodeKey, v2: &NodeKey) {
-        let start_idx = self.graph.get_node_idx(v1);
-        let finish_idx = self.graph.get_node_idx(v2);
+        let start_idx = self.graph.get_node_idx(v1).unwrap().to_owned();
+        let finish_idx = self.graph.get_node_idx(v2).unwrap().to_owned();
 
         let mut start = self
             .graph
@@ -78,8 +78,10 @@ impl StoerWagnerGraph {
                         .graph
                         .get_edge_weight(&start.num, &node.num, None, None);
 
+                let node_idx = self.graph.get_node_idx(&node.num).unwrap().to_owned();
+
                 self.graph
-                    .update_edge(start.num.clone(), node.num.clone(), weight, None, None);
+                    .update_edge(start_idx, node_idx, weight, None, None);
 
                 start.optimal_weighted_degree +=
                     self.graph

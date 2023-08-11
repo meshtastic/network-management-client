@@ -1,24 +1,18 @@
 #![allow(non_snake_case)]
 
 use app::protobufs;
-use petgraph::stable_graph::{EdgeIndex, NodeIndex};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::future::Future;
-use std::time::Duration;
-use tokio_util::time::delay_queue::Expired;
-use tokio_util::time::{delay_queue, DelayQueue};
 
 use self::helpers::{
     convert_location_field_to_protos, generate_rand_id, get_current_time_u32,
     normalize_location_field,
 };
-use crate::graph::graph_ds::Graph;
-use crate::state::NodeKey;
 
 pub mod connections;
 pub mod handlers;
 pub mod helpers;
+pub mod mesh_graph;
 pub mod state;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, specta::Type)]
@@ -368,210 +362,6 @@ impl MeshDevice {
             ready: false,
             region_unset: true,
             ..Default::default()
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct TimeoutQueue<T> {
-    pub queue: DelayQueue<T>,
-    pub key_map: HashMap<T, delay_queue::Key>,
-}
-
-impl<T: std::marker::Unpin> Future for TimeoutQueue<T> {
-    type Output = Option<Expired<T>>;
-
-    fn poll(
-        self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Self::Output> {
-        self.get_mut().queue.poll_expired(cx)
-    }
-}
-
-impl<T> TimeoutQueue<T> {
-    pub fn new() -> Self {
-        Self {
-            queue: DelayQueue::new(),
-            key_map: HashMap::new(),
-        }
-    }
-}
-
-/*
- * Just as the MeshDevice struct contains all the information about a device (in raw packet form)
- * the MeshGraph struct contains the network info in raw graph form. This is synchronized with
- * the MeshDevice struct, and is used to generate the graph visualization/algorithm
- * results (see analytics).
- */
-
-#[derive(Debug)]
-pub struct MeshGraph {
-    pub graph: Graph,
-
-    pub node_timeout_queue: TimeoutQueue<NodeIndex>,
-    pub edge_timeout_queue: TimeoutQueue<EdgeIndex>,
-}
-
-impl MeshGraph {
-    pub fn new() -> Self {
-        Self {
-            graph: Graph::new(),
-
-            node_timeout_queue: TimeoutQueue::new(),
-            edge_timeout_queue: TimeoutQueue::new(),
-        }
-    }
-
-    fn update_or_set_node_timeout(
-        &mut self,
-        node_index: NodeIndex,
-        timeout_duration: Duration,
-        is_node_in_graph: bool,
-    ) {
-        if is_node_in_graph {
-            let timeout_key = self
-                .node_timeout_queue
-                .key_map
-                .get(&node_index)
-                .expect("Timeout key not found for node in graph");
-
-            self.node_timeout_queue
-                .queue
-                .reset(timeout_key, timeout_duration);
-        } else {
-            let inserted_node_key = self
-                .node_timeout_queue
-                .queue
-                .insert(node_index, timeout_duration);
-
-            self.node_timeout_queue
-                .key_map
-                .insert(node_index, inserted_node_key);
-        }
-    }
-
-    fn update_or_insert_node(&mut self, node_id: NodeKey, timeout_duration: Duration) -> NodeIndex {
-        let is_node_in_graph = self.graph.contains_node(node_id);
-
-        let node_index = match is_node_in_graph {
-            true => self.graph.get_node_idx(&node_id),
-            false => self.graph.add_node(node_id),
-        };
-
-        self.update_or_set_node_timeout(node_index, timeout_duration, is_node_in_graph);
-
-        node_index
-    }
-
-    fn update_or_set_edge_timeout(
-        &mut self,
-        edge_index: EdgeIndex,
-        timeout_duration: Duration,
-        is_edge_in_graph: bool,
-    ) {
-        if is_edge_in_graph {
-            let timeout_key = self
-                .edge_timeout_queue
-                .key_map
-                .get(&edge_index)
-                .expect("Timeout key not found for edge in graph");
-
-            self.edge_timeout_queue
-                .queue
-                .reset(timeout_key, timeout_duration);
-        } else {
-            let inserted_edge_key = self
-                .edge_timeout_queue
-                .queue
-                .insert(edge_index, timeout_duration);
-
-            self.edge_timeout_queue
-                .key_map
-                .insert(edge_index, inserted_edge_key);
-        }
-    }
-
-    fn update_or_insert_edge(
-        &mut self,
-        node_id: NodeKey,
-        neighbor_id: NodeKey,
-        snr: f64,
-        timeout_duration: Duration,
-    ) -> EdgeIndex {
-        let is_edge_in_graph = self.graph.contains_edge(&node_id, &neighbor_id);
-
-        // Add remote edge to graph if not already present
-        // TODO rework to use NodeIndex instead of node_id
-        let edge_index = match is_edge_in_graph {
-            true => self
-                .graph
-                .get_edge_index(&node_id, &neighbor_id)
-                .expect("Edge not found in graph for edge in graph"),
-            false => self
-                .graph
-                .add_edge(node_id, neighbor_id, snr)
-                .expect("Could not add edge between two valid graph nodes"),
-        };
-
-        self.update_or_set_edge_timeout(edge_index, timeout_duration, is_edge_in_graph);
-
-        edge_index
-    }
-
-    pub fn update_from_neighbor_info(&mut self, packet: NeighborInfoPacket) {
-        let protobufs::NeighborInfo { node_id, .. } = packet.data;
-
-        // TODO use configured firmware node and edge timeout intervals
-        let node_timeout_duration = Duration::from_secs(15 * 60);
-
-        // TODO use packet-based timeout interval for edges
-        // Will need to take maximum timeout if two sides of an edge have different
-        // timeouts and the remaining timeout is greater than the incoming timeout
-        let edge_timeout_duration = Duration::from_secs(15 * 60);
-
-        let _node_index = self.update_or_insert_node(node_id, node_timeout_duration);
-
-        for neighbor in packet.data.neighbors {
-            let _neighbor_index =
-                self.update_or_insert_node(neighbor.node_id, node_timeout_duration);
-
-            self.update_or_insert_edge(
-                node_id,
-                neighbor.node_id,
-                packet.packet.rx_snr.into(),
-                edge_timeout_duration,
-            );
-        }
-    }
-
-    // Do nothing if the remote node hasn't sent a neighbor information packet
-    // Contract says we will only track nodes that send neighbor info packets
-    // Timeout only updated on a neighbor information packet
-    pub fn update_from_position(&mut self, packet: PositionPacket) {
-        let node_id = packet.packet.from;
-
-        let NormalizedPosition {
-            latitude,
-            longitude,
-            altitude,
-            ground_speed,
-            ground_track,
-            ..
-        } = packet.data;
-
-        if !self.graph.contains_node(node_id) {
-            return;
-        }
-
-        let node_index = self.graph.get_node_idx(&node_id);
-
-        if let Some(node) = self.graph.g.node_weight_mut(node_index) {
-            node.latitude = latitude.into();
-            node.longitude = longitude.into();
-            node.altitude = altitude.into();
-            node.speed = ground_speed.into();
-            node.direction = ground_track.into();
         }
     }
 }

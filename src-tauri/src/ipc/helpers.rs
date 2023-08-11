@@ -9,6 +9,7 @@ use tokio::sync::broadcast;
 use crate::device::connections::serial::{SerialConnection, SerialConnectionError};
 use crate::device::connections::MeshConnection;
 use crate::device::handlers::GraphUpdate;
+use crate::device::mesh_graph::MeshGraph;
 use crate::device::SerialDeviceStatus;
 use crate::ipc::events::{dispatch_configuration_status, dispatch_rebooting_event};
 use crate::ipc::{events, ConfigurationStatus};
@@ -18,7 +19,7 @@ use crate::{graph, state};
 
 use super::CommandError;
 
-pub fn generate_graph_nodes_geojson(graph: &mut device::MeshGraph) -> geojson::FeatureCollection {
+pub fn generate_graph_nodes_geojson(graph: &mut MeshGraph) -> geojson::FeatureCollection {
     let node_features: Vec<geojson::Feature> = graph
         .graph
         .get_nodes()
@@ -48,7 +49,7 @@ pub fn generate_graph_nodes_geojson(graph: &mut device::MeshGraph) -> geojson::F
     }
 }
 
-pub fn generate_graph_edges_geojson(graph: &mut device::MeshGraph) -> geojson::FeatureCollection {
+pub fn generate_graph_edges_geojson(graph: &mut MeshGraph) -> geojson::FeatureCollection {
     let edge_features: Vec<geojson::Feature> = graph
         .graph
         .get_edges()
@@ -56,12 +57,12 @@ pub fn generate_graph_edges_geojson(graph: &mut device::MeshGraph) -> geojson::F
         .filter(|e| {
             let u = graph
                 .graph
-                .get_node(e.u)
+                .get_node(e.source)
                 .expect("Index from edge should exist");
 
             let v = graph
                 .graph
-                .get_node(e.v)
+                .get_node(e.target)
                 .expect("Index from edge should exist");
 
             // Don't want (0,0) from either node
@@ -70,12 +71,12 @@ pub fn generate_graph_edges_geojson(graph: &mut device::MeshGraph) -> geojson::F
         .map(|e| {
             let u = graph
                 .graph
-                .get_node(e.u)
+                .get_node(e.source)
                 .expect("Index from edge should exist");
 
             let v = graph
                 .graph
-                .get_node(e.v)
+                .get_node(e.target)
                 .expect("Index from edge should exist");
 
             geojson::Feature {
@@ -114,7 +115,7 @@ pub async fn initialize_graph_state(
     mesh_graph: tauri::State<'_, state::NetworkGraph>,
     algo_state: tauri::State<'_, state::AnalyticsState>,
 ) -> Result<(), CommandError> {
-    let new_graph = device::MeshGraph::new();
+    let new_graph = MeshGraph::new();
     // let state = analytics::state::AnalyticsState::new(HashMap::new(), false);
     let state = analytics::state::AnalyticsState::new();
     let mesh_graph_arc = mesh_graph.inner.clone();
@@ -151,6 +152,7 @@ pub async fn initialize_serial_connection_handlers(
     match connection
         .connect(
             app_handle.clone(),
+            mesh_graph.inner.clone(),
             port_name.clone(),
             baud_rate.unwrap_or(115_200),
             dtr.unwrap_or(true),
@@ -348,7 +350,7 @@ pub fn spawn_decoded_handler(
                     }
                 }
 
-                trace!("Dispatching updated graph: {:#?}", graph.graph);
+                trace!("Dispatching updated graph: {:?}", graph.graph);
 
                 match events::dispatch_updated_edges(&handle, graph) {
                     Ok(_) => (),

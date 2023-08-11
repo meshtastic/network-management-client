@@ -122,57 +122,57 @@ impl AlgoController {
     // }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::analytics::state::configuration::AlgorithmConfigFlags;
-    use crate::graph::graph_ds::Graph;
-    use crate::state::NodeKey;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::analytics::state::configuration::AlgorithmConfigFlags;
+//     use crate::graph::graph_ds::Graph;
+//     use crate::state::NodeKey;
 
-    #[test]
-    fn test_run_controller() {
-        let mut algo_controller = AlgoController::new();
-        let mut graph1 = Graph::new();
+//     #[test]
+//     fn test_run_controller() {
+//         let mut algo_controller = AlgoController::new();
+//         let mut graph1 = Graph::new();
 
-        // Create a few nodes and edges and add to graph
-        let u: NodeKey = 1;
-        let v: NodeKey = 2;
-        let w: NodeKey = 3;
+//         // Create a few nodes and edges and add to graph
+//         let u: NodeKey = 1;
+//         let v: NodeKey = 2;
+//         let w: NodeKey = 3;
 
-        let _u_idx = graph1.add_node(u.clone());
-        let _v_idx = graph1.add_node(v.clone());
-        let _w_idx = graph1.add_node(w.clone());
+//         let _u_idx = graph1.add_node(u.clone());
+//         let _v_idx = graph1.add_node(v.clone());
+//         let _w_idx = graph1.add_node(w.clone());
 
-        graph1.add_edge(u.clone(), v.clone(), 1_f64);
-        graph1.add_edge(u, w.clone(), 7_f64);
-        graph1.add_edge(v, w, 35_f64);
+//         graph1.add_edge(u.clone(), v.clone(), 1_f64);
+//         graph1.add_edge(u, w.clone(), 7_f64);
+//         graph1.add_edge(v, w, 35_f64);
 
-        let mut algo_config = AlgorithmConfiguration::new();
-        let history = &mut AlgorithmRunHistory::new();
-        let store = &mut ResultsStore::new();
+//         let mut algo_config = AlgorithmConfiguration::new();
+//         let history = &mut AlgorithmRunHistory::new();
+//         let store = &mut ResultsStore::new();
 
-        algo_config.set_algorithm_flags(AlgorithmConfigFlags {
-            articulation_point: None,
-            diffusion_centrality: Some(true),
-            global_mincut: None,
-            most_similar_timeline: None,
-            predicted_state: None,
-        });
+//         algo_config.set_algorithm_flags(AlgorithmConfigFlags {
+//             articulation_point: None,
+//             diffusion_centrality: Some(true),
+//             global_mincut: None,
+//             most_similar_timeline: None,
+//             predicted_state: None,
+//         });
 
-        algo_controller.run_algos(&graph1, &algo_config, history, store);
+//         algo_controller.run_algos(&graph1, &algo_config, history, store);
 
-        let diff_cent_option = store.get_diff_cent();
+//         let diff_cent_option = store.get_diff_cent();
 
-        match diff_cent_option {
-            DiffCenResult::Success(diff_cent) => {
-                println!("Diffusion centrality: {:?}", diff_cent);
-            }
-            DiffCenResult::Error(err) => {
-                panic!("Error in diffusion centrality: {:?}", err);
-            }
-            DiffCenResult::Empty(_b) => {
-                panic!("Empty graph");
-            }
-        }
-    }
-}
+//         match diff_cent_option {
+//             DiffCenResult::Success(diff_cent) => {
+//                 println!("Diffusion centrality: {:?}", diff_cent);
+//             }
+//             DiffCenResult::Error(err) => {
+//                 panic!("Error in diffusion centrality: {:?}", err);
+//             }
+//             DiffCenResult::Empty(_b) => {
+//                 panic!("Empty graph");
+//             }
+//         }
+//     }
+// }

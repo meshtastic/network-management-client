@@ -66,8 +66,8 @@ pub async fn run_algorithms(
         MinCutResult::Success(aps) => aps
             .iter()
             .filter_map(|edge| {
-                let u_res = node_index_to_node_id(&edge.get_u(), &graph_struct.graph)?;
-                let v_res = node_index_to_node_id(&edge.get_v(), &graph_struct.graph)?;
+                let u_res = node_index_to_node_id(&edge.get_source(), &graph_struct.graph)?;
+                let v_res = node_index_to_node_id(&edge.get_target(), &graph_struct.graph)?;
                 Some((u_res, v_res))
             })
             .collect(),
