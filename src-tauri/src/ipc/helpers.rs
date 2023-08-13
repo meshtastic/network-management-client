@@ -346,7 +346,14 @@ pub fn spawn_decoded_handler(
                             position_packet.packet.from
                         );
                         trace!("{:?}", position_packet);
-                        graph.update_from_position(position_packet);
+
+                        match graph.update_from_position(position_packet) {
+                            Ok(_) => (),
+                            Err(e) => {
+                                error!("Failed to update graph from position packet:\n{}", e);
+                                continue;
+                            }
+                        };
                     }
                 }
 

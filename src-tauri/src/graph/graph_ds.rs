@@ -57,7 +57,11 @@ impl Graph {
 
         for neighbor_node in self.get_neighbors_idx(node_u.num.clone()) {
             let node_v = self.g.node_weight(neighbor_node).unwrap();
-            self.remove_edge(node_u.num.clone(), node_v.num.clone(), None, Some(false));
+
+            match self.remove_edge(node_u.num.clone(), node_v.num.clone(), None, Some(false)) {
+                Ok(_) => (),
+                Err(e) => error!("Error removing edge: {}", e),
+            };
         }
 
         self.g.remove_node(node);
@@ -235,7 +239,7 @@ impl Graph {
                 source_index,
                 target_index,
                 GraphEdge::new(source_index, target_index, weight),
-            );
+            )?;
         }
 
         let edge_idx_list = self
@@ -390,14 +394,13 @@ impl Graph {
         v: NodeKey,
         parallel_edge_idx: Option<usize>,
         remove_all_parallel: Option<bool>,
-    ) {
+    ) -> Result<(), String> {
         if !self.node_idx_map.contains_key(&u) {
-            let error_message = format!("Node {} does not exist", u);
-            return print_error_and_return(&error_message);
+            return Err(format!("Node {} does not exist", u));
         }
+
         if !self.node_idx_map.contains_key(&v) {
-            let error_message = format!("Node {} does not exist", v);
-            return print_error_and_return(&error_message);
+            return Err(format!("Node {} does not exist", v));
         }
 
         let u_idx = *self.node_idx_map.get(&u).unwrap();
@@ -406,7 +409,7 @@ impl Graph {
         // Check if edge does not exist
         if !self.g.contains_edge(u_idx, v_idx) {
             warn!("Edge: ({}, {}) does not exist", u, v);
-            return print_error_and_return("Edge does not exist");
+            return Err(format!("Edge between {} and {} does not exist", u, v).into());
         }
 
         let edge_idx_list = self.edge_idx_map.get(&(u_idx, v_idx)).unwrap().clone();
@@ -441,26 +444,30 @@ impl Graph {
 
             self.change_node_opt_weight(u_idx, u_weight);
             self.change_node_opt_weight(v_idx, v_weight);
-        } else {
-            let node_u = self.g.node_weight(u_idx).unwrap();
-            let node_v = self.g.node_weight(v_idx).unwrap();
 
-            let u_weight = node_u.optimal_weighted_degree;
-            let v_weight = node_v.optimal_weighted_degree;
-
-            // If remove_all_parallel is true, then remove all edges in the list.
-            for edge_idx in edge_idx_list {
-                let weight = self.g.edge_weight(edge_idx).unwrap().weight;
-
-                self.g.remove_edge(edge_idx);
-
-                self.change_node_opt_weight(u_idx, u_weight - weight);
-                self.change_node_opt_weight(v_idx, v_weight - weight);
-            }
-
-            self.edge_idx_map.remove(&(u_idx, v_idx));
-            self.edge_idx_map.remove(&(v_idx, u_idx));
+            return Ok(());
         }
+
+        let node_u = self.g.node_weight(u_idx).unwrap();
+        let node_v = self.g.node_weight(v_idx).unwrap();
+
+        let u_weight = node_u.optimal_weighted_degree;
+        let v_weight = node_v.optimal_weighted_degree;
+
+        // If remove_all_parallel is true, then remove all edges in the list.
+        for edge_idx in edge_idx_list {
+            let weight = self.g.edge_weight(edge_idx).unwrap().weight;
+
+            self.g.remove_edge(edge_idx);
+
+            self.change_node_opt_weight(u_idx, u_weight - weight);
+            self.change_node_opt_weight(v_idx, v_weight - weight);
+        }
+
+        self.edge_idx_map.remove(&(u_idx, v_idx));
+        self.edge_idx_map.remove(&(v_idx, u_idx));
+
+        Ok(())
     }
 
     /// Converts a graph to an adjacency matrix.
@@ -564,6 +571,7 @@ impl Graph {
     /// # Arguments
     ///
     /// * `node_idx` - NodeIndex of the node we want to get.
+    /// TODO change this to returning a reference
     pub fn get_node(&self, idx: NodeIndex) -> Option<GraphNode> {
         Some(self.g.node_weight(idx)?.clone())
     }

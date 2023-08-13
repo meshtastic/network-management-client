@@ -11,10 +11,7 @@ use tauri::async_runtime;
 use tokio::sync::broadcast;
 use tokio_util::sync::CancellationToken;
 
-use crate::{
-    device::handlers::graph::spawn_graph_update_handler,
-    state::{NetworkGraph, NetworkGraphInner},
-};
+use crate::{device::handlers::graph::spawn_graph_update_handler, state::NetworkGraphInner};
 
 use super::{helpers::format_data_packet, MeshConnection};
 
