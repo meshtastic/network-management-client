@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 
+import CustomTitlebar from "@components/CustomTitlebar";
 import SplashScreen from "@components/SplashScreen/SplashScreen";
 import Sidebar from "@components/Sidebar/Sidebar";
 
@@ -41,48 +42,50 @@ const App = () => {
   };
 
   return (
-    <div className="flex flex-row relative">
-      {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
+    <div className="relative">
+      <CustomTitlebar className="" />
 
-      {isOnboardMounted && (
-        <ConnectPage unmountSelf={handleOnboardUnmount} />
-      )}
+      <div className="flex flex-row relative">
+        {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
 
-      <Routes>
-        <Route path="/" element={<AppWrapper />}>
-          <Route index element={<MapPage />} />
-          <Route path={AppRoutes.MESSAGING} element={<MessagingPage />} />
+        {isOnboardMounted && <ConnectPage unmountSelf={handleOnboardUnmount} />}
 
-          <Route
-            path={AppRoutes.MANAGE_WAYPOINTS}
-            element={<ManageWaypointPage />}
-          />
-          <Route path={AppRoutes.MANAGE_NODES} element={<ManageNodePage />} />
+        <Routes>
+          <Route path="/" element={<AppWrapper />}>
+            <Route index element={<MapPage />} />
+            <Route path={AppRoutes.MESSAGING} element={<MessagingPage />} />
 
-          <Route
-            path={`${AppRoutes.CONFIGURE_RADIO}/:configKey?`}
-            element={<RadioConfigPage />}
-          />
-          <Route
-            path={`${AppRoutes.CONFIGURE_MODULES}/:configKey?`}
-            element={<ModuleConfigPage />}
-          />
-          <Route
-            path={`${AppRoutes.CONFIGURE_CHANNELS}/:channelId?`}
-            element={<ChannelConfigPage />}
-          />
-          <Route
-            path={AppRoutes.APPLICATION_STATE}
-            element={<ApplicationStatePage />}
-          />
+            <Route
+              path={AppRoutes.MANAGE_WAYPOINTS}
+              element={<ManageWaypointPage />}
+            />
+            <Route path={AppRoutes.MANAGE_NODES} element={<ManageNodePage />} />
 
-          <Route
-            path={AppRoutes.APPLICATION_SETTINGS}
-            element={<ApplicationSettingsPage />}
-          />
-          <Route path="*" element={<FallbackPage />} />
-        </Route>
-      </Routes>
+            <Route
+              path={`${AppRoutes.CONFIGURE_RADIO}/:configKey?`}
+              element={<RadioConfigPage />}
+            />
+            <Route
+              path={`${AppRoutes.CONFIGURE_MODULES}/:configKey?`}
+              element={<ModuleConfigPage />}
+            />
+            <Route
+              path={`${AppRoutes.CONFIGURE_CHANNELS}/:channelId?`}
+              element={<ChannelConfigPage />}
+            />
+            <Route
+              path={AppRoutes.APPLICATION_STATE}
+              element={<ApplicationStatePage />}
+            />
+
+            <Route
+              path={AppRoutes.APPLICATION_SETTINGS}
+              element={<ApplicationSettingsPage />}
+            />
+            <Route path="*" element={<FallbackPage />} />
+          </Route>
+        </Routes>
+      </div>
     </div>
   );
 };

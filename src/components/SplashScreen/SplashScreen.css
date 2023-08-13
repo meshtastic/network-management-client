@@ -1,3 +1,9 @@
 .landing-screen-opacity-transition {
   transition: opacity 900ms ease-in-out;
 }
+
+/* TSParticles library conflicts with titlebar library */
+#tsparticles > canvas {
+  height: calc(100vh - 2rem) !important;
+  top: 2rem !important;
+}

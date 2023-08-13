@@ -10,40 +10,24 @@
     "productName": "meshtastic-network-management-client",
     "version": "0.3.0"
   },
-  "tauri": {
-    "allowlist": {
-      "clipboard": {
-        "all": false,
-        "readText": false,
-        "writeText": true
-      },
-      "dialog": {
-        "all": false,
-        "ask": false,
-        "confirm": false,
-        "message": true,
-        "open": false,
-        "save": false
-      },
-      "http": {
-        "all": true,
-        "request": true,
-        "scope": [" http://127.0.0.1:5000/*"]
-      },
-      "notification": {
-        "all": true
-      },
-      "path": {
-        "all": true
-      },
-      "shell": {
-        "all": false,
-        "execute": false,
-        "open": true,
-        "scope": [],
-        "sidecar": false
-      }
+  "plugins": {
+    "cli": {
+      "args": [
+        {
+          "multiple": false,
+          "name": "port",
+          "short": "P",
+          "takesValue": true
+        }
+      ],
+      "description": "A command line interface for launching the (unofficial) Meshtastic Emergency Response Client.",
+      "longDescription": "A CLI that allows for programatic connection to Meshtastic devices while launching the desktop client."
     },
+    "shell": {
+      "open": true
+    }
+  },
+  "tauri": {
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
@@ -77,26 +61,12 @@
         "timestampUrl": ""
       }
     },
-    "cli": {
-      "description": "A command line interface for launching the (unofficial) Meshtastic Emergency Response Client.",
-      "longDescription": "A CLI that allows for programatic connection to Meshtastic devices while launching the desktop client.",
-      "args": [
-        {
-          "name": "port",
-          "short": "P",
-          "takesValue": true,
-          "multiple": false
-        }
-      ]
-    },
     "security": {
       "csp": null
     },
-    "updater": {
-      "active": false
-    },
     "windows": [
       {
+        "decorations": false,
         "maximized": true,
         "resizable": true,
         "title": "Meshtastic Network Management Client"

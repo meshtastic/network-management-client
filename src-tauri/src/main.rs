@@ -4,7 +4,7 @@
 )]
 
 mod analytics;
-mod constructors;
+pub mod constructors;
 mod data_conversion;
 mod device;
 mod graph;
@@ -16,6 +16,8 @@ use specta::ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior
 use std::time::SystemTime;
 use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
+use tauri_plugin_cli::CliExt;
+use tauri_plugin_notification::{NotificationExt, PermissionState};
 
 /// https://docs.rs/fern/0.6.2/fern/
 fn setup_logger() -> Result<(), fern::InitError> {
@@ -41,7 +43,7 @@ fn handle_cli_matches(
     app: &mut tauri::App,
     inital_autoconnect_state: &mut state::AutoConnectState,
 ) -> Result<(), String> {
-    match app.get_cli_matches() {
+    match app.cli().matches() {
         Ok(matches) => {
             let args = matches.args;
 
@@ -110,11 +112,21 @@ fn main() {
     };
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_cli::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_window::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             match handle_cli_matches(app, &mut inital_autoconnect_state) {
                 Ok(_) => {}
                 Err(err) => panic!("Failed to parse CLI args:\n{}", err),
+            }
+
+            if app.notification().permission_state()? == PermissionState::Unknown {
+                app.notification().request_permission()?;
             }
 
             // Manage application state

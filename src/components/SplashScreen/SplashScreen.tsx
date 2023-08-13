@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { Particles } from "react-tsparticles";
 import { loadFull } from "tsparticles";
 import type { Engine } from "tsparticles-engine";
@@ -74,7 +74,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
 
   return (
     <div
-      className="landing-screen-opacity-transition absolute top-0 left-0 w-screen h-screen z-50"
+      className="landing-screen-opacity-transition absolute top-0 left-0 w-full h-full z-50"
       style={{ opacity: isScreenActive ? 1 : 0 }}
     >
       <img

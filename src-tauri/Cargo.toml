@@ -25,7 +25,14 @@ defaultdict = "0.13.0"
 reqwest = { version = "0.11", features = ["json"] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.1.1", features = ["cli", "clipboard-write-text", "dialog-message", "http-all", "notification-all", "path-all", "shell-open", "windows7-compat"] }
+tauri = { version = "2.0.0-alpha", features = [] }
+tauri-plugin-os = "2.0.0-alpha.0"
+tauri-plugin-shell = "2.0.0-alpha.0"
+tauri-plugin-cli = "2.0.0-alpha.0"
+tauri-plugin-window = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
+tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
+tauri-plugin-notification = "2.0.0-alpha.1"
+tauri-plugin-clipboard-manager = "2.0.0-alpha.0"
 tokio = { version = "1.21.2", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"
@@ -41,7 +48,7 @@ humantime = "2.1.0"
 tokio-util = "0.7.7"
 serial2 = "0.1.7"
 specta = { git = "https://github.com/ajmcquilkin/specta.git", branch = "ajmcquilkin/ts-namespaces", ref = "2ba5af7" }
-tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+
 
 [features]
 # by default Tauri runs in production mode
@@ -50,3 +57,6 @@ default = ["custom-protocol"]
 # this feature is used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
 custom-protocol = ["tauri/custom-protocol"]
+
+[lib]
+crate-type = ["staticlib", "cdylib", "rlib"]

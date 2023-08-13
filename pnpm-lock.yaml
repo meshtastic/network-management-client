@@ -3,13 +3,13 @@ lockfileVersion: '6.0'
 dependencies:
   '@deck.gl/carto':
     specifier: ^8.9.9
-    version: 8.9.14(@deck.gl/aggregation-layers@8.9.14)(@deck.gl/core@8.9.14)(@deck.gl/extensions@8.9.14)(@deck.gl/geo-layers@8.9.14)(@deck.gl/layers@8.9.14)(@loaders.gl/core@3.3.5)
+    version: 8.9.14(@deck.gl/aggregation-layers@8.9.23)(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.14)(@deck.gl/geo-layers@8.9.23)(@deck.gl/layers@8.9.23)(@loaders.gl/core@3.4.10)
   '@deck.gl/extensions':
     specifier: ^8.9.9
-    version: 8.9.14(@deck.gl/core@8.9.14)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
+    version: 8.9.14(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
   '@deck.gl/mapbox':
     specifier: ^8.9.9
-    version: 8.9.14(@deck.gl/core@8.9.14)
+    version: 8.9.14(@deck.gl/core@8.9.23)
   '@emoji-mart/data':
     specifier: ^1.1.2
     version: 1.1.2
@@ -62,8 +62,20 @@ dependencies:
     specifier: 8.7.9
     version: 8.7.9(react-dom@18.2.0)(react@18.2.0)
   '@tauri-apps/api':
-    specifier: ^1.1.0
-    version: 1.1.0
+    specifier: 2.0.0-alpha.5
+    version: 2.0.0-alpha.5
+  '@tauri-apps/plugin-clipboard-manager':
+    specifier: 2.0.0-alpha.0
+    version: 2.0.0-alpha.0
+  '@tauri-apps/plugin-os':
+    specifier: 2.0.0-alpha.0
+    version: 2.0.0-alpha.0
+  '@tauri-apps/plugin-shell':
+    specifier: 2.0.0-alpha.0
+    version: 2.0.0-alpha.0
+  '@tauri-apps/plugin-window':
+    specifier: 2.0.0-alpha.0
+    version: 2.0.0-alpha.0
   base64-js:
     specifier: ^1.5.1
     version: 1.5.1
@@ -71,8 +83,8 @@ dependencies:
     specifier: ^4.2.1
     version: 4.2.1
   deck.gl:
-    specifier: ^8.9.7
-    version: 8.9.14(@loaders.gl/core@3.3.5)(@loaders.gl/gltf@3.3.5)(@loaders.gl/images@3.3.5)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(@types/react@18.0.25)(gl-matrix@3.4.3)(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^8.9.23
+    version: 8.9.23(@loaders.gl/core@3.4.10)(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(@types/react@18.0.25)(gl-matrix@3.4.3)(react-dom@18.2.0)(react@18.2.0)
   emoji-mart:
     specifier: ^5.5.2
     version: 5.5.2
@@ -157,9 +169,12 @@ dependencies:
   tailwindcss-radix:
     specifier: ^2.8.0
     version: 2.8.0
+  tauri-controls:
+    specifier: ^0.1.1
+    version: 0.1.1(@tauri-apps/plugin-os@2.0.0-alpha.0)(@tauri-apps/plugin-window@2.0.0-alpha.0)(clsx@2.0.0)(react-dom@18.2.0)(react@18.2.0)(tailwind-merge@1.14.0)
   tauri-plugin-store-api:
     specifier: github:tauri-apps/tauri-plugin-store#v1
-    version: github.com/tauri-apps/tauri-plugin-store/96e2eb3971c981ece96f0a9e47dad14a2d1d2539
+    version: github.com/tauri-apps/tauri-plugin-store/a65ce9bfb168a9a3cd7ed4102b9f22770cc3abfa
   timeago-react:
     specifier: ^3.0.5
     version: 3.0.5(react@18.2.0)
@@ -178,8 +193,8 @@ devDependencies:
     specifier: ^1.0.8
     version: 1.0.8
   '@tauri-apps/cli':
-    specifier: ^1.1.1
-    version: 1.1.1
+    specifier: 2.0.0-alpha.10
+    version: 2.0.0-alpha.10
   '@types/jest':
     specifier: ^29.2.0
     version: 29.2.0
@@ -231,6 +246,9 @@ devDependencies:
   autoprefixer:
     specifier: ^10.4.13
     version: 10.4.13(postcss@8.4.18)
+  clsx:
+    specifier: ^2.0.0
+    version: 2.0.0
   eslint:
     specifier: ^8.25.0
     version: 8.25.0
@@ -243,6 +261,9 @@ devDependencies:
   prettier:
     specifier: ^2.7.1
     version: 2.7.1
+  tailwind-merge:
+    specifier: ^1.14.0
+    version: 1.14.0
   tailwindcss:
     specifier: ^3.2.1
     version: 3.2.1(postcss@8.4.18)
@@ -687,6 +708,13 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.11
+    dev: false
+
+  /@babel/runtime@7.22.10:
+    resolution: {integrity: sha512-21t/fkKLMZI4pqP2wlmsQAWnYW1PDyKyyUV4vCi+B25ydmdaYTKXPwCj0BzSUnZf4seIiYvSA3jcZ3gdsMFkLQ==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.14.0
 
   /@babel/runtime@7.22.6:
     resolution: {integrity: sha512-wDb5pWm4WDdF6LFUde3Jl8WzPA+3ZbxYqkC6xAXuD3irdEHN1k0NfTRrJD8ZD378SJ61miMLCqIOXYhd8x+AJQ==}
@@ -771,15 +799,16 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@deck.gl/aggregation-layers@8.9.14(@deck.gl/core@8.9.14)(@deck.gl/layers@8.9.14)(@luma.gl/core@8.5.20):
-    resolution: {integrity: sha512-hdpkkYxnrrJyf3YFzEM2W7fvX8r0Te/VIQwNf48qpHg3oV5kmq8i0bKTrYdZu2zL3API37+5hUmns9Gc+p0mpg==}
+  /@deck.gl/aggregation-layers@8.9.23(@deck.gl/core@8.9.23)(@deck.gl/layers@8.9.23)(@luma.gl/core@8.5.20):
+    resolution: {integrity: sha512-PNx/F/x1tVYupAJ/roTOZXwQoc7ZdbnJQ1v0xnaiaNdyj5/8q36C95baIVp1AEPhtUxbQ+3D1mHqR+V5b3OJKw==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       '@deck.gl/layers': ^8.0.0
       '@luma.gl/core': ^8.0.0
     dependencies:
-      '@deck.gl/core': 8.9.14
-      '@deck.gl/layers': 8.9.14(@deck.gl/core@8.9.14)(@loaders.gl/core@3.3.5)(@luma.gl/core@8.5.20)
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
+      '@deck.gl/layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/core@3.4.10)(@luma.gl/core@8.5.20)
       '@luma.gl/constants': 8.5.20
       '@luma.gl/core': 8.5.20
       '@luma.gl/shadertools': 8.5.20
@@ -787,7 +816,7 @@ packages:
       d3-hexbin: 0.2.2
     dev: false
 
-  /@deck.gl/carto@8.9.14(@deck.gl/aggregation-layers@8.9.14)(@deck.gl/core@8.9.14)(@deck.gl/extensions@8.9.14)(@deck.gl/geo-layers@8.9.14)(@deck.gl/layers@8.9.14)(@loaders.gl/core@3.3.5):
+  /@deck.gl/carto@8.9.14(@deck.gl/aggregation-layers@8.9.23)(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.14)(@deck.gl/geo-layers@8.9.23)(@deck.gl/layers@8.9.23)(@loaders.gl/core@3.4.10):
     resolution: {integrity: sha512-GETG0W89xTzQvehgt1imdncL25b1wtmYYk2+bZWc8nw596dzQdpYH+8Lp9YTysvZXay46FJ16y5qGMp/1UgoYQ==}
     peerDependencies:
       '@deck.gl/aggregation-layers': ^8.0.0
@@ -797,16 +826,16 @@ packages:
       '@deck.gl/layers': ^8.0.0
       '@loaders.gl/core': ^3.0.0
     dependencies:
-      '@deck.gl/aggregation-layers': 8.9.14(@deck.gl/core@8.9.14)(@deck.gl/layers@8.9.14)(@luma.gl/core@8.5.20)
-      '@deck.gl/core': 8.9.14
-      '@deck.gl/extensions': 8.9.14(@deck.gl/core@8.9.14)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
-      '@deck.gl/geo-layers': 8.9.14(@deck.gl/core@8.9.14)(@deck.gl/extensions@8.9.14)(@deck.gl/layers@8.9.14)(@deck.gl/mesh-layers@8.9.14)(@loaders.gl/core@3.3.5)(@loaders.gl/gltf@3.3.5)(@loaders.gl/images@3.3.5)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
-      '@deck.gl/layers': 8.9.14(@deck.gl/core@8.9.14)(@loaders.gl/core@3.3.5)(@luma.gl/core@8.5.20)
-      '@loaders.gl/core': 3.3.5
+      '@deck.gl/aggregation-layers': 8.9.23(@deck.gl/core@8.9.23)(@deck.gl/layers@8.9.23)(@luma.gl/core@8.5.20)
+      '@deck.gl/core': 8.9.23
+      '@deck.gl/extensions': 8.9.14(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
+      '@deck.gl/geo-layers': 8.9.23(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.14)(@deck.gl/layers@8.9.23)(@deck.gl/mesh-layers@8.9.23)(@loaders.gl/core@3.4.10)(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@deck.gl/layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/core@3.4.10)(@luma.gl/core@8.5.20)
+      '@loaders.gl/core': 3.4.10
       '@loaders.gl/gis': 3.3.5
       '@loaders.gl/loader-utils': 3.3.5
       '@loaders.gl/mvt': 3.3.5
-      '@loaders.gl/tiles': 3.3.5(@loaders.gl/core@3.3.5)
+      '@loaders.gl/tiles': 3.3.5(@loaders.gl/core@3.4.10)
       '@luma.gl/constants': 8.5.20
       '@math.gl/web-mercator': 3.6.3
       cartocolor: 4.0.2
@@ -820,11 +849,46 @@ packages:
       quadbin: 0.1.9
     dev: false
 
-  /@deck.gl/core@8.9.14:
-    resolution: {integrity: sha512-ziWnQUd92HHD+Pb6/azen5Nb6SdR7u9WCLbI/PS0LOIYtuTis7fcVjp5sKi7yEte8Za8LHU0V5dB4ekE9Ni22w==}
+  /@deck.gl/carto@8.9.23(@deck.gl/aggregation-layers@8.9.23)(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.23)(@deck.gl/geo-layers@8.9.23)(@deck.gl/layers@8.9.23)(@loaders.gl/core@3.4.10):
+    resolution: {integrity: sha512-naruduNzJScjWRoUs4Y8zzlH7Ud7geLRfRMpfIRkaBtWPo+t/LizuDIiW707Ua/ssP4qNk512QYcpFqign7E8g==}
+    peerDependencies:
+      '@deck.gl/aggregation-layers': ^8.0.0
+      '@deck.gl/core': ^8.0.0
+      '@deck.gl/extensions': ^8.0.0
+      '@deck.gl/geo-layers': ^8.0.0
+      '@deck.gl/layers': ^8.0.0
+      '@loaders.gl/core': ^3.4.2
     dependencies:
-      '@loaders.gl/core': 3.3.5
-      '@loaders.gl/images': 3.3.5
+      '@babel/runtime': 7.22.10
+      '@deck.gl/aggregation-layers': 8.9.23(@deck.gl/core@8.9.23)(@deck.gl/layers@8.9.23)(@luma.gl/core@8.5.20)
+      '@deck.gl/core': 8.9.23
+      '@deck.gl/extensions': 8.9.23(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
+      '@deck.gl/geo-layers': 8.9.23(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.23)(@deck.gl/layers@8.9.23)(@deck.gl/mesh-layers@8.9.23)(@loaders.gl/core@3.4.10)(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@deck.gl/layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/core@3.4.10)(@luma.gl/core@8.5.20)
+      '@loaders.gl/core': 3.4.10
+      '@loaders.gl/gis': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/mvt': 3.4.10
+      '@loaders.gl/tiles': 3.4.10(@loaders.gl/core@3.4.10)
+      '@luma.gl/constants': 8.5.20
+      '@math.gl/web-mercator': 3.6.3
+      cartocolor: 4.0.2
+      d3-array: 3.2.3
+      d3-color: 3.1.0
+      d3-format: 3.1.0
+      d3-scale: 4.0.2
+      h3-js: 3.7.2
+      moment-timezone: 0.5.43
+      pbf: 3.2.1
+      quadbin: 0.1.9
+    dev: false
+
+  /@deck.gl/core@8.9.23:
+    resolution: {integrity: sha512-wYnupT+kCKOSHfxGK8W+FV/PLodgSPEetDC8PKoYldBqJpSC+mDU2CjtE2SXc/3mcmH07GHN6RVCfXyImAsolg==}
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@loaders.gl/core': 3.4.10
+      '@loaders.gl/images': 3.4.10
       '@luma.gl/constants': 8.5.20
       '@luma.gl/core': 8.5.20
       '@luma.gl/webgl': 8.5.20
@@ -839,7 +903,7 @@ packages:
       mjolnir.js: 2.7.1
     dev: false
 
-  /@deck.gl/extensions@8.9.14(@deck.gl/core@8.9.14)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3):
+  /@deck.gl/extensions@8.9.14(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3):
     resolution: {integrity: sha512-fmzPl+IL/Vr7ThOZr1ChIyX3FDtN82rIdL+d5yUXBlHIlCOl8eXPvqEJoBupq3Bt2ZAK5FsU/B5qISL/qufOlQ==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
@@ -849,7 +913,7 @@ packages:
       '@math.gl/web-mercator': ^3.6.2
       gl-matrix: ^3.0.0
     dependencies:
-      '@deck.gl/core': 8.9.14
+      '@deck.gl/core': 8.9.23
       '@luma.gl/constants': 8.5.20
       '@luma.gl/core': 8.5.20
       '@luma.gl/shadertools': 8.5.20
@@ -858,32 +922,53 @@ packages:
       gl-matrix: 3.4.3
     dev: false
 
-  /@deck.gl/geo-layers@8.9.14(@deck.gl/core@8.9.14)(@deck.gl/extensions@8.9.14)(@deck.gl/layers@8.9.14)(@deck.gl/mesh-layers@8.9.14)(@loaders.gl/core@3.3.5)(@loaders.gl/gltf@3.3.5)(@loaders.gl/images@3.3.5)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20):
-    resolution: {integrity: sha512-SBbPfRToIyO9+ko4kNrWyUT8tWxHbgTepfX3dowZJ18AF7Fet0ybpp1LdhCTGL6CJq9egR4RdhTdBA5v5EbJOg==}
+  /@deck.gl/extensions@8.9.23(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3):
+    resolution: {integrity: sha512-2VUplflJMHcJ2otVjy415nFP+KqDdmC4ZilR10nX53k0iBXjojRlmsqzIPT4oHuXgF/CC/GZXenAwlS4DQzzOQ==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
+      '@luma.gl/constants': ^8.0.0
+      '@luma.gl/core': ^8.0.0
+      '@math.gl/core': ^3.6.2
+      '@math.gl/web-mercator': ^3.6.2
+      gl-matrix: ^3.0.0
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
+      '@luma.gl/constants': 8.5.20
+      '@luma.gl/core': 8.5.20
+      '@luma.gl/shadertools': 8.5.20
+      '@math.gl/core': 3.6.3
+      '@math.gl/web-mercator': 3.6.3
+      gl-matrix: 3.4.3
+    dev: false
+
+  /@deck.gl/geo-layers@8.9.23(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.14)(@deck.gl/layers@8.9.23)(@deck.gl/mesh-layers@8.9.23)(@loaders.gl/core@3.4.10)(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20):
+    resolution: {integrity: sha512-D2d0oS4sXUGFWXRib7Uu2lCz9sEx3L0fhvJvS2laDjwZ7vhzLANnjjaf7pybIGopTvQGc6m7NnGPb55fCsFIug==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       '@deck.gl/extensions': ^8.0.0
       '@deck.gl/layers': ^8.0.0
       '@deck.gl/mesh-layers': ^8.0.0
-      '@loaders.gl/core': ^3.3.0
+      '@loaders.gl/core': ^3.4.2
       '@luma.gl/core': ^8.0.0
     dependencies:
-      '@deck.gl/core': 8.9.14
-      '@deck.gl/extensions': 8.9.14(@deck.gl/core@8.9.14)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
-      '@deck.gl/layers': 8.9.14(@deck.gl/core@8.9.14)(@loaders.gl/core@3.3.5)(@luma.gl/core@8.5.20)
-      '@deck.gl/mesh-layers': 8.9.14(@deck.gl/core@8.9.14)(@loaders.gl/images@3.3.5)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/webgl@8.5.20)
-      '@loaders.gl/3d-tiles': 3.3.5(@loaders.gl/core@3.3.5)
-      '@loaders.gl/core': 3.3.5
-      '@loaders.gl/gis': 3.3.5
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/mvt': 3.3.5
-      '@loaders.gl/schema': 3.3.5
-      '@loaders.gl/terrain': 3.3.5
-      '@loaders.gl/tiles': 3.3.5(@loaders.gl/core@3.3.5)
-      '@loaders.gl/wms': 3.3.5
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
+      '@deck.gl/extensions': 8.9.14(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
+      '@deck.gl/layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/core@3.4.10)(@luma.gl/core@8.5.20)
+      '@deck.gl/mesh-layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@loaders.gl/3d-tiles': 3.4.10(@loaders.gl/core@3.4.10)
+      '@loaders.gl/core': 3.4.10
+      '@loaders.gl/gis': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/mvt': 3.4.10
+      '@loaders.gl/schema': 3.4.10
+      '@loaders.gl/terrain': 3.4.10
+      '@loaders.gl/tiles': 3.4.10(@loaders.gl/core@3.4.10)
+      '@loaders.gl/wms': 3.4.10
       '@luma.gl/constants': 8.5.20
       '@luma.gl/core': 8.5.20
-      '@luma.gl/experimental': 8.5.20(@loaders.gl/gltf@3.3.5)(@loaders.gl/images@3.3.5)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@luma.gl/experimental': 8.5.20(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
       '@math.gl/core': 3.6.3
       '@math.gl/culling': 3.6.3
       '@math.gl/web-mercator': 3.6.3
@@ -899,41 +984,86 @@ packages:
       - '@luma.gl/webgl'
     dev: false
 
-  /@deck.gl/google-maps@8.9.14(@deck.gl/core@8.9.14)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3):
-    resolution: {integrity: sha512-QbZhanDN4ca3tQ68gCvcQ6DVLGnI0J2kMv3iSyQQk65dIPYMh6LKCdUoFcRhyx0B8VDvFYgQyfoqMjQMdfyCPA==}
+  /@deck.gl/geo-layers@8.9.23(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.23)(@deck.gl/layers@8.9.23)(@deck.gl/mesh-layers@8.9.23)(@loaders.gl/core@3.4.10)(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20):
+    resolution: {integrity: sha512-D2d0oS4sXUGFWXRib7Uu2lCz9sEx3L0fhvJvS2laDjwZ7vhzLANnjjaf7pybIGopTvQGc6m7NnGPb55fCsFIug==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
+      '@deck.gl/extensions': ^8.0.0
+      '@deck.gl/layers': ^8.0.0
+      '@deck.gl/mesh-layers': ^8.0.0
+      '@loaders.gl/core': ^3.4.2
+      '@luma.gl/core': ^8.0.0
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
+      '@deck.gl/extensions': 8.9.23(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
+      '@deck.gl/layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/core@3.4.10)(@luma.gl/core@8.5.20)
+      '@deck.gl/mesh-layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@loaders.gl/3d-tiles': 3.4.10(@loaders.gl/core@3.4.10)
+      '@loaders.gl/core': 3.4.10
+      '@loaders.gl/gis': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/mvt': 3.4.10
+      '@loaders.gl/schema': 3.4.10
+      '@loaders.gl/terrain': 3.4.10
+      '@loaders.gl/tiles': 3.4.10(@loaders.gl/core@3.4.10)
+      '@loaders.gl/wms': 3.4.10
+      '@luma.gl/constants': 8.5.20
+      '@luma.gl/core': 8.5.20
+      '@luma.gl/experimental': 8.5.20(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@math.gl/core': 3.6.3
+      '@math.gl/culling': 3.6.3
+      '@math.gl/web-mercator': 3.6.3
+      '@types/geojson': 7946.0.10
+      h3-js: 3.7.2
+      long: 3.2.0
+    transitivePeerDependencies:
+      - '@loaders.gl/gltf'
+      - '@loaders.gl/images'
+      - '@luma.gl/engine'
+      - '@luma.gl/gltools'
+      - '@luma.gl/shadertools'
+      - '@luma.gl/webgl'
+    dev: false
+
+  /@deck.gl/google-maps@8.9.23(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3):
+    resolution: {integrity: sha512-u6fhxJeQguF4tGBmx7abfU8ZKct6cmUuPA526la/5GPKTdDKOVHDwXMSqmrrXN5RlUCrBy/SdPEmqhD3SL3sIw==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       '@luma.gl/constants': ^8.5.0
       '@luma.gl/core': ^8.5.0
       '@math.gl/core': ^3.6.0
     dependencies:
-      '@deck.gl/core': 8.9.14
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
       '@luma.gl/constants': 8.5.20
       '@luma.gl/core': 8.5.20
       '@math.gl/core': 3.6.3
     dev: false
 
-  /@deck.gl/json@8.9.14(@deck.gl/core@8.9.14):
-    resolution: {integrity: sha512-mvYtT5iQ/gCBo8kAR/9426iPFU7WA2HxHij12dpKr/dQnnBe4RbM0Q5PjLEjvDaZw13vQq7ANh8t7zARTL9yHA==}
+  /@deck.gl/json@8.9.23(@deck.gl/core@8.9.23):
+    resolution: {integrity: sha512-BZx3j8pA2cuo+x/wAX85Pk8+NJIueKho7pORqGH545yH1hQoO5EPSvoCTbPd3g8zpOgNIdya4ECNCnEt1l674Q==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
     dependencies:
-      '@deck.gl/core': 8.9.14
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
       d3-dsv: 1.2.0
       expression-eval: 2.1.0
     dev: false
 
-  /@deck.gl/layers@8.9.14(@deck.gl/core@8.9.14)(@loaders.gl/core@3.3.5)(@luma.gl/core@8.5.20):
-    resolution: {integrity: sha512-oo0rURBV5QUvDr9qb9stahYdApYAyufEAFc5D4XW01cgnlHvR2x76rdbn0lZvXYCQM1W7NyzNLOc66B6XOR3sQ==}
+  /@deck.gl/layers@8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/core@3.4.10)(@luma.gl/core@8.5.20):
+    resolution: {integrity: sha512-LwZ9fpgw5dMRpvEZ5hSAV8dNb59ZmlKeF6RbO5UlSgwoOReGFwcVqMN+XOZan7jq0QWpgtbf/LGBv1iM2wEDoA==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
-      '@loaders.gl/core': ^3.0.0
+      '@loaders.gl/core': ^3.4.2
       '@luma.gl/core': ^8.0.0
     dependencies:
-      '@deck.gl/core': 8.9.14
-      '@loaders.gl/core': 3.3.5
-      '@loaders.gl/images': 3.3.5
-      '@loaders.gl/schema': 3.3.5
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
+      '@loaders.gl/core': 3.4.10
+      '@loaders.gl/images': 3.4.10
+      '@loaders.gl/schema': 3.4.10
       '@luma.gl/constants': 8.5.20
       '@luma.gl/core': 8.5.20
       '@mapbox/tiny-sdf': 2.0.6
@@ -943,26 +1073,37 @@ packages:
       earcut: 2.2.4
     dev: false
 
-  /@deck.gl/mapbox@8.9.14(@deck.gl/core@8.9.14):
+  /@deck.gl/mapbox@8.9.14(@deck.gl/core@8.9.23):
     resolution: {integrity: sha512-ydp8+AUjSTIZDbii7PeJmClmpWGVjF65PJ8iGHL0jQOlzSf47e5Uy28fvB+tXYyz33KSD6oV+L7gWu7co8mEwA==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
     dependencies:
-      '@deck.gl/core': 8.9.14
+      '@deck.gl/core': 8.9.23
       '@types/mapbox-gl': 2.7.6
     dev: false
 
-  /@deck.gl/mesh-layers@8.9.14(@deck.gl/core@8.9.14)(@loaders.gl/images@3.3.5)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/webgl@8.5.20):
-    resolution: {integrity: sha512-MvGJ+xGhII4+M1xwGjuSdkGuNm7Y3sEBy50+rxidQQ55lzkerV6aPn3p4BOldeCXpKX0NqIXOF7D0rNgUplNhw==}
+  /@deck.gl/mapbox@8.9.23(@deck.gl/core@8.9.23):
+    resolution: {integrity: sha512-59sptQUg+rwJpo5uwlhsfRfEycOvKrQXUrXOTZHoT4nPBPhF27uY0esTrw6Ev4J/5wSuWBF7U6Y6P7RE13Ve3g==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
+      '@types/mapbox-gl': 2.7.6
+    dev: false
+
+  /@deck.gl/mesh-layers@8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/webgl@8.5.20):
+    resolution: {integrity: sha512-4UXaaFF6oGEvMmZhJIiUQd0BMHGmrjdPD2jNOf+e6HaFYOWLfaE0F2FkbmK2OsxpSlh5YWWv9Vtkg1dO+EQzDQ==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       '@luma.gl/core': ^8.0.0
     dependencies:
-      '@deck.gl/core': 8.9.14
-      '@loaders.gl/gltf': 3.3.5
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
+      '@loaders.gl/gltf': 3.4.10
       '@luma.gl/constants': 8.5.20
       '@luma.gl/core': 8.5.20
-      '@luma.gl/experimental': 8.5.20(@loaders.gl/gltf@3.3.5)(@loaders.gl/images@3.3.5)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@luma.gl/experimental': 8.5.20(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
       '@luma.gl/shadertools': 8.5.20
     transitivePeerDependencies:
       - '@loaders.gl/images'
@@ -971,15 +1112,16 @@ packages:
       - '@luma.gl/webgl'
     dev: false
 
-  /@deck.gl/react@8.9.14(@deck.gl/core@8.9.14)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-XdYrL65SE9BnjULcxW6DevH4q4hpgkiPg3AbLvpb6RLdKiEGKGYIrArg2Wk1wFKg3cuOyUx7orfcayLlHf61tg==}
+  /@deck.gl/react@8.9.23(@deck.gl/core@8.9.23)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-N3+aakVHtHuHnF/g23wqjSnVPK/IeFH6jCTEeVtRCdVqtKnisZS8TkKUKxK6at8ZqMFG7VKlq2TD/70+wZF3Gw==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       '@types/react': '>= 16.3'
       react: '>=16.3'
       react-dom: '>=16.3'
     dependencies:
-      '@deck.gl/core': 8.9.14
+      '@babel/runtime': 7.22.10
+      '@deck.gl/core': 8.9.23
       '@types/react': 18.0.25
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -1558,37 +1700,38 @@ packages:
     resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
     dev: false
 
-  /@loaders.gl/3d-tiles@3.3.5(@loaders.gl/core@3.3.5):
-    resolution: {integrity: sha512-mRBrQQg1HEOTfx55vJNLv7qXGli7PBlyYY6ENwHKSbctzIftzfzYzoqMAx42lFhlTXGeP9C4QNzIdv6KFDvA+A==}
+  /@loaders.gl/3d-tiles@3.4.10(@loaders.gl/core@3.4.10):
+    resolution: {integrity: sha512-3aAFMdkH0Zc7+wBvnMarddut2Zz11OxOXzU5q6hyA3h8I9rCgQmmfmFsIOC5dsfIluDXqpTpprJiRfZxJbMF5Q==}
     peerDependencies:
-      '@loaders.gl/core': ^3.2.0
+      '@loaders.gl/core': ^3.4.0
     dependencies:
-      '@loaders.gl/core': 3.3.5
-      '@loaders.gl/draco': 3.3.5
-      '@loaders.gl/gltf': 3.3.5
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/math': 3.3.5
-      '@loaders.gl/tiles': 3.3.5(@loaders.gl/core@3.3.5)
+      '@loaders.gl/core': 3.4.10
+      '@loaders.gl/draco': 3.4.10
+      '@loaders.gl/gltf': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/math': 3.4.10
+      '@loaders.gl/tiles': 3.4.10(@loaders.gl/core@3.4.10)
       '@math.gl/core': 3.6.3
       '@math.gl/geospatial': 3.6.3
+      long: 5.2.3
     dev: false
 
-  /@loaders.gl/core@3.3.5:
-    resolution: {integrity: sha512-TlgMVBVhUZPNWN8iJHEQN26fy4p4E2dpqV19PRp7f8fYYN1MvLDJ4ZD5l35/OTLFvWrgHzPttoAOEbzmCyyhPg==}
+  /@loaders.gl/core@3.4.10:
+    resolution: {integrity: sha512-/lXNcHAjbZgR5Ou7Wusgd86ZPtDrmD2gONJ6gWq7AJOBk5vlAwifh0zInhzVEyfmqi3O7x8ofA9/8GVRc9OGiw==}
     dependencies:
-      '@babel/runtime': 7.21.0
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/worker-utils': 3.3.5
-      '@probe.gl/log': 3.6.0
+      '@babel/runtime': 7.22.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/worker-utils': 3.4.10
+      '@probe.gl/log': 4.0.4
     dev: false
 
-  /@loaders.gl/draco@3.3.5:
-    resolution: {integrity: sha512-1xCnPd32WeWbmin9SBvNnSl42gmhAiDhjRoD+goa+bLtmAeTnDkaEdjY+WMqVQxMfF0yGBN9YjR/Y5GK46CEjw==}
+  /@loaders.gl/draco@3.4.10:
+    resolution: {integrity: sha512-UHJmxcq4tPc+TPTGZ5MR13le6H7CbKfDPNgvnG21FXOoOXBwVmvdgAHBspUESObRiPX1TBiGtuH7L3VCQMQNwQ==}
     dependencies:
-      '@babel/runtime': 7.22.6
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/schema': 3.3.5
-      '@loaders.gl/worker-utils': 3.3.5
+      '@babel/runtime': 7.22.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/schema': 3.4.10
+      '@loaders.gl/worker-utils': 3.4.10
       draco3d: 1.5.5
     dev: false
 
@@ -1602,13 +1745,23 @@ packages:
       pbf: 3.2.1
     dev: false
 
-  /@loaders.gl/gltf@3.3.5:
-    resolution: {integrity: sha512-+BHY3cdN6vNLUN1vx6Okjsfsv+uUADpvonZ+SNI6aqK/cLcAvsmX98z0RmOQUU58MWnpLO6kYbsUq9WrBB3WIQ==}
+  /@loaders.gl/gis@3.4.10:
+    resolution: {integrity: sha512-7OJAtYlTXE148mm1XwLL7xXNHWRUSpUJgt2r5Q6PXcKoIW+eAGsGDIsSOtJdoVQl9Rp7vR3ufs0YrId+MidTqg==}
     dependencies:
-      '@loaders.gl/draco': 3.3.5
-      '@loaders.gl/images': 3.3.5
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/textures': 3.3.5
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/schema': 3.4.10
+      '@mapbox/vector-tile': 1.3.1
+      '@math.gl/polygon': 3.6.3
+      pbf: 3.2.1
+    dev: false
+
+  /@loaders.gl/gltf@3.4.10:
+    resolution: {integrity: sha512-yT/UbIowx9rIaGhgMvWPu3WCn+psVCVicJb/uc102FzncIi/V9tkTGmYAstOI+NWDsIykdkmL7CSxIObGo449w==}
+    dependencies:
+      '@loaders.gl/draco': 3.4.10
+      '@loaders.gl/images': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/textures': 3.4.10
       '@math.gl/core': 3.6.3
     dev: false
 
@@ -1618,12 +1771,26 @@ packages:
       '@loaders.gl/loader-utils': 3.3.5
     dev: false
 
+  /@loaders.gl/images@3.4.10:
+    resolution: {integrity: sha512-7jUPKddZPnuno63O90JWa9tA/clSZlgPMvSdcxRzYOhIFLnu8+XXXJ1A09uBRKb5iLSj3PnCM0cAlQ0exeQRaA==}
+    dependencies:
+      '@loaders.gl/loader-utils': 3.4.10
+    dev: false
+
   /@loaders.gl/loader-utils@3.3.5:
     resolution: {integrity: sha512-fsXwmPc9jgZABaHgm2oxmUyYE3DDZD84KHf2JqphsdgEdyxvrAYZecdEWwOt7we8DObWxx4YKZBCOqT4aWqpIQ==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@loaders.gl/worker-utils': 3.3.5
       '@probe.gl/stats': 3.6.0
+    dev: false
+
+  /@loaders.gl/loader-utils@3.4.10:
+    resolution: {integrity: sha512-w5iDdQicUUEF20K0NVIFR4BGAAI6Y+KNZe6u3+K/LjraWvzYWKzik7fxLNmS8qnNpL8zHS/w1G6L3HGLE0q8wA==}
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@loaders.gl/worker-utils': 3.4.10
+      '@probe.gl/stats': 4.0.4
     dev: false
 
   /@loaders.gl/math@3.3.5:
@@ -1631,6 +1798,14 @@ packages:
     dependencies:
       '@loaders.gl/images': 3.3.5
       '@loaders.gl/loader-utils': 3.3.5
+      '@math.gl/core': 3.6.3
+    dev: false
+
+  /@loaders.gl/math@3.4.10:
+    resolution: {integrity: sha512-qWDos7SPWnTw8hxrn9VbgocQ1ISJS5Jc5857K0Wj6D1//XJlIWNxu7+Qb+bxVyYoXAE/PxJ0gTKxJ9i0dL0T2g==}
+    dependencies:
+      '@loaders.gl/images': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
       '@math.gl/core': 3.6.3
     dev: false
 
@@ -1644,38 +1819,55 @@ packages:
       pbf: 3.2.1
     dev: false
 
+  /@loaders.gl/mvt@3.4.10:
+    resolution: {integrity: sha512-XE+8cMB783R0HWF0udrKIRDDOMWsQVFP27Xl1Ah0m+7I6+fOMh4/twqXUlHL4gpY9Q+uN1f0Pop33fQtsOMTTg==}
+    dependencies:
+      '@loaders.gl/gis': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/schema': 3.4.10
+      '@math.gl/polygon': 3.6.3
+      pbf: 3.2.1
+    dev: false
+
   /@loaders.gl/schema@3.3.5:
     resolution: {integrity: sha512-NWzNUEJh3RCSxek5koM0hHj4H0dzV/mhEjVci6WGK4ntAy5+gOgwkjhNObPWvlssoE5W+qErHXlgUmjqnL6AuA==}
     dependencies:
       '@types/geojson': 7946.0.10
     dev: false
 
-  /@loaders.gl/terrain@3.3.5:
-    resolution: {integrity: sha512-ys+FUlZpVevQtLWwe4T3fd03A8vXPyim65IWGg+fR9w3gV/9mn8NY0f8tNbFhZlMMxohda6kaqZXbmWj8oitdg==}
+  /@loaders.gl/schema@3.4.10:
+    resolution: {integrity: sha512-vSVPWpC3+U+W6djheOQKHOzkNCnUgdYTcdA2leUbDI1Alp6MEMRhWFrR6CyykUMJIWPoLsY+oitVJ1nMu1nnjw==}
     dependencies:
-      '@babel/runtime': 7.21.0
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/schema': 3.3.5
+      '@types/geojson': 7946.0.10
+    dev: false
+
+  /@loaders.gl/terrain@3.4.10:
+    resolution: {integrity: sha512-SDGbQ157QoGixJozmLLLDzGdJm0VvKUpmim329pQG4KECGSpAHtk3x2Po/GoBg0C2YzRNJwsSuPKU0ovtfAKrQ==}
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@loaders.gl/images': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/schema': 3.4.10
       '@mapbox/martini': 0.2.0
     dev: false
 
-  /@loaders.gl/textures@3.3.5:
-    resolution: {integrity: sha512-bEw2IssZAIGNDTpglCPtFmzZdK1U0Maw17sz25MBShmjugd7Jo7bqc1fXHfMJIIbW7hIA4FxwXUdbFel5/T7PA==}
+  /@loaders.gl/textures@3.4.10:
+    resolution: {integrity: sha512-qnVeOSvKpU+CKEDgGUCH9irF+5i0EGt1fOXL3D2a4WPDhw9+THRR9QBNw53WVnR4nrouIXzQurSKiKWBeL2Jrg==}
     dependencies:
-      '@loaders.gl/images': 3.3.5
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/schema': 3.3.5
-      '@loaders.gl/worker-utils': 3.3.5
+      '@loaders.gl/images': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/schema': 3.4.10
+      '@loaders.gl/worker-utils': 3.4.10
       ktx-parse: 0.0.4
       texture-compressor: 1.0.2
     dev: false
 
-  /@loaders.gl/tiles@3.3.5(@loaders.gl/core@3.3.5):
+  /@loaders.gl/tiles@3.3.5(@loaders.gl/core@3.4.10):
     resolution: {integrity: sha512-5p94WH1zOMmmIFE3T7CkzaY31NhW4szwRYxpTN9SRiSehYaAjUTrhXN4ka9QpCZyJ2KAHZKuomkU5fElgxq5FA==}
     peerDependencies:
       '@loaders.gl/core': ^3.2.0
     dependencies:
-      '@loaders.gl/core': 3.3.5
+      '@loaders.gl/core': 3.4.10
       '@loaders.gl/loader-utils': 3.3.5
       '@loaders.gl/math': 3.3.5
       '@math.gl/core': 3.6.3
@@ -1685,14 +1877,29 @@ packages:
       '@probe.gl/stats': 3.6.0
     dev: false
 
-  /@loaders.gl/wms@3.3.5:
-    resolution: {integrity: sha512-ohPubiOi3JS2J3FPqXYph5fl9jfySrqvCyBjUzPbeU2YqWa8ppEm2iCx/ccGP3HBQR9D+LVZtwJACK6OkBjKdA==}
+  /@loaders.gl/tiles@3.4.10(@loaders.gl/core@3.4.10):
+    resolution: {integrity: sha512-CvHTDTFHbTs9C6WNO14ow5tq0L97/ApntZjGjazSkOFRk39gJd6kcIc2RX107vgW8/cdNHRYJmqzGwk2rTpx/w==}
+    peerDependencies:
+      '@loaders.gl/core': ^3.4.0
     dependencies:
-      '@babel/runtime': 7.21.0
-      '@loaders.gl/images': 3.3.5
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/schema': 3.3.5
-      '@loaders.gl/xml': 3.3.5
+      '@loaders.gl/core': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/math': 3.4.10
+      '@math.gl/core': 3.6.3
+      '@math.gl/culling': 3.6.3
+      '@math.gl/geospatial': 3.6.3
+      '@math.gl/web-mercator': 3.6.3
+      '@probe.gl/stats': 4.0.4
+    dev: false
+
+  /@loaders.gl/wms@3.4.10:
+    resolution: {integrity: sha512-pTnCQXC0hfG/zTUbkfo3hHpQKvKU4F/6auGqFrO2aJ86mAu3RL0KT40CCL2aa6pRkNmcWrmYv5doF/awnjpNmw==}
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@loaders.gl/images': 3.4.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/schema': 3.4.10
+      '@loaders.gl/xml': 3.4.10
       '@turf/rewind': 5.1.5
       deep-strict-equal: 0.2.0
       lerc: 4.0.1
@@ -1701,16 +1908,22 @@ packages:
   /@loaders.gl/worker-utils@3.3.5:
     resolution: {integrity: sha512-qDWLw7X53Y18pN3ANnTJgNahB6cDz9JGC0rX/q+oNhwZP1hSCa1WQ4hyPHPJiR6ka4D3gdeeSHAoXKnxxEfwIA==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
     dev: false
 
-  /@loaders.gl/xml@3.3.5:
-    resolution: {integrity: sha512-VuwJA0CSSqyaTXU0gdzwa7ZlI5xwDUHQaaKOkK1uypTIucBVahbyfBqxU5ovAPo4C5aCT8Pz9k/Pv2AFAYgwUg==}
+  /@loaders.gl/worker-utils@3.4.10:
+    resolution: {integrity: sha512-ecT63PJemIR8v0hXp3fgvIFgGWnhysYsmyYltHk2FBrKy9gwH7jkGderl8SdM2d5mc6EBff8P1Y7H7qAKpCQMQ==}
     dependencies:
-      '@babel/runtime': 7.22.6
-      '@loaders.gl/loader-utils': 3.3.5
-      '@loaders.gl/schema': 3.3.5
-      fast-xml-parser: 4.2.2
+      '@babel/runtime': 7.22.10
+    dev: false
+
+  /@loaders.gl/xml@3.4.10:
+    resolution: {integrity: sha512-wLjjL4ppZrimgiDfL/Z3aNdLj8T99B8KpWl+AuF6dkivhkmC3QxOBNJeo0zu5tOkU7OaInudCifdhVpWPrASwQ==}
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@loaders.gl/loader-utils': 3.4.10
+      '@loaders.gl/schema': 3.4.10
+      fast-xml-parser: 4.2.7
     dev: false
 
   /@luma.gl/constants@8.5.20:
@@ -1720,7 +1933,7 @@ packages:
   /@luma.gl/core@8.5.20:
     resolution: {integrity: sha512-xJr96G6vhYcznYHC84fbeOG3fgNM4lFwj9bd0VPcg/Kfe8otUeN1Hl0AKHCCtNn48PiMSg3LKbaiRfNUMhaffQ==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@luma.gl/constants': 8.5.20
       '@luma.gl/engine': 8.5.20
       '@luma.gl/gltools': 8.5.20
@@ -1731,7 +1944,7 @@ packages:
   /@luma.gl/engine@8.5.20:
     resolution: {integrity: sha512-+0ryJ/4gL1pWaEgZimY21jUPt1LYiO6Cqte8TNUprCfAHoAStsuzD7jwgEqnM6jJOUEdIxQ3w0z3Dzw/0KIE+w==}
     dependencies:
-      '@babel/runtime': 7.22.6
+      '@babel/runtime': 7.22.10
       '@luma.gl/constants': 8.5.20
       '@luma.gl/gltools': 8.5.20
       '@luma.gl/shadertools': 8.5.20
@@ -1742,7 +1955,7 @@ packages:
       '@types/offscreencanvas': 2019.7.0
     dev: false
 
-  /@luma.gl/experimental@8.5.20(@loaders.gl/gltf@3.3.5)(@loaders.gl/images@3.3.5)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20):
+  /@luma.gl/experimental@8.5.20(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20):
     resolution: {integrity: sha512-V1Jp68rYMPtwMdf+50r3NSYsGV3srjwZ+lcK2ew4DshjedDbYwLqTGMWcOyBhY3K3aCl2LH3Fhn0hAY+3NTLGA==}
     peerDependencies:
       '@loaders.gl/gltf': ^3.0.0
@@ -1752,8 +1965,8 @@ packages:
       '@luma.gl/shadertools': ^8.4.0
       '@luma.gl/webgl': ^8.4.0
     dependencies:
-      '@loaders.gl/gltf': 3.3.5
-      '@loaders.gl/images': 3.3.5
+      '@loaders.gl/gltf': 3.4.10
+      '@loaders.gl/images': 3.4.10
       '@luma.gl/constants': 8.5.20
       '@luma.gl/engine': 8.5.20
       '@luma.gl/gltools': 8.5.20
@@ -1766,7 +1979,7 @@ packages:
   /@luma.gl/gltools@8.5.20:
     resolution: {integrity: sha512-5pP6ph9FSX5gHiVWQM1DmYRUnriklzKUG9yaqlQsKEqCFsOcKB0EfK3MfBVXIfsOdP/1bJZ9Dlz/zV19soWVhg==}
     dependencies:
-      '@babel/runtime': 7.22.6
+      '@babel/runtime': 7.22.10
       '@luma.gl/constants': 8.5.20
       '@probe.gl/env': 3.6.0
       '@probe.gl/log': 3.6.0
@@ -1776,14 +1989,14 @@ packages:
   /@luma.gl/shadertools@8.5.20:
     resolution: {integrity: sha512-q1lrCZy1ncIFb4mMjsYgISLzNP6eMnhLUY+Oltj/qjAMcPEssCeHN2+XGfP/CVtU+O7sC+5JY2bQGaTs6HQ/Qw==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@math.gl/core': 3.6.3
     dev: false
 
   /@luma.gl/webgl@8.5.20:
     resolution: {integrity: sha512-p/kt9KztywH4l+09XHoZ4cPFOoE7xlZXIBMT8rxRVgfe1w0lvi7QYh4tOG7gk+iixQ34EyDQacoHCsabdpmqQg==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@luma.gl/constants': 8.5.20
       '@luma.gl/gltools': 8.5.20
       '@probe.gl/env': 3.6.0
@@ -1847,7 +2060,7 @@ packages:
   /@math.gl/core@3.6.3:
     resolution: {integrity: sha512-jBABmDkj5uuuE0dTDmwwss7Cup5ZwQ6Qb7h1pgvtkEutTrhkcv8SuItQNXmF45494yIHeoGue08NlyeY6wxq2A==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@math.gl/types': 3.6.3
       gl-matrix: 3.4.3
     dev: false
@@ -1855,7 +2068,7 @@ packages:
   /@math.gl/culling@3.6.3:
     resolution: {integrity: sha512-3UERXHbaPlM6pnTk2MI7LeQ5CoelDZzDzghTTcv+HdQCZsT/EOEuEdYimETHtSxiyiOmsX2Un65UBLYT/rbKZg==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@math.gl/core': 3.6.3
       gl-matrix: 3.4.3
     dev: false
@@ -1863,7 +2076,7 @@ packages:
   /@math.gl/geospatial@3.6.3:
     resolution: {integrity: sha512-6xf657lJnaecSarSzn02t0cnsCSkWb+39m4+im96v20dZTrLCWZ2glDQVzfuL91meDnDXjH4oyvynp12Mj5MFg==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@math.gl/core': 3.6.3
       gl-matrix: 3.4.3
     dev: false
@@ -1877,7 +2090,7 @@ packages:
   /@math.gl/sun@3.6.3:
     resolution: {integrity: sha512-mrx6CGYYeTNSQttvcw0KVUy+35YDmnjMqpO/o0t06Vcghrt0HNruB/ScRgUSbJrgkbOg1Vcqm23HBd++clzQzw==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
     dev: false
 
   /@math.gl/types@3.6.3:
@@ -1887,7 +2100,7 @@ packages:
   /@math.gl/web-mercator@3.6.3:
     resolution: {integrity: sha512-UVrkSOs02YLehKaehrxhAejYMurehIHPfFQvPFZmdJHglHOU4V2cCUApTVEwOksvCp161ypEqVp+9H6mGhTTcw==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       gl-matrix: 3.4.3
     dev: false
 
@@ -1935,38 +2148,57 @@ packages:
   /@probe.gl/env@3.6.0:
     resolution: {integrity: sha512-4tTZYUg/8BICC3Yyb9rOeoKeijKbZHRXBEKObrfPmX4sQmYB15ZOUpoVBhAyJkOYVAM8EkPci6Uw5dLCwx2BEQ==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
+    dev: false
+
+  /@probe.gl/env@4.0.4:
+    resolution: {integrity: sha512-sYNGqesDfWD6dFP5oNZtTeFA4Z6ak5T4a8BNPdNhoqy7PK9w70JHrb6mv+RKWqKXq33KiwCDWL7fYxx2HuEH2w==}
+    dependencies:
+      '@babel/runtime': 7.22.10
     dev: false
 
   /@probe.gl/log@3.6.0:
     resolution: {integrity: sha512-hjpyenpEvOdowgZ1qMeCJxfRD4JkKdlXz0RC14m42Un62NtOT+GpWyKA4LssT0+xyLULCByRAtG2fzZorpIAcA==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@probe.gl/env': 3.6.0
+    dev: false
+
+  /@probe.gl/log@4.0.4:
+    resolution: {integrity: sha512-WpmXl6njlBMwrm8HBh/b4kSp/xnY1VVmeT4PWUKF+RkVbFuKQbsU11dA1IxoMd7gSY+5DGIwxGfAv1H5OMzA4A==}
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@probe.gl/env': 4.0.4
     dev: false
 
   /@probe.gl/stats@3.6.0:
     resolution: {integrity: sha512-JdALQXB44OP4kUBN/UrQgzbJe4qokbVF4Y8lkIA8iVCFnjVowWIgkD/z/0QO65yELT54tTrtepw1jScjKB+rhQ==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
+    dev: false
+
+  /@probe.gl/stats@4.0.4:
+    resolution: {integrity: sha512-SDuSY/D4yDL6LQDa69l/GCcnZLRiGYdyvYkxWb0CgnzTPdPrcdrzGkzkvpC3zsA4fEFw2smlDje370QGHwlisg==}
+    dependencies:
+      '@babel/runtime': 7.22.10
     dev: false
 
   /@radix-ui/number@1.0.1:
     resolution: {integrity: sha512-T5gIdVO2mmPW3NNhjNgEP3cqMXjXL9UbO0BzWcXfvdBs+BohbQxvd/K5hSVKmn9/lbTdsQVKbUcP5WLCwvUbBg==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
     dev: false
 
   /@radix-ui/primitive@1.0.0:
     resolution: {integrity: sha512-3e7rn8FDMin4CgeL7Z/49smCA3rFYY3Ha2rUQ7HRWFadS5iCRw08ZgVT1LaNTCNqgvrUiyczLflrVrF0SRQtNA==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
     dev: false
 
   /@radix-ui/primitive@1.0.1:
     resolution: {integrity: sha512-yQ8oGX2GVsEYMWGxcovu1uGWPCxV5BFfeeYxqPmuAzUyLT9qmaMXSAhXpb0WrspIeqYzdJpkh2vHModJPgRIaw==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
     dev: false
 
   /@radix-ui/react-accordion@1.1.0(react-dom@18.2.0)(react@18.2.0):
@@ -1995,7 +2227,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-primitive': 1.0.2(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -2014,7 +2246,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.0.9)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
@@ -2047,7 +2279,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/primitive': 1.0.0
       '@radix-ui/react-compose-refs': 1.0.0(react@18.2.0)
       '@radix-ui/react-context': 1.0.0(react@18.2.0)
@@ -2094,7 +2326,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-compose-refs': 1.0.0(react@18.2.0)
       '@radix-ui/react-context': 1.0.0(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.1(react-dom@18.2.0)(react@18.2.0)
@@ -2116,7 +2348,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.0.9)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
@@ -2132,7 +2364,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       react: 18.2.0
     dev: false
 
@@ -2145,7 +2377,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@types/react': 18.0.25
       react: 18.2.0
     dev: false
@@ -2155,7 +2387,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       react: 18.2.0
     dev: false
 
@@ -2168,7 +2400,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@types/react': 18.0.25
       react: 18.2.0
     dev: false
@@ -2212,7 +2444,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       react: 18.2.0
     dev: false
 
@@ -2225,7 +2457,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@types/react': 18.0.25
       react: 18.2.0
     dev: false
@@ -2236,7 +2468,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/primitive': 1.0.0
       '@radix-ui/react-compose-refs': 1.0.0(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.2(react-dom@18.2.0)(react@18.2.0)
@@ -2259,7 +2491,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.0.9)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
@@ -2280,7 +2512,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@types/react': 18.0.25
       react: 18.2.0
     dev: false
@@ -2298,7 +2530,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.0.9)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.0.25)(react@18.2.0)
@@ -2321,7 +2553,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-use-layout-effect': 1.0.0(react@18.2.0)
       react: 18.2.0
     dev: false
@@ -2335,7 +2567,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@types/react': 18.0.25
       react: 18.2.0
@@ -2382,7 +2614,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@floating-ui/react-dom': 0.7.2(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-arrow': 1.0.2(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.0(react@18.2.0)
@@ -2412,7 +2644,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@floating-ui/react-dom': 2.0.1(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-arrow': 1.0.3(@types/react-dom@18.0.9)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.0.25)(react@18.2.0)
@@ -2435,7 +2667,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-primitive': 1.0.2(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -2454,7 +2686,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.0.9)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
@@ -2468,7 +2700,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-compose-refs': 1.0.0(react@18.2.0)
       '@radix-ui/react-use-layout-effect': 1.0.0(react@18.2.0)
       react: 18.2.0
@@ -2488,7 +2720,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@types/react': 18.0.25
@@ -2503,7 +2735,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-slot': 1.0.1(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -2515,7 +2747,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-slot': 1.0.1(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -2534,7 +2766,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-slot': 1.0.2(@types/react@18.0.25)(react@18.2.0)
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
@@ -2555,7 +2787,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-collection': 1.0.3(@types/react-dom@18.0.9)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.0.25)(react@18.2.0)
@@ -2638,7 +2870,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-compose-refs': 1.0.0(react@18.2.0)
       react: 18.2.0
     dev: false
@@ -2652,7 +2884,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@types/react': 18.0.25
       react: 18.2.0
@@ -2748,7 +2980,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       react: 18.2.0
     dev: false
 
@@ -2761,7 +2993,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@types/react': 18.0.25
       react: 18.2.0
     dev: false
@@ -2771,7 +3003,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-use-callback-ref': 1.0.0(react@18.2.0)
       react: 18.2.0
     dev: false
@@ -2785,7 +3017,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@types/react': 18.0.25
       react: 18.2.0
@@ -2796,7 +3028,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-use-callback-ref': 1.0.0(react@18.2.0)
       react: 18.2.0
     dev: false
@@ -2810,7 +3042,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@types/react': 18.0.25
       react: 18.2.0
@@ -2821,7 +3053,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       react: 18.2.0
     dev: false
 
@@ -2834,7 +3066,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@types/react': 18.0.25
       react: 18.2.0
     dev: false
@@ -2844,7 +3076,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       react: 18.2.0
     dev: false
 
@@ -2857,7 +3089,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@types/react': 18.0.25
       react: 18.2.0
     dev: false
@@ -2867,7 +3099,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/rect': 1.0.0
       react: 18.2.0
     dev: false
@@ -2881,7 +3113,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/rect': 1.0.1
       '@types/react': 18.0.25
       react: 18.2.0
@@ -2892,7 +3124,7 @@ packages:
     peerDependencies:
       react: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-use-layout-effect': 1.0.0(react@18.2.0)
       react: 18.2.0
     dev: false
@@ -2906,7 +3138,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.0.25)(react@18.2.0)
       '@types/react': 18.0.25
       react: 18.2.0
@@ -2918,7 +3150,7 @@ packages:
       react: ^16.8 || ^17.0 || ^18.0
       react-dom: ^16.8 || ^17.0 || ^18.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-primitive': 1.0.2(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -2937,7 +3169,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.0.9)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.0.25
       '@types/react-dom': 18.0.9
@@ -2948,19 +3180,19 @@ packages:
   /@radix-ui/rect@1.0.0:
     resolution: {integrity: sha512-d0O68AYy/9oeEy1DdC07bz1/ZXX+DqCskRd3i4JzLSTXwefzaepQrKjXC7aNM8lTHjFLDO0pDgaEiQ7jEk+HVg==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
     dev: false
 
   /@radix-ui/rect@1.0.1:
     resolution: {integrity: sha512-fyrgCaedtvMg9NK3en0pnOYJdtfwxUcNolezkNPUsoX57X8oQk+NkqcvzHXD2uKNij6GXmWU9NDru2IWjrO4BQ==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
     dev: false
 
   /@redux-saga/core@1.2.1:
     resolution: {integrity: sha512-ABCxsZy9DwmNoYNo54ZlfuTvh77RXx8ODKpxOHeWam2dOaLGQ7vAktpfOtqSeTdYrKEORtTeWnxkGJMmPOoukg==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@redux-saga/deferred': 1.2.1
       '@redux-saga/delay-p': 1.2.1
       '@redux-saga/is': 1.1.3
@@ -3052,18 +3284,23 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /@tauri-apps/api@1.1.0:
-    resolution: {integrity: sha512-n13pIqdPd3KtaMmmAcrU7BTfdMtIlGNnfZD0dNX8L4p8dgmuNyikm6JAA+yCpl9gqq6I8x5cV2Y0muqdgD0cWw==}
-    engines: {node: '>= 12.22.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
-    dev: false
-
   /@tauri-apps/api@1.4.0:
     resolution: {integrity: sha512-Jd6HPoTM1PZSFIzq7FB8VmMu3qSSyo/3lSwLpoapW+lQ41CL5Dow2KryLg+gyazA/58DRWI9vu/XpEeHK4uMdw==}
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
     dev: false
 
-  /@tauri-apps/cli-darwin-arm64@1.1.1:
-    resolution: {integrity: sha512-qBG11ig525/qf0f5OQxn0ON3hT8YdpTfpa4Y4kVqBJhdW50R5fadPv6tv5Dpl2TS2X7nWh/zg5mEXYoCK3HZ9w==}
+  /@tauri-apps/api@2.0.0-alpha.4:
+    resolution: {integrity: sha512-gWe5fFHbwFM+dmdDPtlDvVDVtoMneGRM+S8mECevWhKpXYxId0yxznE56YGAvPSJXC3vgsXw16mOmkTnEVKnaw==}
+    engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+    dev: false
+
+  /@tauri-apps/api@2.0.0-alpha.5:
+    resolution: {integrity: sha512-OqysC4c819itGxic50RoDMrmd+ofX+MMNkXKeRS0BV2rkKqrnuV17o3TrQXFI1xs/kXRmmPC+3Y42P9Y5uNvRg==}
+    engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+    dev: false
+
+  /@tauri-apps/cli-darwin-arm64@2.0.0-alpha.10:
+    resolution: {integrity: sha512-z6DoKRUm1Yygu2Tpatu7Fej0eZejZQcsDKsHWc3b5yoIsrodxvKbko2SvYczUx4ecXWplJBTIfTZNo6ciIRRmw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -3071,8 +3308,8 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli-darwin-x64@1.1.1:
-    resolution: {integrity: sha512-M3dMsp78OdxisbTwAWGvy3jIb3uqThtQcUYVvqOu9LeEOHyldOBFDSht+6PTBpaJLAHFMQK2rmNxiWgigklJaA==}
+  /@tauri-apps/cli-darwin-x64@2.0.0-alpha.10:
+    resolution: {integrity: sha512-xqPUC5uI6zo5+1IXSwZLj1uyRWCeZgQgpyaExGDOYBjcC8HUc2NRdFGsGVtGhFWE+HftppD9p8elJLQM90B02w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -3080,8 +3317,8 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli-linux-arm-gnueabihf@1.1.1:
-    resolution: {integrity: sha512-LYlvdAd73cq+yTi6rw7j/DWIvDpeApwgQkIn+HYsNNeFhyFmABU7tmw+pekK3W3nHAkYAJ69Rl4ZdoxdNGKmHg==}
+  /@tauri-apps/cli-linux-arm-gnueabihf@2.0.0-alpha.10:
+    resolution: {integrity: sha512-UpjG9qpF/7fkfrBoM6N+Lo08HRAKR9k7LENAFU+zd81JestxOCs0hxuX2/lGkVydtOuSXfVvMn1W5YpGKkgp3A==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
@@ -3089,8 +3326,8 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli-linux-arm64-gnu@1.1.1:
-    resolution: {integrity: sha512-o/hbMQIKuFI7cTNpeQBHD/OCNJOBIci78faKms/t6AstLXx0QJuRHDk477Rg6VVy/I3BBKbyATALbmcTq+ti0A==}
+  /@tauri-apps/cli-linux-arm64-gnu@2.0.0-alpha.10:
+    resolution: {integrity: sha512-Pc8seZINcbHDgOC0ThZ5EPUqOYbL94wEUecKkiaKn7gCl3/ZyIlRte5gizBeLwmnG4fkSLZc0UMvRilu4hGK3g==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -3098,8 +3335,8 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli-linux-arm64-musl@1.1.1:
-    resolution: {integrity: sha512-8Ci4qlDnXIp93XqUrtzFCBDatUzPHpZq7L3bociUbWpvy/bnlzxp1C/C+vwdc4uS1MiAp9v3BFgrU4i0f0Z3QQ==}
+  /@tauri-apps/cli-linux-arm64-musl@2.0.0-alpha.10:
+    resolution: {integrity: sha512-ZlaBbJq5yXP6VmNOrUGgSDnM1JcDsYf7XfVOm/kLVVrZ3iEzYA18v4SZH2kR18bU7h5+YVCPwwnfD+B8ROGidA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -3107,8 +3344,8 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli-linux-x64-gnu@1.1.1:
-    resolution: {integrity: sha512-ES4Bkx2JAI8+dDNDJswhLS3yqt+yT/4C6UfGOPIHFxcXUh6fe36eUllrTt+HLRS9xTZbYnteJy7ebq2TqMkaxw==}
+  /@tauri-apps/cli-linux-x64-gnu@2.0.0-alpha.10:
+    resolution: {integrity: sha512-7fo0u56URSFZwJpwPMeNiYypbgYcT8i5KPMe1CQgWW19sJLHBMK1Kd0L8SeAZDlCPpY2coNifAdEm3C7Ca7xMQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -3116,8 +3353,8 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli-linux-x64-musl@1.1.1:
-    resolution: {integrity: sha512-qrN1WOMAaDl+LE8P8iO0+DYlrWNTc9jIu/CsnVY/LImTn79ZPxEkcVBo0UGeKRI7f10TfvkVmLCBLxTz8QhEyA==}
+  /@tauri-apps/cli-linux-x64-musl@2.0.0-alpha.10:
+    resolution: {integrity: sha512-9lY7YJmsm7SndlIxKzj/faX/bYX1q0dib88kpxT2xW4qNt9RihTI6PST1PDce5DmEoheLU9Xp9ere8SfoHgE2A==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -3125,8 +3362,17 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli-win32-ia32-msvc@1.1.1:
-    resolution: {integrity: sha512-vw7VOmrQlywHhFV3pf54udf2FRNj9dg9WP1gL0My55FnB+w+PWS9Ipm871kX5qepmChdnZHKq9fsqE2uTjX//Q==}
+  /@tauri-apps/cli-win32-arm64-msvc@2.0.0-alpha.10:
+    resolution: {integrity: sha512-tJOHIy13vjYRkfw7++aRDQEb5CVzVQKDiJ35Zg4I8YcaPExgj6LKCpDo8N8AD4RXy4SnYKzqYTt8K9xcyIonzA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tauri-apps/cli-win32-ia32-msvc@2.0.0-alpha.10:
+    resolution: {integrity: sha512-DN4TlOU8e6cRRVXAnldHhfDDr0ER000fojJ/Vb33fgGvaXury3jBtNyKQuoscvg6T8fLUBc72O6+4tDnXlIBwQ==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -3134,8 +3380,8 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli-win32-x64-msvc@1.1.1:
-    resolution: {integrity: sha512-OukxlLLi3AoCN4ABnqCDTiiC7xJGWukAjrKCIx7wFISrLjNfsrnH7/UOzuopfGpZChSe2c+AamVmcpBfVsEmJA==}
+  /@tauri-apps/cli-win32-x64-msvc@2.0.0-alpha.10:
+    resolution: {integrity: sha512-H5Y+L7H24n9EVB/Dw5HHGo+wQZHTLVgWrkOwsxqssDhTPiM5CbEuyjEf/B1y8uqp4YoIlw5t7Db+GBg12KejAA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -3143,21 +3389,46 @@ packages:
     dev: true
     optional: true
 
-  /@tauri-apps/cli@1.1.1:
-    resolution: {integrity: sha512-80kjMEMPBwLYCp0tTKSquy90PHHGGBvZsneNr3B/mWxNsvjzA1C0vOyGJGFrJuT2OmkvrdvuJZ5mch5hL8O1Xg==}
+  /@tauri-apps/cli@2.0.0-alpha.10:
+    resolution: {integrity: sha512-8SkTAxg5J06f7BWgJjNt1NEBPRsffmj4X+PckHX3ZguZd8xqpGtACufUg0zVqaFZPmd+9OCvoEJSP5veO4utDQ==}
     engines: {node: '>= 10'}
     hasBin: true
     optionalDependencies:
-      '@tauri-apps/cli-darwin-arm64': 1.1.1
-      '@tauri-apps/cli-darwin-x64': 1.1.1
-      '@tauri-apps/cli-linux-arm-gnueabihf': 1.1.1
-      '@tauri-apps/cli-linux-arm64-gnu': 1.1.1
-      '@tauri-apps/cli-linux-arm64-musl': 1.1.1
-      '@tauri-apps/cli-linux-x64-gnu': 1.1.1
-      '@tauri-apps/cli-linux-x64-musl': 1.1.1
-      '@tauri-apps/cli-win32-ia32-msvc': 1.1.1
-      '@tauri-apps/cli-win32-x64-msvc': 1.1.1
+      '@tauri-apps/cli-darwin-arm64': 2.0.0-alpha.10
+      '@tauri-apps/cli-darwin-x64': 2.0.0-alpha.10
+      '@tauri-apps/cli-linux-arm-gnueabihf': 2.0.0-alpha.10
+      '@tauri-apps/cli-linux-arm64-gnu': 2.0.0-alpha.10
+      '@tauri-apps/cli-linux-arm64-musl': 2.0.0-alpha.10
+      '@tauri-apps/cli-linux-x64-gnu': 2.0.0-alpha.10
+      '@tauri-apps/cli-linux-x64-musl': 2.0.0-alpha.10
+      '@tauri-apps/cli-win32-arm64-msvc': 2.0.0-alpha.10
+      '@tauri-apps/cli-win32-ia32-msvc': 2.0.0-alpha.10
+      '@tauri-apps/cli-win32-x64-msvc': 2.0.0-alpha.10
     dev: true
+
+  /@tauri-apps/plugin-clipboard-manager@2.0.0-alpha.0:
+    resolution: {integrity: sha512-clM+gZ39my93UUo9GzCQnpJf2jaBG1jKo4HRlbZe8hJM2xQceWkazhY2VaZbl99Lc+J2NJUHjQqzc+JzhAr8uw==}
+    dependencies:
+      '@tauri-apps/api': 2.0.0-alpha.4
+    dev: false
+
+  /@tauri-apps/plugin-os@2.0.0-alpha.0:
+    resolution: {integrity: sha512-vHZW/W/5bAvr1UnaXhRg29yDQUkBuCGlxtVDKUEUTvKEdbMrKLlFuzr8RxcczLI9CTDqQ/EP7xzn7XYYQWR82Q==}
+    dependencies:
+      '@tauri-apps/api': 2.0.0-alpha.4
+    dev: false
+
+  /@tauri-apps/plugin-shell@2.0.0-alpha.0:
+    resolution: {integrity: sha512-Tyl6lsM/S+v5n/cJpIErCGq5CJwGV1xVLB+xyG364wA/y1MpYTVrk5acCSB5sF+OSOtR84ZeazkL4tjCM6EIUA==}
+    dependencies:
+      '@tauri-apps/api': 2.0.0-alpha.4
+    dev: false
+
+  /@tauri-apps/plugin-window@2.0.0-alpha.0:
+    resolution: {integrity: sha512-ZXFXOu9m8QiDB8d8LFFgwcfxIAbr0bhzj06YvmZDB3isuVtlFP9EyU4D+zmumWEWvNN2XP7xgpn68ivOVhmNNQ==}
+    dependencies:
+      '@tauri-apps/api': 2.0.0-alpha.4
+    dev: false
 
   /@turf/boolean-clockwise@5.1.5:
     resolution: {integrity: sha512-FqbmEEOJ4rU4/2t7FKx0HUWmjFEVqR+NJrFP7ymGSjja2SQ7Q91nnBihGuT+yuHHl6ElMjQ3ttsB/eTmyCycxA==}
@@ -3994,6 +4265,10 @@ packages:
       wrap-ansi: 7.0.0
     dev: true
 
+  /clsx@2.0.0:
+    resolution: {integrity: sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==}
+    engines: {node: '>=6'}
+
   /co@4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
@@ -4238,20 +4513,21 @@ packages:
       ms: 2.1.2
     dev: true
 
-  /deck.gl@8.9.14(@loaders.gl/core@3.3.5)(@loaders.gl/gltf@3.3.5)(@loaders.gl/images@3.3.5)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(@types/react@18.0.25)(gl-matrix@3.4.3)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-miVKkhsLYuT0/0c/TAYJc2Y764GewcqQH8nUB8EdC/7aO5sQrSRZFaxneIJVGbTQw/z4ZMg9UV8Eo/d1QY1yBg==}
+  /deck.gl@8.9.23(@loaders.gl/core@3.4.10)(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(@types/react@18.0.25)(gl-matrix@3.4.3)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-2zBVxmwBQFDsfqAJSKJqkiJLLCGzsHgwktshSjAT7aKyUE5ceRS6Iurc6wO2xmEW90VbnaG1x312eqPMqEtGHA==}
     dependencies:
-      '@deck.gl/aggregation-layers': 8.9.14(@deck.gl/core@8.9.14)(@deck.gl/layers@8.9.14)(@luma.gl/core@8.5.20)
-      '@deck.gl/carto': 8.9.14(@deck.gl/aggregation-layers@8.9.14)(@deck.gl/core@8.9.14)(@deck.gl/extensions@8.9.14)(@deck.gl/geo-layers@8.9.14)(@deck.gl/layers@8.9.14)(@loaders.gl/core@3.3.5)
-      '@deck.gl/core': 8.9.14
-      '@deck.gl/extensions': 8.9.14(@deck.gl/core@8.9.14)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
-      '@deck.gl/geo-layers': 8.9.14(@deck.gl/core@8.9.14)(@deck.gl/extensions@8.9.14)(@deck.gl/layers@8.9.14)(@deck.gl/mesh-layers@8.9.14)(@loaders.gl/core@3.3.5)(@loaders.gl/gltf@3.3.5)(@loaders.gl/images@3.3.5)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
-      '@deck.gl/google-maps': 8.9.14(@deck.gl/core@8.9.14)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)
-      '@deck.gl/json': 8.9.14(@deck.gl/core@8.9.14)
-      '@deck.gl/layers': 8.9.14(@deck.gl/core@8.9.14)(@loaders.gl/core@3.3.5)(@luma.gl/core@8.5.20)
-      '@deck.gl/mapbox': 8.9.14(@deck.gl/core@8.9.14)
-      '@deck.gl/mesh-layers': 8.9.14(@deck.gl/core@8.9.14)(@loaders.gl/images@3.3.5)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/webgl@8.5.20)
-      '@deck.gl/react': 8.9.14(@deck.gl/core@8.9.14)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
+      '@babel/runtime': 7.22.10
+      '@deck.gl/aggregation-layers': 8.9.23(@deck.gl/core@8.9.23)(@deck.gl/layers@8.9.23)(@luma.gl/core@8.5.20)
+      '@deck.gl/carto': 8.9.23(@deck.gl/aggregation-layers@8.9.23)(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.23)(@deck.gl/geo-layers@8.9.23)(@deck.gl/layers@8.9.23)(@loaders.gl/core@3.4.10)
+      '@deck.gl/core': 8.9.23
+      '@deck.gl/extensions': 8.9.23(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)(@math.gl/web-mercator@3.6.3)(gl-matrix@3.4.3)
+      '@deck.gl/geo-layers': 8.9.23(@deck.gl/core@8.9.23)(@deck.gl/extensions@8.9.23)(@deck.gl/layers@8.9.23)(@deck.gl/mesh-layers@8.9.23)(@loaders.gl/core@3.4.10)(@loaders.gl/gltf@3.4.10)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/shadertools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@deck.gl/google-maps': 8.9.23(@deck.gl/core@8.9.23)(@luma.gl/constants@8.5.20)(@luma.gl/core@8.5.20)(@math.gl/core@3.6.3)
+      '@deck.gl/json': 8.9.23(@deck.gl/core@8.9.23)
+      '@deck.gl/layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/core@3.4.10)(@luma.gl/core@8.5.20)
+      '@deck.gl/mapbox': 8.9.23(@deck.gl/core@8.9.23)
+      '@deck.gl/mesh-layers': 8.9.23(@deck.gl/core@8.9.23)(@loaders.gl/images@3.4.10)(@luma.gl/core@8.5.20)(@luma.gl/engine@8.5.20)(@luma.gl/gltools@8.5.20)(@luma.gl/webgl@8.5.20)
+      '@deck.gl/react': 8.9.23(@deck.gl/core@8.9.23)(@types/react@18.0.25)(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
       - '@loaders.gl/core'
       - '@loaders.gl/gltf'
@@ -4795,6 +5071,7 @@ packages:
 
   /expression-eval@2.1.0:
     resolution: {integrity: sha512-FUJO/Akvl/JOWkvlqZaqbkhsEWlCJWDeZG4tzX96UH68D9FeRgYgtb55C2qtqbORC0Q6x5419EDjWu4IT9kQfg==}
+    deprecated: The expression-eval npm package is no longer maintained. The package was originally published as part of a now-completed personal project, and I do not have incentives to continue maintenance.
     dependencies:
       jsep: 0.3.5
     dev: false
@@ -4829,8 +5106,8 @@ packages:
     resolution: {integrity: sha512-HPtaa38cPgWvaCFmRNhlc6NG7pv6NUHqjPgVAkWGoB9mQMwYB27/K0CvOM5Czy+qpT3e8XJ6Q4aPAnzpNpzNaw==}
     dev: false
 
-  /fast-xml-parser@4.2.2:
-    resolution: {integrity: sha512-DLzIPtQqmvmdq3VUKR7T6omPK/VCRNqgFlGtbESfyhcH2R4I8EzK1/K6E8PkRCK2EabWrUHK32NjYRbEFnnz0Q==}
+  /fast-xml-parser@4.2.7:
+    resolution: {integrity: sha512-J8r6BriSLO1uj2miOk1NW0YVm8AGOOu3Si2HQp/cSmo6EA4m3fcwu2WKjJ4RK9wMLBtg69y1kS8baDiQBR41Ig==}
     hasBin: true
     dependencies:
       strnum: 1.0.5
@@ -6011,6 +6288,10 @@ packages:
     engines: {node: '>=0.6'}
     dev: false
 
+  /long@5.2.3:
+    resolution: {integrity: sha512-lcHwpNoggQTObv5apGNCTdJrO69eHOZMi4BNC+rTLER8iHAqGrUVeLh/irVIM7zTw2bOXA8T6uNPeujwOLg/2Q==}
+    dev: false
+
   /loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
@@ -6868,7 +7149,7 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       react: 18.2.0
       use-composed-ref: 1.3.0(react@18.2.0)
       use-latest: 1.2.1(@types/react@18.0.25)(react@18.2.0)
@@ -6964,10 +7245,14 @@ packages:
   /redux@4.2.0:
     resolution: {integrity: sha512-oSBmcKKIuIR4ME29/AeNUnl5L+hvBq7OaJWzaptTQJAntaPvxIJqfnjbaEiCzzaIz+XmVILfqAM3Ob0aXLPfjA==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
 
   /regenerator-runtime@0.13.11:
     resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
+    dev: false
+
+  /regenerator-runtime@0.14.0:
+    resolution: {integrity: sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==}
 
   /regexp.prototype.flags@1.4.3:
     resolution: {integrity: sha512-fjggEOO3slI6Wvgjwflkc4NFRCTZAu5CnNfBd5qOMYhWdn67nJBBu34/TkD++eeFmd8C9r9jfXJ27+nSiRkSUA==}
@@ -7065,7 +7350,7 @@ packages:
   /rtl-css-js@1.16.1:
     resolution: {integrity: sha512-lRQgou1mu19e+Ya0LsTvKrVJ5TYUbqCVPAiImX3UfLTenarvPUl1QFdvu5Z3PYmHT9RCcwIfbjRQBntExyj3Zg==}
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
     dev: false
 
   /run-parallel@1.2.0:
@@ -7330,6 +7615,9 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
+  /tailwind-merge@1.14.0:
+    resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
+
   /tailwindcss-radix@2.8.0:
     resolution: {integrity: sha512-1k1UfoIYgVyBl13FKwwoKavjnJ5VEaUClCTAsgz3VLquN4ay/lyaMPzkbqD71sACDs2fRGImytAUlMb4TzOt1A==}
     dev: false
@@ -7367,6 +7655,25 @@ packages:
     transitivePeerDependencies:
       - ts-node
     dev: true
+
+  /tauri-controls@0.1.1(@tauri-apps/plugin-os@2.0.0-alpha.0)(@tauri-apps/plugin-window@2.0.0-alpha.0)(clsx@2.0.0)(react-dom@18.2.0)(react@18.2.0)(tailwind-merge@1.14.0):
+    resolution: {integrity: sha512-0c0zTPeQChxFZlNsZbPys9S0fM6WqJg0QFCxslDLpR0VKi9eIG+uY51nzTEEAGH1ww/Ts7xAOeEV0lmLYOcpnQ==}
+    peerDependencies:
+      '@tauri-apps/plugin-os': 2.0.0-alpha.0
+      '@tauri-apps/plugin-window': 2.0.0-alpha.0
+      clsx: ^2.0.0
+      react: ^18.2.0
+      react-dom: ^18.2.0
+      tailwind-merge: ^1.14.0
+    dependencies:
+      '@tauri-apps/api': 2.0.0-alpha.5
+      '@tauri-apps/plugin-os': 2.0.0-alpha.0
+      '@tauri-apps/plugin-window': 2.0.0-alpha.0
+      clsx: 2.0.0
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      tailwind-merge: 1.14.0
+    dev: false
 
   /test-exclude@6.0.0:
     resolution: {integrity: sha512-cAGWPIyOHU6zlmg88jwm7VRyXnMN7iV68OGAbYDk/Mh/xC/pzVPlQtY6ngoIH/5/tciuhGfvESU8GrHrcxD56w==}
@@ -8127,8 +8434,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  github.com/tauri-apps/tauri-plugin-store/96e2eb3971c981ece96f0a9e47dad14a2d1d2539:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/96e2eb3971c981ece96f0a9e47dad14a2d1d2539}
+  github.com/tauri-apps/tauri-plugin-store/a65ce9bfb168a9a3cd7ed4102b9f22770cc3abfa:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-store/tar.gz/a65ce9bfb168a9a3cd7ed4102b9f22770cc3abfa}
     name: tauri-plugin-store-api
     version: 0.0.0
     dependencies:

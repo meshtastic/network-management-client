@@ -3,7 +3,7 @@ use std::time::Duration;
 
 use app::protobufs;
 use log::{debug, error, trace, warn};
-use tauri::api::notification::Notification;
+use tauri_plugin_notification::NotificationExt;
 use tokio::sync::broadcast;
 
 use crate::device::connections::serial::{SerialConnection, SerialConnectionError};
@@ -330,10 +330,12 @@ pub fn spawn_decoded_handler(
             }
 
             if let Some(notification_config) = update_result.notification_config {
-                match Notification::new(handle.config().tauri.bundle.identifier.clone())
+                match handle
+                    .notification()
+                    .builder()
                     .title(notification_config.title)
                     .body(notification_config.body)
-                    .notify(&handle)
+                    .show()
                 {
                     Ok(_) => (),
                     Err(e) => {

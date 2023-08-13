@@ -1,5 +1,6 @@
 {
   "general": {
+    "clientName": "Meshtastic Network Management Client",
     "meshtastic": "Meshtastic",
     "networkManagement": "Network Management",
     "client": "Client",

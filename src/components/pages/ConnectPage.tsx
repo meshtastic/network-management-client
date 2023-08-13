@@ -1,7 +1,7 @@
 import React, { FormEventHandler, useEffect, useState } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import * as Tabs from "@radix-ui/react-tabs";
 
 import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
@@ -183,13 +183,13 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       className="landing-screen-opacity-transition absolute flex flex-row h-screen w-screen z-40 bg-white dark:bg-gray-800"
       style={{ opacity: isScreenActive ? 1 : 0 }}
     >
-      <div className="flex flex-col flex-1 py-24 overflow-auto no-gutter hide-scrollbar">
+      <div className="flex flex-col flex-1 py-32 overflow-auto no-gutter hide-scrollbar">
         <div className="flex justify-center">
           <div className="h-1/8">
             <img
               className="h-9"
               src={isDarkMode ? MeshLogoLight : MeshLogoDark}
-            ></img>
+            />
           </div>
         </div>
 
