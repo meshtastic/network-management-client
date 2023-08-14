@@ -121,7 +121,7 @@ const NodeSearchDock = () => {
   };
 
   return (
-    <div className="absolute left-9 top-9 w-96 flex flex-col p-4 gap-4">
+    <div className="absolute left-9 top-9 w-80 flex flex-col gap-4">
       <div className="flex flex-row gap-4">
         <NodeSearchInput
           query={query}

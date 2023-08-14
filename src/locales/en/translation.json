@@ -76,7 +76,10 @@
           "powered": "Powered",
           "discharging": "{{batteryLevel}}%, discharging"
         },
-        "lastHeard": "Last heard from <timeAgo />"
+        "lastHeard": "Last heard from <timeAgo />",
+        "neighborInfo": "Neighbor Information",
+        "neighborInfoBlurb": "Last heard <timeAgo /> of {{interval}} second interval at {{snr}} dBi",
+        "noNeighborsFound": "No neighbors found for this node."
       },
       "waypointInfo": {
         "description": "Description",

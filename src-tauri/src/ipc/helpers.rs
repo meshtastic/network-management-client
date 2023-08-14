@@ -79,9 +79,12 @@ pub fn generate_graph_edges_geojson(graph: &mut MeshGraph) -> geojson::FeatureCo
                 .get_node(e.target)
                 .expect("Index from edge should exist");
 
+            let mut edge_properties = serde_json::Map::new();
+            edge_properties.insert("snr".to_string(), json!(e.weight));
+
             geojson::Feature {
                 id: Some(geojson::feature::Id::String(format!("{}-{}", u.num, v.num))),
-                properties: None,
+                properties: Some(edge_properties),
                 geometry: Some(geojson::Geometry::new(geojson::Value::LineString(vec![
                     vec![u.longitude, u.latitude, u.altitude],
                     vec![v.longitude, v.latitude, v.altitude],

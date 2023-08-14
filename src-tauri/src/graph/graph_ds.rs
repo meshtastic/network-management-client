@@ -4,7 +4,7 @@ use crate::graph::edge::GraphEdge;
 use crate::graph::node::GraphNode;
 use crate::state::NodeKey;
 
-use log::{error, info, warn};
+use log::{debug, error, trace, warn};
 use nalgebra::DMatrix;
 use petgraph::prelude::*;
 use petgraph::stable_graph::{EdgeIndex, NodeIndex, StableUnGraph};
@@ -138,10 +138,25 @@ impl Graph {
         edge: GraphEdge,
     ) -> Result<EdgeIndex, String> {
         if let Some(existing_edge) = self.g.find_edge(source_index, target_index) {
-            info!(
+            trace!(
                 "Edge ({:?}, {:?}) already exists",
-                source_index, target_index
+                source_index,
+                target_index
             );
+
+            // Update snr of existing edge
+            let found_edge = self
+                .g
+                .edge_weight_mut(existing_edge)
+                .expect("We know this edge exists because we have its index");
+
+            debug!(
+                "Updating edge weight from {} to {}",
+                found_edge.weight, edge.weight
+            );
+
+            found_edge.weight = edge.weight;
+
             return Ok(existing_edge);
         }
 

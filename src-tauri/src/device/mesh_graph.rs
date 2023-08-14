@@ -110,7 +110,7 @@ impl MeshGraph {
                 Duration::from_secs(node_broadcast_interval_secs.into()),
             ));
 
-            let edge = GraphEdge::new(node_index, neighbor_index, 0.0);
+            let edge = GraphEdge::new(node_index, neighbor_index, neighbor.snr.into());
             let _edge_index = self.add_edge(node_index, neighbor_index, edge);
         }
     }
