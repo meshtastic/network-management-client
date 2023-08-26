@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use app::protobufs;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
