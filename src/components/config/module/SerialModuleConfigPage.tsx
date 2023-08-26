@@ -184,15 +184,14 @@ const SerialModuleConfigPage = ({
             <option value="5">2400 bps</option>
             <option value="6">4800 bps</option>
             <option value="7">9600 bps</option>
-            <option value="8">14400 bps</option>
-            <option value="9">19200 bps</option>
-            <option value="10">38400 bps</option>
-            <option value="11">57600 bps</option>
-            <option value="12">115200 bps</option>
-            <option value="13">230400 bps</option>
-            <option value="14">460800 bps</option>
-            <option value="15">576000 bps</option>
-            <option value="16">921600 bps</option>
+            <option value="8">19200 bps</option>
+            <option value="9">38400 bps</option>
+            <option value="10">57600 bps</option>
+            <option value="11">115200 bps</option>
+            <option value="12">230400 bps</option>
+            <option value="13">460800 bps</option>
+            <option value="14">576000 bps</option>
+            <option value="15">921600 bps</option>
           </ConfigSelect>
 
           <ConfigInput
