@@ -1,7 +1,7 @@
 use app::protobufs;
 use log::{debug, error, info, warn};
 use prost::Message;
-use tokio::sync::broadcast;
+use tokio::sync::mpsc::UnboundedSender;
 
 /// A struct that represents a buffer of bytes received from a radio stream.
 /// This struct is used to store bytes received from a radio stream, and is
@@ -9,7 +9,7 @@ use tokio::sync::broadcast;
 /// FromRadio packets.
 pub struct StreamBuffer {
     buffer: Vec<u8>,
-    decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>,
+    decoded_packet_tx: UnboundedSender<protobufs::FromRadio>,
 }
 
 #[derive(Debug, Clone)]
@@ -32,7 +32,7 @@ type Result<T> = std::result::Result<T, StreamBufferError>;
 impl StreamBuffer {
     /// Creates a new StreamBuffer instance that will send decoded FromRadio packets
     /// to the given broadcast channel.
-    pub fn new(decoded_packet_tx: broadcast::Sender<protobufs::FromRadio>) -> Self {
+    pub fn new(decoded_packet_tx: UnboundedSender<protobufs::FromRadio>) -> Self {
         StreamBuffer {
             buffer: vec![],
             decoded_packet_tx,
@@ -97,7 +97,7 @@ impl StreamBuffer {
     fn process_packet_buffer(&mut self) -> Result<protobufs::FromRadio> {
         // Check that the buffer can potentially contain a packet header
         if self.buffer.len() < 4 {
-            debug!("Buffer can't contain packet header, failing");
+            debug!("Buffer data is shorter than packet header size, failing");
             return Err(StreamBufferError::IncompletePacket);
         }
 
@@ -107,7 +107,7 @@ impl StreamBuffer {
         let framing_index = match self.buffer.iter().position(|&b| b == 0x94) {
             Some(idx) => idx,
             None => {
-                warn!("Could not find index of 0x94, purging");
+                warn!("Could not find index of 0x94, purging buffer");
                 self.buffer.clear(); // Clear buffer since no packets exist
                 return Err(StreamBufferError::MissingHeaderByte);
             }
@@ -124,7 +124,7 @@ impl StreamBuffer {
 
         // Check that the framing byte is correct, and fail if not
         if *framing_byte != 0xc3 {
-            warn!("Framing byte [{}] not equal to 0xc3", framing_byte);
+            warn!("Framing byte {} not equal to 0xc3", framing_byte);
             return Err(StreamBufferError::IncorrectFramingByte);
         }
 
@@ -164,7 +164,7 @@ impl StreamBuffer {
 
         // Defer decoding until the correct number of bytes are received
         if self.buffer.len() < incoming_packet_size {
-            warn!("Serial buffer size is less than size of packet");
+            warn!("Stream buffer size is less than size of packet");
             return Err(StreamBufferError::IncompletePacket);
         }
 
@@ -218,7 +218,7 @@ impl StreamBuffer {
 mod tests {
     use app::protobufs;
     use prost::Message;
-    use tokio::sync::broadcast;
+    use tokio::sync::mpsc::unbounded_channel;
 
     use crate::device::connections::helpers::format_data_packet;
 
@@ -249,7 +249,7 @@ mod tests {
         let (packet, packet_data) = mock_encoded_from_radio_packet(1, payload_variant);
         let encoded_packet = format_data_packet(packet_data);
 
-        let (mock_tx, mut mock_rx) = broadcast::channel::<protobufs::FromRadio>(32);
+        let (mock_tx, mut mock_rx) = unbounded_channel::<protobufs::FromRadio>();
 
         // Attempt to decode packet
 
@@ -282,7 +282,7 @@ mod tests {
         let mut encoded_packet1 = format_data_packet(packet_data1);
         let encoded_packet2 = format_data_packet(packet_data2);
 
-        let (mock_tx, mut mock_rx) = broadcast::channel::<protobufs::FromRadio>(32);
+        let (mock_tx, mut mock_rx) = unbounded_channel::<protobufs::FromRadio>();
 
         // Attempt to decode packets
 

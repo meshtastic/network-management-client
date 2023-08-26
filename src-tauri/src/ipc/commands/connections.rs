@@ -1,9 +1,6 @@
 use crate::device;
-use crate::device::connections;
-use crate::device::connections::serial::SerialConnection;
-use crate::device::connections::MeshConnection;
+use crate::device::connections::stream_api::StreamApi;
 use crate::device::SerialDeviceStatus;
-use crate::ipc::helpers::initialize_serial_connection_handlers;
 use crate::ipc::helpers::spawn_configuration_timeout_handler;
 use crate::ipc::helpers::spawn_decoded_handler;
 use crate::ipc::CommandError;
@@ -12,6 +9,8 @@ use crate::state::DeviceKey;
 
 use log::debug;
 use std::time::Duration;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
 
 #[tauri::command]
 pub async fn request_autoconnect_port(
@@ -33,8 +32,83 @@ pub async fn request_autoconnect_port(
 #[tauri::command]
 pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
     debug!("Called get_all_serial_ports command");
-    let ports = SerialConnection::get_available_ports()?;
+
+    let ports = tokio_serial::available_ports()
+        .map_err(|e| format!("Error getting availabled serial ports: {:?}", e))?
+        .iter()
+        .map(|port| port.port_name.clone())
+        .collect();
+
     Ok(ports)
+}
+
+async fn create_new_connection<S>(
+    stream: S,
+    device_key: DeviceKey,
+    timeout_duration: Duration,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::MeshDevices>,
+    radio_connections: tauri::State<'_, state::RadioConnections>,
+    mesh_graph: tauri::State<'_, state::NetworkGraph>,
+) -> Result<(), CommandError>
+where
+    S: AsyncReadExt + AsyncWriteExt + Send + 'static,
+{
+    // Initialize device and StreamApi instances
+
+    let mut device = device::MeshDevice::new();
+    let mut stream_api = StreamApi::new();
+
+    // Connect to device via stream API
+
+    device.set_status(SerialDeviceStatus::Connecting);
+    let decoded_listener = stream_api.connect(stream).await;
+
+    // Configure device via stream API
+
+    device.set_status(SerialDeviceStatus::Configuring);
+    stream_api.configure(device.config_id).await?;
+
+    // Persist connection in Tauri state
+
+    let handle = app_handle.clone();
+    let mesh_devices_arc = mesh_devices.inner.clone();
+    let radio_connections_arc = radio_connections.inner.clone();
+    let graph_arc = mesh_graph.inner.clone();
+
+    // Persist device struct in Tauri state
+    {
+        let mut devices_guard = mesh_devices_arc.lock().await;
+        devices_guard.insert(device_key.clone(), device);
+    }
+
+    // Persist StreamApi instance Tauri state
+    {
+        let mut connections_guard = radio_connections_arc.lock().await;
+        connections_guard.insert(device_key.clone(), stream_api);
+    }
+
+    // Spawn timeout handler to catch invlaid device connections
+    // Needs the device struct and port name to be loaded into Tauri state before running
+
+    spawn_configuration_timeout_handler(
+        handle.clone(),
+        mesh_devices_arc.clone(),
+        device_key.clone(),
+        timeout_duration,
+    );
+
+    // Spawn decoded packet handler to route decoded packets
+
+    spawn_decoded_handler(
+        handle,
+        decoded_listener,
+        mesh_devices_arc,
+        graph_arc,
+        device_key,
+    );
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -53,17 +127,24 @@ pub async fn connect_to_serial_port(
         port_name
     );
 
-    initialize_serial_connection_handlers(
+    // Create serial connection stream
+
+    let stream = StreamApi::build_serial_stream(port_name.clone(), baud_rate, dtr, rts)?;
+
+    // Create and persist new connection
+
+    create_new_connection(
+        stream,
         port_name,
-        baud_rate,
-        dtr,
-        rts,
+        Duration::from_millis(3000),
         app_handle,
         mesh_devices,
         radio_connections,
         mesh_graph,
     )
-    .await
+    .await?;
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -79,62 +160,22 @@ pub async fn connect_to_tcp_port(
         address
     );
 
-    let mut connection = connections::tcp::TcpConnection::new();
-    let mut device = device::MeshDevice::new();
+    // Create TCP connection stream
 
-    device.set_status(SerialDeviceStatus::Connecting);
+    let stream = StreamApi::build_tcp_stream(address.clone()).await?;
 
-    // Ensure TCP connection is established
-    match connection.connect(address.clone()).await {
-        Ok(_) => (),
-        Err(e) => {
-            device.set_status(SerialDeviceStatus::Disconnected);
-            return Err(e.into());
-        }
-    };
+    // Create and persist new connection
 
-    // Get copy of decoded_listener by resubscribing
-    let decoded_listener = connection
-        .on_decoded_packet
-        .as_ref()
-        .ok_or("Decoded packet listener not open")?
-        .resubscribe();
-
-    device.set_status(SerialDeviceStatus::Configuring);
-    connection.configure(device.config_id).await?;
-
-    let handle = app_handle.clone();
-    let mesh_devices_arc = mesh_devices.inner.clone();
-    let radio_connections_arc = radio_connections.inner.clone();
-    let graph_arc = mesh_graph.inner.clone();
-
-    // Save device into Tauri state
-    {
-        let mut devices_guard = mesh_devices_arc.lock().await;
-        devices_guard.insert(address.clone(), device);
-    }
-
-    // Save connection into Tauri state
-    {
-        let mut connections_guard = radio_connections_arc.lock().await;
-        connections_guard.insert(address.clone(), Box::new(connection));
-    }
-
-    // Needs the device struct and port name to be loaded into Tauri state before running
-    spawn_configuration_timeout_handler(
-        handle.clone(),
-        mesh_devices_arc.clone(),
-        address.clone(),
-        Duration::from_millis(3000),
-    );
-
-    spawn_decoded_handler(
-        handle,
-        decoded_listener,
-        mesh_devices_arc,
-        graph_arc,
+    create_new_connection(
+        stream,
         address,
-    );
+        Duration::from_millis(3000),
+        app_handle,
+        mesh_devices,
+        radio_connections,
+        mesh_graph,
+    )
+    .await?;
 
     Ok(())
 }
@@ -151,7 +192,19 @@ pub async fn drop_device_connection(
         let mut state_devices = mesh_devices.inner.lock().await;
         let mut connections_guard = radio_connections.inner.lock().await;
 
-        connections_guard.remove(&device_key);
+        // Disconnect from open connection
+        // TODO abstract this clearing into a helper function
+
+        if let Some(stream_api) = connections_guard.remove(&device_key).as_mut() {
+            match stream_api.disconnect().await {
+                Ok(_) => (),
+                Err(e) => {
+                    debug!("Failed to disconnect from device: {:?}", e);
+                }
+            };
+        }
+
+        // Clear corresponding state device
 
         if let Some(device) = state_devices.get_mut(&device_key) {
             device.set_status(SerialDeviceStatus::Disconnected);
@@ -172,7 +225,21 @@ pub async fn drop_all_device_connections(
 
     {
         let mut connections_guard = radio_connections.inner.lock().await;
+
+        // Disconnect from all open connections
+
+        for connection in connections_guard.values_mut() {
+            match connection.disconnect().await {
+                Ok(_) => (),
+                Err(e) => {
+                    debug!("Failed to disconnect from device: {:?}", e);
+                }
+            };
+        }
+
         connections_guard.clear();
+
+        // Clear state devices
 
         let mut state_devices = mesh_devices.inner.lock().await;
 

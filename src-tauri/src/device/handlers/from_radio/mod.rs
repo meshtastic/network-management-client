@@ -53,6 +53,11 @@ impl MeshDevice {
             protobufs::from_radio::PayloadVariant::XmodemPacket(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported("xmodem".into()));
             }
+            protobufs::from_radio::PayloadVariant::MqttClientProxyMessage(_) => {
+                return Err(DeviceUpdateError::RadioMessageNotSupported(
+                    "mqtt client proxy message".into(),
+                ));
+            }
         };
 
         Ok(update_result)
@@ -140,10 +145,7 @@ mod tests {
 
     #[test]
     fn set_my_node_info() {
-        let my_node_info = protobufs::MyNodeInfo {
-            max_channels: 12,
-            ..Default::default()
-        };
+        let my_node_info = protobufs::MyNodeInfo::default();
 
         let variant = protobufs::from_radio::PayloadVariant::MyInfo(my_node_info);
 
@@ -153,8 +155,6 @@ mod tests {
         assert!(result.device_updated);
         assert!(!result.regenerate_graph);
         assert!(result.notification_config.is_none());
-
-        assert_eq!(device.my_node_info.max_channels, 12);
     }
 
     #[test]

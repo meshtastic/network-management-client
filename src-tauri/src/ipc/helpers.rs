@@ -4,10 +4,8 @@ use std::time::Duration;
 use app::protobufs;
 use log::{debug, error, trace, warn};
 use tauri::api::notification::Notification;
-use tokio::sync::broadcast;
+use tokio::sync::mpsc::UnboundedReceiver;
 
-use crate::device::connections::serial::{SerialConnection, SerialConnectionError};
-use crate::device::connections::MeshConnection;
 use crate::device::SerialDeviceStatus;
 use crate::ipc::events::{dispatch_configuration_status, dispatch_rebooting_event};
 use crate::ipc::{events, ConfigurationStatus};
@@ -102,92 +100,6 @@ pub async fn initialize_graph_state(
     Ok(())
 }
 
-pub async fn initialize_serial_connection_handlers(
-    port_name: String,
-    baud_rate: Option<u32>,
-    dtr: Option<bool>,
-    rts: Option<bool>,
-    app_handle: tauri::AppHandle,
-    mesh_devices: tauri::State<'_, state::MeshDevices>,
-    radio_connections: tauri::State<'_, state::RadioConnections>,
-    mesh_graph: tauri::State<'_, state::NetworkGraph>,
-) -> Result<(), CommandError> {
-    let mut connection = SerialConnection::new();
-    let mut device = device::MeshDevice::new();
-
-    device.set_status(SerialDeviceStatus::Connecting);
-
-    match connection
-        .connect(
-            app_handle.clone(),
-            port_name.clone(),
-            baud_rate.unwrap_or(115_200),
-            dtr.unwrap_or(true),
-            rts.unwrap_or(false),
-        )
-        .await
-    {
-        Ok(_) => (),
-        Err(e) => match e {
-            SerialConnectionError::PortOpenError => {
-                return Err(
-                    "Failed to open serial port. Is this port in use by another program?".into(),
-                );
-            }
-            SerialConnectionError::ConfigurationError => {
-                return Err("Failed to configure serial connection. If you encounter this issue repeatedly, please file a bug report.".into());
-            }
-        },
-    };
-
-    // Get copy of decoded_listener by resubscribing
-    let decoded_listener = connection
-        .on_decoded_packet
-        .as_ref()
-        .ok_or("Decoded packet listener not open")?
-        .resubscribe();
-
-    device.set_status(SerialDeviceStatus::Configuring);
-    connection.configure(device.config_id).await?;
-
-    let handle = app_handle.clone();
-    let mesh_devices_arc = mesh_devices.inner.clone();
-    let radio_connections_arc = radio_connections.inner.clone();
-    let graph_arc = mesh_graph.inner.clone();
-    // TODO introduce a utility or something that converts an input to a device_key.
-    let device_key = port_name.clone();
-
-    // Save device into Tauri state
-    {
-        let mut devices_guard = mesh_devices_arc.lock().await;
-        devices_guard.insert(device_key.clone(), device);
-    }
-
-    // Save connection into Tauri state
-    {
-        let mut connections_guard = radio_connections_arc.lock().await;
-        connections_guard.insert(device_key.clone(), Box::new(connection));
-    }
-
-    // * Needs the device struct and port name to be loaded into Tauri state before running
-    spawn_configuration_timeout_handler(
-        handle.clone(),
-        mesh_devices_arc.clone(),
-        device_key.clone(),
-        Duration::from_millis(1500),
-    );
-
-    spawn_decoded_handler(
-        handle,
-        decoded_listener,
-        mesh_devices_arc,
-        graph_arc,
-        port_name,
-    );
-
-    Ok(())
-}
-
 pub fn spawn_configuration_timeout_handler(
     handle: tauri::AppHandle,
     connected_devices_inner: state::MeshDevicesInner,
@@ -244,7 +156,7 @@ pub fn spawn_configuration_timeout_handler(
 
 pub fn spawn_decoded_handler(
     handle: tauri::AppHandle,
-    mut decoded_listener: broadcast::Receiver<protobufs::FromRadio>,
+    mut decoded_listener: UnboundedReceiver<protobufs::FromRadio>,
     connected_devices_arc: state::MeshDevicesInner,
     graph_arc: state::NetworkGraphInner,
     device_key: DeviceKey,
@@ -252,7 +164,9 @@ pub fn spawn_decoded_handler(
     tauri::async_runtime::spawn(async move {
         let handle = handle;
 
-        while let Ok(message) = decoded_listener.recv().await {
+        while let Some(message) = decoded_listener.recv().await {
+            debug!("Received message from device: {:?}", message);
+
             let variant = match message.payload_variant {
                 Some(v) => v,
                 None => continue,

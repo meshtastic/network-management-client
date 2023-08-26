@@ -108,6 +108,8 @@ impl MeshDevice {
                     trace!("Updated own telemetry module config: {:?}", config);
                     self.module_config.telemetry = Some(config);
                 }
+                protobufs::module_config::PayloadVariant::NeighborInfo(_config) => {}
+                protobufs::module_config::PayloadVariant::AmbientLighting(_config) => {}
             }
         }
     }
