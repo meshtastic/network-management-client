@@ -39,9 +39,9 @@ log = "0.4"
 fern = "0.6"
 humantime = "2.1.0"
 tokio-util = "0.7.7"
-serial2 = "0.1.7"
 specta = { git = "https://github.com/ajmcquilkin/specta.git", branch = "ajmcquilkin/ts-namespaces", ref = "2ba5af7" }
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tokio-serial = "5.4.4"
 
 [features]
 # by default Tauri runs in production mode

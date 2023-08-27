@@ -132,21 +132,25 @@ mod tests {
         let neighbor_1 = Neighbor {
             node_id: 1,
             snr: 1.0,
+            ..Default::default()
         };
 
         let neighbor_2 = Neighbor {
             node_id: 2,
             snr: 2.0,
+            ..Default::default()
         };
 
         let neighbor_3 = Neighbor {
             node_id: 3,
             snr: 3.0,
+            ..Default::default()
         };
 
         let neighbor_4 = Neighbor {
             node_id: 4,
             snr: 4.0,
+            ..Default::default()
         };
 
         let neighbor_info_1 = NeighborInfo {
@@ -202,11 +206,13 @@ mod tests {
         let neighbor_1 = Neighbor {
             node_id: 1,
             snr: 1.0,
+            ..Default::default()
         };
 
         let neighbor_2 = Neighbor {
             node_id: 2,
             snr: 2.0,
+            ..Default::default()
         };
 
         let packet_1 = MeshPacket {
@@ -255,21 +261,25 @@ mod tests {
         let neighbor_1 = Neighbor {
             node_id: 1,
             snr: 1.0,
+            ..Default::default()
         };
 
         let neighbor_2 = Neighbor {
             node_id: 2,
             snr: 2.0,
+            ..Default::default()
         };
 
         let neighbor_3 = Neighbor {
             node_id: 3,
             snr: 3.0,
+            ..Default::default()
         };
 
         let neighbor_4 = Neighbor {
             node_id: 4,
             snr: 4.0,
+            ..Default::default()
         };
 
         let packet_1 = MeshPacket {
