@@ -22,16 +22,7 @@ defaultdict = "0.13.0"
 reqwest = { version = "0.11", features = ["json"] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.1.1", features = [
-  "cli",
-  "clipboard-write-text",
-  "dialog-message",
-  "http-all",
-  "notification-all",
-  "path-all",
-  "shell-open",
-  "windows7-compat",
-] }
+tauri = { version = "1.1.1", features = ["cli", "clipboard-write-text", "dialog-message", "http-all", "notification-all", "path-all", "shell-open", "windows7-compat"] }
 tokio = { version = "1.21.2", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"
