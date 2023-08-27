@@ -1,5 +1,4 @@
 use crate::device;
-use crate::device::connections::stream_api::StreamApi;
 use crate::device::SerialDeviceStatus;
 use crate::ipc::helpers::spawn_configuration_timeout_handler;
 use crate::ipc::helpers::spawn_decoded_handler;
@@ -8,6 +7,7 @@ use crate::state;
 use crate::state::DeviceKey;
 
 use log::debug;
+use meshtastic::connections::stream_api::StreamApi;
 use std::time::Duration;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;

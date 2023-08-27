@@ -4,9 +4,9 @@ use crate::ipc::DeviceBulkConfig;
 use crate::state;
 use crate::state::DeviceKey;
 
-use app::protobufs;
 use log::debug;
 use log::trace;
+use meshtastic::protobufs;
 
 #[tauri::command]
 pub async fn update_device_config(
@@ -28,7 +28,7 @@ pub async fn update_device_config(
         .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
-    connection.update_device_config(device, config).await?;
+    connection.update_config(device, config).await?;
 
     Ok(())
 }
@@ -53,7 +53,7 @@ pub async fn update_device_user(
         .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
-    connection.update_device_user(device, user).await?;
+    connection.update_user(device, user).await?;
 
     Ok(())
 }
@@ -76,7 +76,12 @@ pub async fn start_configuration_transaction(
         .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
-    connection.start_configuration_transaction(device).await?;
+    if device.config_in_progress {
+        return Err("Configuration transaction already started".into());
+    }
+
+    connection.start_config_transaction().await?;
+    device.config_in_progress = true;
 
     Ok(())
 }
@@ -100,7 +105,12 @@ pub async fn commit_configuration_transaction(
         .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
-    connection.commit_configuration_transaction(device).await?;
+    if !device.config_in_progress {
+        return Err("Configuration transaction not started".into());
+    }
+
+    connection.commit_config_transaction().await?;
+    device.config_in_progress = false;
 
     Ok(())
 }
@@ -125,7 +135,7 @@ pub async fn update_device_config_bulk(
         .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
-    connection.start_configuration_transaction(device).await?;
+    connection.start_config_transaction().await?;
 
     if let Some(radio_config) = config.radio {
         connection.set_local_config(device, radio_config).await?;
@@ -139,11 +149,11 @@ pub async fn update_device_config_bulk(
 
     if let Some(channel_config) = config.channels {
         connection
-            .set_channel_config(device, channel_config)
+            .set_message_channel_config(device, channel_config)
             .await?;
     }
 
-    connection.commit_configuration_transaction(device).await?;
+    connection.commit_config_transaction().await?;
 
     events::dispatch_updated_device(&app_handle, device).map_err(|e| e.to_string())?;
 

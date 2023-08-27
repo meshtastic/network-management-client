@@ -18,7 +18,7 @@ mod tests {
     use crate::device::NormalizedPosition;
 
     use super::*;
-    use app::protobufs;
+    use meshtastic::protobufs;
 
     fn generate_test_user() -> protobufs::User {
         protobufs::User {

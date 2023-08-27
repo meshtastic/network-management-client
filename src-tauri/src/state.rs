@@ -1,7 +1,5 @@
-use crate::{
-    analytics,
-    device::{self, connections::stream_api::StreamApi},
-};
+use crate::{analytics, device};
+use meshtastic::connections::stream_api::StreamApi;
 use std::{collections::HashMap, sync::Arc};
 use tauri::async_runtime;
 

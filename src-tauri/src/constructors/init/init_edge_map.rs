@@ -1,5 +1,5 @@
-use app::protobufs::Neighbor;
 use log::{info, warn};
+use meshtastic::protobufs::Neighbor;
 use std::collections::HashMap;
 
 use crate::device::NeighborInfoPacket;
@@ -123,7 +123,7 @@ pub fn as_key(node_1: u32, node_2: u32) -> (u32, u32) {
 
 #[cfg(test)]
 mod tests {
-    use app::protobufs::{MeshPacket, Neighbor, NeighborInfo};
+    use meshtastic::protobufs::{MeshPacket, Neighbor, NeighborInfo};
 
     use super::*;
 

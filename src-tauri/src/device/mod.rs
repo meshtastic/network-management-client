@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
-use app::protobufs;
+use meshtastic::protobufs;
+use meshtastic::ts::specta::{self, Type};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -10,12 +11,11 @@ use self::helpers::{
 };
 use crate::graph::graph_ds::Graph;
 
-pub mod connections;
 pub mod handlers;
 pub mod helpers;
 pub mod state;
 
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum SerialDeviceStatus {
     Restarting,   // unused
@@ -33,7 +33,7 @@ impl Default for SerialDeviceStatus {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshChannel {
     pub config: protobufs::Channel,
@@ -41,7 +41,7 @@ pub struct MeshChannel {
     pub messages: Vec<ChannelMessageWithState>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshNodeDeviceMetrics {
     metrics: protobufs::DeviceMetrics,
@@ -50,7 +50,7 @@ pub struct MeshNodeDeviceMetrics {
     // channel: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshNodeEnvironmentMetrics {
     metrics: protobufs::EnvironmentMetrics,
@@ -59,7 +59,7 @@ pub struct MeshNodeEnvironmentMetrics {
     // channel: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshNodePositionMetrics {
     metrics: NormalizedPosition,
@@ -68,7 +68,7 @@ pub struct MeshNodePositionMetrics {
     // channel: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct LastHeardMetadata {
     pub timestamp: u32,
@@ -76,7 +76,7 @@ pub struct LastHeardMetadata {
     pub channel: u32,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshNode {
     pub node_num: u32,
@@ -124,7 +124,7 @@ impl MeshNode {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct NormalizedNodeInfo {
     /// The node number
@@ -152,7 +152,7 @@ pub struct NormalizedNodeInfo {
 }
 
 /// Currently a re-export of `protobufs::Position` with normalized lat, long
-#[derive(Clone, Debug, Default, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct NormalizedPosition {
     pub latitude: f32,
@@ -210,48 +210,48 @@ impl From<protobufs::Position> for NormalizedPosition {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct TelemetryPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::Telemetry,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct UserPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::User,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PositionPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::Position,
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct NeighborInfoPacket {
     pub packet: protobufs::MeshPacket,
     pub data: protobufs::NeighborInfo,
 }
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct TextPacket {
     pub packet: protobufs::MeshPacket,
     pub data: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct WaypointPacket {
     pub packet: protobufs::MeshPacket,
     pub data: NormalizedWaypoint,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct NormalizedWaypoint {
     /// The waypoint's unique identifier
@@ -312,7 +312,7 @@ impl Into<protobufs::Waypoint> for NormalizedWaypoint {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "type")]
 pub enum ChannelMessagePayload {
@@ -320,7 +320,7 @@ pub enum ChannelMessagePayload {
     Waypoint(WaypointPacket),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum ChannelMessageState {
     Pending,
@@ -328,7 +328,7 @@ pub enum ChannelMessageState {
     Error(String),
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, specta::Type)]
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct ChannelMessageWithState {
     pub payload: ChannelMessagePayload,
@@ -336,7 +336,7 @@ pub struct ChannelMessageWithState {
 }
 
 // TODO can't deserialize `SerialConnection`
-#[derive(Clone, Debug, Default, Serialize, specta::Type)]
+#[derive(Clone, Debug, Default, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MeshDevice {
     pub config_id: u32,             // unique identifier for configuration flow packets

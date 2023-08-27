@@ -1,77 +1,25 @@
-mod handlers;
-
-use super::{super::MeshDevice, DeviceUpdateError, DeviceUpdateMetadata};
-use app::protobufs;
-
-impl MeshDevice {
-    pub fn handle_packet_from_radio(
-        &mut self,
-        variant: protobufs::from_radio::PayloadVariant,
-    ) -> Result<DeviceUpdateMetadata, DeviceUpdateError> {
-        let mut update_result = DeviceUpdateMetadata::new();
-
-        match variant {
-            protobufs::from_radio::PayloadVariant::Channel(channel) => {
-                handlers::handle_channel_packet(self, &mut update_result, channel)?;
-            }
-            protobufs::from_radio::PayloadVariant::Config(config) => {
-                handlers::handle_config_packet(self, &mut update_result, config)?;
-            }
-            protobufs::from_radio::PayloadVariant::ConfigCompleteId(_) => {
-                handlers::handle_config_complete_packet(self, &mut update_result)?;
-            }
-            protobufs::from_radio::PayloadVariant::LogRecord(_) => {
-                return Err(DeviceUpdateError::RadioMessageNotSupported(
-                    "log record".into(),
-                ));
-            }
-            protobufs::from_radio::PayloadVariant::Metadata(_m) => {
-                return Err(DeviceUpdateError::RadioMessageNotSupported(
-                    "metadata".into(),
-                ));
-            }
-            protobufs::from_radio::PayloadVariant::ModuleConfig(module_config) => {
-                handlers::handle_module_config_packet(self, &mut update_result, module_config)?;
-            }
-            protobufs::from_radio::PayloadVariant::MyInfo(my_node_info) => {
-                handlers::handle_my_node_info_packet(self, &mut update_result, my_node_info)?;
-            }
-            protobufs::from_radio::PayloadVariant::NodeInfo(node_info) => {
-                handlers::handle_node_info_packet(self, &mut update_result, node_info)?;
-            }
-            protobufs::from_radio::PayloadVariant::Packet(mesh_packet) => {
-                update_result = self.handle_mesh_packet(mesh_packet)?;
-            }
-            protobufs::from_radio::PayloadVariant::QueueStatus(_) => {
-                return Err(DeviceUpdateError::RadioMessageNotSupported(
-                    "queue status".into(),
-                ));
-            }
-            protobufs::from_radio::PayloadVariant::Rebooted(_) => {
-                update_result.rebooting = true;
-            }
-            protobufs::from_radio::PayloadVariant::XmodemPacket(_) => {
-                return Err(DeviceUpdateError::RadioMessageNotSupported("xmodem".into()));
-            }
-            protobufs::from_radio::PayloadVariant::MqttClientProxyMessage(_) => {
-                return Err(DeviceUpdateError::RadioMessageNotSupported(
-                    "mqtt client proxy message".into(),
-                ));
-            }
-        };
-
-        Ok(update_result)
-    }
-}
+pub mod handlers;
 
 #[cfg(test)]
 mod tests {
-    use crate::device::{self, helpers::get_current_time_u32};
+    use crate::device::{
+        self,
+        helpers::{generate_rand_id, get_current_time_u32},
+    };
 
-    use super::*;
+    use meshtastic::{connections::PacketRouter, protobufs};
 
     fn initialize_mock_device() -> device::MeshDevice {
         device::MeshDevice::new()
+    }
+
+    fn generate_mock_fromradio_packet(
+        variant: protobufs::from_radio::PayloadVariant,
+    ) -> protobufs::FromRadio {
+        protobufs::FromRadio {
+            id: generate_rand_id(),
+            payload_variant: Some(variant),
+        }
     }
 
     #[test]
@@ -87,7 +35,9 @@ mod tests {
         let variant1 = protobufs::from_radio::PayloadVariant::Channel(channel1);
 
         let mut device = initialize_mock_device();
-        let result1 = device.handle_packet_from_radio(variant1).unwrap();
+        let result1 = device
+            .handle_packet_from_radio(generate_mock_fromradio_packet(variant1))
+            .unwrap();
 
         // Assert channel initialized correctly
 
@@ -110,7 +60,9 @@ mod tests {
         };
 
         let variant2 = protobufs::from_radio::PayloadVariant::Channel(channel2);
-        let _result2 = device.handle_packet_from_radio(variant2).unwrap();
+        let _result2 = device
+            .handle_packet_from_radio(generate_mock_fromradio_packet(variant2))
+            .unwrap();
 
         // Assert channel updated correctly
 
@@ -134,7 +86,9 @@ mod tests {
         let variant = protobufs::from_radio::PayloadVariant::Config(config_packet);
 
         let mut device = initialize_mock_device();
-        let result = device.handle_packet_from_radio(variant).unwrap();
+        let result = device
+            .handle_packet_from_radio(generate_mock_fromradio_packet(variant))
+            .unwrap();
 
         assert!(result.device_updated);
         assert!(!result.regenerate_graph);
@@ -150,7 +104,9 @@ mod tests {
         let variant = protobufs::from_radio::PayloadVariant::MyInfo(my_node_info);
 
         let mut device = initialize_mock_device();
-        let result = device.handle_packet_from_radio(variant).unwrap();
+        let result = device
+            .handle_packet_from_radio(generate_mock_fromradio_packet(variant))
+            .unwrap();
 
         assert!(result.device_updated);
         assert!(!result.regenerate_graph);
@@ -170,7 +126,9 @@ mod tests {
         let variant1 = protobufs::from_radio::PayloadVariant::NodeInfo(node_info1);
 
         let mut device = initialize_mock_device();
-        let result1 = device.handle_packet_from_radio(variant1).unwrap();
+        let result1 = device
+            .handle_packet_from_radio(generate_mock_fromradio_packet(variant1))
+            .unwrap();
 
         // Assert NodeInfo initialized correctly
 
@@ -202,7 +160,9 @@ mod tests {
         };
 
         let variant2 = protobufs::from_radio::PayloadVariant::NodeInfo(node_info2);
-        let _result2 = device.handle_packet_from_radio(variant2).unwrap();
+        let _result2 = device
+            .handle_packet_from_radio(generate_mock_fromradio_packet(variant2))
+            .unwrap();
 
         // Assert NodeInfo updated correctly
 
@@ -222,6 +182,6 @@ mod tests {
         );
     }
 
-    // #[test]
-    // fn handle_mesh_packet() {}
+    #[test]
+    fn handle_mesh_packet() {}
 }
