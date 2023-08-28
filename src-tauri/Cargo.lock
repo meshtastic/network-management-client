@@ -2097,7 +2097,7 @@ dependencies = [
 [[package]]
 name = "meshtastic"
 version = "0.1.0"
-source = "git+https://github.com/meshtastic/rust#3548ba00ea3c5a33b5a6fd4bcd72f3a68114c20b"
+source = "git+https://github.com/meshtastic/rust?rev=3548ba0#3548ba00ea3c5a33b5a6fd4bcd72f3a68114c20b"
 dependencies = [
  "futures-util",
  "log",

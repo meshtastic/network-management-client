@@ -37,7 +37,7 @@ humantime = "2.1.0"
 tokio-util = "0.7.7"
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tokio-serial = "5.4.4"
-meshtastic = { git = "https://github.com/meshtastic/rust", features = ["ts-gen"], ref = "3548ba0" }
+meshtastic = { git = "https://github.com/meshtastic/rust", features = ["ts-gen"], rev = "c7cf9b9" }
 
 [features]
 # by default Tauri runs in production mode
