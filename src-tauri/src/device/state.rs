@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
-use app::protobufs;
 use log::{debug, trace, warn};
+use meshtastic::protobufs;
 
 use super::helpers::get_current_time_u32;
 use super::{
@@ -110,6 +110,7 @@ impl MeshDevice {
                 }
                 protobufs::module_config::PayloadVariant::NeighborInfo(_config) => {}
                 protobufs::module_config::PayloadVariant::AmbientLighting(_config) => {}
+                protobufs::module_config::PayloadVariant::DetectionSensor(_config) => {}
             }
         }
     }

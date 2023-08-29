@@ -12,7 +12,10 @@ mod ipc;
 mod state;
 
 use log::{debug, error, info};
-use specta::ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior};
+use meshtastic::ts::specta::{
+    export::ts_with_cfg,
+    ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior, TsExportError},
+};
 use std::time::SystemTime;
 use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
@@ -69,12 +72,12 @@ fn handle_cli_matches(
     }
 }
 
-fn export_specta_types(file_path: &str) -> Result<(), specta::ts::TsExportError> {
-    let specta_config = ExportConfiguration::default()
+fn export_ts_types(file_path: &str) -> Result<(), TsExportError> {
+    let ts_export_config = ExportConfiguration::default()
         .bigint(BigIntExportBehavior::String)
         .modules(ModuleExportBehavior::Enabled);
 
-    specta::export::ts_with_cfg(file_path, &specta_config)
+    ts_with_cfg(file_path, &ts_export_config)
 }
 
 fn main() {
@@ -85,7 +88,7 @@ fn main() {
     info!("Building TS types from Rust");
 
     #[cfg(debug_assertions)]
-    export_specta_types("../src/bindings/index.ts").unwrap();
+    export_ts_types("../src/bindings/index.ts").unwrap();
 
     info!("Application starting");
 

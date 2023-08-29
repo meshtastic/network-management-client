@@ -1,4 +1,0 @@
-[submodule "src-tauri/protobufs"]
-	path = src-tauri/protobufs
-	url = https://github.com/meshtastic/protobufs.git
-	branch = master

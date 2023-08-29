@@ -2,6 +2,7 @@ use std::{error::Error, fmt};
 
 mod from_radio;
 mod mesh_packet;
+mod packet_router;
 
 #[derive(Clone, Debug, Default)]
 pub struct NotificationConfig {
@@ -38,7 +39,7 @@ impl DeviceUpdateMetadata {
 pub enum DeviceUpdateError {
     PacketNotSupported(String),
     RadioMessageNotSupported(String),
-    DecodeFailure(prost::DecodeError),
+    DecodeFailure(String),
     GeneralFailure(String),
 }
 

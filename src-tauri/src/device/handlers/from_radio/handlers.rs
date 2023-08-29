@@ -1,4 +1,4 @@
-use app::protobufs;
+use meshtastic::protobufs;
 
 use crate::device::{
     handlers::{DeviceUpdateError, DeviceUpdateMetadata},

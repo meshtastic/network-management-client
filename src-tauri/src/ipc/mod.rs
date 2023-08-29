@@ -1,7 +1,7 @@
 use crate::state::DeviceKey;
-use app::protobufs;
+use meshtastic::protobufs;
+use meshtastic::ts::specta::{self, Type};
 use serde::{Deserialize, Serialize};
-use specta::Type;
 use std::collections::HashMap;
 
 pub mod commands;

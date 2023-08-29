@@ -1,5 +1,5 @@
-use app::protobufs;
 use log::debug;
+use meshtastic::protobufs;
 
 use crate::device::{
     handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
@@ -7,7 +7,7 @@ use crate::device::{
     ChannelMessageState, MeshDevice, NeighborInfoPacket, NormalizedWaypoint, PositionPacket,
     TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
-use prost::Message;
+use meshtastic::Message;
 
 pub fn handle_user_mesh_packet(
     device: &mut MeshDevice,
@@ -16,7 +16,7 @@ pub fn handle_user_mesh_packet(
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
     let data = protobufs::User::decode(data.payload.as_slice())
-        .map_err(DeviceUpdateError::DecodeFailure)?;
+        .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
     device.add_user(UserPacket { packet, data });
 
@@ -32,7 +32,7 @@ pub fn handle_position_mesh_packet(
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
     let data = protobufs::Position::decode(data.payload.as_slice())
-        .map_err(DeviceUpdateError::DecodeFailure)?;
+        .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
     device.add_position(PositionPacket { packet, data });
 
@@ -49,7 +49,7 @@ pub fn handle_routing_mesh_packet(
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
     let routing_data = protobufs::Routing::decode(data.payload.as_slice())
-        .map_err(DeviceUpdateError::DecodeFailure)?;
+        .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
     if let Some(variant) = routing_data.variant {
         match variant {
@@ -122,7 +122,7 @@ pub fn handle_telemetry_mesh_packet(
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
     let data = protobufs::Telemetry::decode(data.payload.as_slice())
-        .map_err(DeviceUpdateError::DecodeFailure)?;
+        .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
     device.set_device_metrics(TelemetryPacket { packet, data });
 
@@ -169,7 +169,7 @@ pub fn handle_waypoint_mesh_packet(
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
     let data = protobufs::Waypoint::decode(data.payload.as_slice())
-        .map_err(DeviceUpdateError::DecodeFailure)?;
+        .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
     let converted_data: NormalizedWaypoint = data.into();
 
@@ -205,7 +205,7 @@ pub fn handle_neighbor_info_mesh_packet(
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
     let data = protobufs::NeighborInfo::decode(data.payload.as_slice())
-        .map_err(DeviceUpdateError::DecodeFailure)?;
+        .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
     device.add_neighborinfo(NeighborInfoPacket { packet, data });
 

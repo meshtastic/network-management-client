@@ -1,9 +1,10 @@
 use crate::device::NormalizedWaypoint;
+use crate::ipc::events;
 use crate::ipc::CommandError;
 use crate::state::{self, DeviceKey};
-use crate::{device::connections::PacketDestination, ipc::events};
 
 use log::{debug, trace};
+use meshtastic::connections::PacketDestination;
 
 #[tauri::command]
 pub async fn send_text(
@@ -67,7 +68,7 @@ pub async fn send_waypoint(
     connection
         .send_waypoint(
             device,
-            waypoint,
+            waypoint.into(),
             PacketDestination::Broadcast,
             true,
             channel,

@@ -7,7 +7,7 @@ use crate::data_conversion::distance_conversion::{
 };
 use crate::device::helpers::get_current_time_u32;
 use crate::device::MeshNode;
-use app::protobufs;
+use meshtastic::protobufs;
 use rand::distributions::Uniform;
 use rand::prelude::*;
 use rand::seq::SliceRandom;

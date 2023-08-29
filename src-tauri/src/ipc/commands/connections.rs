@@ -1,5 +1,4 @@
 use crate::device;
-use crate::device::connections::stream_api::StreamApi;
 use crate::device::SerialDeviceStatus;
 use crate::ipc::helpers::spawn_configuration_timeout_handler;
 use crate::ipc::helpers::spawn_decoded_handler;
@@ -8,6 +7,7 @@ use crate::state;
 use crate::state::DeviceKey;
 
 use log::debug;
+use meshtastic::connections::stream_api::StreamApi;
 use std::time::Duration;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -57,17 +57,17 @@ where
     // Initialize device and StreamApi instances
 
     let mut device = device::MeshDevice::new();
-    let mut stream_api = StreamApi::new();
+    let stream_api = StreamApi::new();
 
     // Connect to device via stream API
 
     device.set_status(SerialDeviceStatus::Connecting);
-    let decoded_listener = stream_api.connect(stream).await;
+    let (decoded_listener, stream_api) = stream_api.connect(stream).await;
 
     // Configure device via stream API
 
     device.set_status(SerialDeviceStatus::Configuring);
-    stream_api.configure(device.config_id).await?;
+    let stream_api = stream_api.configure(device.config_id).await?;
 
     // Persist connection in Tauri state
 
@@ -195,7 +195,7 @@ pub async fn drop_device_connection(
         // Disconnect from open connection
         // TODO abstract this clearing into a helper function
 
-        if let Some(stream_api) = connections_guard.remove(&device_key).as_mut() {
+        if let Some(stream_api) = connections_guard.remove(&device_key) {
             match stream_api.disconnect().await {
                 Ok(_) => (),
                 Err(e) => {
@@ -226,29 +226,21 @@ pub async fn drop_all_device_connections(
     {
         let mut connections_guard = radio_connections.inner.lock().await;
 
-        // Disconnect from all open connections
+        // Disconnect from all open connections and empty HashMap
 
-        for connection in connections_guard.values_mut() {
-            match connection.disconnect().await {
-                Ok(_) => (),
-                Err(e) => {
-                    debug!("Failed to disconnect from device: {:?}", e);
-                }
-            };
+        for (_, connection) in connections_guard.drain() {
+            connection.disconnect().await?;
         }
 
-        connections_guard.clear();
-
-        // Clear state devices
+        // Set all state devices as disconnected and empty HashMap
 
         let mut state_devices = mesh_devices.inner.lock().await;
 
-        // Disconnect from all serial ports
         for (_port_name, device) in state_devices.iter_mut() {
             device.set_status(SerialDeviceStatus::Disconnected);
         }
 
-        // Clear connections map
+        // This could be removed in the future to maintain state on previous devices
         state_devices.clear();
     }
 

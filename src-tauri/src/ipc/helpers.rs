@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
-use app::protobufs;
 use log::{debug, error, trace, warn};
+use meshtastic::connections::PacketRouter;
+use meshtastic::protobufs;
 use tauri::api::notification::Notification;
 use tokio::sync::mpsc::UnboundedReceiver;
 
@@ -164,13 +165,8 @@ pub fn spawn_decoded_handler(
     tauri::async_runtime::spawn(async move {
         let handle = handle;
 
-        while let Some(message) = decoded_listener.recv().await {
-            debug!("Received message from device: {:?}", message);
-
-            let variant = match message.payload_variant {
-                Some(v) => v,
-                None => continue,
-            };
+        while let Some(packet) = decoded_listener.recv().await {
+            debug!("Received packet from device: {:?}", packet);
 
             let mut devices_guard = connected_devices_arc.lock().await;
             let device = match devices_guard
@@ -193,7 +189,7 @@ pub fn spawn_decoded_handler(
                 }
             };
 
-            let update_result = match device.handle_packet_from_radio(variant) {
+            let update_result = match device.handle_packet_from_radio(packet) {
                 Ok(result) => result,
                 Err(err) => {
                     warn!("{}", err);
