@@ -2,24 +2,24 @@
 
 <div align="center">
   <h1 align="center">Meshtastic Network Management Client</h1>
-  <p align="center">An unofficial Meshtastic desktop client for analyzing and managing large-scale, low-bandwidth mesh networks</p>
+  <p align="center">A desktop client for analyzing and managing large-scale, low-bandwidth mesh networks</p>
 </div>
 
 <p align="center">
-  <a href="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/testing.yml">
-    <img alt="Application testing action status" src="https://github.com/ajmcquilkin/meshtastic-network-management-client/actions/workflows/testing.yml/badge.svg">
+  <a href="https://github.com/meshtastic/network-management-client/actions/workflows/testing.yml">
+    <img alt="Application testing action status" src="https://github.com/meshtastic/network-management-client/actions/workflows/testing.yml/badge.svg">
   </a>
   
   <a href="">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/ajmcquilkin/meshtastic-network-management-client">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/meshtastic/network-management-client">
   </a>
   
-  <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client/issues">
-    <img alt="GitHub issues" src="https://img.shields.io/github/issues/ajmcquilkin/meshtastic-network-management-client">
+  <a href="https://github.com/meshtastic/network-management-client/issues">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/meshtastic/network-management-client">
   </a>
   
-  <a href="https://github.com/ajmcquilkin/Meshtastic-network-management-client">
-    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/ajmcquilkin/meshtastic-network-management-client">
+  <a href="https://github.com/meshtastic/network-management-client">
+    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/meshtastic/network-management-client">
   </a>
   
   <a href="https://opencollective.com/meshtastic">
@@ -33,7 +33,7 @@
 
 ## :wave: Introduction
 
-This application is an unofficial desktop client for the [Meshtastic Project](https://meshtastic.org/), designed to allow users to reliably manage large, decentralized mesh networks. Currently the Meshtastic client ecosystem has strong support for managing single nodes, but minimal support for network-level management and analysis. The goal of this project is to give users confidence in their Meshtastic networks as a reliable communications infrastructure through novel algorithmic analysis and connection-level insights.
+This application is a desktop client for the [Meshtastic Project](https://meshtastic.org/), designed to allow users to reliably manage large, decentralized mesh networks. Currently the Meshtastic client ecosystem has strong support for managing single nodes, but minimal support for network-level management and analysis. The goal of this project is to give users confidence in their Meshtastic networks as a reliable communications infrastructure through novel algorithmic analysis and connection-level insights.
 
 ![image](https://user-images.githubusercontent.com/46639306/230783389-330754f9-a1c3-4b8b-8db9-a226c612f011.png)
 
@@ -44,12 +44,12 @@ This application is built using the [Tauri Framework](https://tauri.app/), a mod
 At the time of writing, this project is currently maintained by a single developer. As such, the project is looking for developers willing to contribute towards or take lead on the following major initiatives:
 
 - Full offline map support, including region-based downloading and loading of custom maps (will require Meshtastic mirror of the [OSM tile DB](https://tile.openstreetmap.org/))
-- ~~Persisting application state across client sessions~~ ([completed](https://github.com/ajmcquilkin/meshtastic-network-management-client/pull/424))
+- ~~Persisting application state across client sessions~~ ([completed](https://github.com/meshtastic/network-management-client/pull/424))
 - Rust backend testing (unit, integration, e2e, smoke)
 - TS frontend testing (unit, integration, e2e, smoke)
 - Adding support for remote node configuration
 - Integrating UI components into the [Storybook](https://storybook.js.org/) framework
-- ~~Adding support for i18n translations within the UI layer~~ ([completed](https://github.com/ajmcquilkin/meshtastic-network-management-client/pull/423))
+- ~~Adding support for i18n translations within the UI layer~~ ([completed](https://github.com/meshtastic/network-management-client/pull/423))
 - General reorganization of application file structure to make the project intuitive
 
 ## :rocket: Functionality
@@ -122,10 +122,10 @@ This project is built in Rust and React TypeScript, and managed using the PNPM p
 For the time being, the only way to run this project is to clone this repository. To do this, follow the steps below:
 
 1. Ensure you have Rust, Node.js, and PNPM installed (see [Prerequisites](#prerequisites))
-2. Clone this repositiory to a local directory. This can be done by running `git clone https://github.com/ajmcquilkin/meshtastic-network-management-client.git`
+2. Clone this repositiory to a local directory. This can be done by running `git clone https://github.com/meshtastic/network-management-client.git`
 3. Recursively clone our Git submodules by running `git submodule update --init`
 4. Install all required NPM packages with `pnpm i`
-5. Once you have completed these steps, verify your installation with the `pnpm run rust:dev` command. The application should compile successfully, and you should see the application open successfully. If this process fails for you, please [let us know](https://github.com/ajmcquilkin/meshtastic-network-management-client/issues)!
+5. Once you have completed these steps, verify your installation with the `pnpm run rust:dev` command. The application should compile successfully, and you should see the application open successfully. If this process fails for you, please [let us know](https://github.com/meshtastic/network-management-client/issues)!
 
 ### Recommended IDE Setup
 
