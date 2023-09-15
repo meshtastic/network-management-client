@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/46639306/229531059-2f07b9c1-982f-4eaa-aae7-b8663e1e94a5.png)
+![GitHub Header (V2)](https://github.com/ajmcquilkin/meshtastic-network-management-client/assets/46639306/d1d66bc5-a0ea-4945-98fe-aaa2d552b2de)
 
 <div align="center">
   <h1 align="center">Meshtastic Network Management Client</h1>
