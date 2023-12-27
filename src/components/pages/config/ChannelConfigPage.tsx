@@ -18,7 +18,7 @@ import { getChannelName } from "@utils/messaging";
 
 const getNumberOfPendingChanges = (
   currentChannelConfig: ChannelConfigInput | null,
-  editedChannelConfig: ChannelConfigInput | undefined
+  editedChannelConfig: ChannelConfigInput | undefined,
 ): number => {
   if (!currentChannelConfig) return -1;
   if (!editedChannelConfig) return 0;
@@ -27,15 +27,11 @@ const getNumberOfPendingChanges = (
     (accum, [editedConfigKey, editedConfigValue]) => {
       if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const currentFieldValue =
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         (currentChannelConfig as Record<string, any>)?.[editedConfigKey] ??
         null;
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const editedFieldValue =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (editedChannelConfig as Record<string, any>)?.[editedConfigKey] ?? null;
 
       if (
@@ -47,7 +43,7 @@ const getNumberOfPendingChanges = (
 
       return accum;
     },
-    0
+    0,
   );
 };
 
@@ -61,12 +57,12 @@ const ChannelConfigPage = () => {
 
   const currentChannelConfig = useMemo(
     () => meshChannels.map((c) => getCurrentConfigFromMeshChannel(c)),
-    [meshChannels]
+    [meshChannels],
   );
   const editedChannelConfig = useSelector(selectEditedAllChannelConfig());
 
   const [activeChannelIndex, setActiveChannelIndex] = useState<number | null>(
-    parseInt(Object.entries(currentChannelConfig)[0]?.[0]) ?? null
+    parseInt(Object.entries(currentChannelConfig)[0]?.[0]) ?? null,
   );
 
   useLayoutEffect(() => {
@@ -91,7 +87,7 @@ const ChannelConfigPage = () => {
 
             const pendingChanges = getNumberOfPendingChanges(
               currentChannelConfig[c.config.index],
-              editedChannelConfig[c.config.index] ?? undefined
+              editedChannelConfig[c.config.index] ?? undefined,
             );
 
             return (

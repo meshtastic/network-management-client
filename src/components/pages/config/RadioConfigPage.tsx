@@ -69,7 +69,7 @@ const _ActiveDetailView = ({
 const getNumberOfPendingChanges = (
   currentRadioConfig: app_protobufs_LocalConfig | null,
   editedRadioConfig: IRadioConfigState,
-  configKey: keyof IRadioConfigState
+  configKey: keyof IRadioConfigState,
 ): number => {
   if (!currentRadioConfig) return -1;
 
@@ -77,16 +77,12 @@ const getNumberOfPendingChanges = (
     (accum, [editedConfigKey, editedConfigValue]) => {
       if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const currentFieldValue =
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         (currentRadioConfig as Record<string, any>)?.[configKey]?.[
           editedConfigKey
         ] ?? null;
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const editedFieldValue =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (editedRadioConfig?.[configKey] as Record<string, any>)?.[
           editedConfigKey
         ] ?? null;
@@ -100,7 +96,7 @@ const getNumberOfPendingChanges = (
 
       return accum;
     },
-    0
+    0,
   );
 };
 
@@ -138,7 +134,7 @@ const RadioConfigPage = () => {
             const pendingChanges = getNumberOfPendingChanges(
               currentRadioConfig,
               editedRadioConfig,
-              configKey
+              configKey,
             );
 
             return (

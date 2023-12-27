@@ -13,10 +13,8 @@ export interface IConfigInputProps
   error?: string;
 }
 
-// eslint-disable-next-line react/display-name
 const ConfigInput = forwardRef<
   HTMLInputElement,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   IConfigInputProps & ReturnType<UseFormRegister<any>>
 >(({ text, error, ...rest }, ref) => {
   return (

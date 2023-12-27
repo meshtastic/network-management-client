@@ -13,10 +13,8 @@ export interface IConfigSelectProps
   error?: string;
 }
 
-// eslint-disable-next-line react/display-name
 const ConfigSelect = forwardRef<
   HTMLSelectElement,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   IConfigSelectProps & ReturnType<UseFormRegister<any>>
 >(({ text, error, ...rest }, ref) => {
   return (

@@ -26,7 +26,6 @@ export const selectDevice =
 export const selectConnectedDeviceNodeId =
   () =>
   (state: RootState): number | null =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
     state.devices.device?.myNodeInfo.myNodeNum ?? null;
 
 export const selectDeviceConnected =
@@ -47,10 +46,13 @@ export const selectNodeById =
 export const selectAllUsersByNodeIds =
   () =>
   (state: RootState): Record<number, app_protobufs_User | null> =>
-    selectAllNodes()(state).reduce((accum, n) => {
-      const { user } = n;
-      return user ? { ...accum, [n.nodeNum]: user } : accum;
-    }, [] as app_protobufs_User[]);
+    selectAllNodes()(state).reduce(
+      (accum, n) => {
+        const { user } = n;
+        return user ? { ...accum, [n.nodeNum]: user } : accum;
+      },
+      [] as app_protobufs_User[],
+    );
 
 export const selectUserByNodeId =
   (nodeId: number) =>
@@ -68,7 +70,7 @@ export const selectAllWaypoints =
   (state: RootState): app_device_NormalizedWaypoint[] =>
     Object.values(state.devices.device?.waypoints ?? []).filter(
       // Filter waypoints that were set to expire in the past
-      (w) => !w.expire || w.expire * 1000 > Date.now()
+      (w) => !w.expire || w.expire * 1000 > Date.now(),
     );
 
 // Returns single waypoint object given ID
@@ -86,7 +88,7 @@ export const selectWaypointByLocation =
   (state: RootState): app_device_NormalizedWaypoint | null => {
     return (
       selectAllWaypoints()(state).find(
-        (waypoint) => waypoint.latitude === lat && waypoint.longitude === long
+        (waypoint) => waypoint.latitude === lat && waypoint.longitude === long,
       ) ?? null
     );
   };
