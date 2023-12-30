@@ -10,8 +10,6 @@
     "rust:test": "cd src-tauri; cargo test",
     "ui:dev": "vite",
     "ui:build": "tsc && vite build",
-    "ui:lint": "eslint src/*.{ts,tsx}",
-    "ui:format": "prettier --write ./src && eslint src/*.{ts,tsx}",
     "ui:test": "jest --passWithNoTests",
     "ui:preview": "vite preview"
   },
