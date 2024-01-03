@@ -10,6 +10,9 @@
     "rust:test": "cd src-tauri; cargo test",
     "ui:dev": "vite",
     "ui:build": "tsc && vite build",
+    "ui:lint": "biome lint",
+    "ui:format": "biome format",
+    "ui:check": "biome check",
     "ui:test": "jest --passWithNoTests",
     "ui:preview": "vite preview"
   },
