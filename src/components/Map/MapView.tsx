@@ -60,10 +60,8 @@ export interface IDeckGLOverlayProps extends MapboxOverlayProps {
 }
 
 const DeckGLOverlay = (props: IDeckGLOverlayProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   overlay.setProps(props);
 
   return null;
@@ -102,7 +100,6 @@ export const MapView = () => {
 
   const handleNodeClick = useCallback(
     (info: PickingInfo) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       const nodeId: number | null = info.object?.properties?.num ?? null;
 
       if (nodeId === activeNodeId) {
@@ -112,7 +109,7 @@ export const MapView = () => {
 
       dispatch(uiSliceActions.setActiveNode(nodeId));
     },
-    [activeNodeId, dispatch]
+    [activeNodeId, dispatch],
   );
 
   useEffect(() => {
@@ -199,7 +196,7 @@ export const MapView = () => {
       setEdgeHoverInfo,
       handleNodeClick,
       activeNodeId,
-    ]
+    ],
   );
 
   const handleClick = () => {
@@ -215,7 +212,7 @@ export const MapView = () => {
   useDebounce(
     () => dispatch(mapSliceActions.setViewState(localViewState)),
     500,
-    [localViewState]
+    [localViewState],
   );
 
   const handleUpdateViewState = (e: ViewStateChangeEvent) => {
@@ -317,8 +314,8 @@ export const MapView = () => {
                 onClick={() =>
                   dispatch(
                     uiSliceActions.setActiveWaypoint(
-                      activeWaypoint?.id === w.id ? null : w.id
-                    )
+                      activeWaypoint?.id === w.id ? null : w.id,
+                    ),
                   )
                 }
               />

@@ -6,10 +6,8 @@ export interface IMapEdgeTooltip {
 }
 
 const MapEdgeTooltip = ({ hoverInfo }: IMapEdgeTooltip) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { object, x, y } = hoverInfo;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
   const snr = object?.properties?.snr;
 
   if (!snr) return null;

@@ -48,27 +48,27 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
     // Get current and edited config
 
     const currentRadioConfig = (yield select(
-      selectCurrentRadioConfig()
+      selectCurrentRadioConfig(),
     )) as ReturnType<ReturnType<typeof selectCurrentRadioConfig>>;
 
     const editedRadioConfig = (yield select(
-      selectEditedRadioConfig()
+      selectEditedRadioConfig(),
     )) as ReturnType<ReturnType<typeof selectEditedRadioConfig>>;
 
     const currentModuleConfig = (yield select(
-      selectCurrentModuleConfig()
+      selectCurrentModuleConfig(),
     )) as ReturnType<ReturnType<typeof selectCurrentModuleConfig>>;
 
     const editedModuleConfig = (yield select(
-      selectEditedModuleConfig()
+      selectEditedModuleConfig(),
     )) as ReturnType<ReturnType<typeof selectEditedModuleConfig>>;
 
     const currentChannelConfig = (yield select(
-      selectCurrentAllChannelConfig()
+      selectCurrentAllChannelConfig(),
     )) as ReturnType<ReturnType<typeof selectCurrentAllChannelConfig>>;
 
     const editedChannelConfig = (yield select(
-      selectEditedAllChannelConfig()
+      selectEditedAllChannelConfig(),
     )) as ReturnType<ReturnType<typeof selectEditedAllChannelConfig>>;
 
     if (!currentRadioConfig || !currentModuleConfig) {
@@ -86,14 +86,14 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
     if (includeRadioConfig) {
       configPayload.radio = merge(
         cloneDeep(currentRadioConfig), // Redux object
-        editedRadioConfig
+        editedRadioConfig,
       );
     }
 
     if (includeModuleConfig) {
       configPayload.module = merge(
         cloneDeep(currentModuleConfig), // Redux object
-        editedModuleConfig
+        editedModuleConfig,
       );
     }
 
@@ -114,14 +114,13 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
           meshChannel,
           // * Need to override array values instead of merging
           (objVal, srcVal) => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             if (Array.isArray(objVal)) return srcVal;
-          }
+          },
         );
       }
 
       configPayload.channels = Object.values(mergedConfig).map(
-        (mc) => mc.config
+        (mc) => mc.config,
       );
     }
 
@@ -152,7 +151,7 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }

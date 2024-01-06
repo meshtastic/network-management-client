@@ -42,7 +42,7 @@ import { error } from "@utils/errors";
 
 // Currently this only suports serial ports
 function* getAutoConnectPortWorker(
-  action: ReturnType<typeof requestAutoConnectPort>
+  action: ReturnType<typeof requestAutoConnectPort>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -62,7 +62,7 @@ function* getAutoConnectPortWorker(
             rts: false,
           },
           setPrimary: true,
-        })
+        }),
       );
     }
 
@@ -72,33 +72,28 @@ function* getAutoConnectPortWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
 
 function* subscribeAll() {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const deviceUpdateChannel: DeviceUpdateChannel = yield call(
-    createDeviceUpdateChannel
+    createDeviceUpdateChannel,
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const deviceDisconnectChannel: DeviceDisconnectChannel = yield call(
-    createDeviceDisconnectChannel
+    createDeviceDisconnectChannel,
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const graphUpdateChannel: GraphUpdateChannel = yield call(
-    createGraphUpdateChannel
+    createGraphUpdateChannel,
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const configStatusChannel: ConfigStatusChannel = yield call(
-    createConfigStatusChannel
+    createConfigStatusChannel,
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const rebootChannel: RebootChannel = yield call(createRebootChannel);
 
   yield all([
@@ -111,14 +106,14 @@ function* subscribeAll() {
 }
 
 function* getAvailableSerialPortsWorker(
-  action: ReturnType<typeof requestAvailablePorts>
+  action: ReturnType<typeof requestAvailablePorts>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     const serialPorts = (yield call(
       invoke,
-      "get_all_serial_ports"
+      "get_all_serial_ports",
     )) as string[];
 
     yield put(deviceSliceActions.setAvailableSerialPorts(serialPorts));
@@ -128,13 +123,13 @@ function* getAvailableSerialPortsWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
 
 function* initializeApplicationWorker(
-  action: ReturnType<typeof requestInitializeApplication>
+  action: ReturnType<typeof requestInitializeApplication>,
 ) {
   try {
     yield call(invoke, "initialize_graph_state");
@@ -144,21 +139,21 @@ function* initializeApplicationWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
 
 function* connectToDeviceWorker(
-  action: ReturnType<typeof requestConnectToDevice>
+  action: ReturnType<typeof requestConnectToDevice>,
 ) {
   let subscribeTask: Task | null = null;
   const deviceKey: DeviceKey =
     action.payload.params.type === ConnectionType.SERIAL
       ? action.payload.params.portName
       : action.payload.params.type === ConnectionType.TCP
-      ? action.payload.params.socketAddress
-      : error("Neither portName nor socketAddress were set");
+        ? action.payload.params.socketAddress
+        : error("Neither portName nor socketAddress were set");
 
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -168,12 +163,11 @@ function* connectToDeviceWorker(
         status: {
           status: "PENDING",
         },
-      })
+      }),
     );
 
     // Need to subscribe to events before connecting
     // * Can't block as these are infinite loops
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     subscribeTask = yield fork(subscribeAll) as unknown as Task;
 
     yield call(invoke, "initialize_graph_state");
@@ -194,16 +188,16 @@ function* connectToDeviceWorker(
       if (action.payload.params.type === ConnectionType.SERIAL) {
         yield put(
           deviceSliceActions.setPrimaryDeviceConnectionKey(
-            action.payload.params.portName
-          )
+            action.payload.params.portName,
+          ),
         );
       }
 
       if (action.payload.params.type === ConnectionType.TCP) {
         yield put(
           deviceSliceActions.setPrimaryDeviceConnectionKey(
-            action.payload.params.socketAddress
-          )
+            action.payload.params.socketAddress,
+          ),
         );
       }
     }
@@ -220,7 +214,7 @@ function* connectToDeviceWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (e as CommandError).message,
-      })
+      }),
     );
 
     yield put(
@@ -230,7 +224,7 @@ function* connectToDeviceWorker(
           status: "FAILED",
           message: (e as CommandError).message,
         },
-      })
+      }),
     );
 
     if (subscribeTask) {
@@ -240,7 +234,7 @@ function* connectToDeviceWorker(
 }
 
 function* disconnectFromDeviceWorker(
-  action: ReturnType<typeof requestDisconnectFromDevice>
+  action: ReturnType<typeof requestDisconnectFromDevice>,
 ) {
   try {
     yield call(invoke, "drop_device_connection", {
@@ -281,7 +275,7 @@ function* sendTextWorker(action: ReturnType<typeof requestSendMessage>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
@@ -301,7 +295,7 @@ function* updateUserConfigWorker(action: ReturnType<typeof requestUpdateUser>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
@@ -324,13 +318,13 @@ function* sendWaypointWorker(action: ReturnType<typeof requestSendWaypoint>) {
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
 
 function* deleteWaypointWorker(
-  action: ReturnType<typeof requestDeleteWaypoint>
+  action: ReturnType<typeof requestDeleteWaypoint>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -346,7 +340,7 @@ function* deleteWaypointWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
@@ -360,7 +354,7 @@ export function* devicesSaga() {
     takeEvery(requestDisconnectFromDevice.type, disconnectFromDeviceWorker),
     takeEvery(
       requestDisconnectFromAllDevices.type,
-      disconnectFromAllDevicesWorker
+      disconnectFromAllDevicesWorker,
     ),
     takeEvery(requestSendMessage.type, sendTextWorker),
     takeEvery(requestUpdateUser.type, updateUserConfigWorker),

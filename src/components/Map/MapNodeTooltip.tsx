@@ -12,10 +12,8 @@ export interface IMapNodeTooltip {
 const MapNodeTooltip = ({ hoverInfo }: IMapNodeTooltip) => {
   const rootState = useSelector(selectRootState());
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { object, x, y } = hoverInfo;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
   const num: number | null = object?.properties?.num;
 
   if (!num) return null;

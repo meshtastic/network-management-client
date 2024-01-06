@@ -77,7 +77,7 @@ const _ActiveDetailView = ({
 const getNumberOfPendingChanges = (
   currentModuleConfig: app_protobufs_LocalModuleConfig | null,
   editedModuleConfig: IModuleConfigState,
-  configKey: keyof IModuleConfigState
+  configKey: keyof IModuleConfigState,
 ): number => {
   if (!currentModuleConfig) return -1;
 
@@ -85,16 +85,12 @@ const getNumberOfPendingChanges = (
     (accum, [editedConfigKey, editedConfigValue]) => {
       if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const currentFieldValue =
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
         (currentModuleConfig as Record<string, any>)?.[configKey]?.[
           editedConfigKey
         ] ?? null;
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const editedFieldValue =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (editedModuleConfig?.[configKey] as Record<string, any>)?.[
           editedConfigKey
         ] ?? null;
@@ -108,7 +104,7 @@ const getNumberOfPendingChanges = (
 
       return accum;
     },
-    0
+    0,
   );
 };
 
@@ -146,7 +142,7 @@ const ModuleConfigPage = () => {
             const pendingChanges = getNumberOfPendingChanges(
               currentModuleConfig,
               editedModuleConfig,
-              configKey
+              configKey,
             );
 
             return (

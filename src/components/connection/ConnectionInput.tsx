@@ -1,7 +1,6 @@
 import React, { forwardRef } from "react";
 import type { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IConnectionInputProps
   extends DetailedHTMLProps<
     InputHTMLAttributes<HTMLInputElement>,

@@ -44,7 +44,6 @@ export const createDeviceUpdateChannel = (): DeviceUpdateChannel => {
 export function* handleDeviceUpdateChannel(channel: DeviceUpdateChannel) {
   try {
     while (true) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const meshDevice: app_device_MeshDevice = yield take(channel);
       yield put(deviceSliceActions.setDevice(meshDevice));
     }
@@ -69,11 +68,10 @@ export const createDeviceDisconnectChannel = (): DeviceDisconnectChannel => {
 };
 
 export function* handleDeviceDisconnectChannel(
-  channel: DeviceDisconnectChannel
+  channel: DeviceDisconnectChannel,
 ) {
   try {
     while (true) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const portName: string = yield take(channel);
       yield put(requestDisconnectFromDevice(portName));
       window.location.reload();
@@ -101,7 +99,6 @@ export const createGraphUpdateChannel = (): GraphUpdateChannel => {
 export function* handleGraphUpdateChannel(channel: GraphUpdateChannel) {
   try {
     while (true) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { nodes, edges }: GraphGeoJSONResult = yield take(channel);
 
       yield put(mapSliceActions.setNodesFeatureCollection(nodes));
@@ -130,7 +127,6 @@ export const createConfigStatusChannel = (): ConfigStatusChannel => {
 export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
   try {
     while (true) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const {
         successful,
         deviceKey,
@@ -151,7 +147,7 @@ export function* handleConfigStatusChannel(channel: ConfigStatusChannel) {
           status: successful
             ? { status: "SUCCESSFUL" }
             : { status: "FAILED", message: message ?? "" },
-        })
+        }),
       );
     }
   } catch (error) {
@@ -177,7 +173,6 @@ export const createRebootChannel = (): RebootChannel => {
 export function* handleRebootChannel(channel: RebootChannel) {
   try {
     while (true) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const timestamp_sec: number = yield take(channel);
       const reboot_time = new Date(timestamp_sec * 1000);
       console.warn("Rebooting at", reboot_time);

@@ -24,7 +24,6 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
     await loadFull(engine);
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   const particlesLoaded = useCallback(async () => {
     setParticlesLoaded(true);
   }, []);
@@ -135,7 +134,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
               <button
                 className="hover:underline"
                 onClick={openExternalLink(
-                  "https://unsplash.com/@calebriston?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                  "https://unsplash.com/@calebriston?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
                 )}
               />
             ),
@@ -143,7 +142,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
               <button
                 className="hover:underline"
                 onClick={openExternalLink(
-                  "https://unsplash.com/photos/TXiBwX0kg-Q?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                  "https://unsplash.com/photos/TXiBwX0kg-Q?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
                 )}
               />
             ),

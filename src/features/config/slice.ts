@@ -76,7 +76,6 @@ export interface IModuleConfigState {
   telemetry: TelemetryModuleConfigInput | null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IChannelConfigState {
   [key: number]: ChannelConfigInput | null;
 }
@@ -118,7 +117,7 @@ export const configSlice = createSlice({
   reducers: {
     updateRadioConfig: (
       state,
-      action: PayloadAction<DeepPartial<IRadioConfigState>>
+      action: PayloadAction<DeepPartial<IRadioConfigState>>,
     ) => {
       state.radio = merge(cloneDeep(state.radio), action.payload);
     },
@@ -129,7 +128,7 @@ export const configSlice = createSlice({
 
     updateModuleConfig: (
       state,
-      action: PayloadAction<DeepPartial<IModuleConfigState>>
+      action: PayloadAction<DeepPartial<IModuleConfigState>>,
     ) => {
       state.module = merge(cloneDeep(state.module), action.payload);
     },
@@ -142,7 +141,7 @@ export const configSlice = createSlice({
       state,
       action: PayloadAction<
         { channelNum: number; config: DeepPartial<ChannelConfigInput> | null }[]
-      >
+      >,
     ) => {
       const updatedPartialConfig: Record<
         number,
