@@ -2,5 +2,5 @@
   "files.eol": "\n",
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "biomejs.biome",
+  "editor.defaultFormatter": "biomejs.biome"
 }
