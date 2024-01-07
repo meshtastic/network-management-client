@@ -4,7 +4,7 @@ export interface INodeSearchInputProps {
   placeholder: string;
 }
 
-const NodeSearchInput = ({
+export const NodeSearchInput = ({
   query,
   setQuery,
   placeholder,
@@ -21,5 +21,3 @@ const NodeSearchInput = ({
     </div>
   );
 };
-
-export default NodeSearchInput;

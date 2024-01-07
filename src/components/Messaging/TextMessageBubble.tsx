@@ -5,12 +5,12 @@ import { Map, ScaleControl } from "react-map-gl";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import i18next from "@app/i18n";
+import { i18next } from "@app/i18n";
 
 import type { app_device_ChannelMessageWithState } from "@bindings/index";
 
-import MapOverlayButton from "@components/Map/MapOverlayButton";
-import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
+import { MapOverlayButton } from "@components/Map/MapOverlayButton";
+import { MeshWaypoint } from "@components/Waypoints/MeshWaypoint";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
 import {
@@ -33,7 +33,7 @@ export interface ITextMessageBubbleProps {
 }
 
 const getAcknowledgementText = (
-  message: app_device_ChannelMessageWithState,
+  message: app_device_ChannelMessageWithState
 ): { text: string; isError: boolean } => {
   if (message.state === "acknowledged") {
     return { text: i18next.t("messaging.transmitting"), isError: false };
@@ -46,7 +46,7 @@ const getAcknowledgementText = (
   return { text: message.state.error, isError: true };
 };
 
-const TextMessageBubble = ({
+export const TextMessageBubble = ({
   message,
   className = "",
 }: ITextMessageBubbleProps) => {
@@ -61,7 +61,7 @@ const TextMessageBubble = ({
   const { displayText: usernameDisplayText, isSelf } = formatMessageUsername(
     user?.longName,
     ownNodeId ?? 0,
-    packet.from,
+    packet.from
   );
 
   const handleShowOnMapClick = () => {
@@ -217,5 +217,3 @@ const TextMessageBubble = ({
     </div>
   );
 };
-
-export default TextMessageBubble;

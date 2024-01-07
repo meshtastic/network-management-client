@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
 
-import Sidebar from "@components/Sidebar/Sidebar";
-import SplashScreen from "@components/SplashScreen/SplashScreen";
+import { Sidebar } from "@components/Sidebar/Sidebar";
+import { SplashScreen } from "@components/SplashScreen/SplashScreen";
 
-import ModuleConfigPage from "@app/components/pages/config/ModuleConfigPage";
-import ApplicationStatePage from "@components/pages/ApplicationStatePage";
-import ConnectPage from "@components/pages/ConnectPage";
-import FallbackPage from "@components/pages/FallbackPage";
-import ManageNodePage from "@components/pages/ManageNodePage";
-import ManageWaypointPage from "@components/pages/ManageWaypointPage";
-import MapPage from "@components/pages/MapPage";
-import MessagingPage from "@components/pages/MessagingPage";
-import ApplicationSettingsPage from "@components/pages/config/ApplicationSettingsPage";
-import ChannelConfigPage from "@components/pages/config/ChannelConfigPage";
-import RadioConfigPage from "@components/pages/config/RadioConfigPage";
+import { ModuleConfigPage } from "@app/components/pages/config/ModuleConfigPage";
+import { ApplicationStatePage } from "@components/pages/ApplicationStatePage";
+import { ConnectPage } from "@components/pages/ConnectPage";
+import { FallbackPage } from "@components/pages/FallbackPage";
+import { ManageNodePage } from "@components/pages/ManageNodePage";
+import { ManageWaypointPage } from "@components/pages/ManageWaypointPage";
+import { MapPage } from "@components/pages/MapPage";
+import { MessagingPage } from "@components/pages/MessagingPage";
+import { ApplicationSettingsPage } from "@components/pages/config/ApplicationSettingsPage";
+import { ChannelConfigPage } from "@components/pages/config/ChannelConfigPage";
+import { RadioConfigPage } from "@components/pages/config/RadioConfigPage";
 
 import { AppRoutes } from "@utils/routing";
 
@@ -25,7 +25,7 @@ const AppWrapper = () => (
   </>
 );
 
-const App = () => {
+export const App = () => {
   // Bool to allow/disallow the splash screen at startup
   const splashEnabled = true;
 
@@ -83,5 +83,3 @@ const App = () => {
     </div>
   );
 };
-
-export default App;

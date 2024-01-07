@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LngLat,
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
   MapLayerMouseEvent,
   Marker,
@@ -27,18 +28,18 @@ import { useDebounce } from "react-use";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
+import { MapSelectedNodeMenu } from "@components/Map/MapSelectedNodeMenu";
 // * Note: hiding until reimplementation
 // import AnalyticsPane from "@components/Map/AnalyticsPane";
 // import MapInteractionPane from "@components/Map/MapInteractionPane";
-import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
+import { NodeSearchDock } from "@components/NodeSearch/NodeSearchDock";
 
-import CreateWaypointDialog from "@components/Map/CreateWaypointDialog";
-import MapContextOption from "@components/Map/MapContextOption";
-import MapEdgeTooltip from "@components/Map/MapEdgeTooltip";
-import MapNodeTooltip from "@components/Map/MapNodeTooltip";
-import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
-import WaypointMenu from "@components/Waypoints/WaypointMenu";
+import { CreateWaypointDialog } from "@components/Map/CreateWaypointDialog";
+import { MapContextOption } from "@components/Map/MapContextOption";
+import { MapEdgeTooltip } from "@components/Map/MapEdgeTooltip";
+import { MapNodeTooltip } from "@components/Map/MapNodeTooltip";
+import { MeshWaypoint } from "@components/Waypoints/MeshWaypoint";
+import { WaypointMenu } from "@components/Waypoints/WaypointMenu";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
 import { selectAllWaypoints } from "@features/device/selectors";
@@ -109,7 +110,7 @@ export const MapView = () => {
 
       dispatch(uiSliceActions.setActiveNode(nodeId));
     },
-    [activeNodeId, dispatch],
+    [activeNodeId, dispatch]
   );
 
   useEffect(() => {
@@ -196,7 +197,7 @@ export const MapView = () => {
       setEdgeHoverInfo,
       handleNodeClick,
       activeNodeId,
-    ],
+    ]
   );
 
   const handleClick = () => {
@@ -212,7 +213,7 @@ export const MapView = () => {
   useDebounce(
     () => dispatch(mapSliceActions.setViewState(localViewState)),
     500,
-    [localViewState],
+    [localViewState]
   );
 
   const handleUpdateViewState = (e: ViewStateChangeEvent) => {
@@ -314,8 +315,8 @@ export const MapView = () => {
                 onClick={() =>
                   dispatch(
                     uiSliceActions.setActiveWaypoint(
-                      activeWaypoint?.id === w.id ? null : w.id,
-                    ),
+                      activeWaypoint?.id === w.id ? null : w.id
+                    )
                   )
                 }
               />

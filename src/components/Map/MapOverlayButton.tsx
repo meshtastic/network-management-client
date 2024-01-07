@@ -1,7 +1,8 @@
 import type { TooltipContentProps } from "@radix-ui/react-tooltip";
 import type React from "react";
 import type { ReactNode } from "react";
-import DefaultTooltip from "../DefaultTooltip";
+
+import { DefaultTooltip } from "../DefaultTooltip";
 
 export interface IMapIconButtonProps {
   children: ReactNode;
@@ -12,7 +13,7 @@ export interface IMapIconButtonProps {
   tooltipProps?: TooltipContentProps;
 }
 
-const MapOverlayButton = ({
+export const MapOverlayButton = ({
   children,
   onClick,
   tooltipText,
@@ -41,5 +42,3 @@ const MapOverlayButton = ({
     </DefaultTooltip>
   );
 };
-
-export default MapOverlayButton;

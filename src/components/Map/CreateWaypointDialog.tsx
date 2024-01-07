@@ -12,7 +12,6 @@ import {
   useMap,
 } from "react-map-gl";
 import { useDispatch, useSelector } from "react-redux";
-
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -29,10 +28,10 @@ import moment from "moment";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import MapOverlayButton from "@components/Map/MapOverlayButton";
-import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
-import ConnectionInput from "@components/connection/ConnectionInput";
-import ConnectionSwitch from "@components/connection/ConnectionSwitch";
+import { MapOverlayButton } from "@components/Map/MapOverlayButton";
+import { MeshWaypoint } from "@components/Waypoints/MeshWaypoint";
+import { ConnectionInput } from "@components/connection/ConnectionInput";
+import { ConnectionSwitch } from "@components/connection/ConnectionSwitch";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
 import { requestSendWaypoint } from "@features/device/actions";
@@ -68,7 +67,7 @@ export interface ICreateWaypointDialogProps {
 }
 
 // Needs to be rendered within a MapProvider component
-const CreateWaypointDialog = ({
+export const CreateWaypointDialog = ({
   lngLat,
   closeDialog,
   existingWaypoint,
@@ -91,7 +90,7 @@ const CreateWaypointDialog = ({
       : {
           value: "",
           isValid: true,
-        },
+        }
   );
 
   const [desc, setDesc] = useState<{
@@ -100,7 +99,7 @@ const CreateWaypointDialog = ({
   }>(
     existingWaypoint
       ? { value: existingWaypoint.description, isValid: true }
-      : { value: "", isValid: true },
+      : { value: "", isValid: true }
   );
 
   const [waypointPosition, setWaypointPosition] = useState<LngLat>(
@@ -109,25 +108,25 @@ const CreateWaypointDialog = ({
           lng: existingWaypoint.longitude,
           lat: existingWaypoint.latitude,
         } as LngLat)
-      : lngLat,
+      : lngLat
   );
 
   const [waypointLocked, setWaypointLocked] = useState<boolean>(
-    existingWaypoint ? existingWaypoint.lockedTo !== 0 : false,
+    existingWaypoint ? existingWaypoint.lockedTo !== 0 : false
   );
 
   const [waypointExpires, setWaypointExpires] = useState<boolean>(
-    existingWaypoint ? existingWaypoint.expire !== 0 : false,
+    existingWaypoint ? existingWaypoint.expire !== 0 : false
   );
 
   const [expireTime, setExpireTime] = useState<string>(
     existingWaypoint
       ? moment(existingWaypoint.expire * 1000).format(dateTimeLocalFormatString)
-      : moment().add(1, "years").format(dateTimeLocalFormatString),
+      : moment().add(1, "years").format(dateTimeLocalFormatString)
   );
 
   const [emoji, setEmoji] = useState<string | null>(
-    existingWaypoint ? String.fromCodePoint(existingWaypoint.icon) : null,
+    existingWaypoint ? String.fromCodePoint(existingWaypoint.icon) : null
   );
 
   const [channelNum, setChannelNum] = useState(0);
@@ -146,7 +145,7 @@ const CreateWaypointDialog = ({
         t("map.waypoints.nameTooLong", {
           currentLength: value.length,
           maxLength: WAYPOINT_NAME_MAX_LEN,
-        }),
+        })
       );
     }
 
@@ -165,7 +164,7 @@ const CreateWaypointDialog = ({
         t("map.waypoints.descriptionTooLong", {
           currentLength: value.length,
           maxLength: WAYPOINT_DESC_MAX_LEN,
-        }),
+        })
       );
     }
 
@@ -176,7 +175,7 @@ const CreateWaypointDialog = ({
 
   const flyToPosition = useMemo(
     () => (pos: LngLat) => map?.flyTo(getFlyToConfig(pos)),
-    [getFlyToConfig, map],
+    [getFlyToConfig, map]
   );
 
   const handlePositionUpdate = useMemo(
@@ -185,7 +184,7 @@ const CreateWaypointDialog = ({
         setWaypointPosition(e.lngLat);
         flyToPosition(e.lngLat);
       }, 300),
-    [map],
+    [map]
   );
 
   const encodeEmoji = (emoji: string | null): number => {
@@ -233,7 +232,7 @@ const CreateWaypointDialog = ({
         deviceKey: primaryDeviceKey,
         waypoint: createdWaypoint,
         channel: channelNum,
-      }),
+      })
     );
 
     closeDialog();
@@ -319,7 +318,7 @@ const CreateWaypointDialog = ({
 
               <Dialog.Description className="text-sm font-normal text-gray-500">
                 {`${formatLocation(waypointPosition.lat)}, ${formatLocation(
-                  waypointPosition.lng,
+                  waypointPosition.lng
                 )}`}
               </Dialog.Description>
             </div>
@@ -573,5 +572,3 @@ const CreateWaypointDialog = ({
     </Dialog.Portal>
   );
 };
-
-export default CreateWaypointDialog;

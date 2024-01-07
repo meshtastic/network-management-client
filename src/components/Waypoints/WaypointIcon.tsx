@@ -10,7 +10,7 @@ export interface IWaypointProps {
   isSelected: boolean;
 }
 
-const WaypointIcon = ({ waypoint, isSelected }: IWaypointProps) => {
+export const WaypointIcon = ({ waypoint, isSelected }: IWaypointProps) => {
   return (
     <div className="relative">
       <img
@@ -20,10 +20,9 @@ const WaypointIcon = ({ waypoint, isSelected }: IWaypointProps) => {
       />
       {!!waypoint.icon && (
         <p className="absolute top-0 left-1/2 -translate-x-1/2 text-xl text-center select-none">{`${String.fromCodePoint(
-          waypoint.icon,
+          waypoint.icon
         )}`}</p>
       )}
     </div>
   );
 };
-export default WaypointIcon;

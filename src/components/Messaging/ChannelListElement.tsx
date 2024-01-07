@@ -11,7 +11,7 @@ export interface IChannelListElementProps {
   isSelected: boolean;
 }
 
-const ChannelListElement = ({
+export const ChannelListElement = ({
   channel,
   setActiveChannel,
   isSelected,
@@ -91,5 +91,3 @@ const ChannelListElement = ({
     </button>
   );
 };
-
-export default ChannelListElement;

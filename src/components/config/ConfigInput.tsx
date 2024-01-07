@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import type { DetailedHTMLProps, InputHTMLAttributes } from "react";
 import type { UseFormRegister } from "react-hook-form";
 
-import ConfigLabel from "@components/config/ConfigLabel";
+import { ConfigLabel } from "@components/config/ConfigLabel";
 
 export interface IConfigInputProps
   extends DetailedHTMLProps<
@@ -13,7 +13,7 @@ export interface IConfigInputProps
   error?: string;
 }
 
-const ConfigInput = forwardRef<
+export const ConfigInput = forwardRef<
   HTMLInputElement,
   IConfigInputProps & ReturnType<UseFormRegister<any>>
 >(({ text, error, ...rest }, ref) => {
@@ -30,5 +30,3 @@ const ConfigInput = forwardRef<
     </ConfigLabel>
   );
 });
-
-export default ConfigInput;

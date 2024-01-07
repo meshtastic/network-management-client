@@ -6,9 +6,9 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 } from "uuid";
 
-// import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+// import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import { requestPersistGeneralConfig } from "@features/appConfig/actions";
 import { selectGeneralConfigState } from "@features/appConfig/selectors";
@@ -22,7 +22,9 @@ type GeneralConfigFormInput = {
   colorMode: ColorMode;
 };
 
-const GeneralConfigPage = ({ className = "" }: IGeneralConfigPageProps) => {
+export const GeneralConfigPage = ({
+  className = "",
+}: IGeneralConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -75,5 +77,3 @@ const GeneralConfigPage = ({ className = "" }: IGeneralConfigPageProps) => {
     </div>
   );
 };
-
-export default GeneralConfigPage;

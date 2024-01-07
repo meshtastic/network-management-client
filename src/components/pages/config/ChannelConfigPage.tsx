@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import ConfigLayout from "@components/config/ConfigLayout";
-import ConfigOption from "@components/config/ConfigOption";
-import ChannelConfigDetail from "@components/config/channel/ChannelConfigDetail";
+import { ConfigLayout } from "@components/config/ConfigLayout";
+import { ConfigOption } from "@components/config/ConfigOption";
+import { ChannelConfigDetail } from "@components/config/channel/ChannelConfigDetail";
 
 import { requestCommitConfig } from "@features/config/actions";
 import { selectEditedAllChannelConfig } from "@features/config/selectors";
@@ -18,7 +18,7 @@ import { getChannelName } from "@utils/messaging";
 
 const getNumberOfPendingChanges = (
   currentChannelConfig: ChannelConfigInput | null,
-  editedChannelConfig: ChannelConfigInput | undefined,
+  editedChannelConfig: ChannelConfigInput | undefined
 ): number => {
   if (!currentChannelConfig) return -1;
   if (!editedChannelConfig) return 0;
@@ -43,11 +43,11 @@ const getNumberOfPendingChanges = (
 
       return accum;
     },
-    0,
+    0
   );
 };
 
-const ChannelConfigPage = () => {
+export const ChannelConfigPage = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -57,12 +57,12 @@ const ChannelConfigPage = () => {
 
   const currentChannelConfig = useMemo(
     () => meshChannels.map((c) => getCurrentConfigFromMeshChannel(c)),
-    [meshChannels],
+    [meshChannels]
   );
   const editedChannelConfig = useSelector(selectEditedAllChannelConfig());
 
   const [activeChannelIndex, setActiveChannelIndex] = useState<number | null>(
-    parseInt(Object.entries(currentChannelConfig)[0]?.[0]) ?? null,
+    parseInt(Object.entries(currentChannelConfig)[0]?.[0]) ?? null
   );
 
   useLayoutEffect(() => {
@@ -87,7 +87,7 @@ const ChannelConfigPage = () => {
 
             const pendingChanges = getNumberOfPendingChanges(
               currentChannelConfig[c.config.index],
-              editedChannelConfig[c.config.index] ?? undefined,
+              editedChannelConfig[c.config.index] ?? undefined
             );
 
             return (
@@ -125,5 +125,3 @@ const ChannelConfigPage = () => {
     </div>
   );
 };
-
-export default ChannelConfigPage;

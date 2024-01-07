@@ -3,9 +3,9 @@ import * as Accordion from "@radix-ui/react-accordion";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import ArticulationPoints from "@components/Map/algorithms/ArticulationPoints";
-import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation";
-import MincutEdges from "@components/Map/algorithms/MinCutEdges";
+import { ArticulationPoints } from "@components/Map/algorithms/ArticulationPoints";
+import { DiffusionSimulation } from "@components/Map/algorithms/DiffusionSimulation";
+import { MincutEdges } from "@components/Map/algorithms/MinCutEdges";
 
 import {
   AlgorithmConfigFlags,
@@ -14,7 +14,7 @@ import {
 import { selectAlgorithmsResults } from "@features/algorithms/selectors";
 import { uiSliceActions } from "@features/ui/slice";
 
-const AnalyticsPane = () => {
+export const AnalyticsPane = () => {
   const dispatch = useDispatch();
   const { apResult, mincutResult } = useSelector(selectAlgorithmsResults());
 
@@ -211,5 +211,3 @@ const AnalyticsPane = () => {
     </Accordion.Root>
   );
 };
-
-export default AnalyticsPane;

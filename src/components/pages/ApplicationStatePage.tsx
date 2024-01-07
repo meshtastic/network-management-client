@@ -2,11 +2,11 @@ import { useTranslation } from "react-i18next";
 import ReactJson from "react-json-view";
 import { useSelector } from "react-redux";
 
-import NavigationBacktrace from "@components/NavigationBacktrace";
+import { NavigationBacktrace } from "@components/NavigationBacktrace";
 import { selectRootState } from "@features/ui/selectors";
 import { useIsDarkMode } from "@utils/hooks";
 
-const ApplicationStatePage = () => {
+export const ApplicationStatePage = () => {
   const { t } = useTranslation();
 
   const { isDarkMode } = useIsDarkMode();
@@ -31,5 +31,3 @@ const ApplicationStatePage = () => {
     </div>
   );
 };
-
-export default ApplicationStatePage;

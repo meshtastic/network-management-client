@@ -1,11 +1,11 @@
 import { Lightbulb } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
-import MapOverlayButton from "@components/Map/MapOverlayButton";
+import { MapOverlayButton } from "@components/Map/MapOverlayButton";
 import { selectInfoPane } from "@features/ui/selectors";
 import { uiSliceActions } from "@features/ui/slice";
 
-const MapInteractionPane = () => {
+export const MapInteractionPane = () => {
   const dispatch = useDispatch();
   const accordionShown = useSelector(selectInfoPane()) === "algos";
 
@@ -31,5 +31,3 @@ const MapInteractionPane = () => {
     </div>
   );
 };
-
-export default MapInteractionPane;

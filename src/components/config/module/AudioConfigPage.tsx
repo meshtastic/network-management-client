@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 // import {
 //   AudioModuleConfigInput,
@@ -27,8 +27,8 @@ export interface IAudioConfigPageProps {
 }
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
-const parseAudioModuleConfigInput = (
-  d: DeepPartial<AudioModuleConfigInput>,
+export const parseAudioModuleConfigInput = (
+  d: DeepPartial<AudioModuleConfigInput>
 ): DeepPartial<AudioModuleConfigInput> => ({
   ...d,
   pttPin: parseInt(d.pttPin as unknown as string),
@@ -47,7 +47,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [codec2Disabled, setCodec2Disabled] = useState(
-    !device?.moduleConfig.audio?.codec2Enabled ?? true,
+    !device?.moduleConfig.audio?.codec2Enabled ?? true
   );
 
   const defaultValues = useMemo(
@@ -55,10 +55,10 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
       getDefaultConfigInput(
         device?.moduleConfig.audio ?? undefined,
         // ! https://github.com/ajmcquilkin/meshtastic-network-management-client/issues/382
-        undefined,
+        undefined
         // editedConfig.audio ?? undefined
       ),
-    [],
+    []
   );
 
   const updateStateFlags = (d: DeepPartial<AudioModuleConfigInput>) => {
@@ -89,9 +89,9 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
           // dispatch(configSliceActions.updateModuleConfig({ audio: data }));
         },
         500,
-        { leading: true },
+        { leading: true }
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -184,5 +184,3 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
     </div>
   );
 };
-
-export default AudioConfigPage;

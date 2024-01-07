@@ -1,7 +1,7 @@
 import { Marker, MarkerProps } from "react-map-gl";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
-import WaypointIcon from "@components/Waypoints/WaypointIcon";
+import { WaypointIcon } from "@components/Waypoints/WaypointIcon";
 
 // This component returns a marker for each individual waypoint. It is called from MapView.tsx
 export interface IMeshWaypointProps
@@ -12,7 +12,7 @@ export interface IMeshWaypointProps
 }
 
 // All references to currWaypoint being null don't end up getting used because if it's null then we return <></>
-const MeshWaypoint = ({
+export const MeshWaypoint = ({
   waypoint,
   isSelected,
   onClick,
@@ -33,8 +33,8 @@ const MeshWaypoint = ({
             onClick
               ? "cursor-pointer"
               : props.draggable
-                ? "cursor-move"
-                : "cursor-default"
+              ? "cursor-move"
+              : "cursor-default"
           } -translate-y-1/2`}
         >
           <WaypointIcon waypoint={waypoint} isSelected={isSelected} />
@@ -43,5 +43,3 @@ const MeshWaypoint = ({
     </Marker>
   );
 };
-
-export default MeshWaypoint;

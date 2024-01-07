@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentRadioConfig,
@@ -25,7 +25,7 @@ export interface IDeviceConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseDeviceConfigInput = (
-  d: DeepPartial<DeviceConfigInput>,
+  d: DeepPartial<DeviceConfigInput>
 ): DeepPartial<DeviceConfigInput> => ({
   ...d,
   nodeInfoBroadcastSecs: parseInt(d.nodeInfoBroadcastSecs as unknown as string),
@@ -33,7 +33,9 @@ const parseDeviceConfigInput = (
   rebroadcastMode: parseInt(d.rebroadcastMode as unknown as string),
 });
 
-const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
+export const DeviceConfigPage = ({
+  className = "",
+}: IDeviceConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -46,9 +48,9 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
     () =>
       getDefaultConfigInput(
         device?.config.device ?? undefined,
-        editedConfig.device ?? undefined,
+        editedConfig.device ?? undefined
       ),
-    [],
+    []
   );
 
   const {
@@ -68,9 +70,9 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ device: data }));
         },
         500,
-        { leading: true },
+        { leading: true }
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -172,5 +174,3 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
     </div>
   );
 };
-
-export default DeviceConfigPage;

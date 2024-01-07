@@ -5,20 +5,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import type { meshtastic_protobufs_LocalModuleConfig } from "@app/bindings";
-import i18next from "@app/i18n";
+import { i18next } from "@app/i18n";
 
-import ConfigLayout from "@components/config/ConfigLayout";
-import ConfigOption from "@components/config/ConfigOption";
+import { ConfigLayout } from "@components/config/ConfigLayout";
+import { ConfigOption } from "@components/config/ConfigOption";
 
-// import AudioConfigPage from "@components/config/module/AudioConfigPage";
-import CannedMessageConfigPage from "@components/config/module/CannedMessageConfigPage";
-import ExternalNotificationConfigPage from "@components/config/module/ExternalNotificationConfigPage";
-import MQTTConfigPage from "@components/config/module/MQTTConfigPage";
-import RangeTestConfigPage from "@components/config/module/RangeTestConfigPage";
-import RemoteHardwareConfigPage from "@components/config/module/RemoteHardwareConfigPage";
-import SerialModuleConfigPage from "@components/config/module/SerialModuleConfigPage";
-import StoreAndForwardConfigPage from "@components/config/module/StoreAndForwardConfigPage";
-import TelemetryConfigPage from "@components/config/module/TelemetryConfigPage";
+// import { AudioConfigPage } from "@components/config/module/AudioConfigPage";
+import { CannedMessageConfigPage } from "@components/config/module/CannedMessageConfigPage";
+import { ExternalNotificationConfigPage } from "@components/config/module/ExternalNotificationConfigPage";
+import { MQTTConfigPage } from "@components/config/module/MQTTConfigPage";
+import { RangeTestConfigPage } from "@components/config/module/RangeTestConfigPage";
+import { RemoteHardwareConfigPage } from "@components/config/module/RemoteHardwareConfigPage";
+import { SerialModuleConfigPage } from "@components/config/module/SerialModuleConfigPage";
+import { StoreAndForwardConfigPage } from "@components/config/module/StoreAndForwardConfigPage";
+import { TelemetryConfigPage } from "@components/config/module/TelemetryConfigPage";
 
 import { requestCommitConfig } from "@features/config/actions";
 import {
@@ -77,7 +77,7 @@ const _ActiveDetailView = ({
 const getNumberOfPendingChanges = (
   currentModuleConfig: meshtastic_protobufs_LocalModuleConfig | null,
   editedModuleConfig: IModuleConfigState,
-  configKey: keyof IModuleConfigState,
+  configKey: keyof IModuleConfigState
 ): number => {
   if (!currentModuleConfig) return -1;
 
@@ -104,11 +104,11 @@ const getNumberOfPendingChanges = (
 
       return accum;
     },
-    0,
+    0
   );
 };
 
-const ModuleConfigPage = () => {
+export const ModuleConfigPage = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -142,7 +142,7 @@ const ModuleConfigPage = () => {
             const pendingChanges = getNumberOfPendingChanges(
               currentModuleConfig,
               editedModuleConfig,
-              configKey,
+              configKey
             );
 
             return (
@@ -166,5 +166,3 @@ const ModuleConfigPage = () => {
     </div>
   );
 };
-
-export default ModuleConfigPage;

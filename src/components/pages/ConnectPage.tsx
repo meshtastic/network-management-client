@@ -8,9 +8,9 @@ import MeshLogoDark from "@app/assets/Mesh_Logo_Dark.svg";
 import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 
-import ConnectTab from "@components/connection/ConnectTab";
-import SerialConnectPane from "@components/connection/SerialConnectPane";
-import TcpConnectPane from "@components/connection/TcpConnectPane";
+import { ConnectTab } from "@components/connection/ConnectTab";
+import { SerialConnectPane } from "@components/connection/SerialConnectPane";
+import { TcpConnectPane } from "@components/connection/TcpConnectPane";
 
 import {
   requestFetchLastTcpConnectionMeta,
@@ -43,7 +43,7 @@ export interface IOnboardPageProps {
   unmountSelf: () => void;
 }
 
-const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
+export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const { t } = useTranslation();
 
   const { isDarkMode } = useIsDarkMode();
@@ -74,13 +74,13 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   };
 
   const activeSocketState = useSelector(
-    selectConnectionStatus(getFullSocketAddress(socketAddress, socketPort)),
+    selectConnectionStatus(getFullSocketAddress(socketAddress, socketPort))
   ) ?? {
     status: "IDLE",
   };
 
   const persistedTCPConnectionMeta = useSelector(
-    selectPersistedTCPConnectionMeta(),
+    selectPersistedTCPConnectionMeta()
   );
 
   const requestPorts = () => {
@@ -94,7 +94,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       requestPersistLastTcpConnectionMeta({
         address: socketAddress,
         port: parseInt(socketPort),
-      }),
+      })
     );
 
     dispatch(
@@ -104,7 +104,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
           socketAddress: getFullSocketAddress(socketAddress, socketPort),
         },
         setPrimary: true,
-      }),
+      })
     );
   };
 
@@ -112,7 +112,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(
       requestSliceActions.clearRequestState({
         name: requestConnectToDevice.type,
-      }),
+      })
     );
     dispatch(connectionSliceActions.clearAllConnectionState());
     requestPorts();
@@ -124,7 +124,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       requestConnectToDevice({
         params: { type: ConnectionType.SERIAL, portName, dtr, rts },
         setPrimary: true,
-      }),
+      })
     );
   };
 
@@ -284,7 +284,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                   type="button"
                   className="hover:underline"
                   onClick={openExternalLink(
-                    "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+                    "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
                   )}
                 />
               ),
@@ -293,7 +293,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                   type="button"
                   className="hover:underline"
                   onClick={openExternalLink(
-                    "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+                    "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
                   )}
                 />
               ),
@@ -304,4 +304,3 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     </div>
   );
 };
-export default ConnectPage;

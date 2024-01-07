@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -28,7 +28,7 @@ export interface IExternalNotificationConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseExternalNotificationModuleConfigInput = (
-  d: DeepPartial<ExternalNotificationModuleConfigInput>,
+  d: DeepPartial<ExternalNotificationModuleConfigInput>
 ): DeepPartial<ExternalNotificationModuleConfigInput> => ({
   ...d,
   outputMs: parseInt(d.outputMs as unknown as string),
@@ -38,7 +38,7 @@ const parseExternalNotificationModuleConfigInput = (
   nagTimeout: parseInt(d.nagTimeout as unknown as string),
 });
 
-const ExternalNotificationConfigPage = ({
+export const ExternalNotificationConfigPage = ({
   className = "",
 }: IExternalNotificationConfigPageProps) => {
   const { t } = useTranslation();
@@ -50,28 +50,28 @@ const ExternalNotificationConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.externalNotification?.enabled ?? true,
+    !device?.moduleConfig.externalNotification?.enabled ?? true
   );
 
   const [bellAlertsDisabled, setBellAlertsDisabled] = useState(
-    !device?.moduleConfig.externalNotification?.alertBell ?? true,
+    !device?.moduleConfig.externalNotification?.alertBell ?? true
   );
 
   const [messageAlertsDisabled, setMessageAlertsDisabled] = useState(
-    !device?.moduleConfig.externalNotification?.alertMessage ?? true,
+    !device?.moduleConfig.externalNotification?.alertMessage ?? true
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.externalNotification ?? undefined,
-        editedConfig.externalNotification ?? undefined,
+        editedConfig.externalNotification ?? undefined
       ),
-    [],
+    []
   );
 
   const updateStateFlags = (
-    d: DeepPartial<ExternalNotificationModuleConfigInput>,
+    d: DeepPartial<ExternalNotificationModuleConfigInput>
   ) => {
     setModuleDisabled(!d.enabled);
     setBellAlertsDisabled(!d.alertBell);
@@ -101,13 +101,13 @@ const ExternalNotificationConfigPage = ({
           dispatch(
             configSliceActions.updateModuleConfig({
               externalNotification: data,
-            }),
+            })
           );
         },
         500,
-        { leading: true },
+        { leading: true }
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -120,7 +120,7 @@ const ExternalNotificationConfigPage = ({
     if (!currentConfig?.externalNotification) return;
     reset(currentConfig.externalNotification);
     dispatch(
-      configSliceActions.updateModuleConfig({ externalNotification: null }),
+      configSliceActions.updateModuleConfig({ externalNotification: null })
     );
   };
 
@@ -160,7 +160,7 @@ const ExternalNotificationConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t(
-              "config.module.externalNotification.enableBellVibrateAlert",
+              "config.module.externalNotification.enableBellVibrateAlert"
             )}
             disabled={moduleDisabled || bellAlertsDisabled}
             error={errors.alertBellVibra?.message as string}
@@ -186,7 +186,7 @@ const ExternalNotificationConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t(
-              "config.module.externalNotification.enableMessageVibrateAlert",
+              "config.module.externalNotification.enableMessageVibrateAlert"
             )}
             disabled={moduleDisabled || messageAlertsDisabled}
             error={errors.alertMessageVibra?.message as string}
@@ -196,7 +196,7 @@ const ExternalNotificationConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t(
-              "config.module.externalNotification.enableMessageBuzzerAlert",
+              "config.module.externalNotification.enableMessageBuzzerAlert"
             )}
             disabled={moduleDisabled || messageAlertsDisabled}
             error={errors.alertMessageBuzzer?.message as string}
@@ -255,5 +255,3 @@ const ExternalNotificationConfigPage = ({
     </div>
   );
 };
-
-export default ExternalNotificationConfigPage;

@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import type { DetailedHTMLProps, SelectHTMLAttributes } from "react";
 import type { UseFormRegister } from "react-hook-form";
 
-import ConfigLabel from "@components/config/ConfigLabel";
+import { ConfigLabel } from "@components/config/ConfigLabel";
 
 export interface IConfigSelectProps
   extends DetailedHTMLProps<
@@ -13,7 +13,7 @@ export interface IConfigSelectProps
   error?: string;
 }
 
-const ConfigSelect = forwardRef<
+export const ConfigSelect = forwardRef<
   HTMLSelectElement,
   IConfigSelectProps & ReturnType<UseFormRegister<any>>
 >(({ text, error, ...rest }, ref) => {
@@ -29,5 +29,3 @@ const ConfigSelect = forwardRef<
     </ConfigLabel>
   );
 });
-
-export default ConfigSelect;

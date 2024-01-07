@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -28,7 +28,7 @@ export interface ISerialModuleConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseSerialModuleConfigInput = (
-  d: DeepPartial<SerialModuleConfigInput>,
+  d: DeepPartial<SerialModuleConfigInput>
 ): DeepPartial<SerialModuleConfigInput> => ({
   ...d,
   mode: parseInt(d.mode as unknown as string),
@@ -38,7 +38,7 @@ const parseSerialModuleConfigInput = (
   timeout: parseInt(d.timeout as unknown as string),
 });
 
-const SerialModuleConfigPage = ({
+export const SerialModuleConfigPage = ({
   className = "",
 }: ISerialModuleConfigPageProps) => {
   const { t } = useTranslation();
@@ -50,16 +50,16 @@ const SerialModuleConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.serial?.enabled ?? true,
+    !device?.moduleConfig.serial?.enabled ?? true
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.serial ?? undefined,
-        editedConfig.serial ?? undefined,
+        editedConfig.serial ?? undefined
       ),
-    [],
+    []
   );
 
   const updateStateFlags = (d: DeepPartial<SerialModuleConfigInput>) => {
@@ -89,9 +89,9 @@ const SerialModuleConfigPage = ({
           dispatch(configSliceActions.updateModuleConfig({ serial: data }));
         },
         500,
-        { leading: true },
+        { leading: true }
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -207,5 +207,3 @@ const SerialModuleConfigPage = ({
     </div>
   );
 };
-
-export default SerialModuleConfigPage;

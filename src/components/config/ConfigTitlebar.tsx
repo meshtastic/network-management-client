@@ -1,7 +1,7 @@
 import type React from "react";
 import type { ReactNode } from "react";
 
-import DefaultTooltip from "@components/DefaultTooltip";
+import { DefaultTooltip } from "@components/DefaultTooltip";
 
 export interface IConfigTitleProps {
   title: string;
@@ -16,7 +16,7 @@ export interface IConfigTitleProps {
   children: ReactNode;
 }
 
-const ConfigTitle = ({
+export const ConfigTitlebar = ({
   title,
   subtitle,
   renderIcon,
@@ -53,5 +53,3 @@ const ConfigTitle = ({
     </div>
   );
 };
-
-export default ConfigTitle;

@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentRadioConfig,
@@ -25,23 +25,22 @@ export interface IPowerConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parsePowerConfigInput = (
-  d: DeepPartial<PowerConfigInput>,
+  d: DeepPartial<PowerConfigInput>
 ): DeepPartial<PowerConfigInput> => ({
   ...d,
   onBatteryShutdownAfterSecs: parseInt(
-    d.onBatteryShutdownAfterSecs as unknown as string,
+    d.onBatteryShutdownAfterSecs as unknown as string
   ),
   adcMultiplierOverride: parseFloat(
-    d.adcMultiplierOverride as unknown as string,
+    d.adcMultiplierOverride as unknown as string
   ),
   waitBluetoothSecs: parseInt(d.waitBluetoothSecs as unknown as string),
-  meshSdsTimeoutSecs: parseInt(d.meshSdsTimeoutSecs as unknown as string),
   sdsSecs: parseInt(d.sdsSecs as unknown as string),
   lsSecs: parseInt(d.lsSecs as unknown as string),
   minWakeSecs: parseInt(d.minWakeSecs as unknown as string),
 });
 
-const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
+export const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -54,9 +53,9 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
     () =>
       getDefaultConfigInput(
         device?.config.power ?? undefined,
-        editedConfig.power ?? undefined,
+        editedConfig.power ?? undefined
       ),
-    [],
+    []
   );
 
   const {
@@ -76,9 +75,9 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ power: data }));
         },
         500,
-        { leading: true },
+        { leading: true }
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -133,13 +132,6 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
 
           <ConfigInput
             type="number"
-            text={t("config.radio.power.sdsTimeout")}
-            error={errors.meshSdsTimeoutSecs?.message as string}
-            {...register("meshSdsTimeoutSecs")}
-          />
-
-          <ConfigInput
-            type="number"
             text={t("config.radio.power.sdsInterval")}
             error={errors.sdsSecs?.message as string}
             {...register("sdsSecs")}
@@ -163,5 +155,3 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
     </div>
   );
 };
-
-export default PowerConfigPage;

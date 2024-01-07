@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import TableLayout from "@components/Table/TableLayout";
+import { TableLayout } from "@components/Table/TableLayout";
 import {
   selectAllUsersByNodeIds,
   selectAllWaypoints,
@@ -12,7 +12,7 @@ import {
 import { formatLocation } from "@utils/map";
 import { useTranslation } from "react-i18next";
 
-const ManageWaypointPage = () => {
+export const ManageWaypointPage = () => {
   const { t } = useTranslation();
 
   const waypoints = useSelector(selectAllWaypoints());
@@ -71,7 +71,7 @@ const ManageWaypointPage = () => {
         },
       },
     ],
-    [waypoints],
+    [waypoints]
   );
 
   return (
@@ -83,5 +83,3 @@ const ManageWaypointPage = () => {
     />
   );
 };
-
-export default ManageWaypointPage;

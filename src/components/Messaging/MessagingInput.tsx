@@ -1,4 +1,4 @@
-import DefaultTooltip from "@components/DefaultTooltip";
+import { DefaultTooltip } from "@components/DefaultTooltip";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { FormEventHandler, useState } from "react";
 
@@ -8,7 +8,7 @@ export interface IMessagingInputProps {
   className?: string;
 }
 
-const MessagingInput = ({
+export const MessagingInput = ({
   onSubmit,
   placeholder = "",
   className = "",
@@ -42,5 +42,3 @@ const MessagingInput = ({
     </form>
   );
 };
-
-export default MessagingInput;

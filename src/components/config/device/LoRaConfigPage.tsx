@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentRadioConfig,
@@ -25,7 +25,7 @@ export interface ILoRaConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseLoRaConfigInput = (
-  d: DeepPartial<LoRaConfigInput>,
+  d: DeepPartial<LoRaConfigInput>
 ): DeepPartial<LoRaConfigInput> => ({
   ...d,
   region: parseInt(d.region as unknown as string),
@@ -39,7 +39,7 @@ const parseLoRaConfigInput = (
   channelNum: parseInt(d.channelNum as unknown as string),
 });
 
-const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
+export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -49,20 +49,20 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [useModemPreset, setUseModemPreset] = useState(
-    !device?.config.lora?.modemPreset ?? false,
+    !device?.config.lora?.modemPreset ?? false
   );
 
   const [txEnabled, setTxEnabled] = useState(
-    device?.config.lora?.txEnabled ?? true,
+    device?.config.lora?.txEnabled ?? true
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.config.lora ?? undefined,
-        editedConfig.lora ?? undefined,
+        editedConfig.lora ?? undefined
       ),
-    [],
+    []
   );
 
   const updateStateFlags = (d: DeepPartial<LoRaConfigInput>) => {
@@ -93,9 +93,9 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ lora: data }));
         },
         500,
-        { leading: true },
+        { leading: true }
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -250,5 +250,3 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
     </div>
   );
 };
-
-export default LoRaConfigPage;

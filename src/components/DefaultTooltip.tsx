@@ -8,7 +8,7 @@ export interface IDefaultTooltipProps extends Tooltip.TooltipContentProps {
   deactivated?: boolean;
 }
 
-const DefaultTooltip = ({
+export const DefaultTooltip = ({
   text,
   children,
   deactivated,
@@ -40,5 +40,3 @@ const DefaultTooltip = ({
     </Tooltip.Provider>
   );
 };
-
-export default DefaultTooltip;

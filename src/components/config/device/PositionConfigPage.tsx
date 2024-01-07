@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentRadioConfig,
@@ -28,7 +28,7 @@ export interface IPositionConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parsePositionConfigInput = (
-  d: DeepPartial<PositionConfigInput>,
+  d: DeepPartial<PositionConfigInput>
 ): DeepPartial<PositionConfigInput> => ({
   ...d,
   positionBroadcastSecs: parseInt(d.positionBroadcastSecs as unknown as string),
@@ -38,14 +38,16 @@ const parsePositionConfigInput = (
   rxGpio: parseInt(d.rxGpio as unknown as string),
   txGpio: parseInt(d.txGpio as unknown as string),
   broadcastSmartMinimumDistance: parseInt(
-    d.broadcastSmartMinimumDistance as unknown as string,
+    d.broadcastSmartMinimumDistance as unknown as string
   ),
   broadcastSmartMinimumIntervalSecs: parseInt(
-    d.broadcastSmartMinimumIntervalSecs as unknown as string,
+    d.broadcastSmartMinimumIntervalSecs as unknown as string
   ),
 });
 
-const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
+export const PositionConfigPage = ({
+  className = "",
+}: IPositionConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -55,20 +57,20 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [gpsDisabled, setGpsDisabled] = useState(
-    !device?.config.position?.gpsEnabled ?? true,
+    !device?.config.position?.gpsEnabled ?? true
   );
 
   const [fixedPositionDisabled, setFixedPositionDisabled] = useState(
-    !device?.config.position?.fixedPosition ?? true,
+    !device?.config.position?.fixedPosition ?? true
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.config.position ?? undefined,
-        editedConfig.position ?? undefined,
+        editedConfig.position ?? undefined
       ),
-    [],
+    []
   );
 
   const updateStateFlags = (d: DeepPartial<PositionConfigInput>) => {
@@ -99,9 +101,9 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ position: data }));
         },
         500,
-        { leading: true },
+        { leading: true }
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -185,5 +187,3 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
     </div>
   );
 };
-
-export default PositionConfigPage;

@@ -14,7 +14,7 @@ export interface ISerialPortOptions {
   onClick: (portName: string) => void;
 }
 
-const SerialPortOption = ({
+export const SerialPortOption = ({
   name,
   connectionState,
   onClick,
@@ -92,5 +92,3 @@ const SerialPortOption = ({
       );
   }
 };
-
-export default SerialPortOption;

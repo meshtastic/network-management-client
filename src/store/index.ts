@@ -13,7 +13,7 @@ import { mapReducer } from "@features/map/slice";
 import { requestReducer } from "@features/requests/slice";
 import { uiReducer } from "@features/ui/slice";
 
-import rootSaga from "@store/saga";
+import { rootSaga } from "@store/saga";
 
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware, logger];

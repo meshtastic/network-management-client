@@ -8,7 +8,7 @@ export interface IMapNodeTooltip {
   hoverInfo: PickingInfo;
 }
 
-const MapNodeTooltip = ({ hoverInfo }: IMapNodeTooltip) => {
+export const MapNodeTooltip = ({ hoverInfo }: IMapNodeTooltip) => {
   const rootState = useSelector(selectRootState());
 
   const { object, x, y } = hoverInfo;
@@ -31,5 +31,3 @@ const MapNodeTooltip = ({ hoverInfo }: IMapNodeTooltip) => {
     </div>
   );
 };
-
-export default MapNodeTooltip;

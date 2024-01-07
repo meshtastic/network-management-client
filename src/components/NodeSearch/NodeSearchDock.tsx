@@ -9,9 +9,9 @@ import type {
   app_device_MeshNode,
 } from "@bindings/index";
 
-import DefaultTooltip from "@components/DefaultTooltip";
-import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
-import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
+import { DefaultTooltip } from "@components/DefaultTooltip";
+import { NodeSearchInput } from "@components/NodeSearch/NodeSearchInput";
+import { NodeSearchResult } from "@components/NodeSearch/NodeSearchResult";
 
 import { selectAllNodes, selectDevice } from "@features/device/selectors";
 import { selectMapUIState } from "@features/map/selectors";
@@ -83,7 +83,7 @@ const filterNodes =
     return false;
   };
 
-const NodeSearchDock = () => {
+export const NodeSearchDock = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -112,7 +112,7 @@ const NodeSearchDock = () => {
       getFlyToConfig({
         lat: nodePosition.latitude,
         lng: nodePosition.longitude,
-      }),
+      })
     );
   };
 
@@ -161,5 +161,3 @@ const NodeSearchDock = () => {
     </div>
   );
 };
-
-export default NodeSearchDock;

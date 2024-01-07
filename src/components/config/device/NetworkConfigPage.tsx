@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentRadioConfig,
@@ -25,13 +25,15 @@ export interface INetworkConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseNetworkConfigInput = (
-  d: DeepPartial<NetworkConfigInput>,
+  d: DeepPartial<NetworkConfigInput>
 ): DeepPartial<NetworkConfigInput> => ({
   ...d,
   addressMode: parseInt(d.addressMode as unknown as string),
 });
 
-const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
+export const NetworkConfigPage = ({
+  className = "",
+}: INetworkConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -41,20 +43,20 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [wifiDisabled, setWifiDisabled] = useState(
-    !device?.config.network?.wifiEnabled ?? true,
+    !device?.config.network?.wifiEnabled ?? true
   );
 
   const [ethDisabled, setEthDisabled] = useState(
-    !device?.config.network?.ethEnabled ?? true,
+    !device?.config.network?.ethEnabled ?? true
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.config.network ?? undefined,
-        editedConfig.network ?? undefined,
+        editedConfig.network ?? undefined
       ),
-    [],
+    []
   );
 
   const updateStateFlags = (d: DeepPartial<NetworkConfigInput>) => {
@@ -85,9 +87,9 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ network: data }));
         },
         500,
-        { leading: true },
+        { leading: true }
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -170,5 +172,3 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
     </div>
   );
 };
-
-export default NetworkConfigPage;
