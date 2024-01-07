@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import { LoRaConfigInput, configSliceActions } from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
+import { LoRaConfigInput, configSliceActions } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -25,7 +25,7 @@ export interface ILoRaConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseLoRaConfigInput = (
-  d: DeepPartial<LoRaConfigInput>
+  d: DeepPartial<LoRaConfigInput>,
 ): DeepPartial<LoRaConfigInput> => ({
   ...d,
   region: parseInt(d.region as unknown as string),
@@ -39,7 +39,7 @@ const parseLoRaConfigInput = (
   channelNum: parseInt(d.channelNum as unknown as string),
 });
 
-const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
+export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -49,20 +49,20 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [useModemPreset, setUseModemPreset] = useState(
-    !device?.config.lora?.modemPreset ?? false
+    !device?.config.lora?.modemPreset ?? false,
   );
 
   const [txEnabled, setTxEnabled] = useState(
-    device?.config.lora?.txEnabled ?? true
+    device?.config.lora?.txEnabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.config.lora ?? undefined,
-        editedConfig.lora ?? undefined
+        editedConfig.lora ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<LoRaConfigInput>) => {
@@ -73,7 +73,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -93,16 +93,17 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ lora: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.lora) return;
@@ -144,7 +145,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.lora.useModemPreset")}
-            error={errors.usePreset?.message}
+            error={errors.usePreset?.message as string}
             {...register("usePreset")}
           />
 
@@ -180,7 +181,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={useModemPreset}
             type="number"
             text={t("config.radio.lora.bandwidth")}
-            error={errors.bandwidth?.message}
+            error={errors.bandwidth?.message as string}
             {...register("bandwidth")}
           />
 
@@ -188,7 +189,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={useModemPreset}
             type="number"
             text={t("config.radio.lora.spreadFactor")}
-            error={errors.spreadFactor?.message}
+            error={errors.spreadFactor?.message as string}
             {...register("spreadFactor")}
           />
 
@@ -196,28 +197,28 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={useModemPreset}
             type="number"
             text={t("config.radio.lora.codingRate")}
-            error={errors.codingRate?.message}
+            error={errors.codingRate?.message as string}
             {...register("codingRate")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.lora.freqOffset")}
-            error={errors.frequencyOffset?.message}
+            error={errors.frequencyOffset?.message as string}
             {...register("frequencyOffset")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.lora.hopLimit")}
-            error={errors.hopLimit?.message}
+            error={errors.hopLimit?.message as string}
             {...register("hopLimit")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.lora.txEnabled")}
-            error={errors.txEnabled?.message}
+            error={errors.txEnabled?.message as string}
             {...register("txEnabled")}
           />
 
@@ -225,7 +226,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={!txEnabled}
             type="number"
             text={t("config.radio.lora.txPower")}
-            error={errors.txPower?.message}
+            error={errors.txPower?.message as string}
             {...register("txPower")}
           />
 
@@ -233,14 +234,14 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={!txEnabled}
             type="number"
             text={t("config.radio.lora.loraChannel")}
-            error={errors.channelNum?.message}
+            error={errors.channelNum?.message as string}
             {...register("channelNum")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.lora.euOverride")}
-            error={errors.overrideDutyCycle?.message}
+            error={errors.overrideDutyCycle?.message as string}
             {...register("overrideDutyCycle")}
           />
 
@@ -250,5 +251,3 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
     </div>
   );
 };
-
-export default LoRaConfigPage;

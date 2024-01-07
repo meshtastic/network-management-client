@@ -1,28 +1,28 @@
-import React, { useLayoutEffect, useState } from "react";
+import { Upload } from "lucide-react";
+import { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Upload } from "lucide-react";
 
-import type { app_protobufs_LocalConfig } from "@app/bindings";
-import i18next from "@app/i18n";
+import type { meshtastic_protobufs_LocalConfig } from "@app/bindings";
+import { i18next } from "@app/i18n";
 
-import ConfigLayout from "@components/config/ConfigLayout";
-import ConfigOption from "@components/config/ConfigOption";
+import { ConfigLayout } from "@components/config/ConfigLayout";
+import { ConfigOption } from "@components/config/ConfigOption";
 
-import BluetoothConfigPage from "@components/config/device/BluetoothConfigPage";
-import DeviceConfigPage from "@components/config/device/DeviceConfigPage";
-import DisplayConfigPage from "@components/config/device/DisplayConfigPage";
-import LoRaConfigPage from "@components/config/device/LoRaConfigPage";
-import NetworkConfigPage from "@components/config/device/NetworkConfigPage";
-import PositionConfigPage from "@components/config/device/PositionConfigPage";
-import PowerConfigPage from "@components/config/device/PowerConfigPage";
+import { BluetoothConfigPage } from "@components/config/device/BluetoothConfigPage";
+import { DeviceConfigPage } from "@components/config/device/DeviceConfigPage";
+import { DisplayConfigPage } from "@components/config/device/DisplayConfigPage";
+import { LoRaConfigPage } from "@components/config/device/LoRaConfigPage";
+import { NetworkConfigPage } from "@components/config/device/NetworkConfigPage";
+import { PositionConfigPage } from "@components/config/device/PositionConfigPage";
+import { PowerConfigPage } from "@components/config/device/PowerConfigPage";
 
+import { requestCommitConfig } from "@features/config/actions";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
-import { requestCommitConfig } from "@features/config/actions";
 import type { IRadioConfigState } from "@features/config/slice";
 
 export const RadioConfigOptions: Record<keyof IRadioConfigState, string> = {
@@ -67,7 +67,7 @@ const _ActiveDetailView = ({
 };
 
 const getNumberOfPendingChanges = (
-  currentRadioConfig: app_protobufs_LocalConfig | null,
+  currentRadioConfig: meshtastic_protobufs_LocalConfig | null,
   editedRadioConfig: IRadioConfigState,
   configKey: keyof IRadioConfigState,
 ): number => {
@@ -75,14 +75,16 @@ const getNumberOfPendingChanges = (
 
   return Object.entries(editedRadioConfig?.[configKey] ?? {}).reduce(
     (accum, [editedConfigKey, editedConfigValue]) => {
-      if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
+      if (editedConfigValue === undefined) return accum; // ! Need to allow falsy values
 
       const currentFieldValue =
+        // biome-ignore lint/suspicious/noExplicitAny: Need any for getting current config
         (currentRadioConfig as Record<string, any>)?.[configKey]?.[
           editedConfigKey
         ] ?? null;
 
       const editedFieldValue =
+        // biome-ignore lint/suspicious/noExplicitAny: Need any for getting current config
         (editedRadioConfig?.[configKey] as Record<string, any>)?.[
           editedConfigKey
         ] ?? null;
@@ -100,7 +102,7 @@ const getNumberOfPendingChanges = (
   );
 };
 
-const RadioConfigPage = () => {
+export const RadioConfigPage = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -158,5 +160,3 @@ const RadioConfigPage = () => {
     </div>
   );
 };
-
-export default RadioConfigPage;

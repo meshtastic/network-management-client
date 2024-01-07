@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import { ChannelConfigInput, configSliceActions } from "@features/config/slice";
 import {
   selectCurrentChannelConfig,
   selectEditedChannelConfig,
 } from "@features/config/selectors";
+import { ChannelConfigInput, configSliceActions } from "@features/config/slice";
 
 import {
   getCurrentConfigFromMeshChannel,
@@ -29,13 +29,14 @@ export interface IChannelConfigDetailProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseChannelConfigInput = (
-  d: DeepPartial<ChannelConfigInput>
+  d: DeepPartial<ChannelConfigInput>,
 ): DeepPartial<ChannelConfigInput> => ({
   ...d,
-  role: d.role != undefined ? parseInt(d.role as unknown as string) : undefined,
+  role:
+    d.role !== undefined ? parseInt(d.role as unknown as string) : undefined,
 });
 
-const ChannelConfigDetail = ({
+export const ChannelConfigDetail = ({
   channelNum,
   className = "",
 }: IChannelConfigDetailProps) => {
@@ -44,7 +45,7 @@ const ChannelConfigDetail = ({
   const dispatch = useDispatch();
 
   const currentMeshChannel = useSelector(
-    selectCurrentChannelConfig(channelNum)
+    selectCurrentChannelConfig(channelNum),
   );
   const editedConfig = useSelector(selectEditedChannelConfig(channelNum));
 
@@ -53,23 +54,23 @@ const ChannelConfigDetail = ({
       currentMeshChannel
         ? getCurrentConfigFromMeshChannel(currentMeshChannel)
         : null,
-    [currentMeshChannel]
+    [currentMeshChannel],
   );
   const channelName = currentMeshChannel
     ? getChannelName(currentMeshChannel)
     : t("general.unknown");
 
   const [channelDisabled, setChannelDisabled] = useState(
-    currentMeshChannel?.config.role === 0 // DISABLED
+    currentMeshChannel?.config.role === 0, // DISABLED
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         currentConfig ?? undefined,
-        editedConfig ?? undefined
+        editedConfig ?? undefined,
       ),
-    []
+    [currentConfig, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<ChannelConfigInput>) => {
@@ -79,7 +80,7 @@ const ChannelConfigDetail = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -99,26 +100,27 @@ const ChannelConfigDetail = ({
           dispatch(
             configSliceActions.updateChannelConfig([
               { channelNum, config: data },
-            ])
+            ]),
           );
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags, channelNum],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentMeshChannel) return;
     reset(getCurrentConfigFromMeshChannel(currentMeshChannel));
     dispatch(
-      configSliceActions.updateChannelConfig([{ channelNum, config: null }])
+      configSliceActions.updateChannelConfig([{ channelNum, config: null }]),
     );
   };
 
@@ -183,5 +185,3 @@ const ChannelConfigDetail = ({
     </div>
   );
 };
-
-export default ChannelConfigDetail;

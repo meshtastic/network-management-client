@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import type { ReactNode } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { useState } from "react";
+import type { ReactNode } from "react";
 
 export interface IDefaultTooltipProps extends Tooltip.TooltipContentProps {
   text: string;
@@ -8,7 +8,7 @@ export interface IDefaultTooltipProps extends Tooltip.TooltipContentProps {
   deactivated?: boolean;
 }
 
-const DefaultTooltip = ({
+export const DefaultTooltip = ({
   text,
   children,
   deactivated,
@@ -40,5 +40,3 @@ const DefaultTooltip = ({
     </Tooltip.Provider>
   );
 };
-
-export default DefaultTooltip;

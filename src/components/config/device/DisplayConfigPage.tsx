@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import { DisplayConfigInput, configSliceActions } from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
+import { DisplayConfigInput, configSliceActions } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -25,11 +25,11 @@ export interface IDisplayConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseDisplayConfigInput = (
-  d: DeepPartial<DisplayConfigInput>
+  d: DeepPartial<DisplayConfigInput>,
 ): DeepPartial<DisplayConfigInput> => ({
   ...d,
   autoScreenCarouselSecs: parseInt(
-    d.autoScreenCarouselSecs as unknown as string
+    d.autoScreenCarouselSecs as unknown as string,
   ),
   screenOnSecs: parseInt(d.screenOnSecs as unknown as string),
   displaymode: parseInt(d.displaymode as unknown as string),
@@ -38,7 +38,9 @@ const parseDisplayConfigInput = (
   units: parseInt(d.units as unknown as string),
 });
 
-const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
+export const DisplayConfigPage = ({
+  className = "",
+}: IDisplayConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -51,9 +53,9 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
     () =>
       getDefaultConfigInput(
         device?.config.display ?? undefined,
-        editedConfig.display ?? undefined
+        editedConfig.display ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const {
@@ -73,16 +75,17 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ display: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.display) return;
@@ -103,14 +106,14 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="number"
             text={t("config.radio.display.autoScrollInterval")}
-            error={errors.autoScreenCarouselSecs?.message}
+            error={errors.autoScreenCarouselSecs?.message as string}
             {...register("autoScreenCarouselSecs")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.display.forceNorthToTop")}
-            error={errors.compassNorthTop?.message}
+            error={errors.compassNorthTop?.message as string}
             {...register("compassNorthTop")}
           />
 
@@ -135,7 +138,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.display.flipScreen")}
-            error={errors.flipScreen?.message}
+            error={errors.flipScreen?.message as string}
             {...register("flipScreen")}
           />
 
@@ -160,7 +163,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.display.boldHeading")}
-            error={errors.headingBold?.message}
+            error={errors.headingBold?.message as string}
             {...register("headingBold")}
           />
 
@@ -185,7 +188,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="number"
             text={t("config.radio.display.screenOnDuration")}
-            error={errors.screenOnSecs?.message}
+            error={errors.screenOnSecs?.message as string}
             {...register("screenOnSecs")}
           />
 
@@ -202,7 +205,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.display.wakeOnMotion")}
-            error={errors.wakeOnTapOrMotion?.message}
+            error={errors.wakeOnTapOrMotion?.message as string}
             {...register("wakeOnTapOrMotion")}
           />
 
@@ -212,5 +215,3 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
     </div>
   );
 };
-
-export default DisplayConfigPage;

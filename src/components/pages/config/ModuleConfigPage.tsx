@@ -1,31 +1,31 @@
-import React, { useLayoutEffect, useState } from "react";
+import { Upload } from "lucide-react";
+import { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Upload } from "lucide-react";
 
-import type { app_protobufs_LocalModuleConfig } from "@app/bindings";
-import i18next from "@app/i18n";
+import type { meshtastic_protobufs_LocalModuleConfig } from "@app/bindings";
+import { i18next } from "@app/i18n";
 
-import ConfigLayout from "@components/config/ConfigLayout";
-import ConfigOption from "@components/config/ConfigOption";
+import { ConfigLayout } from "@components/config/ConfigLayout";
+import { ConfigOption } from "@components/config/ConfigOption";
 
-// import AudioConfigPage from "@components/config/module/AudioConfigPage";
-import CannedMessageConfigPage from "@components/config/module/CannedMessageConfigPage";
-import ExternalNotificationConfigPage from "@components/config/module/ExternalNotificationConfigPage";
-import MQTTConfigPage from "@components/config/module/MQTTConfigPage";
-import RangeTestConfigPage from "@components/config/module/RangeTestConfigPage";
-import RemoteHardwareConfigPage from "@components/config/module/RemoteHardwareConfigPage";
-import SerialModuleConfigPage from "@components/config/module/SerialModuleConfigPage";
-import StoreAndForwardConfigPage from "@components/config/module/StoreAndForwardConfigPage";
-import TelemetryConfigPage from "@components/config/module/TelemetryConfigPage";
+// import { AudioConfigPage } from "@components/config/module/AudioConfigPage";
+import { CannedMessageConfigPage } from "@components/config/module/CannedMessageConfigPage";
+import { ExternalNotificationConfigPage } from "@components/config/module/ExternalNotificationConfigPage";
+import { MQTTConfigPage } from "@components/config/module/MQTTConfigPage";
+import { RangeTestConfigPage } from "@components/config/module/RangeTestConfigPage";
+import { RemoteHardwareConfigPage } from "@components/config/module/RemoteHardwareConfigPage";
+import { SerialModuleConfigPage } from "@components/config/module/SerialModuleConfigPage";
+import { StoreAndForwardConfigPage } from "@components/config/module/StoreAndForwardConfigPage";
+import { TelemetryConfigPage } from "@components/config/module/TelemetryConfigPage";
 
 import { requestCommitConfig } from "@features/config/actions";
-import type { IModuleConfigState } from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import type { IModuleConfigState } from "@features/config/slice";
 
 export const ModuleConfigOptions: Record<keyof IModuleConfigState, string> = {
   // audio: i18next.t('config.module.options.audio'),
@@ -75,7 +75,7 @@ const _ActiveDetailView = ({
 };
 
 const getNumberOfPendingChanges = (
-  currentModuleConfig: app_protobufs_LocalModuleConfig | null,
+  currentModuleConfig: meshtastic_protobufs_LocalModuleConfig | null,
   editedModuleConfig: IModuleConfigState,
   configKey: keyof IModuleConfigState,
 ): number => {
@@ -83,14 +83,16 @@ const getNumberOfPendingChanges = (
 
   return Object.entries(editedModuleConfig?.[configKey] ?? {}).reduce(
     (accum, [editedConfigKey, editedConfigValue]) => {
-      if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
+      if (editedConfigValue === undefined) return accum; // ! Need to allow falsy values
 
       const currentFieldValue =
+        // biome-ignore lint/suspicious/noExplicitAny: Need any for getting current config
         (currentModuleConfig as Record<string, any>)?.[configKey]?.[
           editedConfigKey
         ] ?? null;
 
       const editedFieldValue =
+        // biome-ignore lint/suspicious/noExplicitAny: Need any for getting current config
         (editedModuleConfig?.[configKey] as Record<string, any>)?.[
           editedConfigKey
         ] ?? null;
@@ -108,7 +110,7 @@ const getNumberOfPendingChanges = (
   );
 };
 
-const ModuleConfigPage = () => {
+export const ModuleConfigPage = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -166,5 +168,3 @@ const ModuleConfigPage = () => {
     </div>
   );
 };
-
-export default ModuleConfigPage;

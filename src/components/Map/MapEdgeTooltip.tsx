@@ -1,11 +1,10 @@
-import React from "react";
 import type { PickingInfo } from "deck.gl/typed";
 
 export interface IMapEdgeTooltip {
   hoverInfo: PickingInfo;
 }
 
-const MapEdgeTooltip = ({ hoverInfo }: IMapEdgeTooltip) => {
+export const MapEdgeTooltip = ({ hoverInfo }: IMapEdgeTooltip) => {
   const { object, x, y } = hoverInfo;
 
   const snr = object?.properties?.snr;
@@ -21,5 +20,3 @@ const MapEdgeTooltip = ({ hoverInfo }: IMapEdgeTooltip) => {
     </div>
   );
 };
-
-export default MapEdgeTooltip;

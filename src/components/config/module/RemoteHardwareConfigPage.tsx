@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import {
-  RemoteHardwareModuleConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import {
+  RemoteHardwareModuleConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,12 +28,12 @@ export interface IRemoteHardwareConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseRemoteHardwareModuleConfigInput = (
-  d: DeepPartial<RemoteHardwareModuleConfigInput>
+  d: DeepPartial<RemoteHardwareModuleConfigInput>,
 ): DeepPartial<RemoteHardwareModuleConfigInput> => ({
   ...d,
 });
 
-const RemoteHardwareConfigPage = ({
+export const RemoteHardwareConfigPage = ({
   className = "",
 }: IRemoteHardwareConfigPageProps) => {
   const { t } = useTranslation();
@@ -52,13 +52,13 @@ const RemoteHardwareConfigPage = ({
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.remoteHardware ?? undefined,
-        editedConfig.remoteHardware ?? undefined
+        editedConfig.remoteHardware ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (
-    d: DeepPartial<RemoteHardwareModuleConfigInput>
+    d: DeepPartial<RemoteHardwareModuleConfigInput>,
   ) => {
     return d; // TODO placeholder
   };
@@ -66,7 +66,7 @@ const RemoteHardwareConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -84,20 +84,21 @@ const RemoteHardwareConfigPage = ({
           const data = parseRemoteHardwareModuleConfigInput(d);
           updateStateFlags(data);
           dispatch(
-            configSliceActions.updateModuleConfig({ remoteHardware: data })
+            configSliceActions.updateModuleConfig({ remoteHardware: data }),
           );
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.remoteHardware) return;
@@ -118,7 +119,7 @@ const RemoteHardwareConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.remoteHardware.remoteHardwareEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
         </div>
@@ -126,5 +127,3 @@ const RemoteHardwareConfigPage = ({
     </div>
   );
 };
-
-export default RemoteHardwareConfigPage;

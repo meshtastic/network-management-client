@@ -1,14 +1,14 @@
-import React, { useMemo } from "react";
+import { Save } from "lucide-react";
+import { useMemo } from "react";
 import type { FormEventHandler } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Save } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-// import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+// import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import { requestPersistGeneralConfig } from "@features/appConfig/actions";
 import { selectGeneralConfigState } from "@features/appConfig/selectors";
@@ -22,7 +22,9 @@ type GeneralConfigFormInput = {
   colorMode: ColorMode;
 };
 
-const GeneralConfigPage = ({ className = "" }: IGeneralConfigPageProps) => {
+export const GeneralConfigPage = ({
+  className = "",
+}: IGeneralConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -40,7 +42,7 @@ const GeneralConfigPage = ({ className = "" }: IGeneralConfigPageProps) => {
 
   const handleFormSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    void handleSubmit(handleSubmitSuccess, console.warn)(e);
+    handleSubmit(handleSubmitSuccess, console.warn)(e);
   };
 
   const formId = useMemo(() => v4(), []);
@@ -75,5 +77,3 @@ const GeneralConfigPage = ({ className = "" }: IGeneralConfigPageProps) => {
     </div>
   );
 };
-
-export default GeneralConfigPage;

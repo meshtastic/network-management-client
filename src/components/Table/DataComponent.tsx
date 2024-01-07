@@ -1,4 +1,3 @@
-import React from "react";
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 export interface IDataComponent {
   header: string;
@@ -6,7 +5,7 @@ export interface IDataComponent {
   data: string;
 }
 
-const DataComponent = ({ header, category, data }: IDataComponent) => {
+export const DataComponent = ({ header, category, data }: IDataComponent) => {
   switch (header) {
     case "Name":
       switch (data) {
@@ -51,7 +50,7 @@ const DataComponent = ({ header, category, data }: IDataComponent) => {
             </div>
           );
         default:
-          return <div></div>;
+          return <div />;
       }
 
     case "Encryption":
@@ -69,7 +68,7 @@ const DataComponent = ({ header, category, data }: IDataComponent) => {
             </div>
           );
         default:
-          return <div></div>;
+          return <div />;
       }
 
     case "Uplink":
@@ -87,7 +86,7 @@ const DataComponent = ({ header, category, data }: IDataComponent) => {
             </div>
           );
         default:
-          return <div></div>;
+          return <div />;
       }
 
     case "Downlink":
@@ -105,7 +104,7 @@ const DataComponent = ({ header, category, data }: IDataComponent) => {
             </div>
           );
         default:
-          return <div></div>;
+          return <div />;
       }
 
     case "PSK":
@@ -128,12 +127,10 @@ const DataComponent = ({ header, category, data }: IDataComponent) => {
             </div>
           );
         default:
-          return <div></div>;
+          return <div />;
       }
 
     default:
-      return <div></div>;
+      return <div />;
   }
 };
-
-export default DataComponent;

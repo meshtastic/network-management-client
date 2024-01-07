@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import {
-  StoreForwardModuleConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import {
+  StoreForwardModuleConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,7 +28,7 @@ export interface IStoreAndForwardConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseStoreAndForwardModuleConfigInput = (
-  d: DeepPartial<StoreForwardModuleConfigInput>
+  d: DeepPartial<StoreForwardModuleConfigInput>,
 ): DeepPartial<StoreForwardModuleConfigInput> => ({
   ...d,
   records: parseInt(d.records as unknown as string),
@@ -36,7 +36,7 @@ const parseStoreAndForwardModuleConfigInput = (
   historyReturnWindow: parseInt(d.historyReturnWindow as unknown as string),
 });
 
-const StoreAndForwardConfigPage = ({
+export const StoreAndForwardConfigPage = ({
   className = "",
 }: IStoreAndForwardConfigPageProps) => {
   const { t } = useTranslation();
@@ -48,16 +48,16 @@ const StoreAndForwardConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.serial?.enabled ?? true
+    !device?.moduleConfig.serial?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.storeForward ?? undefined,
-        editedConfig.storeForward ?? undefined
+        editedConfig.storeForward ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<StoreForwardModuleConfigInput>) => {
@@ -67,7 +67,7 @@ const StoreAndForwardConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -85,20 +85,21 @@ const StoreAndForwardConfigPage = ({
           const data = parseStoreAndForwardModuleConfigInput(d);
           updateStateFlags(data);
           dispatch(
-            configSliceActions.updateModuleConfig({ storeForward: data })
+            configSliceActions.updateModuleConfig({ storeForward: data }),
           );
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.storeForward) return;
@@ -119,7 +120,7 @@ const StoreAndForwardConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.storeAndForward.sfEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -127,7 +128,7 @@ const StoreAndForwardConfigPage = ({
             type="checkbox"
             text={t("config.module.storeAndForward.heartbeatBroadcastEnabled")}
             disabled={moduleDisabled}
-            error={errors.heartbeat?.message}
+            error={errors.heartbeat?.message as string}
             {...register("heartbeat")}
           />
 
@@ -135,7 +136,7 @@ const StoreAndForwardConfigPage = ({
             type="number"
             text={t("config.module.storeAndForward.storedRecords")}
             disabled={moduleDisabled}
-            error={errors.records?.message}
+            error={errors.records?.message as string}
             {...register("records")}
           />
 
@@ -143,7 +144,7 @@ const StoreAndForwardConfigPage = ({
             type="number"
             text={t("config.module.storeAndForward.maxRecordsReturn")}
             disabled={moduleDisabled}
-            error={errors.historyReturnMax?.message}
+            error={errors.historyReturnMax?.message as string}
             {...register("historyReturnMax")}
           />
 
@@ -151,7 +152,7 @@ const StoreAndForwardConfigPage = ({
             type="number"
             text={t("config.module.storeAndForward.returnWindow")}
             disabled={moduleDisabled}
-            error={errors.historyReturnWindow?.message}
+            error={errors.historyReturnWindow?.message as string}
             {...register("historyReturnWindow")}
           />
         </div>
@@ -159,5 +160,3 @@ const StoreAndForwardConfigPage = ({
     </div>
   );
 };
-
-export default StoreAndForwardConfigPage;

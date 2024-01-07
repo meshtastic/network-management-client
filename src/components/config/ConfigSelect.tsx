@@ -1,8 +1,8 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import type { DetailedHTMLProps, SelectHTMLAttributes } from "react";
 import type { UseFormRegister } from "react-hook-form";
 
-import ConfigLabel from "@components/config/ConfigLabel";
+import { ConfigLabel } from "@components/config/ConfigLabel";
 
 export interface IConfigSelectProps
   extends DetailedHTMLProps<
@@ -13,8 +13,9 @@ export interface IConfigSelectProps
   error?: string;
 }
 
-const ConfigSelect = forwardRef<
+export const ConfigSelect = forwardRef<
   HTMLSelectElement,
+  // biome-ignore lint/suspicious/noExplicitAny: Need any to simplify complexity of being config-agnostic
   IConfigSelectProps & ReturnType<UseFormRegister<any>>
 >(({ text, error, ...rest }, ref) => {
   return (
@@ -29,5 +30,3 @@ const ConfigSelect = forwardRef<
     </ConfigLabel>
   );
 });
-
-export default ConfigSelect;

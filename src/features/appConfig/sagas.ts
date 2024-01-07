@@ -3,8 +3,8 @@ import { Store } from "tauri-plugin-store-api";
 
 import {
   requestFetchLastTcpConnectionMeta,
-  requestPersistLastTcpConnectionMeta,
   requestPersistGeneralConfig,
+  requestPersistLastTcpConnectionMeta,
   requestPersistMapConfig,
 } from "@features/appConfig/actions";
 import { ColorMode, appConfigSliceActions } from "@features/appConfig/slice";
@@ -23,18 +23,18 @@ import {
 const defaultStore = new Store(DEFAULT_STORE_FILE_NAME);
 
 function* fetchLastTcpConnectionMetaWorker(
-  action: ReturnType<typeof requestFetchLastTcpConnectionMeta>
+  action: ReturnType<typeof requestFetchLastTcpConnectionMeta>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     const persistedValue = (yield getValueFromPersistedStore(
       defaultStore,
-      PersistedStateKeys.LastTcpConnection
+      PersistedStateKeys.LastTcpConnection,
     )) as IPersistedState[PersistedStateKeys.LastTcpConnection];
 
     yield put(
-      appConfigSliceActions.setLastTcpConnection(persistedValue ?? null)
+      appConfigSliceActions.setLastTcpConnection(persistedValue ?? null),
     );
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
@@ -43,13 +43,13 @@ function* fetchLastTcpConnectionMetaWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
 
 function* persistLastTcpConnectionMetaWorker(
-  action: ReturnType<typeof requestPersistLastTcpConnectionMeta>
+  action: ReturnType<typeof requestPersistLastTcpConnectionMeta>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -57,13 +57,13 @@ function* persistLastTcpConnectionMetaWorker(
     yield setValueInPersistedStore(
       defaultStore,
       PersistedStateKeys.LastTcpConnection,
-      action.payload ?? undefined
+      action.payload ?? undefined,
     );
 
     // Fetch value from store to ensure it was set correctly
     const persistedValue = (yield getValueFromPersistedStore(
       defaultStore,
-      PersistedStateKeys.LastTcpConnection
+      PersistedStateKeys.LastTcpConnection,
     )) as IPersistedState[PersistedStateKeys.LastTcpConnection];
 
     if (JSON.stringify(persistedValue) !== JSON.stringify(action.payload)) {
@@ -76,7 +76,7 @@ function* persistLastTcpConnectionMetaWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
@@ -101,7 +101,7 @@ function setColorModeClassWorker(colorMode: ColorMode) {
 }
 
 function* persistGeneralConfigWorker(
-  action: ReturnType<typeof requestPersistGeneralConfig>
+  action: ReturnType<typeof requestPersistGeneralConfig>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -109,13 +109,13 @@ function* persistGeneralConfigWorker(
     yield setValueInPersistedStore(
       defaultStore,
       PersistedStateKeys.GeneralConfig,
-      action.payload
+      action.payload,
     );
 
     // Fetch value from store to ensure it was set correctly
     const persistedValue = (yield getValueFromPersistedStore(
       defaultStore,
-      PersistedStateKeys.GeneralConfig
+      PersistedStateKeys.GeneralConfig,
     )) as IPersistedState[PersistedStateKeys.GeneralConfig];
 
     if (JSON.stringify(persistedValue) !== JSON.stringify(action.payload)) {
@@ -133,13 +133,13 @@ function* persistGeneralConfigWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
 
 function* persistMapConfigWorker(
-  action: ReturnType<typeof requestPersistMapConfig>
+  action: ReturnType<typeof requestPersistMapConfig>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -147,13 +147,13 @@ function* persistMapConfigWorker(
     yield setValueInPersistedStore(
       defaultStore,
       PersistedStateKeys.MapConfig,
-      action.payload
+      action.payload,
     );
 
     // Fetch value from store to ensure it was set correctly
     const persistedValue = (yield getValueFromPersistedStore(
       defaultStore,
-      PersistedStateKeys.MapConfig
+      PersistedStateKeys.MapConfig,
     )) as IPersistedState[PersistedStateKeys.MapConfig];
 
     if (JSON.stringify(persistedValue) !== JSON.stringify(action.payload)) {
@@ -169,31 +169,31 @@ function* persistMapConfigWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
 
 function* initializeAppConfigWorker(
-  action: ReturnType<typeof requestInitializeApplication>
+  action: ReturnType<typeof requestInitializeApplication>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
     const persistedGeneralConfig = (yield getValueFromPersistedStore(
       defaultStore,
-      PersistedStateKeys.GeneralConfig
+      PersistedStateKeys.GeneralConfig,
     )) as IPersistedState[PersistedStateKeys.GeneralConfig];
 
     if (persistedGeneralConfig) {
       yield put(
-        appConfigSliceActions.updateGeneralConfig(persistedGeneralConfig)
+        appConfigSliceActions.updateGeneralConfig(persistedGeneralConfig),
       );
     }
 
     const persistedMapConfig = (yield getValueFromPersistedStore(
       defaultStore,
-      PersistedStateKeys.MapConfig
+      PersistedStateKeys.MapConfig,
     )) as IPersistedState[PersistedStateKeys.MapConfig];
 
     if (persistedMapConfig) {
@@ -203,7 +203,7 @@ function* initializeAppConfigWorker(
     // Initialize color theme when data loaded
     yield call(
       setColorModeClassWorker,
-      persistedGeneralConfig?.colorMode ?? "system"
+      persistedGeneralConfig?.colorMode ?? "system",
     );
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
@@ -212,7 +212,7 @@ function* initializeAppConfigWorker(
       requestSliceActions.setRequestFailed({
         name: action.type,
         message: (error as CommandError).message,
-      })
+      }),
     );
   }
 }
@@ -221,11 +221,11 @@ export function* appConfigSaga() {
   yield all([
     takeEvery(
       requestFetchLastTcpConnectionMeta.type,
-      fetchLastTcpConnectionMetaWorker
+      fetchLastTcpConnectionMetaWorker,
     ),
     takeEvery(
       requestPersistLastTcpConnectionMeta.type,
-      persistLastTcpConnectionMetaWorker
+      persistLastTcpConnectionMetaWorker,
     ),
     takeEvery(requestPersistGeneralConfig.type, persistGeneralConfigWorker),
     takeEvery(requestPersistMapConfig.type, persistMapConfigWorker),

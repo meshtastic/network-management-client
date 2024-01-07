@@ -3,5 +3,7 @@ export interface CommandError {
 }
 
 export function error(message: string): never {
-  return (() => { throw new Error(message); })();
+  return (() => {
+    throw new Error(message);
+  })();
 }

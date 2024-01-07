@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import {
-  BluetoothConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
+import {
+  BluetoothConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,14 +28,16 @@ export interface IBluetoothConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseBluetoothConfigInput = (
-  d: DeepPartial<BluetoothConfigInput>
+  d: DeepPartial<BluetoothConfigInput>,
 ): DeepPartial<BluetoothConfigInput> => ({
   ...d,
   fixedPin: d.fixedPin ? parseInt(d.fixedPin as unknown as string) : undefined,
   mode: d.mode ? parseInt(d.mode as unknown as string) : undefined,
 });
 
-const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
+export const BluetoothConfigPage = ({
+  className = "",
+}: IBluetoothConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -45,31 +47,31 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [bluetoothDisabled, setBluetoothDisabled] = useState(
-    !device?.config.bluetooth?.enabled ?? true
+    !device?.config.bluetooth?.enabled ?? true,
   );
 
   const [fixedPinDisabled, setFixedPinDisabled] = useState(
-    device?.config.bluetooth?.mode != 1 ?? true
+    device?.config.bluetooth?.mode !== 1 ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.config.bluetooth ?? undefined,
-        editedConfig.bluetooth ?? undefined
+        editedConfig.bluetooth ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<BluetoothConfigInput>) => {
     setBluetoothDisabled(!d.enabled);
-    setFixedPinDisabled(d.mode != 1);
+    setFixedPinDisabled(d.mode !== 1);
   };
 
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -89,16 +91,17 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ bluetooth: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.bluetooth) return;
@@ -119,7 +122,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.bluetooth.bluetoothEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -143,7 +146,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
             type="number"
             text={t("config.radio.bluetooth.fixedPin")}
             disabled={bluetoothDisabled || fixedPinDisabled}
-            error={errors.fixedPin?.message}
+            error={errors.fixedPin?.message as string}
             {...register("fixedPin")}
           />
         </div>
@@ -151,5 +154,3 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
     </div>
   );
 };
-
-export default BluetoothConfigPage;

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   ColumnDef,
   flexRender,
@@ -13,7 +12,7 @@ export interface ITableBodyProps<T> {
 }
 
 // https://stackoverflow.com/questions/32308370/what-is-the-syntax-for-typescript-arrow-functions-with-generics#45576880
-const TableBody = <T,>({ title, data, columns }: ITableBodyProps<T>) => {
+export const TableBody = <T,>({ title, data, columns }: ITableBodyProps<T>) => {
   const table = useReactTable<T>({
     data,
     columns,
@@ -52,7 +51,7 @@ const TableBody = <T,>({ title, data, columns }: ITableBodyProps<T>) => {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </th>
                 ))}
@@ -78,5 +77,3 @@ const TableBody = <T,>({ title, data, columns }: ITableBodyProps<T>) => {
     </div>
   );
 };
-
-export default TableBody;

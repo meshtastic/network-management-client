@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import createSagaMiddleware from "redux-saga";
 import { logger } from "redux-logger";
+import createSagaMiddleware from "redux-saga";
 
 import { requestInitializeApplication } from "@features/device/actions";
 
@@ -13,7 +13,7 @@ import { mapReducer } from "@features/map/slice";
 import { requestReducer } from "@features/requests/slice";
 import { uiReducer } from "@features/ui/slice";
 
-import rootSaga from "@store/saga";
+import { rootSaga } from "@store/saga";
 
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware, logger];

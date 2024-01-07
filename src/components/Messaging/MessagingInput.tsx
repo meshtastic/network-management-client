@@ -1,6 +1,6 @@
-import React, { FormEventHandler, useState } from "react";
+import { DefaultTooltip } from "@components/DefaultTooltip";
 import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
-import DefaultTooltip from "@components/DefaultTooltip";
+import { FormEventHandler, useState } from "react";
 
 export interface IMessagingInputProps {
   onSubmit: (message: string) => void;
@@ -8,7 +8,7 @@ export interface IMessagingInputProps {
   className?: string;
 }
 
-const MessagingInput = ({
+export const MessagingInput = ({
   onSubmit,
   placeholder = "",
   className = "",
@@ -42,5 +42,3 @@ const MessagingInput = ({
     </form>
   );
 };
-
-export default MessagingInput;

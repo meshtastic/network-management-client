@@ -1,12 +1,11 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
-import * as Collapsible from "@radix-ui/react-collapsible";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { RowSpacingIcon, Cross2Icon } from "@radix-ui/react-icons";
+import * as Collapsible from "@radix-ui/react-collapsible";
+import { Cross2Icon, RowSpacingIcon } from "@radix-ui/react-icons";
+import { useTranslation } from "react-i18next";
 
-import SerialPortOption from "@components/connection/SerialPortOption";
-import ConnectionInput from "@components/connection/ConnectionInput";
-import ConnectionSwitch from "@components/connection/ConnectionSwitch";
+import { ConnectionInput } from "@components/connection/ConnectionInput";
+import { ConnectionSwitch } from "@components/connection/ConnectionSwitch";
+import { SerialPortOption } from "@components/connection/SerialPortOption";
 import type { RequestStatus } from "@features/requests/slice";
 
 export interface ISerialConnectPaneProps {
@@ -25,7 +24,7 @@ export interface ISerialConnectPaneProps {
   refreshPorts: () => void;
 }
 
-const SerialConnectPane = ({
+export const SerialConnectPane = ({
   availableSerialPorts,
   activePort,
   activePortState,
@@ -77,7 +76,10 @@ const SerialConnectPane = ({
       </button>
 
       <Collapsible.Trigger asChild>
-        <button className="flex flex-row align-middle justify-between w-full mt-5 mb-2">
+        <button
+          type="button"
+          className="flex flex-row align-middle justify-between w-full mt-5 mb-2"
+        >
           <p className="my-auto text-base font-normal text-gray-500 dark:text-gray-400">
             {t("connectPage.tabs.serial.advancedTitle")}
           </p>
@@ -114,5 +116,3 @@ const SerialConnectPane = ({
     </Collapsible.Root>
   );
 };
-
-export default SerialConnectPane;

@@ -11,7 +11,7 @@
     "ui:dev": "vite",
     "ui:build": "tsc && vite build",
     "ui:lint": "biome lint src",
-    "ui:format": "biome format src",
+    "ui:format": "biome format --write src",
     "ui:check": "biome check src",
     "ui:test": "jest --passWithNoTests",
     "ui:preview": "vite preview"

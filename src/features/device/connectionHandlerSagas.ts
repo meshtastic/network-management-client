@@ -1,12 +1,12 @@
+import { listen } from "@tauri-apps/api/event";
 import { EventChannel, eventChannel } from "redux-saga";
 import { call, put, take } from "redux-saga/effects";
-import { listen } from "@tauri-apps/api/event";
 
 import type { app_device_MeshDevice } from "@bindings/index";
 
 import { connectionSliceActions } from "@features/connection/slice";
-import { deviceSliceActions } from "@features/device/slice";
 import { requestDisconnectFromDevice } from "@features/device/actions";
+import { deviceSliceActions } from "@features/device/slice";
 import { mapSliceActions } from "@features/map/slice";
 
 import type { DeviceKey } from "@utils/connections";

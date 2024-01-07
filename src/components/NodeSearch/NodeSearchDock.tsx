@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { useMap } from "react-map-gl";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { useMap } from "react-map-gl";
+import { useDispatch, useSelector } from "react-redux";
 
 import type {
   app_device_MeshDevice,
   app_device_MeshNode,
 } from "@bindings/index";
 
-import DefaultTooltip from "@components/DefaultTooltip";
-import NodeSearchInput from "@components/NodeSearch/NodeSearchInput";
-import NodeSearchResult from "@components/NodeSearch/NodeSearchResult";
+import { DefaultTooltip } from "@components/DefaultTooltip";
+import { NodeSearchInput } from "@components/NodeSearch/NodeSearchInput";
+import { NodeSearchResult } from "@components/NodeSearch/NodeSearchResult";
 
-import { selectDevice, selectAllNodes } from "@features/device/selectors";
+import { selectAllNodes, selectDevice } from "@features/device/selectors";
 import { selectMapUIState } from "@features/map/selectors";
 import { mapSliceActions } from "@features/map/slice";
 import { selectActiveNodeId } from "@features/ui/selectors";
@@ -83,7 +83,7 @@ const filterNodes =
     return false;
   };
 
-const NodeSearchDock = () => {
+export const NodeSearchDock = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -112,7 +112,7 @@ const NodeSearchDock = () => {
       getFlyToConfig({
         lat: nodePosition.latitude,
         lng: nodePosition.longitude,
-      })
+      }),
     );
   };
 
@@ -151,6 +151,7 @@ const NodeSearchDock = () => {
         side="right"
       >
         <button
+          type="button"
           onClick={() => setNodeSearchDockExpanded(!searchDockExpanded)}
           className="flex flex-row align-middle justify-center bg-white dark:bg-gray-800 rounded-full mx-auto p-2 shadow-lg text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
         >
@@ -160,5 +161,3 @@ const NodeSearchDock = () => {
     </div>
   );
 };
-
-export default NodeSearchDock;

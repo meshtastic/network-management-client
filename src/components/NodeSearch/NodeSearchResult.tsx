@@ -1,20 +1,19 @@
-import React from "react";
+import { Locate, LocateFixed } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TimeAgo from "timeago-react";
-import { Locate, LocateFixed } from "lucide-react";
 
 import type { app_device_MeshNode } from "@bindings/index";
 
-import DefaultTooltip from "@components/DefaultTooltip";
+import { DefaultTooltip } from "@components/DefaultTooltip";
 
 import { useComponentReload } from "@utils/hooks";
+import { formatLocation } from "@utils/map";
 import {
   getColorClassFromNodeState,
   getLastHeardTime,
-  getNodeState,
   getMinsSinceLastHeard,
+  getNodeState,
 } from "@utils/nodes";
-import { formatLocation } from "@utils/map";
 
 export interface INodeSearchResultProps {
   node: app_device_MeshNode;
@@ -22,7 +21,7 @@ export interface INodeSearchResultProps {
   selectNode: (nodeId: number) => void;
 }
 
-const NodeSearchResult = ({
+export const NodeSearchResult = ({
   node,
   isActive,
   selectNode,
@@ -55,9 +54,9 @@ const NodeSearchResult = ({
           {!!node.positionMetrics.at(-1)?.latitude &&
           !!node.positionMetrics.at(-1)?.longitude
             ? `${formatLocation(
-                node.positionMetrics.at(-1)?.latitude ?? 0
+                node.positionMetrics.at(-1)?.latitude ?? 0,
               )}, ${formatLocation(
-                node.positionMetrics.at(-1)?.longitude ?? 0
+                node.positionMetrics.at(-1)?.longitude ?? 0,
               )}`
             : t("map.panes.search.noGpsLock")}
         </p>
@@ -94,5 +93,3 @@ const NodeSearchResult = ({
     </div>
   );
 };
-
-export default NodeSearchResult;

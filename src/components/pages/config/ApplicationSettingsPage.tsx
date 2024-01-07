@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import i18next from "@app/i18n";
+import { i18next } from "@app/i18n";
 
-import ConfigLayout from "@components/config/ConfigLayout";
-import ConfigOption from "@components/config/ConfigOption";
-
-import GeneralConfigPage from "@components/config/application/GeneralConfigPage";
-import MapConfigPage from "@components/config/application/MapConfigPage";
+import { ConfigLayout } from "@components/config/ConfigLayout";
+import { ConfigOption } from "@components/config/ConfigOption";
+import { GeneralConfigPage } from "@components/config/application/GeneralConfigPage";
+import { MapConfigPage } from "@components/config/application/MapConfigPage";
 
 import type { IAppConfigState } from "@features/appConfig/slice";
 
@@ -39,7 +38,7 @@ const _ActiveOption = ({
   }
 };
 
-const ApplicationSettingsPage = () => {
+export const ApplicationSettingsPage = () => {
   const { t } = useTranslation();
 
   const [activeOption, setActiveOption] =
@@ -56,17 +55,19 @@ const ApplicationSettingsPage = () => {
         titleIconTooltip={""}
         onTitleIconClick={() => null}
         renderOptions={() =>
-          Object.entries(ApplicationSettingsOptions).map(([k, displayName]) => (
-            <ConfigOption
-              key={k}
-              title={displayName}
-              subtitle=""
-              isActive={activeOption === k}
-              onClick={() =>
-                setActiveOption(k as keyof typeof ApplicationSettingsOptions)
-              }
-            />
-          ))
+          Object.entries(ApplicationSettingsOptions).map(
+            ([k, displayName]) => (
+              <ConfigOption
+                key={k}
+                title={displayName}
+                subtitle=""
+                isActive={activeOption === k}
+                onClick={() =>
+                  setActiveOption(k as keyof typeof ApplicationSettingsOptions)
+                }
+              />
+            ),
+          )
         }
       >
         <_ActiveOption activeOption={activeOption} />
@@ -74,5 +75,3 @@ const ApplicationSettingsPage = () => {
     </div>
   );
 };
-
-export default ApplicationSettingsPage;

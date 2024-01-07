@@ -1,7 +1,3 @@
-import React from "react";
-import { Trans, useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import TimeAgo from "timeago-react";
 import {
   Battery,
   BatteryFull,
@@ -13,16 +9,19 @@ import {
   PlugZap,
   X,
 } from "lucide-react";
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import TimeAgo from "timeago-react";
 
-import i18next from "@app/i18n";
+import { i18next } from "@app/i18n";
 
 import { selectActiveNode } from "@features/ui/selectors";
 import { uiSliceActions } from "@features/ui/slice";
 
 import { writeValueToClipboard } from "@utils/clipboard";
 import { useComponentReload } from "@utils/hooks";
-import { getLastHeardTime } from "@utils/nodes";
 import { formatLocation } from "@utils/map";
+import { getLastHeardTime } from "@utils/nodes";
 
 export interface IBatteryLevelIconProps {
   batteryLevel: number | null;
@@ -59,7 +58,7 @@ const getBatteryStateString = (batteryLevel: number | null) => {
   return i18next.t("map.panes.nodeInfo.battery.discharging", { batteryLevel });
 };
 
-const MapSelectedNodeMenu = () => {
+export const MapSelectedNodeMenu = () => {
   const { t, i18n } = useTranslation();
 
   useComponentReload(1000);
@@ -122,12 +121,12 @@ const MapSelectedNodeMenu = () => {
               strokeWidth={1.5}
             />
             <h2 className="text-gray-500 dark:text-gray-400 text-base leading-6 font-normal pl-2">
-              {!deviceLatCoord || !deviceLngCoord ? (
+              {!(deviceLatCoord && deviceLngCoord) ? (
                 <span>{t("map.panes.nodeInfo.unknownValue")}</span>
               ) : (
                 <span>
                   {`${formatLocation(deviceLatCoord)}, ${formatLocation(
-                    deviceLngCoord
+                    deviceLngCoord,
                   )}`}
                 </span>
               )}
@@ -136,10 +135,10 @@ const MapSelectedNodeMenu = () => {
           <button
             type="button"
             onClick={() =>
-              void writeValueToClipboard(
+              writeValueToClipboard(
                 `${formatLocation(deviceLatCoord)}, ${formatLocation(
-                  deviceLngCoord
-                )}`
+                  deviceLngCoord,
+                )}`,
               )
             }
           >
@@ -163,7 +162,7 @@ const MapSelectedNodeMenu = () => {
           <button
             type="button"
             onClick={() =>
-              void writeValueToClipboard(getBatteryStateString(batteryLevel))
+              writeValueToClipboard(getBatteryStateString(batteryLevel))
             }
           >
             <Copy
@@ -178,5 +177,3 @@ const MapSelectedNodeMenu = () => {
     </div>
   );
 };
-
-export default MapSelectedNodeMenu;

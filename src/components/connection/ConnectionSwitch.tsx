@@ -1,4 +1,3 @@
-import React from "react";
 import * as Switch from "@radix-ui/react-switch";
 
 export interface IConnectionSwitchProps {
@@ -6,7 +5,10 @@ export interface IConnectionSwitchProps {
   setChecked: (checked: boolean) => void;
 }
 
-const ConnectionSwitch = ({ checked, setChecked }: IConnectionSwitchProps) => {
+export const ConnectionSwitch = ({
+  checked,
+  setChecked,
+}: IConnectionSwitchProps) => {
   return (
     <Switch.Root
       className="w-10 h-6 bg-gray-300 dark:bg-gray-600 rounded-full relative data-[state=checked]:bg-gray-700 dark:data-[state=checked]:bg-gray-500 transition-colors"
@@ -17,5 +19,3 @@ const ConnectionSwitch = ({ checked, setChecked }: IConnectionSwitchProps) => {
     </Switch.Root>
   );
 };
-
-export default ConnectionSwitch;

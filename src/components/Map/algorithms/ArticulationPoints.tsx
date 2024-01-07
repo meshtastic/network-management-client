@@ -1,7 +1,6 @@
-import React from "react";
 import {
-  LastRan,
   AlgorithmSelector,
+  LastRan,
 } from "@components/Map/algorithms/CommonComps";
 
 export interface ArticulationPointsProps {
@@ -12,7 +11,7 @@ export interface ArticulationPointsProps {
 
 // component ArticulationPoints receives a list of nodes that are articulation points
 // and displays them in a list
-const ArticulationPoints = ({
+export const ArticulationPoints = ({
   articulationPoints,
   isAPSet,
   setAP,
@@ -49,5 +48,3 @@ const ArticulationPoints = ({
     </div>
   );
 };
-
-export default ArticulationPoints;

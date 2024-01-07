@@ -1,8 +1,7 @@
-import React from "react";
 import type { ReactNode } from "react";
 
-import DefaultTooltip from "@components/DefaultTooltip";
-import NavigationBacktrace from "@components/NavigationBacktrace";
+import { DefaultTooltip } from "@components/DefaultTooltip";
+import { NavigationBacktrace } from "@components/NavigationBacktrace";
 
 export interface IConfigLayoutProps {
   title: string;
@@ -14,7 +13,7 @@ export interface IConfigLayoutProps {
   children: ReactNode;
 }
 
-const ConfigLayout = ({
+export const ConfigLayout = ({
   title,
   backtrace,
   renderTitleIcon,
@@ -43,7 +42,7 @@ const ConfigLayout = ({
                 onClick={() => onTitleIconClick()}
               >
                 {renderTitleIcon(
-                  "w-6 h-6 text-gray-400 dark:text-gray-400 my-auto"
+                  "w-6 h-6 text-gray-400 dark:text-gray-400 my-auto",
                 )}
               </button>
             </DefaultTooltip>
@@ -57,5 +56,3 @@ const ConfigLayout = ({
     </div>
   );
 };
-
-export default ConfigLayout;

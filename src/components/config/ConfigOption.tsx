@@ -1,5 +1,3 @@
-import React from "react";
-
 export interface IConfigOptionProps {
   title: string;
   subtitle: string;
@@ -7,7 +5,7 @@ export interface IConfigOptionProps {
   onClick: () => void;
 }
 
-const ConfigOption = ({
+export const ConfigOption = ({
   title,
   subtitle,
   isActive,
@@ -44,5 +42,3 @@ const ConfigOption = ({
     </button>
   );
 };
-
-export default ConfigOption;

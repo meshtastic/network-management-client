@@ -1,13 +1,12 @@
-import React from "react";
+import { Edit3 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Edit3 } from "lucide-react";
 
 import type { app_device_MeshChannel } from "@bindings/index";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import TextMessageBubble from "@components/Messaging/TextMessageBubble";
-import MessagingInput from "@components/Messaging/MessagingInput";
+import { MessagingInput } from "@components/Messaging/MessagingInput";
+import { TextMessageBubble } from "@components/Messaging/TextMessageBubble";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import { requestSendMessage } from "@features/device/actions";
 import { selectPrimaryDeviceKey } from "@features/device/selectors";
@@ -20,7 +19,7 @@ export interface IChannelDetailViewProps {
   className?: string;
 }
 
-const ChannelDetailView = ({
+export const ChannelDetailView = ({
   channel,
   className = "",
 }: IChannelDetailViewProps) => {
@@ -45,7 +44,7 @@ const ChannelDetailView = ({
         deviceKey: primaryDeviceKey,
         text: message,
         channel: channel.config.index,
-      })
+      }),
     );
   };
 
@@ -81,5 +80,3 @@ const ChannelDetailView = ({
     </div>
   );
 };
-
-export default ChannelDetailView;

@@ -1,7 +1,6 @@
-import React from "react";
 import {
-  LastRan,
   AlgorithmSelector,
+  LastRan,
 } from "@components/Map/algorithms/CommonComps";
 
 export interface MincutEdgesInterface {
@@ -10,7 +9,7 @@ export interface MincutEdgesInterface {
   setMinCut: (checked: boolean) => void;
 }
 
-const MincutEdges = ({
+export const MincutEdges = ({
   edges,
   isMincutSet,
   setMinCut,
@@ -54,5 +53,3 @@ const MincutEdges = ({
     </div>
   );
 };
-
-export default MincutEdges;

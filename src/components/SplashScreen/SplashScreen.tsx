@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Trans } from "react-i18next";
 import { open } from "@tauri-apps/api/shell";
+import { useCallback, useEffect, useState } from "react";
+import { Trans } from "react-i18next";
 import { Particles } from "react-tsparticles";
 import { loadFull } from "tsparticles";
 import type { Engine } from "tsparticles-engine";
 
 import RainierSplashBackground from "@app/assets/rainier_splash_background.jpg";
+import { SplashScreenLogo } from "@components/SplashScreen/SplashScreenLogo";
 import { options } from "@components/SplashScreen/SplashScreenParticlesOptions";
-import SplashScreenLogo from "@components/SplashScreen/SplashScreenLogo";
 
 import "@components/SplashScreen/SplashScreen.css";
 
@@ -15,7 +15,7 @@ export interface ISplashScreenProps {
   unmountSelf: () => void;
 }
 
-const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
+export const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
   const [isParticlesLoaded, setParticlesLoaded] = useState(false);
   const [isScreenLoaded, setScreenLoaded] = useState(false);
   const [isScreenActive, setScreenActive] = useState(true);
@@ -24,6 +24,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
     await loadFull(engine);
   }, []);
 
+  // biome-ignore lint/nursery/useAwait: Need an async callback for particlesLoaded
   const particlesLoaded = useCallback(async () => {
     setParticlesLoaded(true);
   }, []);
@@ -68,7 +69,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
   }, [isScreenActive, unmountSelf]);
 
   const openExternalLink = (url: string) => () => {
-    void open(url);
+    open(url);
   };
 
   return (
@@ -79,7 +80,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
       <img
         className="absolute w-full h-full object-cover bg-gray-200 transition-all"
         src={RainierSplashBackground}
-        alt="Photo of Mount Rainier at sunset"
+        alt="Mount Rainier at sunset"
       />
 
       <div
@@ -132,6 +133,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
           components={{
             link1: (
               <button
+                type="button"
                 className="hover:underline"
                 onClick={openExternalLink(
                   "https://unsplash.com/@calebriston?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
@@ -140,6 +142,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
             ),
             link2: (
               <button
+                type="button"
                 className="hover:underline"
                 onClick={openExternalLink(
                   "https://unsplash.com/photos/TXiBwX0kg-Q?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
@@ -152,5 +155,3 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
     </div>
   );
 };
-
-export default SplashScreen;

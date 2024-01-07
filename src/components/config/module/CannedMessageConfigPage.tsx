@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import {
-  CannedMessageModuleConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import {
+  CannedMessageModuleConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,7 +28,7 @@ export interface ICannedMessageConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseCannedMessageModuleConfigInput = (
-  d: DeepPartial<CannedMessageModuleConfigInput>
+  d: DeepPartial<CannedMessageModuleConfigInput>,
 ): DeepPartial<CannedMessageModuleConfigInput> => ({
   ...d,
   inputbrokerPinA: parseInt(d.inputbrokerPinA as unknown as string),
@@ -39,7 +39,7 @@ const parseCannedMessageModuleConfigInput = (
   inputbrokerEventPress: parseInt(d.inputbrokerEventPress as unknown as string),
 });
 
-const CannedMessageConfigPage = ({
+export const CannedMessageConfigPage = ({
   className = "",
 }: ICannedMessageConfigPageProps) => {
   const { t } = useTranslation();
@@ -51,16 +51,16 @@ const CannedMessageConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.cannedMessage?.enabled ?? true
+    !device?.moduleConfig.cannedMessage?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.cannedMessage ?? undefined,
-        editedConfig.cannedMessage ?? undefined
+        editedConfig.cannedMessage ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<CannedMessageModuleConfigInput>) => {
@@ -70,7 +70,7 @@ const CannedMessageConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -88,20 +88,21 @@ const CannedMessageConfigPage = ({
           const data = parseCannedMessageModuleConfigInput(d);
           updateStateFlags(data);
           dispatch(
-            configSliceActions.updateModuleConfig({ cannedMessage: data })
+            configSliceActions.updateModuleConfig({ cannedMessage: data }),
           );
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.cannedMessage) return;
@@ -122,7 +123,7 @@ const CannedMessageConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.cannedMessages.cannedMessagesEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -152,7 +153,7 @@ const CannedMessageConfigPage = ({
             type="checkbox"
             text={t("config.module.cannedMessages.sendBell")}
             disabled={moduleDisabled}
-            error={errors.sendBell?.message}
+            error={errors.sendBell?.message as string}
             {...register("sendBell")}
           />
 
@@ -160,7 +161,7 @@ const CannedMessageConfigPage = ({
             type="checkbox"
             text={t("config.module.cannedMessages.enableRotaryEncoder")}
             disabled={moduleDisabled}
-            error={errors.rotary1Enabled?.message}
+            error={errors.rotary1Enabled?.message as string}
             {...register("rotary1Enabled")}
           />
 
@@ -168,7 +169,7 @@ const CannedMessageConfigPage = ({
             type="checkbox"
             text={t("config.module.cannedMessages.enableUpDownEncoder")}
             disabled={moduleDisabled}
-            error={errors.updown1Enabled?.message}
+            error={errors.updown1Enabled?.message as string}
             {...register("updown1Enabled")}
           />
 
@@ -176,7 +177,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerA")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerPinA?.message}
+            error={errors.inputbrokerPinA?.message as string}
             {...register("inputbrokerPinA")}
           />
 
@@ -184,7 +185,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerB")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerPinB?.message}
+            error={errors.inputbrokerPinB?.message as string}
             {...register("inputbrokerPinB")}
           />
 
@@ -192,7 +193,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerPress")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerPinPress?.message}
+            error={errors.inputbrokerPinPress?.message as string}
             {...register("inputbrokerPinPress")}
           />
 
@@ -200,7 +201,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerEventCw")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerEventCw?.message}
+            error={errors.inputbrokerEventCw?.message as string}
             {...register("inputbrokerEventCw")}
           />
 
@@ -208,7 +209,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerEventCcw")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerEventCcw?.message}
+            error={errors.inputbrokerEventCcw?.message as string}
             {...register("inputbrokerEventCcw")}
           />
 
@@ -216,7 +217,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerEventPress")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerEventPress?.message}
+            error={errors.inputbrokerEventPress?.message as string}
             {...register("inputbrokerEventPress")}
           />
         </div>
@@ -224,5 +225,3 @@ const CannedMessageConfigPage = ({
     </div>
   );
 };
-
-export default CannedMessageConfigPage;

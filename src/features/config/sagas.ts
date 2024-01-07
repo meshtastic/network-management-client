@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api";
 import { all, call, put, select, takeEvery } from "redux-saga/effects";
 
+import cloneDeep from "lodash.clonedeep";
 import merge from "lodash.merge";
 import mergeWith from "lodash.mergewith";
-import cloneDeep from "lodash.clonedeep";
 
 import type {
   app_device_MeshChannel,
@@ -27,6 +27,7 @@ import { requestSliceActions } from "@features/requests/slice";
 import type { CommandError } from "@utils/errors";
 import { getMeshChannelFromCurrentConfig } from "@utils/form";
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Saga, should be refactored in the future
 function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -71,7 +72,7 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
       selectEditedAllChannelConfig(),
     )) as ReturnType<ReturnType<typeof selectEditedAllChannelConfig>>;
 
-    if (!currentRadioConfig || !currentModuleConfig) {
+    if (!(currentRadioConfig && currentModuleConfig)) {
       throw new Error("Current radio or module config not defined");
     }
 

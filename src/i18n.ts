@@ -1,13 +1,13 @@
-import i18next, { use, init } from "i18next";
-import { initReactI18next } from "react-i18next";
+import i18next, { init, use } from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
+import { initReactI18next } from "react-i18next";
 
 import en from "@app/locales/en/translation.json";
 
 use(LanguageDetector);
 use(initReactI18next);
 
-void init({
+init({
   debug: true,
   fallbackLng: "en",
   defaultNS: "translation",
@@ -19,4 +19,4 @@ void init({
   },
 });
 
-export default i18next;
+export { i18next };

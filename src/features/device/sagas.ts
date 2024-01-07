@@ -1,37 +1,37 @@
 import { invoke } from "@tauri-apps/api";
-import { all, call, cancel, fork, put, takeEvery } from "redux-saga/effects";
 import type { Task } from "redux-saga";
+import { all, call, cancel, fork, put, takeEvery } from "redux-saga/effects";
 
 import { connectionSliceActions } from "@features/connection/slice";
 import {
+  requestAutoConnectPort,
+  requestAvailablePorts,
+  requestConnectToDevice,
+  requestDeleteWaypoint,
+  requestDisconnectFromAllDevices,
+  requestDisconnectFromDevice,
+  requestInitializeApplication,
+  requestSendMessage,
+  requestSendWaypoint,
+  requestUpdateUser,
+} from "@features/device/actions";
+import {
   ConfigStatusChannel,
+  DeviceDisconnectChannel,
+  DeviceUpdateChannel,
+  GraphUpdateChannel,
+  RebootChannel,
   createConfigStatusChannel,
   createDeviceDisconnectChannel,
   createDeviceUpdateChannel,
   createGraphUpdateChannel,
   createRebootChannel,
-  DeviceDisconnectChannel,
-  DeviceUpdateChannel,
-  GraphUpdateChannel,
   handleConfigStatusChannel,
   handleDeviceDisconnectChannel,
   handleDeviceUpdateChannel,
   handleGraphUpdateChannel,
   handleRebootChannel,
-  RebootChannel,
 } from "@features/device/connectionHandlerSagas";
-import {
-  requestAutoConnectPort,
-  requestAvailablePorts,
-  requestConnectToDevice,
-  requestDisconnectFromAllDevices,
-  requestDisconnectFromDevice,
-  requestInitializeApplication,
-  requestSendWaypoint,
-  requestSendMessage,
-  requestUpdateUser,
-  requestDeleteWaypoint,
-} from "@features/device/actions";
 import { deviceSliceActions } from "@features/device/slice";
 import { requestSliceActions } from "@features/requests/slice";
 import { uiSliceActions } from "@features/ui/slice";

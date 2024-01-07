@@ -1,5 +1,4 @@
 import type { PickingInfo } from "deck.gl/typed";
-import React from "react";
 import { useSelector } from "react-redux";
 
 import { selectNodeById } from "@features/device/selectors";
@@ -9,7 +8,7 @@ export interface IMapNodeTooltip {
   hoverInfo: PickingInfo;
 }
 
-const MapNodeTooltip = ({ hoverInfo }: IMapNodeTooltip) => {
+export const MapNodeTooltip = ({ hoverInfo }: IMapNodeTooltip) => {
   const rootState = useSelector(selectRootState());
 
   const { object, x, y } = hoverInfo;
@@ -32,5 +31,3 @@ const MapNodeTooltip = ({ hoverInfo }: IMapNodeTooltip) => {
     </div>
   );
 };
-
-export default MapNodeTooltip;

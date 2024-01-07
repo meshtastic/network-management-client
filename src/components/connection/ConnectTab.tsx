@@ -1,7 +1,6 @@
-import React from "react";
-import * as Tabs from "@radix-ui/react-tabs";
+import { DefaultTooltip } from "@components/DefaultTooltip";
 import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
-import DefaultTooltip from "@components/DefaultTooltip";
+import * as Tabs from "@radix-ui/react-tabs";
 
 export interface IConnectTabProps {
   value: string;
@@ -10,7 +9,7 @@ export interface IConnectTabProps {
   className?: string;
 }
 
-const ConnectTab = ({
+export const ConnectTab = ({
   value,
   label,
   tooltip,
@@ -30,5 +29,3 @@ const ConnectTab = ({
     </Tabs.Trigger>
   );
 };
-
-export default ConnectTab;

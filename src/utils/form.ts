@@ -1,6 +1,6 @@
 import { fromByteArray, toByteArray } from "base64-js";
-import merge from "lodash.merge";
 import cloneDeep from "lodash.clonedeep";
+import merge from "lodash.merge";
 import type { DeepPartial } from "react-hook-form";
 
 import type { app_device_MeshChannel } from "@bindings/index";
@@ -10,13 +10,13 @@ export const dateTimeLocalFormatString = "YYYY-MM-DDThh:mm";
 
 export const getDefaultConfigInput = <C, E>(
   currentConfig: C | undefined,
-  editedConfig: E | undefined
+  editedConfig: E | undefined,
 ): Partial<E> | undefined => {
   return merge(cloneDeep(currentConfig), editedConfig);
 };
 
 export const getCurrentConfigFromMeshChannel = (
-  channel: app_device_MeshChannel
+  channel: app_device_MeshChannel,
 ): ChannelConfigInput => {
   return {
     role: channel.config.role,
@@ -28,7 +28,7 @@ export const getCurrentConfigFromMeshChannel = (
 };
 
 export const getMeshChannelFromCurrentConfig = (
-  config: ChannelConfigInput
+  config: ChannelConfigInput,
 ): DeepPartial<app_device_MeshChannel> => {
   return {
     config: {

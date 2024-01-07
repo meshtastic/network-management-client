@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import {
-  PositionConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
+import {
+  PositionConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,7 +28,7 @@ export interface IPositionConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parsePositionConfigInput = (
-  d: DeepPartial<PositionConfigInput>
+  d: DeepPartial<PositionConfigInput>,
 ): DeepPartial<PositionConfigInput> => ({
   ...d,
   positionBroadcastSecs: parseInt(d.positionBroadcastSecs as unknown as string),
@@ -38,14 +38,16 @@ const parsePositionConfigInput = (
   rxGpio: parseInt(d.rxGpio as unknown as string),
   txGpio: parseInt(d.txGpio as unknown as string),
   broadcastSmartMinimumDistance: parseInt(
-    d.broadcastSmartMinimumDistance as unknown as string
+    d.broadcastSmartMinimumDistance as unknown as string,
   ),
   broadcastSmartMinimumIntervalSecs: parseInt(
-    d.broadcastSmartMinimumIntervalSecs as unknown as string
+    d.broadcastSmartMinimumIntervalSecs as unknown as string,
   ),
 });
 
-const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
+export const PositionConfigPage = ({
+  className = "",
+}: IPositionConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -55,20 +57,20 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [gpsDisabled, setGpsDisabled] = useState(
-    !device?.config.position?.gpsEnabled ?? true
+    !device?.config.position?.gpsEnabled ?? true,
   );
 
   const [fixedPositionDisabled, setFixedPositionDisabled] = useState(
-    !device?.config.position?.fixedPosition ?? true
+    !device?.config.position?.fixedPosition ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.config.position ?? undefined,
-        editedConfig.position ?? undefined
+        editedConfig.position ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<PositionConfigInput>) => {
@@ -79,7 +81,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -99,16 +101,17 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ position: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.position) return;
@@ -129,7 +132,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.position.gpsEnabled")}
-            error={errors.gpsEnabled?.message}
+            error={errors.gpsEnabled?.message as string}
             {...register("gpsEnabled")}
           />
 
@@ -137,14 +140,14 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
             disabled={gpsDisabled}
             type="number"
             text={t("config.radio.position.posBroadcastInterval")}
-            error={errors.positionBroadcastSecs?.message}
+            error={errors.positionBroadcastSecs?.message as string}
             {...register("positionBroadcastSecs")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.position.fixedPosition")}
-            error={errors.fixedPosition?.message}
+            error={errors.fixedPosition?.message as string}
             {...register("fixedPosition")}
           />
 
@@ -155,7 +158,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="number"
             text={t("config.radio.position.gpsUpdateInterval")}
-            error={errors.gpsUpdateInterval?.message}
+            error={errors.gpsUpdateInterval?.message as string}
             {...register("gpsUpdateInterval")}
           />
 
@@ -163,7 +166,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="number"
             text={t("config.radio.position.gpsAttemptTime")}
-            error={errors.gpsAttemptTime?.message}
+            error={errors.gpsAttemptTime?.message as string}
             {...register("gpsAttemptTime")}
           />
 
@@ -171,7 +174,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="checkbox"
             text={t("config.radio.position.enableSmartPosBroadcast")}
-            error={errors.positionBroadcastSmartEnabled?.message}
+            error={errors.positionBroadcastSmartEnabled?.message as string}
             {...register("positionBroadcastSmartEnabled")}
           />
 
@@ -185,5 +188,3 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
     </div>
   );
 };
-
-export default PositionConfigPage;

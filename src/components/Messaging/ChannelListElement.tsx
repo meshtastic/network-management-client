@@ -1,5 +1,3 @@
-import React from "react";
-
 import type { app_device_MeshChannel } from "@bindings/index";
 import {
   getChannelName,
@@ -13,7 +11,7 @@ export interface IChannelListElementProps {
   isSelected: boolean;
 }
 
-const ChannelListElement = ({
+export const ChannelListElement = ({
   channel,
   setActiveChannel,
   isSelected,
@@ -93,5 +91,3 @@ const ChannelListElement = ({
     </button>
   );
 };
-
-export default ChannelListElement;

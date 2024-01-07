@@ -1,16 +1,16 @@
-import React, { FormEventHandler, useEffect, useState } from "react";
-import { useTranslation, Trans } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { open } from "@tauri-apps/api/shell";
 import * as Tabs from "@radix-ui/react-tabs";
+import { open } from "@tauri-apps/api/shell";
+import { FormEventHandler, useCallback, useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 
-import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
 import MeshLogoDark from "@app/assets/Mesh_Logo_Dark.svg";
+import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 
-import ConnectTab from "@components/connection/ConnectTab";
-import TcpConnectPane from "@components/connection/TcpConnectPane";
-import SerialConnectPane from "@components/connection/SerialConnectPane";
+import { ConnectTab } from "@components/connection/ConnectTab";
+import { SerialConnectPane } from "@components/connection/SerialConnectPane";
+import { TcpConnectPane } from "@components/connection/TcpConnectPane";
 
 import {
   requestFetchLastTcpConnectionMeta,
@@ -43,7 +43,7 @@ export interface IOnboardPageProps {
   unmountSelf: () => void;
 }
 
-const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
+export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const { t } = useTranslation();
 
   const { isDarkMode } = useIsDarkMode();
@@ -74,18 +74,18 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   };
 
   const activeSocketState = useSelector(
-    selectConnectionStatus(getFullSocketAddress(socketAddress, socketPort))
+    selectConnectionStatus(getFullSocketAddress(socketAddress, socketPort)),
   ) ?? {
     status: "IDLE",
   };
 
   const persistedTCPConnectionMeta = useSelector(
-    selectPersistedTCPConnectionMeta()
+    selectPersistedTCPConnectionMeta(),
   );
 
-  const requestPorts = () => {
+  const requestPorts = useCallback(() => {
     dispatch(requestAvailablePorts());
-  };
+  }, [dispatch]);
 
   const handleSocketConnect: FormEventHandler = (e) => {
     e.preventDefault();
@@ -94,7 +94,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       requestPersistLastTcpConnectionMeta({
         address: socketAddress,
         port: parseInt(socketPort),
-      })
+      }),
     );
 
     dispatch(
@@ -104,7 +104,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
           socketAddress: getFullSocketAddress(socketAddress, socketPort),
         },
         setPrimary: true,
-      })
+      }),
     );
   };
 
@@ -112,7 +112,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(
       requestSliceActions.clearRequestState({
         name: requestConnectToDevice.type,
-      })
+      }),
     );
     dispatch(connectionSliceActions.clearAllConnectionState());
     requestPorts();
@@ -124,12 +124,12 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       requestConnectToDevice({
         params: { type: ConnectionType.SERIAL, portName, dtr, rts },
         setPrimary: true,
-      })
+      }),
     );
   };
 
   const openExternalLink = (url: string) => () => {
-    void open(url);
+    open(url);
   };
 
   useEffect(() => {
@@ -137,7 +137,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(requestAutoConnectPort());
     dispatch(requestFetchLastTcpConnectionMeta());
     requestPorts();
-  }, []);
+  }, [dispatch, requestPorts]);
 
   // Initialize TCP state to persisted state
   useEffect(() => {
@@ -189,7 +189,8 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
             <img
               className="h-9"
               src={isDarkMode ? MeshLogoLight : MeshLogoDark}
-            ></img>
+              alt="Mesh Logo"
+            />
           </div>
         </div>
 
@@ -208,7 +209,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                   <button
                     type="button"
                     onClick={() =>
-                      void open("https://meshtastic.org/docs/introduction")
+                      open("https://meshtastic.org/docs/introduction")
                     }
                     className="hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 underline transition-colors"
                   />
@@ -272,6 +273,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
         <img
           className="w-full h-full object-cover object-center bg-gray-700"
           src={Hero_Image}
+          alt="Meshtastic Emergency Response Client hero"
         />
         <p className="landing-screen-opacity-transition absolute bottom-3 right-3 text-right text-sm text-gray-600">
           <Trans
@@ -279,17 +281,19 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
             components={{
               link1: (
                 <button
+                  type="button"
                   className="hover:underline"
                   onClick={openExternalLink(
-                    "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                    "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
                   )}
                 />
               ),
               link2: (
                 <button
+                  type="button"
                   className="hover:underline"
                   onClick={openExternalLink(
-                    "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                    "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
                   )}
                 />
               ),
@@ -300,4 +304,3 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     </div>
   );
 };
-export default ConnectPage;

@@ -1,11 +1,10 @@
-import React from "react";
-import { Trans } from "react-i18next";
 import {
   CheckCircleIcon,
-  XCircleIcon,
   EllipsisHorizontalCircleIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Usb } from "lucide-react";
+import { Trans } from "react-i18next";
 
 import type { RequestStatus } from "@features/requests/slice";
 
@@ -15,7 +14,7 @@ export interface ISerialPortOptions {
   onClick: (portName: string) => void;
 }
 
-const SerialPortOption = ({
+export const SerialPortOption = ({
   name,
   connectionState,
   onClick,
@@ -93,5 +92,3 @@ const SerialPortOption = ({
       );
   }
 };
-
-export default SerialPortOption;

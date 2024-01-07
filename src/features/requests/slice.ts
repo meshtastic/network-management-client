@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export type RequestStatus =
   | { status: "IDLE" }
@@ -27,7 +27,7 @@ export const requestSlice = createSlice({
     },
     setRequestFailed: (
       state,
-      action: PayloadAction<{ name: string; message: string }>
+      action: PayloadAction<{ name: string; message: string }>,
     ) => {
       state.status[action.payload.name] = {
         status: "FAILED",

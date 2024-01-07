@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import * as Accordion from "@radix-ui/react-accordion";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import ArticulationPoints from "@components/Map/algorithms/ArticulationPoints";
-import MincutEdges from "@components/Map/algorithms/MinCutEdges";
-import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation";
+import { ArticulationPoints } from "@components/Map/algorithms/ArticulationPoints";
+import { DiffusionSimulation } from "@components/Map/algorithms/DiffusionSimulation";
+import { MincutEdges } from "@components/Map/algorithms/MinCutEdges";
 
 import {
   AlgorithmConfigFlags,
@@ -14,7 +14,7 @@ import {
 import { selectAlgorithmsResults } from "@features/algorithms/selectors";
 import { uiSliceActions } from "@features/ui/slice";
 
-const AnalyticsPane = () => {
+export const AnalyticsPane = () => {
   const dispatch = useDispatch();
   const { apResult, mincutResult } = useSelector(selectAlgorithmsResults());
 
@@ -56,6 +56,7 @@ const AnalyticsPane = () => {
         </h2>
         <div className="flex flex-row justify-between space-x-6">
           <button
+            type="button"
             className=" border-2 rounded-md px-4 py-1 text-md hover:bg-gray-200 border-gray-300 self-end text-gray-700 font-semibold text-md"
             onClick={requestRunAlgorithms}
           >
@@ -210,5 +211,3 @@ const AnalyticsPane = () => {
     </Accordion.Root>
   );
 };
-
-export default AnalyticsPane;

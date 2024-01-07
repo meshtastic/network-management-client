@@ -1,15 +1,14 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
 import { ChevronRightIcon, HomeIcon } from "@heroicons/react/20/solid";
-import DefaultTooltip from "./DefaultTooltip";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { DefaultTooltip } from "./DefaultTooltip";
 
 export interface INavigationBacktraceProps {
   levels: string[];
   className?: string;
 }
 
-const NavigationBacktrace = ({
+export const NavigationBacktrace = ({
   levels,
   className = "",
 }: INavigationBacktraceProps) => {
@@ -35,5 +34,3 @@ const NavigationBacktrace = ({
     </div>
   );
 };
-
-export default NavigationBacktrace;

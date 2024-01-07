@@ -3,15 +3,30 @@
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "space",
-		"indentWidth": 2
+		"indentWidth": 2,
+		"ignore": [
+			"src/bindings/index.ts"
+		]
 	},
 	"organizeImports": {
 		"enabled": true
 	},
 	"linter": {
+		"ignore": [
+			"src/bindings/index.ts"
+		],
 		"enabled": true,
 		"rules": {
-			"all": true
+			"all": true,
+			"correctness": {
+				"useExhaustiveDependencies": "warn"
+			},
+			"suspicious": {
+				"noDoubleEquals": "warn"
+			},
+			"style": {
+				"noImplicitBoolean": "off"
+			}
 		}
 	}
 }

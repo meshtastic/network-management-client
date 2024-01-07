@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RequestStatus } from "@features/requests/slice";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { DeviceKey } from "@utils/connections";
 
 export interface IConnectionState {
@@ -16,7 +16,7 @@ export const connectionSlice = createSlice({
   reducers: {
     setConnectionState: (
       state,
-      action: PayloadAction<{ deviceKey: DeviceKey; status: RequestStatus }>
+      action: PayloadAction<{ deviceKey: DeviceKey; status: RequestStatus }>,
     ) => {
       state.connections[action.payload.deviceKey] = action.payload.status;
     },

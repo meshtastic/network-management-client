@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   ChevronsLeft,
@@ -8,6 +8,7 @@ import {
   Component,
   FileDigit,
   Mails,
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
   MapPin,
   MessagesSquare,
@@ -16,15 +17,15 @@ import {
   Settings,
 } from "lucide-react";
 
-import SidebarIcon from "@components/Sidebar/SidebarIcon";
-import SidebarLogo from "@components/Sidebar/SidebarLogo";
-import SidebarTab from "@components/Sidebar/SidebarTab";
+import { SidebarIcon } from "@components/Sidebar/SidebarIcon";
+import { SidebarLogo } from "@components/Sidebar/SidebarLogo";
+import { SidebarTab } from "@components/Sidebar/SidebarTab";
 
 import { AppRoutes } from "@utils/routing";
 
 import "@components/Sidebar/Sidebar.css";
 
-const Sidebar = () => {
+export const Sidebar = () => {
   const { t } = useTranslation();
 
   const [isSidebarExpanded, setSidebarExpanded] = useState(true);
@@ -115,7 +116,7 @@ const Sidebar = () => {
             <SidebarIcon
               name={t("sidebar.configureChannels")}
               isActive={location.pathname.includes(
-                AppRoutes.CONFIGURE_CHANNELS
+                AppRoutes.CONFIGURE_CHANNELS,
               )}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}
@@ -170,5 +171,3 @@ const Sidebar = () => {
     </div>
   );
 };
-
-export default Sidebar;

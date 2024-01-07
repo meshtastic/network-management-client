@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
-import ConfigLayout from "@components/config/ConfigLayout";
-import ChannelDetailView from "@components/Messaging/ChannelDetailView";
-import ChannelListElement from "@components/Messaging/ChannelListElement";
+import { ChannelDetailView } from "@components/Messaging/ChannelDetailView";
+import { ChannelListElement } from "@components/Messaging/ChannelListElement";
+import { ConfigLayout } from "@components/config/ConfigLayout";
 
 import { selectDeviceChannels } from "@features/device/selectors";
-import { useNavigate } from "react-router-dom";
 import { AppRoutes } from "@utils/routing";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
-const MessagingPage = () => {
+export const MessagingPage = () => {
   const { t } = useTranslation();
 
   const channels = useSelector(selectDeviceChannels());
   const [activeChannelIdx, setActiveChannelIdx] = useState<number | null>(
-    channels[0]?.config.index ?? null
+    channels[0]?.config.index ?? null,
   );
 
   const navigateTo = useNavigate();
@@ -55,5 +55,3 @@ const MessagingPage = () => {
     </div>
   );
 };
-
-export default MessagingPage;

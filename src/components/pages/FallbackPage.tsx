@@ -1,7 +1,6 @@
-import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
-const FallbackPage = () => {
+export const FallbackPage = () => {
   const location = useLocation();
 
   return (
@@ -15,5 +14,3 @@ const FallbackPage = () => {
     </div>
   );
 };
-
-export default FallbackPage;

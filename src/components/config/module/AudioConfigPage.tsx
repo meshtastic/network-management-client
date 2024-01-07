@@ -1,15 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import type { AudioModuleConfigInput } from "@features/config/slice";
 // import {
 //   AudioModuleConfigInput,
 //   configSliceActions,
@@ -18,6 +17,7 @@ import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import type { AudioModuleConfigInput } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -27,8 +27,8 @@ export interface IAudioConfigPageProps {
 }
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
-const parseAudioModuleConfigInput = (
-  d: DeepPartial<AudioModuleConfigInput>
+export const parseAudioModuleConfigInput = (
+  d: DeepPartial<AudioModuleConfigInput>,
 ): DeepPartial<AudioModuleConfigInput> => ({
   ...d,
   pttPin: parseInt(d.pttPin as unknown as string),
@@ -47,7 +47,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [codec2Disabled, setCodec2Disabled] = useState(
-    !device?.moduleConfig.audio?.codec2Enabled ?? true
+    !device?.moduleConfig.audio?.codec2Enabled ?? true,
   );
 
   const defaultValues = useMemo(
@@ -55,10 +55,10 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
       getDefaultConfigInput(
         device?.moduleConfig.audio ?? undefined,
         // ! https://github.com/ajmcquilkin/meshtastic-network-management-client/issues/382
-        undefined
+        undefined,
         // editedConfig.audio ?? undefined
       ),
-    []
+    [device],
   );
 
   const updateStateFlags = (d: DeepPartial<AudioModuleConfigInput>) => {
@@ -68,7 +68,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -89,16 +89,17 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
           // dispatch(configSliceActions.updateModuleConfig({ audio: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [updateStateFlags], // dispatch
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.audio) return;
@@ -120,7 +121,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text="Codec2 Enabled"
-            error={errors.codec2Enabled?.message}
+            error={errors.codec2Enabled?.message as string}
             {...register("codec2Enabled")}
           />
 
@@ -128,7 +129,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="PTT Pin"
             disabled={codec2Disabled}
-            error={errors.pttPin?.message}
+            error={errors.pttPin?.message as string}
             {...register("pttPin")}
           />
 
@@ -152,7 +153,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="i2S WS Pin"
             disabled={codec2Disabled}
-            error={errors.i2SWs?.message}
+            error={errors.i2SWs?.message as string}
             {...register("i2SWs")}
           />
 
@@ -160,7 +161,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="i2S SD Pin"
             disabled={codec2Disabled}
-            error={errors.i2SSd?.message}
+            error={errors.i2SSd?.message as string}
             {...register("i2SSd")}
           />
 
@@ -168,7 +169,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="i2S DIN Pin"
             disabled={codec2Disabled}
-            error={errors.i2SDin?.message}
+            error={errors.i2SDin?.message as string}
             {...register("i2SDin")}
           />
 
@@ -176,7 +177,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="i2S Serial Clock Pin"
             disabled={codec2Disabled}
-            error={errors.i2SSck?.message}
+            error={errors.i2SSck?.message as string}
             {...register("i2SSck")}
           />
         </div>
@@ -184,5 +185,3 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
     </div>
   );
 };
-
-export default AudioConfigPage;

@@ -1,57 +1,60 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import merge from "lodash.merge";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import cloneDeep from "lodash.clonedeep";
+import merge from "lodash.merge";
 import type { DeepPartial } from "react-hook-form";
 
 import type {
-  app_protobufs_config_BluetoothConfig,
-  app_protobufs_config_DeviceConfig,
-  app_protobufs_config_DisplayConfig,
-  app_protobufs_config_LoRaConfig,
-  app_protobufs_config_NetworkConfig,
-  app_protobufs_config_PositionConfig,
-  app_protobufs_config_PowerConfig,
-  app_protobufs_module_config_AudioConfig,
-  app_protobufs_module_config_CannedMessageConfig,
-  app_protobufs_module_config_ExternalNotificationConfig,
-  app_protobufs_module_config_MqttConfig,
-  app_protobufs_module_config_RangeTestConfig,
-  app_protobufs_module_config_RemoteHardwareConfig,
-  app_protobufs_module_config_SerialConfig,
-  app_protobufs_module_config_StoreForwardConfig,
-  app_protobufs_module_config_TelemetryConfig,
-  app_protobufs_Channel,
-  app_protobufs_ChannelSettings,
+  meshtastic_protobufs_Channel,
+  meshtastic_protobufs_ChannelSettings,
+  meshtastic_protobufs_config_BluetoothConfig,
+  meshtastic_protobufs_config_DeviceConfig,
+  meshtastic_protobufs_config_DisplayConfig,
+  meshtastic_protobufs_config_LoRaConfig,
+  meshtastic_protobufs_config_NetworkConfig,
+  meshtastic_protobufs_config_PositionConfig,
+  meshtastic_protobufs_config_PowerConfig,
+  meshtastic_protobufs_module_config_AudioConfig,
+  meshtastic_protobufs_module_config_CannedMessageConfig,
+  meshtastic_protobufs_module_config_ExternalNotificationConfig,
+  meshtastic_protobufs_module_config_MqttConfig,
+  meshtastic_protobufs_module_config_RangeTestConfig,
+  meshtastic_protobufs_module_config_RemoteHardwareConfig,
+  meshtastic_protobufs_module_config_SerialConfig,
+  meshtastic_protobufs_module_config_StoreForwardConfig,
+  meshtastic_protobufs_module_config_TelemetryConfig,
 } from "@bindings/index";
 
-export type BluetoothConfigInput = app_protobufs_config_BluetoothConfig;
-export type DeviceConfigInput = app_protobufs_config_DeviceConfig;
-export type DisplayConfigInput = app_protobufs_config_DisplayConfig;
-export type LoRaConfigInput = app_protobufs_config_LoRaConfig;
-export type NetworkConfigInput = app_protobufs_config_NetworkConfig;
-export type PositionConfigInput = app_protobufs_config_PositionConfig;
-export type PowerConfigInput = app_protobufs_config_PowerConfig;
+export type BluetoothConfigInput = meshtastic_protobufs_config_BluetoothConfig;
+export type DeviceConfigInput = meshtastic_protobufs_config_DeviceConfig;
+export type DisplayConfigInput = meshtastic_protobufs_config_DisplayConfig;
+export type LoRaConfigInput = meshtastic_protobufs_config_LoRaConfig;
+export type NetworkConfigInput = meshtastic_protobufs_config_NetworkConfig;
+export type PositionConfigInput = meshtastic_protobufs_config_PositionConfig;
+export type PowerConfigInput = meshtastic_protobufs_config_PowerConfig;
 
-export type AudioModuleConfigInput = app_protobufs_module_config_AudioConfig;
+export type AudioModuleConfigInput =
+  meshtastic_protobufs_module_config_AudioConfig;
 export type CannedMessageModuleConfigInput =
-  app_protobufs_module_config_CannedMessageConfig;
+  meshtastic_protobufs_module_config_CannedMessageConfig;
 export type ExternalNotificationModuleConfigInput =
-  app_protobufs_module_config_ExternalNotificationConfig;
-export type MQTTModuleConfigInput = app_protobufs_module_config_MqttConfig;
+  meshtastic_protobufs_module_config_ExternalNotificationConfig;
+export type MQTTModuleConfigInput =
+  meshtastic_protobufs_module_config_MqttConfig;
 export type RangeTestModuleConfigInput =
-  app_protobufs_module_config_RangeTestConfig;
+  meshtastic_protobufs_module_config_RangeTestConfig;
 export type RemoteHardwareModuleConfigInput =
-  app_protobufs_module_config_RemoteHardwareConfig;
-export type SerialModuleConfigInput = app_protobufs_module_config_SerialConfig;
+  meshtastic_protobufs_module_config_RemoteHardwareConfig;
+export type SerialModuleConfigInput =
+  meshtastic_protobufs_module_config_SerialConfig;
 export type StoreForwardModuleConfigInput =
-  app_protobufs_module_config_StoreForwardConfig;
+  meshtastic_protobufs_module_config_StoreForwardConfig;
 export type TelemetryModuleConfigInput =
-  app_protobufs_module_config_TelemetryConfig;
+  meshtastic_protobufs_module_config_TelemetryConfig;
 
 export type ChannelConfigInput = Omit<
-  app_protobufs_ChannelSettings,
+  meshtastic_protobufs_ChannelSettings,
   "id" | "channelNum" | "psk"
-> & { psk: string } & Pick<app_protobufs_Channel, "role">;
+> & { psk: string } & Pick<meshtastic_protobufs_Channel, "role">;
 
 export interface IRadioConfigState {
   bluetooth: BluetoothConfigInput | null;

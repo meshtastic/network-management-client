@@ -1,11 +1,11 @@
 import type { RootState } from "@app/store";
 
 import type {
+  app_device_MeshChannel,
   app_device_MeshDevice,
   app_device_MeshNode,
-  app_protobufs_User,
-  app_device_MeshChannel,
   app_device_NormalizedWaypoint,
+  meshtastic_protobufs_User,
 } from "@bindings/index";
 
 export const selectAvailablePorts =
@@ -45,18 +45,23 @@ export const selectNodeById =
 
 export const selectAllUsersByNodeIds =
   () =>
-  (state: RootState): Record<number, app_protobufs_User | null> =>
+  (state: RootState): Record<number, meshtastic_protobufs_User | null> =>
     selectAllNodes()(state).reduce(
       (accum, n) => {
         const { user } = n;
-        return user ? { ...accum, [n.nodeNum]: user } : accum;
+
+        if (user) {
+          accum[n.nodeNum] = user;
+        }
+
+        return accum;
       },
-      [] as app_protobufs_User[],
+      [] as meshtastic_protobufs_User[],
     );
 
 export const selectUserByNodeId =
   (nodeId: number) =>
-  (state: RootState): app_protobufs_User | null =>
+  (state: RootState): meshtastic_protobufs_User | null =>
     selectNodeById(nodeId)(state)?.user ?? null;
 
 export const selectDeviceChannels =

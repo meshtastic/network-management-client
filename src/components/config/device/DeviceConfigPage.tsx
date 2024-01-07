@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import { DeviceConfigInput, configSliceActions } from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
+import { DeviceConfigInput, configSliceActions } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -25,7 +25,7 @@ export interface IDeviceConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseDeviceConfigInput = (
-  d: DeepPartial<DeviceConfigInput>
+  d: DeepPartial<DeviceConfigInput>,
 ): DeepPartial<DeviceConfigInput> => ({
   ...d,
   nodeInfoBroadcastSecs: parseInt(d.nodeInfoBroadcastSecs as unknown as string),
@@ -33,7 +33,9 @@ const parseDeviceConfigInput = (
   rebroadcastMode: parseInt(d.rebroadcastMode as unknown as string),
 });
 
-const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
+export const DeviceConfigPage = ({
+  className = "",
+}: IDeviceConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -46,9 +48,9 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
     () =>
       getDefaultConfigInput(
         device?.config.device ?? undefined,
-        editedConfig.device ?? undefined
+        editedConfig.device ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const {
@@ -68,16 +70,17 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ device: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.device) return;
@@ -125,14 +128,14 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.device.serialEnabled")}
-            error={errors.serialEnabled?.message}
+            error={errors.serialEnabled?.message as string}
             {...register("serialEnabled")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.device.serialDebugEnabled")}
-            error={errors.debugLogEnabled?.message}
+            error={errors.debugLogEnabled?.message as string}
             {...register("debugLogEnabled")}
           />
 
@@ -157,14 +160,14 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           <ConfigInput
             type="number"
             text={t("config.radio.device.nodeInfoBroadcastInterval")}
-            error={errors.nodeInfoBroadcastSecs?.message}
+            error={errors.nodeInfoBroadcastSecs?.message as string}
             {...register("nodeInfoBroadcastSecs")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.device.doubleTapButtonPress")}
-            error={errors.doubleTapAsButtonPress?.message}
+            error={errors.doubleTapAsButtonPress?.message as string}
             {...register("doubleTapAsButtonPress")}
           />
         </div>
@@ -172,5 +175,3 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
     </div>
   );
 };
-
-export default DeviceConfigPage;

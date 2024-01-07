@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { error } from "@utils/errors";
+import { useEffect, useState } from "react";
 
 /**
  * This hook is intended for use in components that need to rerender
@@ -13,7 +13,7 @@ export const useComponentReload = (interval: number) => {
   useEffect(() => {
     const intervalHandle = setInterval(() => setTime(Date.now()), interval);
     return () => clearInterval(intervalHandle);
-  }, []);
+  }, [interval]);
 
   return time;
 };

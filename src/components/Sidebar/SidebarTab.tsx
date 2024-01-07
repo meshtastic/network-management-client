@@ -1,4 +1,3 @@
-import React from "react";
 import type { ReactNode } from "react";
 
 import "@components/Sidebar/Sidebar.css";
@@ -9,7 +8,7 @@ export interface ISidebarTabProps {
   children: ReactNode;
 }
 
-const SidebarTab = ({
+export const SidebarTab = ({
   title,
   isSidebarExpanded,
   children,
@@ -26,5 +25,3 @@ const SidebarTab = ({
     </div>
   );
 };
-
-export default SidebarTab;

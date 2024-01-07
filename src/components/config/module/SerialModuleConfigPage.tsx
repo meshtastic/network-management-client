@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import {
-  SerialModuleConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import {
+  SerialModuleConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,7 +28,7 @@ export interface ISerialModuleConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseSerialModuleConfigInput = (
-  d: DeepPartial<SerialModuleConfigInput>
+  d: DeepPartial<SerialModuleConfigInput>,
 ): DeepPartial<SerialModuleConfigInput> => ({
   ...d,
   mode: parseInt(d.mode as unknown as string),
@@ -38,7 +38,7 @@ const parseSerialModuleConfigInput = (
   timeout: parseInt(d.timeout as unknown as string),
 });
 
-const SerialModuleConfigPage = ({
+export const SerialModuleConfigPage = ({
   className = "",
 }: ISerialModuleConfigPageProps) => {
   const { t } = useTranslation();
@@ -50,16 +50,16 @@ const SerialModuleConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.serial?.enabled ?? true
+    !device?.moduleConfig.serial?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.serial ?? undefined,
-        editedConfig.serial ?? undefined
+        editedConfig.serial ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<SerialModuleConfigInput>) => {
@@ -69,7 +69,7 @@ const SerialModuleConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -89,16 +89,17 @@ const SerialModuleConfigPage = ({
           dispatch(configSliceActions.updateModuleConfig({ serial: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.serial) return;
@@ -119,7 +120,7 @@ const SerialModuleConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.serial.serialModuleEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -127,7 +128,7 @@ const SerialModuleConfigPage = ({
             type="checkbox"
             text={t("config.module.serial.echoSentPackets")}
             disabled={moduleDisabled}
-            error={errors.echo?.message}
+            error={errors.echo?.message as string}
             {...register("echo")}
           />
 
@@ -157,7 +158,7 @@ const SerialModuleConfigPage = ({
             type="number"
             text={t("config.module.serial.rxPin")}
             disabled={moduleDisabled}
-            error={errors.rxd?.message}
+            error={errors.rxd?.message as string}
             {...register("rxd")}
           />
 
@@ -165,7 +166,7 @@ const SerialModuleConfigPage = ({
             type="number"
             text={t("config.module.serial.txPin")}
             disabled={moduleDisabled}
-            error={errors.txd?.message}
+            error={errors.txd?.message as string}
             {...register("txd")}
           />
 
@@ -199,7 +200,7 @@ const SerialModuleConfigPage = ({
             type="number"
             text={t("config.module.serial.serialTimeout")}
             disabled={moduleDisabled}
-            error={errors.timeout?.message}
+            error={errors.timeout?.message as string}
             {...register("timeout")}
           />
         </div>
@@ -207,5 +208,3 @@ const SerialModuleConfigPage = ({
     </div>
   );
 };
-
-export default SerialModuleConfigPage;

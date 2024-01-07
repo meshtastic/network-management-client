@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import {
-  RangeTestModuleConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import {
+  RangeTestModuleConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,13 +28,15 @@ export interface IRangeTestConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseRangeTestModuleConfigInput = (
-  d: DeepPartial<RangeTestModuleConfigInput>
+  d: DeepPartial<RangeTestModuleConfigInput>,
 ): DeepPartial<RangeTestModuleConfigInput> => ({
   ...d,
   sender: parseInt(d.sender as unknown as string),
 });
 
-const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
+export const RangeTestConfigPage = ({
+  className = "",
+}: IRangeTestConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -44,16 +46,16 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.rangeTest?.enabled ?? true
+    !device?.moduleConfig.rangeTest?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.rangeTest ?? undefined,
-        editedConfig.rangeTest ?? undefined
+        editedConfig.rangeTest ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<RangeTestModuleConfigInput>) => {
@@ -63,7 +65,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -83,16 +85,17 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
           dispatch(configSliceActions.updateModuleConfig({ rangeTest: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.rangeTest) return;
@@ -113,7 +116,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.module.rangeTest.rangeTestEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -121,7 +124,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
             type="number"
             text={t("config.module.rangeTest.senderTransmitInterval")}
             disabled={moduleDisabled}
-            error={errors.sender?.message}
+            error={errors.sender?.message as string}
             {...register("sender")}
           />
 
@@ -129,7 +132,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
             type="checkbox"
             text={t("config.module.rangeTest.saveToFs")}
             disabled={moduleDisabled}
-            error={errors.save?.message}
+            error={errors.save?.message as string}
             {...register("save")}
           />
         </div>
@@ -137,5 +140,3 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
     </div>
   );
 };
-
-export default RangeTestConfigPage;

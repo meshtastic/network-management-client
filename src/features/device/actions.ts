@@ -1,18 +1,18 @@
 import { createAction } from "@reduxjs/toolkit";
 
 import type {
-  app_protobufs_User,
   app_device_NormalizedWaypoint,
+  meshtastic_protobufs_User,
 } from "@bindings/index";
 
 import type { ConnectionType, DeviceKey } from "@utils/connections";
 
 export const requestAvailablePorts = createAction(
-  "@device/request-available-ports"
+  "@device/request-available-ports",
 );
 
 export const requestInitializeApplication = createAction(
-  "@device/request-initialize-application"
+  "@device/request-initialize-application",
 );
 
 export const requestConnectToDevice = createAction<{
@@ -28,11 +28,11 @@ export const requestConnectToDevice = createAction<{
 }>("@device/request-connect");
 
 export const requestDisconnectFromDevice = createAction<DeviceKey>(
-  "@device/request-disconnect"
+  "@device/request-disconnect",
 );
 
 export const requestDisconnectFromAllDevices = createAction(
-  "@device/request-disconnect-all"
+  "@device/request-disconnect-all",
 );
 
 export const requestSendMessage = createAction<{
@@ -43,7 +43,7 @@ export const requestSendMessage = createAction<{
 
 export const requestUpdateUser = createAction<{
   deviceKey: string;
-  user: app_protobufs_User;
+  user: meshtastic_protobufs_User;
 }>("@device/update-device-user");
 
 export const requestSendWaypoint = createAction<{
@@ -58,5 +58,5 @@ export const requestDeleteWaypoint = createAction<{
 }>("@device/delete-waypoint");
 
 export const requestAutoConnectPort = createAction(
-  "@device/request-autoconnect-port"
+  "@device/request-autoconnect-port",
 );

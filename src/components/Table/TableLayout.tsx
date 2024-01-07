@@ -1,8 +1,7 @@
-import React from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 
-import NavigationBacktrace from "@components/NavigationBacktrace";
-import TableBody from "@components/Table/TableBody";
+import { NavigationBacktrace } from "@components/NavigationBacktrace";
+import { TableBody } from "@components/Table/TableBody";
 
 export interface ITableLayoutProps<T> {
   data: T[];
@@ -12,7 +11,7 @@ export interface ITableLayoutProps<T> {
 }
 
 // https://stackoverflow.com/questions/32308370/what-is-the-syntax-for-typescript-arrow-functions-with-generics#45576880
-const TableLayout = <T,>({
+export const TableLayout = <T,>({
   data,
   columns,
   title,
@@ -30,5 +29,3 @@ const TableLayout = <T,>({
     </div>
   );
 };
-
-export default TableLayout;

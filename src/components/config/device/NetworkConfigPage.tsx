@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import { NetworkConfigInput, configSliceActions } from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
+import { NetworkConfigInput, configSliceActions } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -25,13 +25,15 @@ export interface INetworkConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseNetworkConfigInput = (
-  d: DeepPartial<NetworkConfigInput>
+  d: DeepPartial<NetworkConfigInput>,
 ): DeepPartial<NetworkConfigInput> => ({
   ...d,
   addressMode: parseInt(d.addressMode as unknown as string),
 });
 
-const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
+export const NetworkConfigPage = ({
+  className = "",
+}: INetworkConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -41,20 +43,20 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [wifiDisabled, setWifiDisabled] = useState(
-    !device?.config.network?.wifiEnabled ?? true
+    !device?.config.network?.wifiEnabled ?? true,
   );
 
   const [ethDisabled, setEthDisabled] = useState(
-    !device?.config.network?.ethEnabled ?? true
+    !device?.config.network?.ethEnabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.config.network ?? undefined,
-        editedConfig.network ?? undefined
+        editedConfig.network ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<NetworkConfigInput>) => {
@@ -65,7 +67,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -85,16 +87,17 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ network: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.network) return;
@@ -115,7 +118,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.network.wifiEnabled")}
-            error={errors.wifiEnabled?.message}
+            error={errors.wifiEnabled?.message as string}
             {...register("wifiEnabled")}
           />
 
@@ -123,7 +126,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
             disabled={wifiDisabled}
             type="text"
             text={t("config.radio.network.wifiSsid")}
-            error={errors.wifiSsid?.message}
+            error={errors.wifiSsid?.message as string}
             {...register("wifiSsid")}
           />
 
@@ -131,14 +134,14 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
             disabled={wifiDisabled}
             type="text"
             text={t("config.radio.network.wifiPsk")}
-            error={errors.wifiPsk?.message}
+            error={errors.wifiPsk?.message as string}
             {...register("wifiPsk")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.network.ethEnabled")}
-            error={errors.ethEnabled?.message}
+            error={errors.ethEnabled?.message as string}
             {...register("ethEnabled")}
           />
 
@@ -159,7 +162,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
             disabled={wifiDisabled && ethDisabled}
             type="text"
             text={t("config.radio.network.ntpServerAddress")}
-            error={errors.ntpServer?.message}
+            error={errors.ntpServer?.message as string}
             {...register("ntpServer")}
           />
 
@@ -170,5 +173,3 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
     </div>
   );
 };
-
-export default NetworkConfigPage;

@@ -1,4 +1,3 @@
-import React from "react";
 import type { ReactNode } from "react";
 
 export interface IConfigLabelProps {
@@ -8,7 +7,7 @@ export interface IConfigLabelProps {
   className?: string;
 }
 
-const ConfigLabel = ({
+export const ConfigLabel = ({
   text,
   error = "",
   children,
@@ -26,5 +25,3 @@ const ConfigLabel = ({
     </div>
   );
 };
-
-export default ConfigLabel;

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export interface IAlgorithmsState {
   apResult: string[] | null;
@@ -19,7 +19,7 @@ export const algorithmsSlice = createSlice({
     },
     setMincutResult: (
       state,
-      action: PayloadAction<[string, string][] | null>
+      action: PayloadAction<[string, string][] | null>,
     ) => {
       state.mincutResult = action.payload;
     },

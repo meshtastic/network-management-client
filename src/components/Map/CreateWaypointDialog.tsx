@@ -1,37 +1,37 @@
-import React, { ChangeEventHandler, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import maplibregl from "maplibre-gl";
-import {
-  Map,
-  LngLat,
-  NavigationControl,
-  ScaleControl,
-  MarkerDragEvent,
-  useMap,
-} from "react-map-gl";
-import debounce from "lodash.debounce";
-
-import moment from "moment";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 import * as Dialog from "@radix-ui/react-dialog";
-import * as Select from "@radix-ui/react-select";
-import * as Popover from "@radix-ui/react-popover";
 import {
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   Cross2Icon,
 } from "@radix-ui/react-icons";
-import { Plus, X, Locate } from "lucide-react";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+import * as Popover from "@radix-ui/react-popover";
+import * as Select from "@radix-ui/react-select";
+import debounce from "lodash.debounce";
+import { Locate, Plus, X } from "lucide-react";
+import maplibregl from "maplibre-gl";
+import moment from "moment";
+import { ChangeEventHandler, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  LngLat,
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
+  Map,
+  MarkerDragEvent,
+  NavigationControl,
+  ScaleControl,
+  useMap,
+} from "react-map-gl";
+import { useDispatch, useSelector } from "react-redux";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import ConnectionInput from "@components/connection/ConnectionInput";
-import ConnectionSwitch from "@components/connection/ConnectionSwitch";
-import MapOverlayButton from "@components/Map/MapOverlayButton";
-import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
+import { MapOverlayButton } from "@components/Map/MapOverlayButton";
+import { MeshWaypoint } from "@components/Waypoints/MeshWaypoint";
+import { ConnectionInput } from "@components/connection/ConnectionInput";
+import { ConnectionSwitch } from "@components/connection/ConnectionSwitch";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
 import { requestSendWaypoint } from "@features/device/actions";
@@ -67,10 +67,11 @@ export interface ICreateWaypointDialogProps {
 }
 
 // Needs to be rendered within a MapProvider component
-const CreateWaypointDialog = ({
+export const CreateWaypointDialog = ({
   lngLat,
   closeDialog,
   existingWaypoint,
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Functional component
 }: ICreateWaypointDialogProps) => {
   const { t } = useTranslation();
 
@@ -90,7 +91,7 @@ const CreateWaypointDialog = ({
       : {
           value: "",
           isValid: true,
-        }
+        },
   );
 
   const [desc, setDesc] = useState<{
@@ -99,7 +100,7 @@ const CreateWaypointDialog = ({
   }>(
     existingWaypoint
       ? { value: existingWaypoint.description, isValid: true }
-      : { value: "", isValid: true }
+      : { value: "", isValid: true },
   );
 
   const [waypointPosition, setWaypointPosition] = useState<LngLat>(
@@ -108,25 +109,25 @@ const CreateWaypointDialog = ({
           lng: existingWaypoint.longitude,
           lat: existingWaypoint.latitude,
         } as LngLat)
-      : lngLat
+      : lngLat,
   );
 
   const [waypointLocked, setWaypointLocked] = useState<boolean>(
-    existingWaypoint ? existingWaypoint.lockedTo !== 0 : false
+    existingWaypoint ? existingWaypoint.lockedTo !== 0 : false,
   );
 
   const [waypointExpires, setWaypointExpires] = useState<boolean>(
-    existingWaypoint ? existingWaypoint.expire !== 0 : false
+    existingWaypoint ? existingWaypoint.expire !== 0 : false,
   );
 
   const [expireTime, setExpireTime] = useState<string>(
     existingWaypoint
       ? moment(existingWaypoint.expire * 1000).format(dateTimeLocalFormatString)
-      : moment().add(1, "years").format(dateTimeLocalFormatString)
+      : moment().add(1, "years").format(dateTimeLocalFormatString),
   );
 
   const [emoji, setEmoji] = useState<string | null>(
-    existingWaypoint ? String.fromCodePoint(existingWaypoint.icon) : null
+    existingWaypoint ? String.fromCodePoint(existingWaypoint.icon) : null,
   );
 
   const [channelNum, setChannelNum] = useState(0);
@@ -145,7 +146,7 @@ const CreateWaypointDialog = ({
         t("map.waypoints.nameTooLong", {
           currentLength: value.length,
           maxLength: WAYPOINT_NAME_MAX_LEN,
-        })
+        }),
       );
     }
 
@@ -164,7 +165,7 @@ const CreateWaypointDialog = ({
         t("map.waypoints.descriptionTooLong", {
           currentLength: value.length,
           maxLength: WAYPOINT_DESC_MAX_LEN,
-        })
+        }),
       );
     }
 
@@ -175,7 +176,7 @@ const CreateWaypointDialog = ({
 
   const flyToPosition = useMemo(
     () => (pos: LngLat) => map?.flyTo(getFlyToConfig(pos)),
-    [getFlyToConfig, map]
+    [map],
   );
 
   const handlePositionUpdate = useMemo(
@@ -184,7 +185,7 @@ const CreateWaypointDialog = ({
         setWaypointPosition(e.lngLat);
         flyToPosition(e.lngLat);
       }, 300),
-    [map]
+    [flyToPosition],
   );
 
   const encodeEmoji = (emoji: string | null): number => {
@@ -232,7 +233,7 @@ const CreateWaypointDialog = ({
         deviceKey: primaryDeviceKey,
         waypoint: createdWaypoint,
         channel: channelNum,
-      })
+      }),
     );
 
     closeDialog();
@@ -318,7 +319,7 @@ const CreateWaypointDialog = ({
 
               <Dialog.Description className="text-sm font-normal text-gray-500">
                 {`${formatLocation(waypointPosition.lat)}, ${formatLocation(
-                  waypointPosition.lng
+                  waypointPosition.lng,
                 )}`}
               </Dialog.Description>
             </div>
@@ -424,7 +425,7 @@ const CreateWaypointDialog = ({
                       aria-label={t("map.waypoints.channelAriaLabel")}
                       asChild
                     >
-                      <button>
+                      <button type="button">
                         <Select.Value
                           placeholder={t("map.waypoints.channelPlaceholder")}
                           defaultValue={0}
@@ -447,7 +448,9 @@ const CreateWaypointDialog = ({
                               <Select.Item
                                 key={c.config.index}
                                 value={`${c.config.index}`}
-                                className={`relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 dark:text-gray-300 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50 dark:radix-disabled:opacity-100 dark:radix-disabled:text-gray-700`}
+                                className={
+                                  "relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 dark:text-gray-300 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50 dark:radix-disabled:opacity-100 dark:radix-disabled:text-gray-700"
+                                }
                                 disabled={c.config.role === 0} // DISABLED role
                               >
                                 <Select.ItemText>
@@ -482,6 +485,7 @@ const CreateWaypointDialog = ({
                     <Popover.Trigger asChild>
                       <div className="relative mr-auto">
                         <button
+                          type="button"
                           className="relative w-9 h-9 flex align-middle justify-center border border-gray-200 dark:border-gray-500 rounded-full"
                           aria-label="Select emoji"
                         >
@@ -545,7 +549,10 @@ const CreateWaypointDialog = ({
               </button>
 
               <Dialog.Close asChild>
-                <button className="text-red-400 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors">
+                <button
+                  type="button"
+                  className="text-red-400 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors"
+                >
                   {t("map.waypoints.cancel")}
                 </button>
               </Dialog.Close>
@@ -555,6 +562,7 @@ const CreateWaypointDialog = ({
 
         <Dialog.Close asChild>
           <button
+            type="button"
             className="fixed top-7 right-9 w-6 h-6 text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             aria-label={t("map.waypoints.closeAriaLabel")}
           >
@@ -565,5 +573,3 @@ const CreateWaypointDialog = ({
     </Dialog.Portal>
   );
 };
-
-export default CreateWaypointDialog;

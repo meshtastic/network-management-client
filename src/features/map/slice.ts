@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { ViewState } from "react-map-gl";
 
 export interface IMapUIState {
@@ -34,7 +34,7 @@ export const mapSlice = createSlice({
     },
     setPosition: (
       state,
-      action: PayloadAction<{ latitude: number; longitude: number }>
+      action: PayloadAction<{ latitude: number; longitude: number }>,
     ) => {
       state.viewState.latitude = action.payload.latitude;
       state.viewState.longitude = action.payload.longitude;
@@ -44,13 +44,13 @@ export const mapSlice = createSlice({
     },
     setNodesFeatureCollection: (
       state,
-      action: PayloadAction<GeoJSON.FeatureCollection | null>
+      action: PayloadAction<GeoJSON.FeatureCollection | null>,
     ) => {
       state.nodesFeatureCollection = action.payload;
     },
     setEdgesFeatureCollection: (
       state,
-      action: PayloadAction<GeoJSON.FeatureCollection | null>
+      action: PayloadAction<GeoJSON.FeatureCollection | null>,
     ) => {
       state.edgesFeatureCollection = action.payload;
     },

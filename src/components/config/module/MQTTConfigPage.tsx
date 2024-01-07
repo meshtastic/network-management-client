@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import {
-  MQTTModuleConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import {
+  MQTTModuleConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,12 +28,12 @@ export interface IMQTTConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseMQTTModuleConfigInput = (
-  d: DeepPartial<MQTTModuleConfigInput>
+  d: DeepPartial<MQTTModuleConfigInput>,
 ): DeepPartial<MQTTModuleConfigInput> => ({
   ...d,
 });
 
-const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
+export const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -43,16 +43,16 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.mqtt?.enabled ?? true
+    !device?.moduleConfig.mqtt?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.mqtt ?? undefined,
-        editedConfig.mqtt ?? undefined
+        editedConfig.mqtt ?? undefined,
       ),
-    []
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<MQTTModuleConfigInput>) => {
@@ -62,7 +62,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -82,16 +82,17 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
           dispatch(configSliceActions.updateModuleConfig({ mqtt: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.mqtt) return;
@@ -112,7 +113,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.module.mqtt.enableMqtt")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -120,7 +121,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="text"
             text={t("config.module.mqtt.serverAddress")}
             disabled={moduleDisabled}
-            error={errors.address?.message}
+            error={errors.address?.message as string}
             {...register("address")}
           />
 
@@ -128,7 +129,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="text"
             text={t("config.module.mqtt.username")}
             disabled={moduleDisabled}
-            error={errors.username?.message}
+            error={errors.username?.message as string}
             {...register("username")}
           />
 
@@ -136,7 +137,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="password"
             text={t("config.module.mqtt.password")}
             disabled={moduleDisabled}
-            error={errors.password?.message}
+            error={errors.password?.message as string}
             {...register("password")}
           />
 
@@ -144,7 +145,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="checkbox"
             text={t("config.module.mqtt.encryptionEnabled")}
             disabled={moduleDisabled}
-            error={errors.encryptionEnabled?.message}
+            error={errors.encryptionEnabled?.message as string}
             {...register("encryptionEnabled")}
           />
 
@@ -152,7 +153,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="checkbox"
             text={t("config.module.mqtt.jsonEnabled")}
             disabled={moduleDisabled}
-            error={errors.jsonEnabled?.message}
+            error={errors.jsonEnabled?.message as string}
             {...register("jsonEnabled")}
           />
 
@@ -160,7 +161,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="checkbox"
             text={t("config.module.mqtt.tlsEnabled")}
             disabled={moduleDisabled}
-            error={errors.tlsEnabled?.message}
+            error={errors.tlsEnabled?.message as string}
             {...register("tlsEnabled")}
           />
         </div>
@@ -168,5 +169,3 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
     </div>
   );
 };
-
-export default MQTTConfigPage;

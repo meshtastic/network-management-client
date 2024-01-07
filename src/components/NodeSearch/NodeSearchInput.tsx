@@ -1,12 +1,10 @@
-import React from "react";
-
 export interface INodeSearchInputProps {
   query: string;
   setQuery: (value: string) => void;
   placeholder: string;
 }
 
-const NodeSearchInput = ({
+export const NodeSearchInput = ({
   query,
   setQuery,
   placeholder,
@@ -23,5 +21,3 @@ const NodeSearchInput = ({
     </div>
   );
 };
-
-export default NodeSearchInput;
