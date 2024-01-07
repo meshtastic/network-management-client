@@ -19,7 +19,7 @@ export const algorithmsSlice = createSlice({
     },
     setMincutResult: (
       state,
-      action: PayloadAction<[string, string][] | null>
+      action: PayloadAction<[string, string][] | null>,
     ) => {
       state.mincutResult = action.payload;
     },

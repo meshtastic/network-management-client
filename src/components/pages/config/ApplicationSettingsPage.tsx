@@ -56,17 +56,19 @@ const ApplicationSettingsPage = () => {
         titleIconTooltip={""}
         onTitleIconClick={() => null}
         renderOptions={() =>
-          Object.entries(ApplicationSettingsOptions).map(([k, displayName]) => (
-            <ConfigOption
-              key={k}
-              title={displayName}
-              subtitle=""
-              isActive={activeOption === k}
-              onClick={() =>
-                setActiveOption(k as keyof typeof ApplicationSettingsOptions)
-              }
-            />
-          ))
+          Object.entries(ApplicationSettingsOptions).map(
+            ([k, displayName]) => (
+              <ConfigOption
+                key={k}
+                title={displayName}
+                subtitle=""
+                isActive={activeOption === k}
+                onClick={() =>
+                  setActiveOption(k as keyof typeof ApplicationSettingsOptions)
+                }
+              />
+            ),
+          )
         }
       >
         <_ActiveOption activeOption={activeOption} />

@@ -16,7 +16,7 @@ export const connectionSlice = createSlice({
   reducers: {
     setConnectionState: (
       state,
-      action: PayloadAction<{ deviceKey: DeviceKey; status: RequestStatus }>
+      action: PayloadAction<{ deviceKey: DeviceKey; status: RequestStatus }>,
     ) => {
       state.connections[action.payload.deviceKey] = action.payload.status;
     },

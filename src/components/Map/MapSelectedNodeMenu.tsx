@@ -127,7 +127,7 @@ const MapSelectedNodeMenu = () => {
               ) : (
                 <span>
                   {`${formatLocation(deviceLatCoord)}, ${formatLocation(
-                    deviceLngCoord
+                    deviceLngCoord,
                   )}`}
                 </span>
               )}
@@ -138,8 +138,8 @@ const MapSelectedNodeMenu = () => {
             onClick={() =>
               void writeValueToClipboard(
                 `${formatLocation(deviceLatCoord)}, ${formatLocation(
-                  deviceLngCoord
-                )}`
+                  deviceLngCoord,
+                )}`,
               )
             }
           >

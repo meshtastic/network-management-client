@@ -11,7 +11,16 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"all": true
+			"all": true,
+			"correctness": {
+				"useExhaustiveDependencies": "warn"
+			},
+			"suspicious": {
+				"noDoubleEquals": "warn"
+			},
+			"style": {
+				"noImplicitBoolean": "off"
+			}
 		}
 	}
 }

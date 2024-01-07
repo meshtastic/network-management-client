@@ -52,7 +52,7 @@ const TableBody = <T,>({ title, data, columns }: ITableBodyProps<T>) => {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </th>
                 ))}

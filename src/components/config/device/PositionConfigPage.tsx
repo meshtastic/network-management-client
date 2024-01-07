@@ -129,7 +129,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.position.gpsEnabled")}
-            error={errors.gpsEnabled?.message}
+            error={errors.gpsEnabled?.message as string}
             {...register("gpsEnabled")}
           />
 
@@ -137,14 +137,14 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
             disabled={gpsDisabled}
             type="number"
             text={t("config.radio.position.posBroadcastInterval")}
-            error={errors.positionBroadcastSecs?.message}
+            error={errors.positionBroadcastSecs?.message as string}
             {...register("positionBroadcastSecs")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.position.fixedPosition")}
-            error={errors.fixedPosition?.message}
+            error={errors.fixedPosition?.message as string}
             {...register("fixedPosition")}
           />
 
@@ -155,7 +155,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="number"
             text={t("config.radio.position.gpsUpdateInterval")}
-            error={errors.gpsUpdateInterval?.message}
+            error={errors.gpsUpdateInterval?.message as string}
             {...register("gpsUpdateInterval")}
           />
 
@@ -163,7 +163,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="number"
             text={t("config.radio.position.gpsAttemptTime")}
-            error={errors.gpsAttemptTime?.message}
+            error={errors.gpsAttemptTime?.message as string}
             {...register("gpsAttemptTime")}
           />
 
@@ -171,7 +171,7 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
             disabled={gpsDisabled || !fixedPositionDisabled}
             type="checkbox"
             text={t("config.radio.position.enableSmartPosBroadcast")}
-            error={errors.positionBroadcastSmartEnabled?.message}
+            error={errors.positionBroadcastSmartEnabled?.message as string}
             {...register("positionBroadcastSmartEnabled")}
           />
 

@@ -120,7 +120,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text="Codec2 Enabled"
-            error={errors.codec2Enabled?.message}
+            error={errors.codec2Enabled?.message as string}
             {...register("codec2Enabled")}
           />
 
@@ -128,7 +128,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="PTT Pin"
             disabled={codec2Disabled}
-            error={errors.pttPin?.message}
+            error={errors.pttPin?.message as string}
             {...register("pttPin")}
           />
 
@@ -152,7 +152,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="i2S WS Pin"
             disabled={codec2Disabled}
-            error={errors.i2SWs?.message}
+            error={errors.i2SWs?.message as string}
             {...register("i2SWs")}
           />
 
@@ -160,7 +160,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="i2S SD Pin"
             disabled={codec2Disabled}
-            error={errors.i2SSd?.message}
+            error={errors.i2SSd?.message as string}
             {...register("i2SSd")}
           />
 
@@ -168,7 +168,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="i2S DIN Pin"
             disabled={codec2Disabled}
-            error={errors.i2SDin?.message}
+            error={errors.i2SDin?.message as string}
             {...register("i2SDin")}
           />
 
@@ -176,7 +176,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
             type="number"
             text="i2S Serial Clock Pin"
             disabled={codec2Disabled}
-            error={errors.i2SSck?.message}
+            error={errors.i2SSck?.message as string}
             {...register("i2SSck")}
           />
         </div>

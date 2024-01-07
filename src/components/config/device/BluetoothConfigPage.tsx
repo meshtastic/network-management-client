@@ -119,7 +119,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.bluetooth.bluetoothEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -143,7 +143,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
             type="number"
             text={t("config.radio.bluetooth.fixedPin")}
             disabled={bluetoothDisabled || fixedPinDisabled}
-            error={errors.fixedPin?.message}
+            error={errors.fixedPin?.message as string}
             {...register("fixedPin")}
           />
         </div>

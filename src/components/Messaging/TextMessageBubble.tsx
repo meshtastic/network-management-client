@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
+// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
 import { Map, ScaleControl } from "react-map-gl";
 import { MapIcon } from "lucide-react";
 

@@ -103,14 +103,14 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="number"
             text={t("config.radio.display.autoScrollInterval")}
-            error={errors.autoScreenCarouselSecs?.message}
+            error={errors.autoScreenCarouselSecs?.message as string}
             {...register("autoScreenCarouselSecs")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.display.forceNorthToTop")}
-            error={errors.compassNorthTop?.message}
+            error={errors.compassNorthTop?.message as string}
             {...register("compassNorthTop")}
           />
 
@@ -135,7 +135,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.display.flipScreen")}
-            error={errors.flipScreen?.message}
+            error={errors.flipScreen?.message as string}
             {...register("flipScreen")}
           />
 
@@ -160,7 +160,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.display.boldHeading")}
-            error={errors.headingBold?.message}
+            error={errors.headingBold?.message as string}
             {...register("headingBold")}
           />
 
@@ -185,7 +185,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="number"
             text={t("config.radio.display.screenOnDuration")}
-            error={errors.screenOnSecs?.message}
+            error={errors.screenOnSecs?.message as string}
             {...register("screenOnSecs")}
           />
 
@@ -202,7 +202,7 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.display.wakeOnMotion")}
-            error={errors.wakeOnTapOrMotion?.message}
+            error={errors.wakeOnTapOrMotion?.message as string}
             {...register("wakeOnTapOrMotion")}
           />
 

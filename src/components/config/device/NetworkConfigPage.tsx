@@ -115,7 +115,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.network.wifiEnabled")}
-            error={errors.wifiEnabled?.message}
+            error={errors.wifiEnabled?.message as string}
             {...register("wifiEnabled")}
           />
 
@@ -123,7 +123,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
             disabled={wifiDisabled}
             type="text"
             text={t("config.radio.network.wifiSsid")}
-            error={errors.wifiSsid?.message}
+            error={errors.wifiSsid?.message as string}
             {...register("wifiSsid")}
           />
 
@@ -131,14 +131,14 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
             disabled={wifiDisabled}
             type="text"
             text={t("config.radio.network.wifiPsk")}
-            error={errors.wifiPsk?.message}
+            error={errors.wifiPsk?.message as string}
             {...register("wifiPsk")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.network.ethEnabled")}
-            error={errors.ethEnabled?.message}
+            error={errors.ethEnabled?.message as string}
             {...register("ethEnabled")}
           />
 
@@ -159,7 +159,7 @@ const NetworkConfigPage = ({ className = "" }: INetworkConfigPageProps) => {
             disabled={wifiDisabled && ethDisabled}
             type="text"
             text={t("config.radio.network.ntpServerAddress")}
-            error={errors.ntpServer?.message}
+            error={errors.ntpServer?.message as string}
             {...register("ntpServer")}
           />
 

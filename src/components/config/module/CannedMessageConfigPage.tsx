@@ -122,7 +122,7 @@ const CannedMessageConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.cannedMessages.cannedMessagesEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -152,7 +152,7 @@ const CannedMessageConfigPage = ({
             type="checkbox"
             text={t("config.module.cannedMessages.sendBell")}
             disabled={moduleDisabled}
-            error={errors.sendBell?.message}
+            error={errors.sendBell?.message as string}
             {...register("sendBell")}
           />
 
@@ -160,7 +160,7 @@ const CannedMessageConfigPage = ({
             type="checkbox"
             text={t("config.module.cannedMessages.enableRotaryEncoder")}
             disabled={moduleDisabled}
-            error={errors.rotary1Enabled?.message}
+            error={errors.rotary1Enabled?.message as string}
             {...register("rotary1Enabled")}
           />
 
@@ -168,7 +168,7 @@ const CannedMessageConfigPage = ({
             type="checkbox"
             text={t("config.module.cannedMessages.enableUpDownEncoder")}
             disabled={moduleDisabled}
-            error={errors.updown1Enabled?.message}
+            error={errors.updown1Enabled?.message as string}
             {...register("updown1Enabled")}
           />
 
@@ -176,7 +176,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerA")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerPinA?.message}
+            error={errors.inputbrokerPinA?.message as string}
             {...register("inputbrokerPinA")}
           />
 
@@ -184,7 +184,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerB")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerPinB?.message}
+            error={errors.inputbrokerPinB?.message as string}
             {...register("inputbrokerPinB")}
           />
 
@@ -192,7 +192,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerPress")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerPinPress?.message}
+            error={errors.inputbrokerPinPress?.message as string}
             {...register("inputbrokerPinPress")}
           />
 
@@ -200,7 +200,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerEventCw")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerEventCw?.message}
+            error={errors.inputbrokerEventCw?.message as string}
             {...register("inputbrokerEventCw")}
           />
 
@@ -208,7 +208,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerEventCcw")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerEventCcw?.message}
+            error={errors.inputbrokerEventCcw?.message as string}
             {...register("inputbrokerEventCcw")}
           />
 
@@ -216,7 +216,7 @@ const CannedMessageConfigPage = ({
             type="number"
             text={t("config.module.cannedMessages.brokerEventPress")}
             disabled={moduleDisabled}
-            error={errors.inputbrokerEventPress?.message}
+            error={errors.inputbrokerEventPress?.message as string}
             {...register("inputbrokerEventPress")}
           />
         </div>

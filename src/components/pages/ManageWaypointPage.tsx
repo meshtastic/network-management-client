@@ -71,7 +71,7 @@ const ManageWaypointPage = () => {
         },
       },
     ],
-    [waypoints]
+    [waypoints],
   );
 
   return (

@@ -43,7 +43,7 @@ const ConfigLayout = ({
                 onClick={() => onTitleIconClick()}
               >
                 {renderTitleIcon(
-                  "w-6 h-6 text-gray-400 dark:text-gray-400 my-auto"
+                  "w-6 h-6 text-gray-400 dark:text-gray-400 my-auto",
                 )}
               </button>
             </DefaultTooltip>

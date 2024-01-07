@@ -71,7 +71,7 @@ const ManageNodePage = () => {
         },
       },
     ],
-    [nodes]
+    [nodes],
   );
 
   return (

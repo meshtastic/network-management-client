@@ -118,7 +118,7 @@ const RemoteHardwareConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.remoteHardware.remoteHardwareEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
         </div>

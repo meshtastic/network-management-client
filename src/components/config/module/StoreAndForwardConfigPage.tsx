@@ -119,7 +119,7 @@ const StoreAndForwardConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.storeAndForward.sfEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -127,7 +127,7 @@ const StoreAndForwardConfigPage = ({
             type="checkbox"
             text={t("config.module.storeAndForward.heartbeatBroadcastEnabled")}
             disabled={moduleDisabled}
-            error={errors.heartbeat?.message}
+            error={errors.heartbeat?.message as string}
             {...register("heartbeat")}
           />
 
@@ -135,7 +135,7 @@ const StoreAndForwardConfigPage = ({
             type="number"
             text={t("config.module.storeAndForward.storedRecords")}
             disabled={moduleDisabled}
-            error={errors.records?.message}
+            error={errors.records?.message as string}
             {...register("records")}
           />
 
@@ -143,7 +143,7 @@ const StoreAndForwardConfigPage = ({
             type="number"
             text={t("config.module.storeAndForward.maxRecordsReturn")}
             disabled={moduleDisabled}
-            error={errors.historyReturnMax?.message}
+            error={errors.historyReturnMax?.message as string}
             {...register("historyReturnMax")}
           />
 
@@ -151,7 +151,7 @@ const StoreAndForwardConfigPage = ({
             type="number"
             text={t("config.module.storeAndForward.returnWindow")}
             disabled={moduleDisabled}
-            error={errors.historyReturnWindow?.message}
+            error={errors.historyReturnWindow?.message as string}
             {...register("historyReturnWindow")}
           />
         </div>

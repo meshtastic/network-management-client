@@ -125,14 +125,14 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.device.serialEnabled")}
-            error={errors.serialEnabled?.message}
+            error={errors.serialEnabled?.message as string}
             {...register("serialEnabled")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.device.serialDebugEnabled")}
-            error={errors.debugLogEnabled?.message}
+            error={errors.debugLogEnabled?.message as string}
             {...register("debugLogEnabled")}
           />
 
@@ -157,14 +157,14 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           <ConfigInput
             type="number"
             text={t("config.radio.device.nodeInfoBroadcastInterval")}
-            error={errors.nodeInfoBroadcastSecs?.message}
+            error={errors.nodeInfoBroadcastSecs?.message as string}
             {...register("nodeInfoBroadcastSecs")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.device.doubleTapButtonPress")}
-            error={errors.doubleTapAsButtonPress?.message}
+            error={errors.doubleTapAsButtonPress?.message as string}
             {...register("doubleTapAsButtonPress")}
           />
         </div>

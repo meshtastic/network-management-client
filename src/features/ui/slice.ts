@@ -23,7 +23,7 @@ export const uiSlice = createSlice({
   reducers: {
     setActiveNode: (
       state,
-      action: PayloadAction<app_device_MeshNode["nodeNum"] | null>
+      action: PayloadAction<app_device_MeshNode["nodeNum"] | null>,
     ) => {
       state.activeNode = action.payload;
 
@@ -36,7 +36,7 @@ export const uiSlice = createSlice({
 
     setActiveWaypoint: (
       state,
-      action: PayloadAction<app_device_NormalizedWaypoint["id"] | null>
+      action: PayloadAction<app_device_NormalizedWaypoint["id"] | null>,
     ) => {
       state.activeWaypoint = action.payload;
 
@@ -49,7 +49,7 @@ export const uiSlice = createSlice({
 
     setInfoPane: (
       state,
-      action: PayloadAction<"waypoint" | "algos" | null>
+      action: PayloadAction<"waypoint" | "algos" | null>,
     ) => {
       state.infoPane = action.payload;
 

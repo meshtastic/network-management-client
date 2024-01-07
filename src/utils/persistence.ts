@@ -23,7 +23,7 @@ export function* setValueInPersistedStore<TKey extends keyof IPersistedState>(
   store: Store,
   key: TKey,
   value: IPersistedState[TKey],
-  save = true
+  save = true,
 ) {
   yield store.set(key, value);
 
@@ -34,7 +34,7 @@ export function* setValueInPersistedStore<TKey extends keyof IPersistedState>(
 
 export function* getValueFromPersistedStore<TKey extends keyof IPersistedState>(
   store: Store,
-  key: TKey
+  key: TKey,
 ) {
   const val = (yield store.get(key)) as IPersistedState[TKey];
   return val;

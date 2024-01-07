@@ -112,7 +112,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.module.mqtt.enableMqtt")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -120,7 +120,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="text"
             text={t("config.module.mqtt.serverAddress")}
             disabled={moduleDisabled}
-            error={errors.address?.message}
+            error={errors.address?.message as string}
             {...register("address")}
           />
 
@@ -128,7 +128,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="text"
             text={t("config.module.mqtt.username")}
             disabled={moduleDisabled}
-            error={errors.username?.message}
+            error={errors.username?.message as string}
             {...register("username")}
           />
 
@@ -136,7 +136,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="password"
             text={t("config.module.mqtt.password")}
             disabled={moduleDisabled}
-            error={errors.password?.message}
+            error={errors.password?.message as string}
             {...register("password")}
           />
 
@@ -144,7 +144,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="checkbox"
             text={t("config.module.mqtt.encryptionEnabled")}
             disabled={moduleDisabled}
-            error={errors.encryptionEnabled?.message}
+            error={errors.encryptionEnabled?.message as string}
             {...register("encryptionEnabled")}
           />
 
@@ -152,7 +152,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="checkbox"
             text={t("config.module.mqtt.jsonEnabled")}
             disabled={moduleDisabled}
-            error={errors.jsonEnabled?.message}
+            error={errors.jsonEnabled?.message as string}
             {...register("jsonEnabled")}
           />
 
@@ -160,7 +160,7 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
             type="checkbox"
             text={t("config.module.mqtt.tlsEnabled")}
             disabled={moduleDisabled}
-            error={errors.tlsEnabled?.message}
+            error={errors.tlsEnabled?.message as string}
             {...register("tlsEnabled")}
           />
         </div>

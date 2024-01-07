@@ -40,19 +40,19 @@ export const appConfigSlice = createSlice({
   reducers: {
     setLastTcpConnection: (
       state,
-      action: PayloadAction<TcpConnectionMeta | null>
+      action: PayloadAction<TcpConnectionMeta | null>,
     ) => {
       state.lastTcpConnection = action.payload;
     },
     updateGeneralConfig: (
       state,
-      action: PayloadAction<Partial<IGeneralConfigState>>
+      action: PayloadAction<Partial<IGeneralConfigState>>,
     ) => {
       state.general = { ...state.general, ...action.payload };
     },
     updateMapConfig: (
       state,
-      action: PayloadAction<Partial<IMapConfigState>>
+      action: PayloadAction<Partial<IMapConfigState>>,
     ) => {
       state.map = { ...state.map, ...action.payload };
     },

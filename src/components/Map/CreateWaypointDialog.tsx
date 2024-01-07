@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import maplibregl from "maplibre-gl";
 import {
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
   Map,
   LngLat,
   NavigationControl,
@@ -424,7 +425,7 @@ const CreateWaypointDialog = ({
                       aria-label={t("map.waypoints.channelAriaLabel")}
                       asChild
                     >
-                      <button>
+                      <button type="button">
                         <Select.Value
                           placeholder={t("map.waypoints.channelPlaceholder")}
                           defaultValue={0}
@@ -447,7 +448,9 @@ const CreateWaypointDialog = ({
                               <Select.Item
                                 key={c.config.index}
                                 value={`${c.config.index}`}
-                                className={`relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 dark:text-gray-300 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50 dark:radix-disabled:opacity-100 dark:radix-disabled:text-gray-700`}
+                                className={
+                                  "relative flex items-center select-none h-6 pl-7 pr-5 py-4 text-gray-700 dark:text-gray-300 cursor-pointer radix-disabled:cursor-default radix-disabled:opacity-50 dark:radix-disabled:opacity-100 dark:radix-disabled:text-gray-700"
+                                }
                                 disabled={c.config.role === 0} // DISABLED role
                               >
                                 <Select.ItemText>
@@ -482,6 +485,7 @@ const CreateWaypointDialog = ({
                     <Popover.Trigger asChild>
                       <div className="relative mr-auto">
                         <button
+                          type="button"
                           className="relative w-9 h-9 flex align-middle justify-center border border-gray-200 dark:border-gray-500 rounded-full"
                           aria-label="Select emoji"
                         >
@@ -545,7 +549,10 @@ const CreateWaypointDialog = ({
               </button>
 
               <Dialog.Close asChild>
-                <button className="text-red-400 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors">
+                <button
+                  type="button"
+                  className="text-red-400 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 transition-colors"
+                >
                   {t("map.waypoints.cancel")}
                 </button>
               </Dialog.Close>
@@ -555,6 +562,7 @@ const CreateWaypointDialog = ({
 
         <Dialog.Close asChild>
           <button
+            type="button"
             className="fixed top-7 right-9 w-6 h-6 text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             aria-label={t("map.waypoints.closeAriaLabel")}
           >

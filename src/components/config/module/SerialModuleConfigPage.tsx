@@ -119,7 +119,7 @@ const SerialModuleConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.serial.serialModuleEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -127,7 +127,7 @@ const SerialModuleConfigPage = ({
             type="checkbox"
             text={t("config.module.serial.echoSentPackets")}
             disabled={moduleDisabled}
-            error={errors.echo?.message}
+            error={errors.echo?.message as string}
             {...register("echo")}
           />
 
@@ -157,7 +157,7 @@ const SerialModuleConfigPage = ({
             type="number"
             text={t("config.module.serial.rxPin")}
             disabled={moduleDisabled}
-            error={errors.rxd?.message}
+            error={errors.rxd?.message as string}
             {...register("rxd")}
           />
 
@@ -165,7 +165,7 @@ const SerialModuleConfigPage = ({
             type="number"
             text={t("config.module.serial.txPin")}
             disabled={moduleDisabled}
-            error={errors.txd?.message}
+            error={errors.txd?.message as string}
             {...register("txd")}
           />
 
@@ -199,7 +199,7 @@ const SerialModuleConfigPage = ({
             type="number"
             text={t("config.module.serial.serialTimeout")}
             disabled={moduleDisabled}
-            error={errors.timeout?.message}
+            error={errors.timeout?.message as string}
             {...register("timeout")}
           />
         </div>

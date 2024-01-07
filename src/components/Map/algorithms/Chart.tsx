@@ -159,7 +159,7 @@ function convertToDataFormat() {
     [...node_to_time_values.entries()].sort((a, b) => b[1][0] - a[1][0])
   );
   let i = 0;
-  sorted.forEach((values, node_name) => {
+  for (const [node_name, values] of sorted) {
     const color_rgb = hexToRgb(colors[i]);
     if (color_rgb) {
       colors[i] = `rgba(${color_rgb.r}, ${color_rgb.g}, ${color_rgb.b}, 0.9)`;
@@ -173,7 +173,7 @@ function convertToDataFormat() {
       backgroundColor: colors[i],
     });
     i++;
-  });
+  }
 
   // reverse the order of the datasets so that the legend is in the same order as the graph
   datasets.reverse();
@@ -188,14 +188,13 @@ function convertToDataFormat() {
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(
+  const updated_hex = hex.replace(
     shorthandRegex,
-    function (m: string, r: string, g: string, b: string): string {
-      return r + r + g + g + b + b;
-    }
+    (m: string, r: string, g: string, b: string): string =>
+      r + r + g + g + b + b
   );
 
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(updated_hex);
   return result
     ? {
         r: parseInt(result[1], 16),

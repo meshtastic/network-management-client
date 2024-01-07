@@ -21,7 +21,7 @@ export const getLastHeardTime = (node: app_device_MeshNode): number | null => {
   const lastHeard = Math.max(
     lastDeviceMetricTimestamp ?? 0,
     lastEnvironmentMetricTimestamp ?? 0,
-    lastDataTimestamp ?? 0
+    lastDataTimestamp ?? 0,
   );
 
   if (lastHeard === 0) return null;
@@ -40,7 +40,7 @@ export const getMinsSinceLastHeard = (node: app_device_MeshNode): number => {
 
 export const getNodeState = (
   timeSinceLastMessage: number,
-  selected: boolean
+  selected: boolean,
 ): NodeState => {
   if (selected) return "selected";
   if (timeSinceLastMessage >= NODE_ERROR_THRESHOLD) return "error";
@@ -56,7 +56,7 @@ export type NodeColorStyleConfig = {
 };
 
 export const getColorClassFromNodeState = (
-  nodeState: NodeState
+  nodeState: NodeState,
 ): NodeColorStyleConfig => {
   switch (nodeState) {
     case "selected":

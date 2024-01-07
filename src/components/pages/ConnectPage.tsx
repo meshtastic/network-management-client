@@ -189,7 +189,8 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
             <img
               className="h-9"
               src={isDarkMode ? MeshLogoLight : MeshLogoDark}
-            ></img>
+              alt="Mesh Logo"
+            />
           </div>
         </div>
 
@@ -272,6 +273,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
         <img
           className="w-full h-full object-cover object-center bg-gray-700"
           src={Hero_Image}
+          alt="Meshtastic Emergency Response Client hero"
         />
         <p className="landing-screen-opacity-transition absolute bottom-3 right-3 text-right text-sm text-gray-600">
           <Trans
@@ -279,6 +281,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
             components={{
               link1: (
                 <button
+                  type="button"
                   className="hover:underline"
                   onClick={openExternalLink(
                     "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
@@ -287,6 +290,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
               ),
               link2: (
                 <button
+                  type="button"
                   className="hover:underline"
                   onClick={openExternalLink(
                     "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"

@@ -137,7 +137,7 @@ const ExternalNotificationConfigPage = ({
           <ConfigInput
             type="checkbox"
             text={t("config.module.externalNotification.extNotEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -145,7 +145,7 @@ const ExternalNotificationConfigPage = ({
             type="checkbox"
             text={t("config.module.externalNotification.activeHighLed")}
             disabled={moduleDisabled}
-            error={errors.active?.message}
+            error={errors.active?.message as string}
             {...register("active")}
           />
 
@@ -153,7 +153,7 @@ const ExternalNotificationConfigPage = ({
             type="checkbox"
             text={t("config.module.externalNotification.enableBellAlerts")}
             disabled={moduleDisabled}
-            error={errors.alertBell?.message}
+            error={errors.alertBell?.message as string}
             {...register("alertBell")}
           />
 
@@ -163,7 +163,7 @@ const ExternalNotificationConfigPage = ({
               "config.module.externalNotification.enableBellVibrateAlert"
             )}
             disabled={moduleDisabled || bellAlertsDisabled}
-            error={errors.alertBellVibra?.message}
+            error={errors.alertBellVibra?.message as string}
             {...register("alertBellVibra")}
           />
 
@@ -171,7 +171,7 @@ const ExternalNotificationConfigPage = ({
             type="checkbox"
             text={t("config.module.externalNotification.enableBellBuzzerAlert")}
             disabled={moduleDisabled || bellAlertsDisabled}
-            error={errors.alertBellBuzzer?.message}
+            error={errors.alertBellBuzzer?.message as string}
             {...register("alertBellBuzzer")}
           />
 
@@ -179,7 +179,7 @@ const ExternalNotificationConfigPage = ({
             type="checkbox"
             text={t("config.module.externalNotification.enableMessageAlerts")}
             disabled={moduleDisabled}
-            error={errors.alertMessage?.message}
+            error={errors.alertMessage?.message as string}
             {...register("alertMessage")}
           />
 
@@ -189,7 +189,7 @@ const ExternalNotificationConfigPage = ({
               "config.module.externalNotification.enableMessageVibrateAlert"
             )}
             disabled={moduleDisabled || messageAlertsDisabled}
-            error={errors.alertMessageVibra?.message}
+            error={errors.alertMessageVibra?.message as string}
             {...register("alertMessageVibra")}
           />
 
@@ -199,7 +199,7 @@ const ExternalNotificationConfigPage = ({
               "config.module.externalNotification.enableMessageBuzzerAlert"
             )}
             disabled={moduleDisabled || messageAlertsDisabled}
-            error={errors.alertMessageBuzzer?.message}
+            error={errors.alertMessageBuzzer?.message as string}
             {...register("alertMessageBuzzer")}
           />
 
@@ -207,7 +207,7 @@ const ExternalNotificationConfigPage = ({
             type="number"
             text={t("config.module.externalNotification.alertLedPin")}
             disabled={moduleDisabled}
-            error={errors.output?.message}
+            error={errors.output?.message as string}
             {...register("output")}
           />
 
@@ -215,7 +215,7 @@ const ExternalNotificationConfigPage = ({
             type="number"
             text={t("config.module.externalNotification.alertVibratePin")}
             disabled={moduleDisabled}
-            error={errors.outputVibra?.message}
+            error={errors.outputVibra?.message as string}
             {...register("outputVibra")}
           />
 
@@ -223,7 +223,7 @@ const ExternalNotificationConfigPage = ({
             type="number"
             text={t("config.module.externalNotification.alertBuzzerPin")}
             disabled={moduleDisabled}
-            error={errors.outputBuzzer?.message}
+            error={errors.outputBuzzer?.message as string}
             {...register("outputBuzzer")}
           />
 
@@ -231,7 +231,7 @@ const ExternalNotificationConfigPage = ({
             type="checkbox"
             text={t("config.module.externalNotification.enableBuzzerPwm")}
             disabled={moduleDisabled}
-            error={errors.usePwm?.message}
+            error={errors.usePwm?.message as string}
             {...register("usePwm")}
           />
 
@@ -239,7 +239,7 @@ const ExternalNotificationConfigPage = ({
             type="number"
             text={t("config.module.externalNotification.alertDuration")}
             disabled={moduleDisabled}
-            error={errors.outputMs?.message}
+            error={errors.outputMs?.message as string}
             {...register("outputMs")}
           />
 
@@ -247,7 +247,7 @@ const ExternalNotificationConfigPage = ({
             type="number"
             text={t("config.module.externalNotification.alertNagDuration")}
             disabled={moduleDisabled}
-            error={errors.nagTimeout?.message}
+            error={errors.nagTimeout?.message as string}
             {...register("nagTimeout")}
           />
         </div>

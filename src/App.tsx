@@ -43,10 +43,7 @@ const App = () => {
   return (
     <div className="flex flex-row relative">
       {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
-
-      {isOnboardMounted && (
-        <ConnectPage unmountSelf={handleOnboardUnmount} />
-      )}
+      {isOnboardMounted && <ConnectPage unmountSelf={handleOnboardUnmount} />}
 
       <Routes>
         <Route path="/" element={<AppWrapper />}>

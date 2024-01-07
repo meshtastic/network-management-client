@@ -29,7 +29,7 @@ export interface IChannelConfigDetailProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseChannelConfigInput = (
-  d: DeepPartial<ChannelConfigInput>
+  d: DeepPartial<ChannelConfigInput>,
 ): DeepPartial<ChannelConfigInput> => ({
   ...d,
   role: d.role != undefined ? parseInt(d.role as unknown as string) : undefined,
@@ -44,7 +44,7 @@ const ChannelConfigDetail = ({
   const dispatch = useDispatch();
 
   const currentMeshChannel = useSelector(
-    selectCurrentChannelConfig(channelNum)
+    selectCurrentChannelConfig(channelNum),
   );
   const editedConfig = useSelector(selectEditedChannelConfig(channelNum));
 
@@ -53,23 +53,23 @@ const ChannelConfigDetail = ({
       currentMeshChannel
         ? getCurrentConfigFromMeshChannel(currentMeshChannel)
         : null,
-    [currentMeshChannel]
+    [currentMeshChannel],
   );
   const channelName = currentMeshChannel
     ? getChannelName(currentMeshChannel)
     : t("general.unknown");
 
   const [channelDisabled, setChannelDisabled] = useState(
-    currentMeshChannel?.config.role === 0 // DISABLED
+    currentMeshChannel?.config.role === 0, // DISABLED
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         currentConfig ?? undefined,
-        editedConfig ?? undefined
+        editedConfig ?? undefined,
       ),
-    []
+    [],
   );
 
   const updateStateFlags = (d: DeepPartial<ChannelConfigInput>) => {
@@ -99,13 +99,13 @@ const ChannelConfigDetail = ({
           dispatch(
             configSliceActions.updateChannelConfig([
               { channelNum, config: data },
-            ])
+            ]),
           );
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -118,7 +118,7 @@ const ChannelConfigDetail = ({
     if (!currentMeshChannel) return;
     reset(getCurrentConfigFromMeshChannel(currentMeshChannel));
     dispatch(
-      configSliceActions.updateChannelConfig([{ channelNum, config: null }])
+      configSliceActions.updateChannelConfig([{ channelNum, config: null }]),
     );
   };
 

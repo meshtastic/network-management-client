@@ -122,14 +122,14 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
           <ConfigInput
             type="number"
             text={t("config.module.telemetry.deviceMetricsInterval")}
-            error={errors.deviceUpdateInterval?.message}
+            error={errors.deviceUpdateInterval?.message as string}
             {...register("deviceUpdateInterval")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.module.telemetry.enableAirQualityMetrics")}
-            error={errors.airQualityEnabled?.message}
+            error={errors.airQualityEnabled?.message as string}
             {...register("airQualityEnabled")}
           />
 
@@ -137,14 +137,14 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
             type="number"
             text={t("config.module.telemetry.airQualityUpdateInterval")}
             disabled={airQualityDisabled}
-            error={errors.airQualityInterval?.message}
+            error={errors.airQualityInterval?.message as string}
             {...register("airQualityInterval")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.module.telemetry.enableEnvironmentMetrics")}
-            error={errors.environmentMeasurementEnabled?.message}
+            error={errors.environmentMeasurementEnabled?.message as string}
             {...register("environmentMeasurementEnabled")}
           />
 
@@ -152,7 +152,7 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
             type="number"
             text={t("config.module.telemetry.environmentUpdateInterval")}
             disabled={envMeasurementDisabled}
-            error={errors.environmentUpdateInterval?.message}
+            error={errors.environmentUpdateInterval?.message as string}
             {...register("environmentUpdateInterval")}
           />
 
@@ -160,7 +160,7 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
             type="checkbox"
             text={t("config.module.telemetry.useFahrenheitForEnvMetrics")}
             disabled={envMeasurementDisabled}
-            error={errors.environmentDisplayFahrenheit?.message}
+            error={errors.environmentDisplayFahrenheit?.message as string}
             {...register("environmentDisplayFahrenheit")}
           />
 
@@ -168,7 +168,7 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
             type="checkbox"
             text={t("config.module.telemetry.showEnvMetricsOnDeviceScreen")}
             disabled={envMeasurementDisabled}
-            error={errors.environmentScreenEnabled?.message}
+            error={errors.environmentScreenEnabled?.message as string}
             {...register("environmentScreenEnabled")}
           />
         </div>

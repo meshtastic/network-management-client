@@ -1,11 +1,10 @@
 import React, { forwardRef } from "react";
 import type { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
-export interface IConnectionInputProps
-  extends DetailedHTMLProps<
-    InputHTMLAttributes<HTMLInputElement>,
-    HTMLInputElement
-  > {}
+export type IConnectionInputProps = DetailedHTMLProps<
+  InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+>;
 
 const ConnectionInput = forwardRef<HTMLInputElement, IConnectionInputProps>(
   function ConnectionInput(props, ref) {

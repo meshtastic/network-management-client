@@ -57,7 +57,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
       requestDeleteWaypoint({
         deviceKey: primaryDeviceKey,
         waypointId: activeWaypoint.id,
-      })
+      }),
     );
   };
 
@@ -111,10 +111,10 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                   {lockedTo === device?.myNodeInfo.myNodeNum
                     ? t("map.panes.waypointInfo.locked.onlyYouEdit")
                     : lockedTo !== 0
-                    ? t("map.panes.waypointInfo.onlyNodeEdit", {
-                        nodeName: usersMap[lockedTo]?.shortName || lockedTo,
-                      })
-                    : t("map.panes.waypointInfo.locked.anyoneEdit")}
+                      ? t("map.panes.waypointInfo.onlyNodeEdit", {
+                          nodeName: usersMap[lockedTo]?.shortName || lockedTo,
+                        })
+                      : t("map.panes.waypointInfo.locked.anyoneEdit")}
                 </h2>
               </div>
 
@@ -125,10 +125,10 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                     lockedTo === device?.myNodeInfo.myNodeNum
                       ? t("map.panes.waypointInfo.locked.onlyYouEdit")
                       : lockedTo !== 0
-                      ? t("map.panes.waypointInfo.onlyNodeEdit", {
-                          nodeName: usersMap[lockedTo]?.shortName || lockedTo,
-                        })
-                      : t("map.panes.waypointInfo.anyoneEdit")
+                        ? t("map.panes.waypointInfo.onlyNodeEdit", {
+                            nodeName: usersMap[lockedTo]?.shortName || lockedTo,
+                          })
+                        : t("map.panes.waypointInfo.anyoneEdit"),
                   )
                 }
               >
@@ -142,7 +142,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                 <h2 className="text-base leading-6 font-normal pl-2">
                   {latitude && longitude
                     ? `(${formatLocation(latitude)}, ${formatLocation(
-                        longitude
+                        longitude,
                       )})`
                     : t("map.panes.waypointInfo.noLocationSet")}
                 </h2>
@@ -154,7 +154,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                   void writeValueToClipboard(
                     latitude && longitude
                       ? `(${latitude}, ${longitude})`
-                      : t("map.panes.waypointInfo.noLocationSet")
+                      : t("map.panes.waypointInfo.noLocationSet"),
                   )
                 }
               >
@@ -186,7 +186,7 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                       ? t("map.panes.waypointInfo.doesNotExpire")
                       : t("map.panes.waypointInfo.expires", {
                           fromNow: moment(expire * 1000).fromNow(),
-                        })
+                        }),
                   )
                 }
               >

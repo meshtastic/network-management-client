@@ -55,9 +55,9 @@ const NodeSearchResult = ({
           {!!node.positionMetrics.at(-1)?.latitude &&
           !!node.positionMetrics.at(-1)?.longitude
             ? `${formatLocation(
-                node.positionMetrics.at(-1)?.latitude ?? 0
+                node.positionMetrics.at(-1)?.latitude ?? 0,
               )}, ${formatLocation(
-                node.positionMetrics.at(-1)?.longitude ?? 0
+                node.positionMetrics.at(-1)?.longitude ?? 0,
               )}`
             : t("map.panes.search.noGpsLock")}
         </p>

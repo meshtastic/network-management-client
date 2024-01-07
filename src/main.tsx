@@ -59,5 +59,5 @@ root.render(
         </Provider>
       </BrowserRouter>
     </Suspense>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

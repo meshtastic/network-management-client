@@ -106,56 +106,56 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.power.enablePowerSaving")}
-            error={errors.isPowerSaving?.message}
+            error={errors.isPowerSaving?.message as string}
             {...register("isPowerSaving")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.power.shutdownPowerLoss")}
-            error={errors.onBatteryShutdownAfterSecs?.message}
+            error={errors.onBatteryShutdownAfterSecs?.message as string}
             {...register("onBatteryShutdownAfterSecs")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.power.adcMultOverride")}
-            error={errors.adcMultiplierOverride?.message}
+            error={errors.adcMultiplierOverride?.message as string}
             {...register("adcMultiplierOverride")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.power.bluetoothTimeout")}
-            error={errors.waitBluetoothSecs?.message}
+            error={errors.waitBluetoothSecs?.message as string}
             {...register("waitBluetoothSecs")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.power.sdsTimeout")}
-            error={errors.meshSdsTimeoutSecs?.message}
+            error={errors.meshSdsTimeoutSecs?.message as string}
             {...register("meshSdsTimeoutSecs")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.power.sdsInterval")}
-            error={errors.sdsSecs?.message}
+            error={errors.sdsSecs?.message as string}
             {...register("sdsSecs")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.power.lsInterval")}
-            error={errors.lsSecs?.message}
+            error={errors.lsSecs?.message as string}
             {...register("lsSecs")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.power.minWakeInterval")}
-            error={errors.minWakeSecs?.message}
+            error={errors.minWakeSecs?.message as string}
             {...register("minWakeSecs")}
           />
         </div>

@@ -45,7 +45,7 @@ const ChannelDetailView = ({
         deviceKey: primaryDeviceKey,
         text: message,
         channel: channel.config.index,
-      })
+      }),
     );
   };
 

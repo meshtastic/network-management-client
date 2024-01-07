@@ -18,6 +18,7 @@ const WaypointIcon = ({ waypoint, isSelected }: IWaypointProps) => {
       <img
         className={"drop-shadow-lg w-9 h-9"}
         src={isSelected ? SelectedWaypoint : DefaultWaypoint}
+        alt={isSelected ? "Selected Waypoint" : "Default Waypoint"}
       />
       {!!waypoint.icon && (
         <p className="absolute top-0 left-1/2 -translate-x-1/2 text-xl text-center select-none">{`${String.fromCodePoint(

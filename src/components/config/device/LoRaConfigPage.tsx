@@ -144,7 +144,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.radio.lora.useModemPreset")}
-            error={errors.usePreset?.message}
+            error={errors.usePreset?.message as string}
             {...register("usePreset")}
           />
 
@@ -180,7 +180,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={useModemPreset}
             type="number"
             text={t("config.radio.lora.bandwidth")}
-            error={errors.bandwidth?.message}
+            error={errors.bandwidth?.message as string}
             {...register("bandwidth")}
           />
 
@@ -188,7 +188,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={useModemPreset}
             type="number"
             text={t("config.radio.lora.spreadFactor")}
-            error={errors.spreadFactor?.message}
+            error={errors.spreadFactor?.message as string}
             {...register("spreadFactor")}
           />
 
@@ -196,28 +196,28 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={useModemPreset}
             type="number"
             text={t("config.radio.lora.codingRate")}
-            error={errors.codingRate?.message}
+            error={errors.codingRate?.message as string}
             {...register("codingRate")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.lora.freqOffset")}
-            error={errors.frequencyOffset?.message}
+            error={errors.frequencyOffset?.message as string}
             {...register("frequencyOffset")}
           />
 
           <ConfigInput
             type="number"
             text={t("config.radio.lora.hopLimit")}
-            error={errors.hopLimit?.message}
+            error={errors.hopLimit?.message as string}
             {...register("hopLimit")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.lora.txEnabled")}
-            error={errors.txEnabled?.message}
+            error={errors.txEnabled?.message as string}
             {...register("txEnabled")}
           />
 
@@ -225,7 +225,7 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={!txEnabled}
             type="number"
             text={t("config.radio.lora.txPower")}
-            error={errors.txPower?.message}
+            error={errors.txPower?.message as string}
             {...register("txPower")}
           />
 
@@ -233,14 +233,14 @@ const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
             disabled={!txEnabled}
             type="number"
             text={t("config.radio.lora.loraChannel")}
-            error={errors.channelNum?.message}
+            error={errors.channelNum?.message as string}
             {...register("channelNum")}
           />
 
           <ConfigInput
             type="checkbox"
             text={t("config.radio.lora.euOverride")}
-            error={errors.overrideDutyCycle?.message}
+            error={errors.overrideDutyCycle?.message as string}
             {...register("overrideDutyCycle")}
           />
 

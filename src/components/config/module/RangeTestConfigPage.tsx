@@ -113,7 +113,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
           <ConfigInput
             type="checkbox"
             text={t("config.module.rangeTest.rangeTestEnabled")}
-            error={errors.enabled?.message}
+            error={errors.enabled?.message as string}
             {...register("enabled")}
           />
 
@@ -121,7 +121,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
             type="number"
             text={t("config.module.rangeTest.senderTransmitInterval")}
             disabled={moduleDisabled}
-            error={errors.sender?.message}
+            error={errors.sender?.message as string}
             {...register("sender")}
           />
 
@@ -129,7 +129,7 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
             type="checkbox"
             text={t("config.module.rangeTest.saveToFs")}
             disabled={moduleDisabled}
-            error={errors.save?.message}
+            error={errors.save?.message as string}
             {...register("save")}
           />
         </div>

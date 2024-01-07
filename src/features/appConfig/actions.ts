@@ -6,18 +6,18 @@ import type {
 } from "@features/appConfig/slice";
 
 export const requestFetchLastTcpConnectionMeta = createAction(
-  "@appConfig/fetch-last-tcp-connection-meta"
+  "@appConfig/fetch-last-tcp-connection-meta",
 );
 
 export const requestPersistLastTcpConnectionMeta =
   createAction<TcpConnectionMeta | null>(
-    "@appConfig/persist-last-tcp-connection-meta"
+    "@appConfig/persist-last-tcp-connection-meta",
   );
 
 export const requestPersistGeneralConfig = createAction<IGeneralConfigState>(
-  "@appConfig/persist-general-config"
+  "@appConfig/persist-general-config",
 );
 
 export const requestPersistMapConfig = createAction<IMapConfigState>(
-  "@appConfig/persist-map-config"
+  "@appConfig/persist-map-config",
 );

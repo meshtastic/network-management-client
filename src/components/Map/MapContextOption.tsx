@@ -24,7 +24,7 @@ const MapContextOption = forwardRef<HTMLButtonElement, IMapContextOptionProps>(
         </div>
       </button>
     );
-  }
+  },
 );
 
 export default MapContextOption;

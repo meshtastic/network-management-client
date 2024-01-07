@@ -151,6 +151,7 @@ const NodeSearchDock = () => {
         side="right"
       >
         <button
+          type="button"
           onClick={() => setNodeSearchDockExpanded(!searchDockExpanded)}
           className="flex flex-row align-middle justify-center bg-white dark:bg-gray-800 rounded-full mx-auto p-2 shadow-lg text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
         >

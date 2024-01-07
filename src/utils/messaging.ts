@@ -26,7 +26,7 @@ export const getChannelName = (channel: app_device_MeshChannel): string => {
 export const formatMessageUsername = (
   longName: string | undefined,
   ownNodeId: number,
-  from: number
+  from: number,
 ): { displayText: string; isSelf: boolean } => {
   if (from === 0 || from == ownNodeId) {
     return { displayText: "You", isSelf: true };
@@ -49,7 +49,7 @@ export const getNumMessagesText = (numMessages: number): string => {
 };
 
 export const getWaypointTitle = (
-  waypoint: app_device_NormalizedWaypoint
+  waypoint: app_device_NormalizedWaypoint,
 ): string => {
   if (waypoint.name) return waypoint.name;
   return i18next.t("messaging.unnamedWaypoint");
@@ -69,7 +69,7 @@ export const getPacketDisplayText = ({
 };
 
 export const getLastChannelMessageDisplayText = (
-  lastMessage: app_device_ChannelMessageWithState | null
+  lastMessage: app_device_ChannelMessageWithState | null,
 ) => {
   if (lastMessage?.payload.type) {
     return getPacketDisplayText(lastMessage.payload);

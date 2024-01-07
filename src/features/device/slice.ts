@@ -22,14 +22,14 @@ export const deviceSlice = createSlice({
   reducers: {
     setAvailableSerialPorts: (
       state,
-      action: PayloadAction<string[] | null>
+      action: PayloadAction<string[] | null>,
     ) => {
       state.availableSerialPorts = action.payload;
     },
 
     setPrimaryDeviceConnectionKey: (
       state,
-      action: PayloadAction<string | null>
+      action: PayloadAction<string | null>,
     ) => {
       state.primaryDeviceKey = action.payload;
     },

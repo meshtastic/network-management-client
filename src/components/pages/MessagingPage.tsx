@@ -16,7 +16,7 @@ const MessagingPage = () => {
 
   const channels = useSelector(selectDeviceChannels());
   const [activeChannelIdx, setActiveChannelIdx] = useState<number | null>(
-    channels[0]?.config.index ?? null
+    channels[0]?.config.index ?? null,
   );
 
   const navigateTo = useNavigate();
