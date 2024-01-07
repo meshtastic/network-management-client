@@ -1,13 +1,13 @@
-import React, { useMemo } from "react";
+import { Save } from "lucide-react";
+import { useMemo } from "react";
 import type { FormEventHandler } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Save } from "lucide-react";
-import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigTitlebar from "@components/config/ConfigTitlebar";
 
 import { requestPersistMapConfig } from "@features/appConfig/actions";
 import { selectMapConfigState } from "@features/appConfig/selectors";
@@ -38,7 +38,7 @@ const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
 
   const handleFormSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    void handleSubmit(handleSubmitSuccess, console.warn)(e);
+    handleSubmit(handleSubmitSuccess, console.warn)(e);
   };
 
   const formId = useMemo(() => v4(), []);

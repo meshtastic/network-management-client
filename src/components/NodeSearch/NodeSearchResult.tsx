@@ -1,20 +1,19 @@
-import React from "react";
+import { Locate, LocateFixed } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import TimeAgo from "timeago-react";
-import { Locate, LocateFixed } from "lucide-react";
 
 import type { app_device_MeshNode } from "@bindings/index";
 
 import DefaultTooltip from "@components/DefaultTooltip";
 
 import { useComponentReload } from "@utils/hooks";
+import { formatLocation } from "@utils/map";
 import {
   getColorClassFromNodeState,
   getLastHeardTime,
-  getNodeState,
   getMinsSinceLastHeard,
+  getNodeState,
 } from "@utils/nodes";
-import { formatLocation } from "@utils/map";
 
 export interface INodeSearchResultProps {
   node: app_device_MeshNode;

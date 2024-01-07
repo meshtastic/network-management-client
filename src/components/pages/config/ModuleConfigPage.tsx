@@ -1,8 +1,8 @@
-import React, { useLayoutEffect, useState } from "react";
+import { Upload } from "lucide-react";
+import { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Upload } from "lucide-react";
 
 import type { meshtastic_protobufs_LocalModuleConfig } from "@app/bindings";
 import i18next from "@app/i18n";
@@ -21,11 +21,11 @@ import StoreAndForwardConfigPage from "@components/config/module/StoreAndForward
 import TelemetryConfigPage from "@components/config/module/TelemetryConfigPage";
 
 import { requestCommitConfig } from "@features/config/actions";
-import type { IModuleConfigState } from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import type { IModuleConfigState } from "@features/config/slice";
 
 export const ModuleConfigOptions: Record<keyof IModuleConfigState, string> = {
   // audio: i18next.t('config.module.options.audio'),
@@ -83,7 +83,7 @@ const getNumberOfPendingChanges = (
 
   return Object.entries(editedModuleConfig?.[configKey] ?? {}).reduce(
     (accum, [editedConfigKey, editedConfigValue]) => {
-      if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
+      if (editedConfigValue === undefined) return accum; // ! Need to allow falsy values
 
       const currentFieldValue =
         (currentModuleConfig as Record<string, any>)?.[configKey]?.[

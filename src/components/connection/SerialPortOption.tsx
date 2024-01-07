@@ -1,11 +1,10 @@
-import React from "react";
-import { Trans } from "react-i18next";
 import {
   CheckCircleIcon,
-  XCircleIcon,
   EllipsisHorizontalCircleIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Usb } from "lucide-react";
+import { Trans } from "react-i18next";
 
 import type { RequestStatus } from "@features/requests/slice";
 

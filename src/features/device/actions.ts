@@ -1,8 +1,8 @@
 import { createAction } from "@reduxjs/toolkit";
 
 import type {
-  meshtastic_protobufs_User,
   app_device_NormalizedWaypoint,
+  meshtastic_protobufs_User,
 } from "@bindings/index";
 
 import type { ConnectionType, DeviceKey } from "@utils/connections";

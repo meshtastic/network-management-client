@@ -1,38 +1,38 @@
-import React, { ChangeEventHandler, useMemo, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import debounce from "lodash.debounce";
 import maplibregl from "maplibre-gl";
+import { ChangeEventHandler, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
+  LngLat,
   // biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
   Map,
-  LngLat,
+  MarkerDragEvent,
   NavigationControl,
   ScaleControl,
-  MarkerDragEvent,
   useMap,
 } from "react-map-gl";
-import debounce from "lodash.debounce";
+import { useDispatch, useSelector } from "react-redux";
 
-import moment from "moment";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 import * as Dialog from "@radix-ui/react-dialog";
-import * as Select from "@radix-ui/react-select";
-import * as Popover from "@radix-ui/react-popover";
 import {
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   Cross2Icon,
 } from "@radix-ui/react-icons";
-import { Plus, X, Locate } from "lucide-react";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+import * as Popover from "@radix-ui/react-popover";
+import * as Select from "@radix-ui/react-select";
+import { Locate, Plus, X } from "lucide-react";
+import moment from "moment";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import ConnectionInput from "@components/connection/ConnectionInput";
-import ConnectionSwitch from "@components/connection/ConnectionSwitch";
 import MapOverlayButton from "@components/Map/MapOverlayButton";
 import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
+import ConnectionInput from "@components/connection/ConnectionInput";
+import ConnectionSwitch from "@components/connection/ConnectionSwitch";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
 import { requestSendWaypoint } from "@features/device/actions";

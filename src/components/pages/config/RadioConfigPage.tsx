@@ -1,8 +1,8 @@
-import React, { useLayoutEffect, useState } from "react";
+import { Upload } from "lucide-react";
+import { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Upload } from "lucide-react";
 
 import type { meshtastic_protobufs_LocalConfig } from "@app/bindings";
 import i18next from "@app/i18n";
@@ -18,11 +18,11 @@ import NetworkConfigPage from "@components/config/device/NetworkConfigPage";
 import PositionConfigPage from "@components/config/device/PositionConfigPage";
 import PowerConfigPage from "@components/config/device/PowerConfigPage";
 
+import { requestCommitConfig } from "@features/config/actions";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
-import { requestCommitConfig } from "@features/config/actions";
 import type { IRadioConfigState } from "@features/config/slice";
 
 export const RadioConfigOptions: Record<keyof IRadioConfigState, string> = {
@@ -75,7 +75,7 @@ const getNumberOfPendingChanges = (
 
   return Object.entries(editedRadioConfig?.[configKey] ?? {}).reduce(
     (accum, [editedConfigKey, editedConfigValue]) => {
-      if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
+      if (editedConfigValue === undefined) return accum; // ! Need to allow falsy values
 
       const currentFieldValue =
         (currentRadioConfig as Record<string, any>)?.[configKey]?.[

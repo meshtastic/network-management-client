@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
 import type { DetailedHTMLProps, InputHTMLAttributes } from "react";
 import type { UseFormRegister } from "react-hook-form";
 

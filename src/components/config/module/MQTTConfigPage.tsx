@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 // import ConfigLabel from "@components/config/ConfigLabel";
 import ConfigInput from "@components/config/ConfigInput";
+import ConfigTitlebar from "@components/config/ConfigTitlebar";
 
-import {
-  MQTTModuleConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import {
+  MQTTModuleConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";

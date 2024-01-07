@@ -1,20 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
 import ConfigSelect from "@components/config/ConfigSelect";
+import ConfigTitlebar from "@components/config/ConfigTitlebar";
 
-import { ChannelConfigInput, configSliceActions } from "@features/config/slice";
 import {
   selectCurrentChannelConfig,
   selectEditedChannelConfig,
 } from "@features/config/selectors";
+import { ChannelConfigInput, configSliceActions } from "@features/config/slice";
 
 import {
   getCurrentConfigFromMeshChannel,
@@ -32,7 +32,8 @@ const parseChannelConfigInput = (
   d: DeepPartial<ChannelConfigInput>,
 ): DeepPartial<ChannelConfigInput> => ({
   ...d,
-  role: d.role != undefined ? parseInt(d.role as unknown as string) : undefined,
+  role:
+    d.role !== undefined ? parseInt(d.role as unknown as string) : undefined,
 });
 
 const ChannelConfigDetail = ({

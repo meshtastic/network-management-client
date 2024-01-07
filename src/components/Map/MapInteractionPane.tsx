@@ -1,7 +1,5 @@
-import React from "react";
-
-import { useSelector, useDispatch } from "react-redux";
 import { Lightbulb } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 
 import MapOverlayButton from "@components/Map/MapOverlayButton";
 import { selectInfoPane } from "@features/ui/selectors";

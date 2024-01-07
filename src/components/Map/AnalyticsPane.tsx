@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import * as Accordion from "@radix-ui/react-accordion";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import ArticulationPoints from "@components/Map/algorithms/ArticulationPoints";
-import MincutEdges from "@components/Map/algorithms/MinCutEdges";
 import DiffusionSimulation from "@components/Map/algorithms/DiffusionSimulation";
+import MincutEdges from "@components/Map/algorithms/MinCutEdges";
 
 import {
   AlgorithmConfigFlags,

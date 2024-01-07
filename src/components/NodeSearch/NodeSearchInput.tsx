@@ -1,5 +1,3 @@
-import React from "react";
-
 export interface INodeSearchInputProps {
   query: string;
   setQuery: (value: string) => void;

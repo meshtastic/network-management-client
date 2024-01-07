@@ -1,5 +1,3 @@
-import React from "react";
-
 import type { app_device_MeshChannel } from "@bindings/index";
 import {
   getChannelName,

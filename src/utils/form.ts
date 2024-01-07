@@ -1,6 +1,6 @@
 import { fromByteArray, toByteArray } from "base64-js";
-import merge from "lodash.merge";
 import cloneDeep from "lodash.clonedeep";
+import merge from "lodash.merge";
 import type { DeepPartial } from "react-hook-form";
 
 import type { app_device_MeshChannel } from "@bindings/index";

@@ -1,23 +1,23 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
-import { RotateCcw } from "lucide-react";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
 import ConfigSelect from "@components/config/ConfigSelect";
+import ConfigTitlebar from "@components/config/ConfigTitlebar";
 
-import {
-  BluetoothConfigInput,
-  configSliceActions,
-} from "@features/config/slice";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
+import {
+  BluetoothConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -49,7 +49,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
   );
 
   const [fixedPinDisabled, setFixedPinDisabled] = useState(
-    device?.config.bluetooth?.mode != 1 ?? true,
+    device?.config.bluetooth?.mode !== 1 ?? true,
   );
 
   const defaultValues = useMemo(
@@ -63,7 +63,7 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
 
   const updateStateFlags = (d: DeepPartial<BluetoothConfigInput>) => {
     setBluetoothDisabled(!d.enabled);
-    setFixedPinDisabled(d.mode != 1);
+    setFixedPinDisabled(d.mode !== 1);
   };
 
   useEffect(() => {

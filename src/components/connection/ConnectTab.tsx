@@ -1,7 +1,6 @@
-import React from "react";
-import * as Tabs from "@radix-ui/react-tabs";
-import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import DefaultTooltip from "@components/DefaultTooltip";
+import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import * as Tabs from "@radix-ui/react-tabs";
 
 export interface IConnectTabProps {
   value: string;

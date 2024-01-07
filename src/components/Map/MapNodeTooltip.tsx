@@ -1,5 +1,4 @@
 import type { PickingInfo } from "deck.gl/typed";
-import React from "react";
 import { useSelector } from "react-redux";
 
 import { selectNodeById } from "@features/device/selectors";

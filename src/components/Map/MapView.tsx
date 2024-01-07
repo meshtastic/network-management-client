@@ -1,37 +1,37 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { GeoJsonLayer, PickingInfo } from "deck.gl/typed";
 import {
   CollisionFilterExtension,
   PathStyleExtension,
 } from "@deck.gl/extensions/typed";
-import maplibregl from "maplibre-gl";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
+import * as Dialog from "@radix-ui/react-dialog";
+import * as Separator from "@radix-ui/react-separator";
+import { invoke } from "@tauri-apps/api/tauri";
+import { GeoJsonLayer, PickingInfo } from "deck.gl/typed";
+import { MapPin, X } from "lucide-react";
+import maplibregl from "maplibre-gl";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
+  LngLat,
   Map,
+  MapLayerMouseEvent,
+  Marker,
   NavigationControl,
   ScaleControl,
-  ViewStateChangeEvent,
-  MapLayerMouseEvent,
   ViewState,
+  ViewStateChangeEvent,
   useControl,
-  Marker,
-  LngLat,
 } from "react-map-gl";
-import { invoke } from "@tauri-apps/api/tauri";
+import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "react-use";
-import * as Separator from "@radix-ui/react-separator";
-import * as Dialog from "@radix-ui/react-dialog";
-import { MapPin, X } from "lucide-react";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
+import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 // * Note: hiding until reimplementation
 // import AnalyticsPane from "@components/Map/AnalyticsPane";
 // import MapInteractionPane from "@components/Map/MapInteractionPane";
 import NodeSearchDock from "@components/NodeSearch/NodeSearchDock";
-import MapSelectedNodeMenu from "@components/Map/MapSelectedNodeMenu";
 
 import CreateWaypointDialog from "@components/Map/CreateWaypointDialog";
 import MapContextOption from "@components/Map/MapContextOption";
@@ -323,7 +323,7 @@ export const MapView = () => {
         </Map>
 
         {/* Popups */}
-        {showInfoPane == "waypoint" ? (
+        {showInfoPane === "waypoint" ? (
           <WaypointMenu
             editWaypoint={(w) => {
               setWaypointDialogOpen(true);

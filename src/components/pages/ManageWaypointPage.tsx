@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 

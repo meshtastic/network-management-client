@@ -7,9 +7,9 @@ import type {
 } from "@bindings/index";
 
 import type {
-  IRadioConfigState,
-  IModuleConfigState,
   ChannelConfigInput,
+  IModuleConfigState,
+  IRadioConfigState,
 } from "@features/config/slice";
 
 export const selectCurrentRadioConfig =

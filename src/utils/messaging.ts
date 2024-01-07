@@ -1,9 +1,9 @@
 import i18next from "@app/i18n";
 
 import type {
-  app_device_MeshChannel,
-  app_device_ChannelMessageWithState,
   app_device_ChannelMessagePayload,
+  app_device_ChannelMessageWithState,
+  app_device_MeshChannel,
   app_device_NormalizedWaypoint,
 } from "@bindings/index";
 import { formatLocation } from "@utils/map";
@@ -28,7 +28,7 @@ export const formatMessageUsername = (
   ownNodeId: number,
   from: number,
 ): { displayText: string; isSelf: boolean } => {
-  if (from === 0 || from == ownNodeId) {
+  if (from === 0 || from === ownNodeId) {
     return { displayText: "You", isSelf: true };
   }
   if (!longName) return { displayText: `${from}`, isSelf: false };

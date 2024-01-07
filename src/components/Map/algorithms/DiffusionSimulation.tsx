@@ -1,6 +1,5 @@
-import React from "react";
-import { LastRan, AlgorithmSelector } from "./CommonComps";
 import { DiffSimTotalChartTimeline } from "./Chart";
+import { AlgorithmSelector, LastRan } from "./CommonComps";
 
 export interface DiffusionSimulationInterface {
   diffusionCentrality: Map<string, Map<string, Map<string, number>>>;

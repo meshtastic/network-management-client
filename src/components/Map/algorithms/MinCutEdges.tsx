@@ -1,7 +1,6 @@
-import React from "react";
 import {
-  LastRan,
   AlgorithmSelector,
+  LastRan,
 } from "@components/Map/algorithms/CommonComps";
 
 export interface MincutEdgesInterface {

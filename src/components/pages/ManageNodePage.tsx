@@ -1,14 +1,14 @@
-import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
 import TimeAgo from "timeago-react";
 
 import type { app_device_MeshNode } from "@bindings/index";
 
 import TableLayout from "@components/Table/TableLayout";
 import { selectAllNodes } from "@features/device/selectors";
-import { getLastHeardTime } from "@utils/nodes";
 import { formatLocation } from "@utils/map";
+import { getLastHeardTime } from "@utils/nodes";
 import { useTranslation } from "react-i18next";
 
 const ManageNodePage = () => {
@@ -65,7 +65,7 @@ const ManageNodePage = () => {
           const batteryLevel = n.deviceMetrics.at(-1)?.metrics.batteryLevel;
           const batteryVoltage = n.deviceMetrics.at(-1)?.metrics.voltage;
 
-          if (!batteryLevel || !batteryVoltage)
+          if (!(batteryLevel && batteryVoltage))
             return t("manageNodes.noBatteryInfo");
           return `${batteryVoltage.toPrecision(4)}V (${batteryLevel}%)`;
         },

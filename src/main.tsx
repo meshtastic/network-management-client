@@ -1,9 +1,9 @@
+import { listen } from "@tauri-apps/api/event";
 import React, { Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { Provider } from "react-redux";
-import { listen } from "@tauri-apps/api/event";
-import { BrowserRouter } from "react-router-dom";
 import { MapProvider } from "react-map-gl";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 
 import App from "@app/App";
 import { store } from "@store/index";

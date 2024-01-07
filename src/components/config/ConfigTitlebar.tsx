@@ -26,7 +26,7 @@ const ConfigTitle = ({
   children,
 }: IConfigTitleProps) => {
   return (
-    <div className={`flex flex-col w-full h-full bg-gray-100 dark:bg-gray-700`}>
+    <div className={"flex flex-col w-full h-full bg-gray-100 dark:bg-gray-700"}>
       <div className="flex-initial flex flex-row justify-between items-center px-9 min-h-[5rem] h-20 bg-white dark:bg-gray-800 border-b border-l border-gray-100 dark:border-gray-700">
         <div>
           <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">

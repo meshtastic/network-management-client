@@ -1,15 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm, DeepPartial } from "react-hook-form";
 import { RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { DeepPartial, useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
 import ConfigInput from "@components/config/ConfigInput";
 import ConfigSelect from "@components/config/ConfigSelect";
+import ConfigTitlebar from "@components/config/ConfigTitlebar";
 
-import type { AudioModuleConfigInput } from "@features/config/slice";
 // import {
 //   AudioModuleConfigInput,
 //   configSliceActions,
@@ -18,6 +17,7 @@ import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
 } from "@features/config/selectors";
+import type { AudioModuleConfigInput } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";

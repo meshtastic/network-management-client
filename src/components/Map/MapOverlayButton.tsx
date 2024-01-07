@@ -1,7 +1,7 @@
+import type { TooltipContentProps } from "@radix-ui/react-tooltip";
 import type React from "react";
 import type { ReactNode } from "react";
 import DefaultTooltip from "../DefaultTooltip";
-import type { TooltipContentProps } from "@radix-ui/react-tooltip";
 
 export interface IMapIconButtonProps {
   children: ReactNode;

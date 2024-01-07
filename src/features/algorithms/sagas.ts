@@ -3,8 +3,8 @@ import { all, call, put, takeEvery } from "redux-saga/effects";
 
 import { requestRunAllAlgorithms } from "@features/algorithms/actions";
 import {
-  algorithmsSliceActions,
   IAlgorithmsState,
+  algorithmsSliceActions,
 } from "@features/algorithms/slice";
 import { requestSliceActions } from "@features/requests/slice";
 

@@ -1,4 +1,3 @@
-import React from "react";
 import type { PickingInfo } from "deck.gl/typed";
 
 export interface IMapEdgeTooltip {

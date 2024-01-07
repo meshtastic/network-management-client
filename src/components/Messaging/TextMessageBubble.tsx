@@ -1,22 +1,21 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { MapIcon } from "lucide-react";
 import maplibregl from "maplibre-gl";
 // biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
 import { Map, ScaleControl } from "react-map-gl";
-import { MapIcon } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import i18next from "@app/i18n";
 
 import type { app_device_ChannelMessageWithState } from "@bindings/index";
 
-import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 import MapOverlayButton from "@components/Map/MapOverlayButton";
+import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
 import {
-  selectUserByNodeId,
   selectConnectedDeviceNodeId,
+  selectUserByNodeId,
 } from "@features/device/selectors";
 import { uiSliceActions } from "@features/ui/slice";
 

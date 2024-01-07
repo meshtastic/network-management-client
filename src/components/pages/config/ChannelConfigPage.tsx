@@ -1,16 +1,16 @@
-import React, { useLayoutEffect, useMemo, useState } from "react";
+import { Upload } from "lucide-react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import { Upload } from "lucide-react";
 
 import ConfigLayout from "@components/config/ConfigLayout";
 import ConfigOption from "@components/config/ConfigOption";
 import ChannelConfigDetail from "@components/config/channel/ChannelConfigDetail";
 
 import { requestCommitConfig } from "@features/config/actions";
-import type { ChannelConfigInput } from "@features/config/slice";
 import { selectEditedAllChannelConfig } from "@features/config/selectors";
+import type { ChannelConfigInput } from "@features/config/slice";
 import { selectDeviceChannels } from "@features/device/selectors";
 
 import { getCurrentConfigFromMeshChannel } from "@utils/form";
@@ -25,7 +25,7 @@ const getNumberOfPendingChanges = (
 
   return Object.entries(editedChannelConfig ?? {}).reduce(
     (accum, [editedConfigKey, editedConfigValue]) => {
-      if (editedConfigValue == undefined) return accum; // ! Need to allow falsy values
+      if (editedConfigValue === undefined) return accum; // ! Need to allow falsy values
 
       const currentFieldValue =
         (currentChannelConfig as Record<string, any>)?.[editedConfigKey] ??
@@ -69,7 +69,7 @@ const ChannelConfigPage = () => {
     if (!channelId) return;
     const parsedChannelId = parseInt(channelId);
 
-    if (isNaN(parsedChannelId)) return;
+    if (Number.isNaN(parsedChannelId)) return;
     setActiveChannelIndex(parsedChannelId);
   }, [channelId]);
 

@@ -1,7 +1,5 @@
-import React from "react";
-
-import SelectedWaypoint from "@app/assets/waypoints/waypoint_selected.svg";
 import DefaultWaypoint from "@app/assets/waypoints/waypoint_default.svg";
+import SelectedWaypoint from "@app/assets/waypoints/waypoint_selected.svg";
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
 // File contains the waypoint icon and interface for two booleans that control its appearance

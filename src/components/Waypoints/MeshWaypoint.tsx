@@ -1,4 +1,3 @@
-import React from "react";
 import { Marker, MarkerProps } from "react-map-gl";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";

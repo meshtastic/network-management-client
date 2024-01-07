@@ -1,9 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import merge from "lodash.merge";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import cloneDeep from "lodash.clonedeep";
+import merge from "lodash.merge";
 import type { DeepPartial } from "react-hook-form";
 
 import type {
+  meshtastic_protobufs_Channel,
+  meshtastic_protobufs_ChannelSettings,
   meshtastic_protobufs_config_BluetoothConfig,
   meshtastic_protobufs_config_DeviceConfig,
   meshtastic_protobufs_config_DisplayConfig,
@@ -20,8 +22,6 @@ import type {
   meshtastic_protobufs_module_config_SerialConfig,
   meshtastic_protobufs_module_config_StoreForwardConfig,
   meshtastic_protobufs_module_config_TelemetryConfig,
-  meshtastic_protobufs_Channel,
-  meshtastic_protobufs_ChannelSettings,
 } from "@bindings/index";
 
 export type BluetoothConfigInput = meshtastic_protobufs_config_BluetoothConfig;

@@ -1,11 +1,11 @@
 import type { RootState } from "@app/store";
 
 import type {
+  app_device_MeshChannel,
   app_device_MeshDevice,
   app_device_MeshNode,
-  meshtastic_protobufs_User,
-  app_device_MeshChannel,
   app_device_NormalizedWaypoint,
+  meshtastic_protobufs_User,
 } from "@bindings/index";
 
 export const selectAvailablePorts =

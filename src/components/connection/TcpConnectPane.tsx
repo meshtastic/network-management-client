@@ -1,10 +1,9 @@
-import React from "react";
-import type { FormEventHandler } from "react";
-import { useTranslation } from "react-i18next";
 import {
   EllipsisHorizontalCircleIcon,
   LinkIcon,
 } from "@heroicons/react/24/outline";
+import type { FormEventHandler } from "react";
+import { useTranslation } from "react-i18next";
 
 import ConnectionInput from "@components/connection/ConnectionInput";
 import type { RequestStatus } from "@features/requests/slice";

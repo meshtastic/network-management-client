@@ -1,16 +1,16 @@
-import React, { FormEventHandler, useEffect, useState } from "react";
-import { useTranslation, Trans } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
-import { open } from "@tauri-apps/api/shell";
 import * as Tabs from "@radix-ui/react-tabs";
+import { open } from "@tauri-apps/api/shell";
+import { FormEventHandler, useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 
-import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
 import MeshLogoDark from "@app/assets/Mesh_Logo_Dark.svg";
+import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 
 import ConnectTab from "@components/connection/ConnectTab";
-import TcpConnectPane from "@components/connection/TcpConnectPane";
 import SerialConnectPane from "@components/connection/SerialConnectPane";
+import TcpConnectPane from "@components/connection/TcpConnectPane";
 
 import {
   requestFetchLastTcpConnectionMeta,
@@ -74,13 +74,13 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   };
 
   const activeSocketState = useSelector(
-    selectConnectionStatus(getFullSocketAddress(socketAddress, socketPort)),
+    selectConnectionStatus(getFullSocketAddress(socketAddress, socketPort))
   ) ?? {
     status: "IDLE",
   };
 
   const persistedTCPConnectionMeta = useSelector(
-    selectPersistedTCPConnectionMeta(),
+    selectPersistedTCPConnectionMeta()
   );
 
   const requestPorts = () => {
@@ -94,7 +94,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       requestPersistLastTcpConnectionMeta({
         address: socketAddress,
         port: parseInt(socketPort),
-      }),
+      })
     );
 
     dispatch(
@@ -104,7 +104,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
           socketAddress: getFullSocketAddress(socketAddress, socketPort),
         },
         setPrimary: true,
-      }),
+      })
     );
   };
 
@@ -112,7 +112,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(
       requestSliceActions.clearRequestState({
         name: requestConnectToDevice.type,
-      }),
+      })
     );
     dispatch(connectionSliceActions.clearAllConnectionState());
     requestPorts();
@@ -124,12 +124,12 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       requestConnectToDevice({
         params: { type: ConnectionType.SERIAL, portName, dtr, rts },
         setPrimary: true,
-      }),
+      })
     );
   };
 
   const openExternalLink = (url: string) => () => {
-    void open(url);
+    open(url);
   };
 
   useEffect(() => {
@@ -209,7 +209,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                   <button
                     type="button"
                     onClick={() =>
-                      void open("https://meshtastic.org/docs/introduction")
+                      open("https://meshtastic.org/docs/introduction")
                     }
                     className="hover:cursor-pointer hover:text-gray-600 dark:hover:text-gray-300 underline transition-colors"
                   />
@@ -284,7 +284,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                   type="button"
                   className="hover:underline"
                   onClick={openExternalLink(
-                    "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+                    "https://unsplash.com/@jordansteranka?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
                   )}
                 />
               ),
@@ -293,7 +293,7 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                   type="button"
                   className="hover:underline"
                   onClick={openExternalLink(
-                    "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
+                    "https://unsplash.com/photos/snpFW42KR8I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
                   )}
                 />
               ),

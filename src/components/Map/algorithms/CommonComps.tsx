@@ -1,6 +1,5 @@
-import React from "react";
-import * as Checkbox from "@radix-ui/react-checkbox";
 import { CheckIcon } from "@heroicons/react/24/outline";
+import * as Checkbox from "@radix-ui/react-checkbox";
 
 const LastRan = ({ lastRanMinutes }: { lastRanMinutes: number }) => {
   return (

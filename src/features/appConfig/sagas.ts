@@ -3,8 +3,8 @@ import { Store } from "tauri-plugin-store-api";
 
 import {
   requestFetchLastTcpConnectionMeta,
-  requestPersistLastTcpConnectionMeta,
   requestPersistGeneralConfig,
+  requestPersistLastTcpConnectionMeta,
   requestPersistMapConfig,
 } from "@features/appConfig/actions";
 import { ColorMode, appConfigSliceActions } from "@features/appConfig/slice";

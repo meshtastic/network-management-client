@@ -1,5 +1,3 @@
-import React from "react";
-
 export interface IConfigOptionProps {
   title: string;
   subtitle: string;

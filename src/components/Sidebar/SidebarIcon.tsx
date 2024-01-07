@@ -1,6 +1,5 @@
-import React from "react";
-import type { ReactNode } from "react";
 import DefaultTooltip from "@components/DefaultTooltip";
+import type { ReactNode } from "react";
 
 import "@components/Sidebar/Sidebar.css";
 

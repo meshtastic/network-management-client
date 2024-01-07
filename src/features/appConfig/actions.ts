@@ -1,9 +1,9 @@
-import { createAction } from "@reduxjs/toolkit";
 import type {
   IGeneralConfigState,
   IMapConfigState,
   TcpConnectionMeta,
 } from "@features/appConfig/slice";
+import { createAction } from "@reduxjs/toolkit";
 
 export const requestFetchLastTcpConnectionMeta = createAction(
   "@appConfig/fetch-last-tcp-connection-meta",
