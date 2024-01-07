@@ -1,5 +1,18 @@
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import * as Dialog from "@radix-ui/react-dialog";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  Cross2Icon,
+} from "@radix-ui/react-icons";
+import * as Popover from "@radix-ui/react-popover";
+import * as Select from "@radix-ui/react-select";
 import debounce from "lodash.debounce";
+import { Locate, Plus, X } from "lucide-react";
 import maplibregl from "maplibre-gl";
+import moment from "moment";
 import { ChangeEventHandler, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,19 +25,6 @@ import {
   useMap,
 } from "react-map-gl";
 import { useDispatch, useSelector } from "react-redux";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  Cross2Icon,
-} from "@radix-ui/react-icons";
-import * as Popover from "@radix-ui/react-popover";
-import * as Select from "@radix-ui/react-select";
-import { Locate, Plus, X } from "lucide-react";
-import moment from "moment";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 

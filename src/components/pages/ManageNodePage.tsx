@@ -1,8 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import TimeAgo from "timeago-react";
-import { useTranslation } from "react-i18next";
 
 import type { app_device_MeshNode } from "@bindings/index";
 
