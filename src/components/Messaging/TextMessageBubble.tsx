@@ -34,7 +34,7 @@ export interface ITextMessageBubbleProps {
 }
 
 const getAcknowledgementText = (
-  message: app_device_ChannelMessageWithState
+  message: app_device_ChannelMessageWithState,
 ): { text: string; isError: boolean } => {
   if (message.state === "acknowledged") {
     return { text: i18next.t("messaging.transmitting"), isError: false };
@@ -62,7 +62,7 @@ const TextMessageBubble = ({
   const { displayText: usernameDisplayText, isSelf } = formatMessageUsername(
     user?.longName,
     ownNodeId ?? 0,
-    packet.from
+    packet.from,
   );
 
   const handleShowOnMapClick = () => {

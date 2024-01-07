@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Upload } from "lucide-react";
 
-import type { app_protobufs_LocalModuleConfig } from "@app/bindings";
+import type { meshtastic_protobufs_LocalModuleConfig } from "@app/bindings";
 import i18next from "@app/i18n";
 
 import ConfigLayout from "@components/config/ConfigLayout";
@@ -75,7 +75,7 @@ const _ActiveDetailView = ({
 };
 
 const getNumberOfPendingChanges = (
-  currentModuleConfig: app_protobufs_LocalModuleConfig | null,
+  currentModuleConfig: meshtastic_protobufs_LocalModuleConfig | null,
   editedModuleConfig: IModuleConfigState,
   configKey: keyof IModuleConfigState,
 ): number => {

@@ -28,7 +28,7 @@ export interface IRemoteHardwareConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseRemoteHardwareModuleConfigInput = (
-  d: DeepPartial<RemoteHardwareModuleConfigInput>
+  d: DeepPartial<RemoteHardwareModuleConfigInput>,
 ): DeepPartial<RemoteHardwareModuleConfigInput> => ({
   ...d,
 });
@@ -52,13 +52,13 @@ const RemoteHardwareConfigPage = ({
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.remoteHardware ?? undefined,
-        editedConfig.remoteHardware ?? undefined
+        editedConfig.remoteHardware ?? undefined,
       ),
-    []
+    [],
   );
 
   const updateStateFlags = (
-    d: DeepPartial<RemoteHardwareModuleConfigInput>
+    d: DeepPartial<RemoteHardwareModuleConfigInput>,
   ) => {
     return d; // TODO placeholder
   };
@@ -84,13 +84,13 @@ const RemoteHardwareConfigPage = ({
           const data = parseRemoteHardwareModuleConfigInput(d);
           updateStateFlags(data);
           dispatch(
-            configSliceActions.updateModuleConfig({ remoteHardware: data })
+            configSliceActions.updateModuleConfig({ remoteHardware: data }),
           );
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

@@ -25,14 +25,14 @@ export interface IPowerConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parsePowerConfigInput = (
-  d: DeepPartial<PowerConfigInput>
+  d: DeepPartial<PowerConfigInput>,
 ): DeepPartial<PowerConfigInput> => ({
   ...d,
   onBatteryShutdownAfterSecs: parseInt(
-    d.onBatteryShutdownAfterSecs as unknown as string
+    d.onBatteryShutdownAfterSecs as unknown as string,
   ),
   adcMultiplierOverride: parseFloat(
-    d.adcMultiplierOverride as unknown as string
+    d.adcMultiplierOverride as unknown as string,
   ),
   waitBluetoothSecs: parseInt(d.waitBluetoothSecs as unknown as string),
   meshSdsTimeoutSecs: parseInt(d.meshSdsTimeoutSecs as unknown as string),
@@ -54,9 +54,9 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
     () =>
       getDefaultConfigInput(
         device?.config.power ?? undefined,
-        editedConfig.power ?? undefined
+        editedConfig.power ?? undefined,
       ),
-    []
+    [],
   );
 
   const {
@@ -76,9 +76,9 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ power: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

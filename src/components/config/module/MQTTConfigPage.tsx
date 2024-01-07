@@ -28,7 +28,7 @@ export interface IMQTTConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseMQTTModuleConfigInput = (
-  d: DeepPartial<MQTTModuleConfigInput>
+  d: DeepPartial<MQTTModuleConfigInput>,
 ): DeepPartial<MQTTModuleConfigInput> => ({
   ...d,
 });
@@ -43,16 +43,16 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.mqtt?.enabled ?? true
+    !device?.moduleConfig.mqtt?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.mqtt ?? undefined,
-        editedConfig.mqtt ?? undefined
+        editedConfig.mqtt ?? undefined,
       ),
-    []
+    [],
   );
 
   const updateStateFlags = (d: DeepPartial<MQTTModuleConfigInput>) => {
@@ -82,9 +82,9 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
           dispatch(configSliceActions.updateModuleConfig({ mqtt: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

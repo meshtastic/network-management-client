@@ -7,7 +7,7 @@ import en from "@app/locales/en/translation.json";
 use(LanguageDetector);
 use(initReactI18next);
 
-void init({
+init({
   debug: true,
   fallbackLng: "en",
   defaultNS: "translation",

@@ -25,7 +25,7 @@ export interface IDeviceConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseDeviceConfigInput = (
-  d: DeepPartial<DeviceConfigInput>
+  d: DeepPartial<DeviceConfigInput>,
 ): DeepPartial<DeviceConfigInput> => ({
   ...d,
   nodeInfoBroadcastSecs: parseInt(d.nodeInfoBroadcastSecs as unknown as string),
@@ -46,9 +46,9 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
     () =>
       getDefaultConfigInput(
         device?.config.device ?? undefined,
-        editedConfig.device ?? undefined
+        editedConfig.device ?? undefined,
       ),
-    []
+    [],
   );
 
   const {
@@ -68,9 +68,9 @@ const DeviceConfigPage = ({ className = "" }: IDeviceConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ device: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

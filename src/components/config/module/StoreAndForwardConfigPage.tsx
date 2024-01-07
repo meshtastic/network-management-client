@@ -28,7 +28,7 @@ export interface IStoreAndForwardConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseStoreAndForwardModuleConfigInput = (
-  d: DeepPartial<StoreForwardModuleConfigInput>
+  d: DeepPartial<StoreForwardModuleConfigInput>,
 ): DeepPartial<StoreForwardModuleConfigInput> => ({
   ...d,
   records: parseInt(d.records as unknown as string),
@@ -48,16 +48,16 @@ const StoreAndForwardConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.serial?.enabled ?? true
+    !device?.moduleConfig.serial?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.storeForward ?? undefined,
-        editedConfig.storeForward ?? undefined
+        editedConfig.storeForward ?? undefined,
       ),
-    []
+    [],
   );
 
   const updateStateFlags = (d: DeepPartial<StoreForwardModuleConfigInput>) => {
@@ -85,13 +85,13 @@ const StoreAndForwardConfigPage = ({
           const data = parseStoreAndForwardModuleConfigInput(d);
           updateStateFlags(data);
           dispatch(
-            configSliceActions.updateModuleConfig({ storeForward: data })
+            configSliceActions.updateModuleConfig({ storeForward: data }),
           );
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

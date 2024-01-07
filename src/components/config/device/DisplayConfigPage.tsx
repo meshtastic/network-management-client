@@ -25,11 +25,11 @@ export interface IDisplayConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseDisplayConfigInput = (
-  d: DeepPartial<DisplayConfigInput>
+  d: DeepPartial<DisplayConfigInput>,
 ): DeepPartial<DisplayConfigInput> => ({
   ...d,
   autoScreenCarouselSecs: parseInt(
-    d.autoScreenCarouselSecs as unknown as string
+    d.autoScreenCarouselSecs as unknown as string,
   ),
   screenOnSecs: parseInt(d.screenOnSecs as unknown as string),
   displaymode: parseInt(d.displaymode as unknown as string),
@@ -51,9 +51,9 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
     () =>
       getDefaultConfigInput(
         device?.config.display ?? undefined,
-        editedConfig.display ?? undefined
+        editedConfig.display ?? undefined,
       ),
-    []
+    [],
   );
 
   const {
@@ -73,9 +73,9 @@ const DisplayConfigPage = ({ className = "" }: IDisplayConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ display: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

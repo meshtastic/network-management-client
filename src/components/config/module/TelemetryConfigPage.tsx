@@ -28,12 +28,12 @@ export interface ITelemetryConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseTelemetryModuleConfigInput = (
-  d: DeepPartial<TelemetryModuleConfigInput>
+  d: DeepPartial<TelemetryModuleConfigInput>,
 ): DeepPartial<TelemetryModuleConfigInput> => ({
   ...d,
   deviceUpdateInterval: parseInt(d.deviceUpdateInterval as unknown as string),
   environmentUpdateInterval: parseInt(
-    d.environmentUpdateInterval as unknown as string
+    d.environmentUpdateInterval as unknown as string,
   ),
   airQualityInterval: parseInt(d.airQualityInterval as unknown as string),
 });
@@ -48,20 +48,20 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [airQualityDisabled, setAirQualityDisabled] = useState(
-    !device?.moduleConfig.telemetry?.airQualityEnabled ?? true
+    !device?.moduleConfig.telemetry?.airQualityEnabled ?? true,
   );
 
   const [envMeasurementDisabled, setEnvMeasurementDisabled] = useState(
-    !device?.moduleConfig.telemetry?.environmentMeasurementEnabled ?? true
+    !device?.moduleConfig.telemetry?.environmentMeasurementEnabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.telemetry ?? undefined,
-        editedConfig.telemetry ?? undefined
+        editedConfig.telemetry ?? undefined,
       ),
-    []
+    [],
   );
 
   const updateStateFlags = (d: DeepPartial<TelemetryModuleConfigInput>) => {
@@ -92,9 +92,9 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
           dispatch(configSliceActions.updateModuleConfig({ telemetry: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

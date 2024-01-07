@@ -28,7 +28,7 @@ export interface IBluetoothConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseBluetoothConfigInput = (
-  d: DeepPartial<BluetoothConfigInput>
+  d: DeepPartial<BluetoothConfigInput>,
 ): DeepPartial<BluetoothConfigInput> => ({
   ...d,
   fixedPin: d.fixedPin ? parseInt(d.fixedPin as unknown as string) : undefined,
@@ -45,20 +45,20 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [bluetoothDisabled, setBluetoothDisabled] = useState(
-    !device?.config.bluetooth?.enabled ?? true
+    !device?.config.bluetooth?.enabled ?? true,
   );
 
   const [fixedPinDisabled, setFixedPinDisabled] = useState(
-    device?.config.bluetooth?.mode != 1 ?? true
+    device?.config.bluetooth?.mode != 1 ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.config.bluetooth ?? undefined,
-        editedConfig.bluetooth ?? undefined
+        editedConfig.bluetooth ?? undefined,
       ),
-    []
+    [],
   );
 
   const updateStateFlags = (d: DeepPartial<BluetoothConfigInput>) => {
@@ -89,9 +89,9 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
           dispatch(configSliceActions.updateRadioConfig({ bluetooth: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

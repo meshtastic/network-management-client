@@ -116,7 +116,7 @@ const Sidebar = () => {
             <SidebarIcon
               name={t("sidebar.configureChannels")}
               isActive={location.pathname.includes(
-                AppRoutes.CONFIGURE_CHANNELS
+                AppRoutes.CONFIGURE_CHANNELS,
               )}
               isSidebarExpanded={isSidebarExpanded}
               onClick={() => navigateTo(AppRoutes.CONFIGURE_CHANNELS)}

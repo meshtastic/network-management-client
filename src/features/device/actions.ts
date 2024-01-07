@@ -1,7 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
 
 import type {
-  app_protobufs_User,
+  meshtastic_protobufs_User,
   app_device_NormalizedWaypoint,
 } from "@bindings/index";
 
@@ -17,13 +17,13 @@ export const requestInitializeApplication = createAction(
 
 export const requestConnectToDevice = createAction<{
   params:
-  | {
-    type: ConnectionType.SERIAL;
-    portName: string;
-    dtr: boolean;
-    rts: boolean;
-  }
-  | { type: ConnectionType.TCP; socketAddress: string };
+    | {
+        type: ConnectionType.SERIAL;
+        portName: string;
+        dtr: boolean;
+        rts: boolean;
+      }
+    | { type: ConnectionType.TCP; socketAddress: string };
   setPrimary: boolean;
 }>("@device/request-connect");
 
@@ -43,7 +43,7 @@ export const requestSendMessage = createAction<{
 
 export const requestUpdateUser = createAction<{
   deviceKey: string;
-  user: app_protobufs_User;
+  user: meshtastic_protobufs_User;
 }>("@device/update-device-user");
 
 export const requestSendWaypoint = createAction<{

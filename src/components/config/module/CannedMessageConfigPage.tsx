@@ -28,7 +28,7 @@ export interface ICannedMessageConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseCannedMessageModuleConfigInput = (
-  d: DeepPartial<CannedMessageModuleConfigInput>
+  d: DeepPartial<CannedMessageModuleConfigInput>,
 ): DeepPartial<CannedMessageModuleConfigInput> => ({
   ...d,
   inputbrokerPinA: parseInt(d.inputbrokerPinA as unknown as string),
@@ -51,16 +51,16 @@ const CannedMessageConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.cannedMessage?.enabled ?? true
+    !device?.moduleConfig.cannedMessage?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.cannedMessage ?? undefined,
-        editedConfig.cannedMessage ?? undefined
+        editedConfig.cannedMessage ?? undefined,
       ),
-    []
+    [],
   );
 
   const updateStateFlags = (d: DeepPartial<CannedMessageModuleConfigInput>) => {
@@ -88,13 +88,13 @@ const CannedMessageConfigPage = ({
           const data = parseCannedMessageModuleConfigInput(d);
           updateStateFlags(data);
           dispatch(
-            configSliceActions.updateModuleConfig({ cannedMessage: data })
+            configSliceActions.updateModuleConfig({ cannedMessage: data }),
           );
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

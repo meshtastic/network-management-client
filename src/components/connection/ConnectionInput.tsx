@@ -17,7 +17,7 @@ const ConnectionInput = forwardRef<HTMLInputElement, IConnectionInputProps>(
         ref={ref}
       />
     );
-  }
+  },
 );
 
 export default ConnectionInput;

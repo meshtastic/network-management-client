@@ -28,7 +28,7 @@ export interface IRangeTestConfigPageProps {
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
 const parseRangeTestModuleConfigInput = (
-  d: DeepPartial<RangeTestModuleConfigInput>
+  d: DeepPartial<RangeTestModuleConfigInput>,
 ): DeepPartial<RangeTestModuleConfigInput> => ({
   ...d,
   sender: parseInt(d.sender as unknown as string),
@@ -44,16 +44,16 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.rangeTest?.enabled ?? true
+    !device?.moduleConfig.rangeTest?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
     () =>
       getDefaultConfigInput(
         device?.moduleConfig.rangeTest ?? undefined,
-        editedConfig.rangeTest ?? undefined
+        editedConfig.rangeTest ?? undefined,
       ),
-    []
+    [],
   );
 
   const updateStateFlags = (d: DeepPartial<RangeTestModuleConfigInput>) => {
@@ -83,9 +83,9 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
           dispatch(configSliceActions.updateModuleConfig({ rangeTest: data }));
         },
         500,
-        { leading: true }
+        { leading: true },
       ),
-    []
+    [],
   );
 
   useEffect(() => {

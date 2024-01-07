@@ -20,7 +20,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Filler,
-  Legend
+  Legend,
 );
 
 export const options = {
@@ -156,7 +156,7 @@ function convertToDataFormat() {
 
   // sort by value and assign color from left to right
   const sorted = new Map(
-    [...node_to_time_values.entries()].sort((a, b) => b[1][0] - a[1][0])
+    [...node_to_time_values.entries()].sort((a, b) => b[1][0] - a[1][0]),
   );
   let i = 0;
   for (const [node_name, values] of sorted) {
@@ -191,7 +191,7 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const updated_hex = hex.replace(
     shorthandRegex,
     (m: string, r: string, g: string, b: string): string =>
-      r + r + g + g + b + b
+      r + r + g + g + b + b,
   );
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(updated_hex);

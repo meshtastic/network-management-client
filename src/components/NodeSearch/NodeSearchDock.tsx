@@ -112,7 +112,7 @@ const NodeSearchDock = () => {
       getFlyToConfig({
         lat: nodePosition.latitude,
         lng: nodePosition.longitude,
-      })
+      }),
     );
   };
 

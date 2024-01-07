@@ -22,7 +22,7 @@ const WaypointIcon = ({ waypoint, isSelected }: IWaypointProps) => {
       />
       {!!waypoint.icon && (
         <p className="absolute top-0 left-1/2 -translate-x-1/2 text-xl text-center select-none">{`${String.fromCodePoint(
-          waypoint.icon
+          waypoint.icon,
         )}`}</p>
       )}
     </div>
