@@ -2,16 +2,16 @@ import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 
-import ChannelDetailView from "@components/Messaging/ChannelDetailView";
-import ChannelListElement from "@components/Messaging/ChannelListElement";
-import ConfigLayout from "@components/config/ConfigLayout";
+import { ChannelDetailView } from "@components/Messaging/ChannelDetailView";
+import { ChannelListElement } from "@components/Messaging/ChannelListElement";
+import { ConfigLayout } from "@components/config/ConfigLayout";
 
 import { selectDeviceChannels } from "@features/device/selectors";
 import { AppRoutes } from "@utils/routing";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-const MessagingPage = () => {
+export const MessagingPage = () => {
   const { t } = useTranslation();
 
   const channels = useSelector(selectDeviceChannels());
@@ -55,5 +55,3 @@ const MessagingPage = () => {
     </div>
   );
 };
-
-export default MessagingPage;

@@ -11,7 +11,7 @@ export interface IMeshLogoProps {
   isSidebarExpanded: boolean;
 }
 
-const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
+export const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
   const { t } = useTranslation();
 
   const { isDarkMode } = useIsDarkMode();
@@ -37,5 +37,3 @@ const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
     </div>
   );
 };
-
-export default SidebarLogo;

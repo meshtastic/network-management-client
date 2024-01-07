@@ -5,7 +5,7 @@ import {
 import type { FormEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 
-import ConnectionInput from "@components/connection/ConnectionInput";
+import { ConnectionInput } from "@components/connection/ConnectionInput";
 import type { RequestStatus } from "@features/requests/slice";
 
 export interface ITcpConnectPaneProps {
@@ -17,7 +17,7 @@ export interface ITcpConnectPaneProps {
   handleSocketConnect: FormEventHandler;
 }
 
-const TcpConnectPane = ({
+export const TcpConnectPane = ({
   socketAddress,
   setSocketAddress,
   socketPort,
@@ -77,5 +77,3 @@ const TcpConnectPane = ({
     </form>
   );
 };
-
-export default TcpConnectPane;

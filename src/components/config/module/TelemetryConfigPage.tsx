@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -38,7 +38,9 @@ const parseTelemetryModuleConfigInput = (
   airQualityInterval: parseInt(d.airQualityInterval as unknown as string),
 });
 
-const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
+export const TelemetryConfigPage = ({
+  className = "",
+}: ITelemetryConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -176,5 +178,3 @@ const TelemetryConfigPage = ({ className = "" }: ITelemetryConfigPageProps) => {
     </div>
   );
 };
-
-export default TelemetryConfigPage;

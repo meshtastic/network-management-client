@@ -12,7 +12,6 @@ import {
   useMap,
 } from "react-map-gl";
 import { useDispatch, useSelector } from "react-redux";
-
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -29,10 +28,10 @@ import moment from "moment";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import MapOverlayButton from "@components/Map/MapOverlayButton";
-import MeshWaypoint from "@components/Waypoints/MeshWaypoint";
-import ConnectionInput from "@components/connection/ConnectionInput";
-import ConnectionSwitch from "@components/connection/ConnectionSwitch";
+import { MapOverlayButton } from "@components/Map/MapOverlayButton";
+import { MeshWaypoint } from "@components/Waypoints/MeshWaypoint";
+import { ConnectionInput } from "@components/connection/ConnectionInput";
+import { ConnectionSwitch } from "@components/connection/ConnectionSwitch";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
 import { requestSendWaypoint } from "@features/device/actions";
@@ -68,7 +67,7 @@ export interface ICreateWaypointDialogProps {
 }
 
 // Needs to be rendered within a MapProvider component
-const CreateWaypointDialog = ({
+export const CreateWaypointDialog = ({
   lngLat,
   closeDialog,
   existingWaypoint,
@@ -573,5 +572,3 @@ const CreateWaypointDialog = ({
     </Dialog.Portal>
   );
 };
-
-export default CreateWaypointDialog;

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import DefaultTooltip from "@components/DefaultTooltip";
-import NavigationBacktrace from "@components/NavigationBacktrace";
+import { DefaultTooltip } from "@components/DefaultTooltip";
+import { NavigationBacktrace } from "@components/NavigationBacktrace";
 
 export interface IConfigLayoutProps {
   title: string;
@@ -13,7 +13,7 @@ export interface IConfigLayoutProps {
   children: ReactNode;
 }
 
-const ConfigLayout = ({
+export const ConfigLayout = ({
   title,
   backtrace,
   renderTitleIcon,
@@ -56,5 +56,3 @@ const ConfigLayout = ({
     </div>
   );
 };
-
-export default ConfigLayout;

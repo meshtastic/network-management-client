@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -38,7 +38,7 @@ const parseExternalNotificationModuleConfigInput = (
   nagTimeout: parseInt(d.nagTimeout as unknown as string),
 });
 
-const ExternalNotificationConfigPage = ({
+export const ExternalNotificationConfigPage = ({
   className = "",
 }: IExternalNotificationConfigPageProps) => {
   const { t } = useTranslation();
@@ -255,5 +255,3 @@ const ExternalNotificationConfigPage = ({
     </div>
   );
 };
-
-export default ExternalNotificationConfigPage;

@@ -3,6 +3,7 @@ import { resolve } from "path";
 
 import react from "@vitejs/plugin-react";
 
+// biome-ignore lint/nursery/noDefaultExport: Required for Vite configuration
 export default defineConfig({
   plugins: [react()],
   // prevent vite from obscuring rust errors

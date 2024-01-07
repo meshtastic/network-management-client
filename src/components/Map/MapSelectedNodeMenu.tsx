@@ -13,7 +13,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import TimeAgo from "timeago-react";
 
-import i18next from "@app/i18n";
+import { i18next } from "@app/i18n";
 
 import { selectActiveNode } from "@features/ui/selectors";
 import { uiSliceActions } from "@features/ui/slice";
@@ -58,7 +58,7 @@ const getBatteryStateString = (batteryLevel: number | null) => {
   return i18next.t("map.panes.nodeInfo.battery.discharging", { batteryLevel });
 };
 
-const MapSelectedNodeMenu = () => {
+export const MapSelectedNodeMenu = () => {
   const { t, i18n } = useTranslation();
 
   useComponentReload(1000);
@@ -177,5 +177,3 @@ const MapSelectedNodeMenu = () => {
     </div>
   );
 };
-
-export default MapSelectedNodeMenu;

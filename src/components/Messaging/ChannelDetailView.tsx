@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 import type { app_device_MeshChannel } from "@bindings/index";
 
-import MessagingInput from "@components/Messaging/MessagingInput";
-import TextMessageBubble from "@components/Messaging/TextMessageBubble";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { MessagingInput } from "@components/Messaging/MessagingInput";
+import { TextMessageBubble } from "@components/Messaging/TextMessageBubble";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import { requestSendMessage } from "@features/device/actions";
 import { selectPrimaryDeviceKey } from "@features/device/selectors";
@@ -19,7 +19,7 @@ export interface IChannelDetailViewProps {
   className?: string;
 }
 
-const ChannelDetailView = ({
+export const ChannelDetailView = ({
   channel,
   className = "",
 }: IChannelDetailViewProps) => {
@@ -80,5 +80,3 @@ const ChannelDetailView = ({
     </div>
   );
 };
-
-export default ChannelDetailView;

@@ -4,7 +4,7 @@ export interface ISplashScreenLogoProps {
   className?: string;
 }
 
-const SplashScreenLogo = ({ className }: ISplashScreenLogoProps) => {
+export const SplashScreenLogo = ({ className }: ISplashScreenLogoProps) => {
   return (
     <svg
       width="163"
@@ -14,6 +14,7 @@ const SplashScreenLogo = ({ className }: ISplashScreenLogoProps) => {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
+      <title>Splash Screen Meshtastic Logo</title>
       <g id="Mesh_Logo_Path_Dark" clipPath="url(#clip0_528_1404)">
         <path
           id="logo-mountain"
@@ -50,5 +51,3 @@ const SplashScreenLogo = ({ className }: ISplashScreenLogoProps) => {
     </svg>
   );
 };
-
-export default SplashScreenLogo;

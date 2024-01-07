@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -39,7 +39,7 @@ const parseCannedMessageModuleConfigInput = (
   inputbrokerEventPress: parseInt(d.inputbrokerEventPress as unknown as string),
 });
 
-const CannedMessageConfigPage = ({
+export const CannedMessageConfigPage = ({
   className = "",
 }: ICannedMessageConfigPageProps) => {
   const { t } = useTranslation();
@@ -224,5 +224,3 @@ const CannedMessageConfigPage = ({
     </div>
   );
 };
-
-export default CannedMessageConfigPage;

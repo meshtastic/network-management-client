@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -34,7 +34,9 @@ const parseRangeTestModuleConfigInput = (
   sender: parseInt(d.sender as unknown as string),
 });
 
-const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
+export const RangeTestConfigPage = ({
+  className = "",
+}: IRangeTestConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -137,5 +139,3 @@ const RangeTestConfigPage = ({ className = "" }: IRangeTestConfigPageProps) => {
     </div>
   );
 };
-
-export default RangeTestConfigPage;

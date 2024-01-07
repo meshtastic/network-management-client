@@ -8,9 +8,9 @@ import MeshLogoDark from "@app/assets/Mesh_Logo_Dark.svg";
 import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
 import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 
-import ConnectTab from "@components/connection/ConnectTab";
-import SerialConnectPane from "@components/connection/SerialConnectPane";
-import TcpConnectPane from "@components/connection/TcpConnectPane";
+import { ConnectTab } from "@components/connection/ConnectTab";
+import { SerialConnectPane } from "@components/connection/SerialConnectPane";
+import { TcpConnectPane } from "@components/connection/TcpConnectPane";
 
 import {
   requestFetchLastTcpConnectionMeta,
@@ -43,7 +43,7 @@ export interface IOnboardPageProps {
   unmountSelf: () => void;
 }
 
-const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
+export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const { t } = useTranslation();
 
   const { isDarkMode } = useIsDarkMode();
@@ -304,4 +304,3 @@ const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     </div>
   );
 };
-export default ConnectPage;

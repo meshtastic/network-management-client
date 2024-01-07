@@ -6,8 +6,8 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 } from "uuid";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import { requestPersistMapConfig } from "@features/appConfig/actions";
 import { selectMapConfigState } from "@features/appConfig/selectors";
@@ -20,7 +20,7 @@ type MapConfigFormInput = {
   style: string;
 };
 
-const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
+export const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -64,5 +64,3 @@ const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
     </div>
   );
 };
-
-export default MapConfigPage;

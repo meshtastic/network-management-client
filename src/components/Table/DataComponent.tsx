@@ -5,7 +5,7 @@ export interface IDataComponent {
   data: string;
 }
 
-const DataComponent = ({ header, category, data }: IDataComponent) => {
+export const DataComponent = ({ header, category, data }: IDataComponent) => {
   switch (header) {
     case "Name":
       switch (data) {
@@ -134,5 +134,3 @@ const DataComponent = ({ header, category, data }: IDataComponent) => {
       return <div />;
   }
 };
-
-export default DataComponent;

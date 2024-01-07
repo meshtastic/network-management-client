@@ -5,18 +5,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import type { meshtastic_protobufs_LocalConfig } from "@app/bindings";
-import i18next from "@app/i18n";
+import { i18next } from "@app/i18n";
 
-import ConfigLayout from "@components/config/ConfigLayout";
-import ConfigOption from "@components/config/ConfigOption";
+import { ConfigLayout } from "@components/config/ConfigLayout";
+import { ConfigOption } from "@components/config/ConfigOption";
 
-import BluetoothConfigPage from "@components/config/device/BluetoothConfigPage";
-import DeviceConfigPage from "@components/config/device/DeviceConfigPage";
-import DisplayConfigPage from "@components/config/device/DisplayConfigPage";
-import LoRaConfigPage from "@components/config/device/LoRaConfigPage";
-import NetworkConfigPage from "@components/config/device/NetworkConfigPage";
-import PositionConfigPage from "@components/config/device/PositionConfigPage";
-import PowerConfigPage from "@components/config/device/PowerConfigPage";
+import { BluetoothConfigPage } from "@components/config/device/BluetoothConfigPage";
+import { DeviceConfigPage } from "@components/config/device/DeviceConfigPage";
+import { DisplayConfigPage } from "@components/config/device/DisplayConfigPage";
+import { LoRaConfigPage } from "@components/config/device/LoRaConfigPage";
+import { NetworkConfigPage } from "@components/config/device/NetworkConfigPage";
+import { PositionConfigPage } from "@components/config/device/PositionConfigPage";
+import { PowerConfigPage } from "@components/config/device/PowerConfigPage";
 
 import { requestCommitConfig } from "@features/config/actions";
 import {
@@ -100,7 +100,7 @@ const getNumberOfPendingChanges = (
   );
 };
 
-const RadioConfigPage = () => {
+export const RadioConfigPage = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -158,5 +158,3 @@ const RadioConfigPage = () => {
     </div>
   );
 };
-
-export default RadioConfigPage;

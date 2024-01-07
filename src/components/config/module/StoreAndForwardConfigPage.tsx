@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -36,7 +36,7 @@ const parseStoreAndForwardModuleConfigInput = (
   historyReturnWindow: parseInt(d.historyReturnWindow as unknown as string),
 });
 
-const StoreAndForwardConfigPage = ({
+export const StoreAndForwardConfigPage = ({
   className = "",
 }: IStoreAndForwardConfigPageProps) => {
   const { t } = useTranslation();
@@ -159,5 +159,3 @@ const StoreAndForwardConfigPage = ({
     </div>
   );
 };
-
-export default StoreAndForwardConfigPage;

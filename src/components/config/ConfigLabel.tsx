@@ -7,7 +7,7 @@ export interface IConfigLabelProps {
   className?: string;
 }
 
-const ConfigLabel = ({
+export const ConfigLabel = ({
   text,
   error = "",
   children,
@@ -25,5 +25,3 @@ const ConfigLabel = ({
     </div>
   );
 };
-
-export default ConfigLabel;

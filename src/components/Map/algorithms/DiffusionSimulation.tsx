@@ -7,7 +7,7 @@ export interface DiffusionSimulationInterface {
   setDiffusion: (checked: boolean) => void;
 }
 
-const DiffusionSimulation = ({
+export const DiffusionSimulation = ({
   diffusionCentrality,
   isDiffusionSet,
   setDiffusion,
@@ -33,5 +33,3 @@ const DiffusionSimulation = ({
     </div>
   );
 };
-
-export default DiffusionSimulation;

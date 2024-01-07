@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 // import {
 //   AudioModuleConfigInput,
@@ -27,7 +27,7 @@ export interface IAudioConfigPageProps {
 }
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
-const parseAudioModuleConfigInput = (
+export const parseAudioModuleConfigInput = (
   d: DeepPartial<AudioModuleConfigInput>,
 ): DeepPartial<AudioModuleConfigInput> => ({
   ...d,
@@ -184,5 +184,3 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
     </div>
   );
 };
-
-export default AudioConfigPage;

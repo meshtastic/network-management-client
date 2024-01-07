@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentChannelConfig,
@@ -36,7 +36,7 @@ const parseChannelConfigInput = (
     d.role !== undefined ? parseInt(d.role as unknown as string) : undefined,
 });
 
-const ChannelConfigDetail = ({
+export const ChannelConfigDetail = ({
   channelNum,
   className = "",
 }: IChannelConfigDetailProps) => {
@@ -184,5 +184,3 @@ const ChannelConfigDetail = ({
     </div>
   );
 };
-
-export default ChannelConfigDetail;

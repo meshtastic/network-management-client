@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentRadioConfig,
@@ -35,7 +35,9 @@ const parseBluetoothConfigInput = (
   mode: d.mode ? parseInt(d.mode as unknown as string) : undefined,
 });
 
-const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
+export const BluetoothConfigPage = ({
+  className = "",
+}: IBluetoothConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -151,5 +153,3 @@ const BluetoothConfigPage = ({ className = "" }: IBluetoothConfigPageProps) => {
     </div>
   );
 };
-
-export default BluetoothConfigPage;

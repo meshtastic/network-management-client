@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -33,7 +33,7 @@ const parseRemoteHardwareModuleConfigInput = (
   ...d,
 });
 
-const RemoteHardwareConfigPage = ({
+export const RemoteHardwareConfigPage = ({
   className = "",
 }: IRemoteHardwareConfigPageProps) => {
   const { t } = useTranslation();
@@ -126,5 +126,3 @@ const RemoteHardwareConfigPage = ({
     </div>
   );
 };
-
-export default RemoteHardwareConfigPage;

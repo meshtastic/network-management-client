@@ -25,7 +25,7 @@ export interface IWaypointMenuProps {
   editWaypoint: (waypoint: app_device_NormalizedWaypoint) => void;
 }
 
-const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
+export const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -217,5 +217,3 @@ const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
     </div>
   );
 };
-
-export default WaypointMenu;

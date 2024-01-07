@@ -6,9 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
 
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigSelect from "@components/config/ConfigSelect";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigSelect } from "@components/config/ConfigSelect";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -38,7 +38,7 @@ const parseSerialModuleConfigInput = (
   timeout: parseInt(d.timeout as unknown as string),
 });
 
-const SerialModuleConfigPage = ({
+export const SerialModuleConfigPage = ({
   className = "",
 }: ISerialModuleConfigPageProps) => {
   const { t } = useTranslation();
@@ -207,5 +207,3 @@ const SerialModuleConfigPage = ({
     </div>
   );
 };
-
-export default SerialModuleConfigPage;

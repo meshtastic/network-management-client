@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentRadioConfig,
@@ -35,13 +35,12 @@ const parsePowerConfigInput = (
     d.adcMultiplierOverride as unknown as string,
   ),
   waitBluetoothSecs: parseInt(d.waitBluetoothSecs as unknown as string),
-  meshSdsTimeoutSecs: parseInt(d.meshSdsTimeoutSecs as unknown as string),
   sdsSecs: parseInt(d.sdsSecs as unknown as string),
   lsSecs: parseInt(d.lsSecs as unknown as string),
   minWakeSecs: parseInt(d.minWakeSecs as unknown as string),
 });
 
-const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
+export const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -133,13 +132,6 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
 
           <ConfigInput
             type="number"
-            text={t("config.radio.power.sdsTimeout")}
-            error={errors.meshSdsTimeoutSecs?.message as string}
-            {...register("meshSdsTimeoutSecs")}
-          />
-
-          <ConfigInput
-            type="number"
             text={t("config.radio.power.sdsInterval")}
             error={errors.sdsSecs?.message as string}
             {...register("sdsSecs")}
@@ -163,5 +155,3 @@ const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
     </div>
   );
 };
-
-export default PowerConfigPage;

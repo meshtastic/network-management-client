@@ -1,5 +1,6 @@
-import DefaultTooltip from "@components/DefaultTooltip";
 import type { ReactNode } from "react";
+
+import { DefaultTooltip } from "@components/DefaultTooltip";
 
 import "@components/Sidebar/Sidebar.css";
 
@@ -11,7 +12,7 @@ export interface ISidebarIconProps {
   children: ReactNode;
 }
 
-const SidebarIcon = ({
+export const SidebarIcon = ({
   name,
   isActive,
   isSidebarExpanded,
@@ -58,5 +59,3 @@ const SidebarIcon = ({
     </DefaultTooltip>
   );
 };
-
-export default SidebarIcon;

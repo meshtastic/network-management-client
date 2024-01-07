@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentRadioConfig,
@@ -45,7 +45,9 @@ const parsePositionConfigInput = (
   ),
 });
 
-const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
+export const PositionConfigPage = ({
+  className = "",
+}: IPositionConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -185,5 +187,3 @@ const PositionConfigPage = ({ className = "" }: IPositionConfigPageProps) => {
     </div>
   );
 };
-
-export default PositionConfigPage;

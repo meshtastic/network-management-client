@@ -2,16 +2,17 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import TimeAgo from "timeago-react";
+import { useTranslation } from "react-i18next";
 
 import type { app_device_MeshNode } from "@bindings/index";
 
-import TableLayout from "@components/Table/TableLayout";
+import { TableLayout } from "@components/Table/TableLayout";
+
 import { selectAllNodes } from "@features/device/selectors";
 import { formatLocation } from "@utils/map";
 import { getLastHeardTime } from "@utils/nodes";
-import { useTranslation } from "react-i18next";
 
-const ManageNodePage = () => {
+export const ManageNodePage = () => {
   const { t, i18n } = useTranslation();
 
   const nodes = useSelector(selectAllNodes());
@@ -83,5 +84,3 @@ const ManageNodePage = () => {
     />
   );
 };
-
-export default ManageNodePage;

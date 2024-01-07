@@ -5,7 +5,7 @@ export interface IConfigOptionProps {
   onClick: () => void;
 }
 
-const ConfigOption = ({
+export const ConfigOption = ({
   title,
   subtitle,
   isActive,
@@ -42,5 +42,3 @@ const ConfigOption = ({
     </button>
   );
 };
-
-export default ConfigOption;

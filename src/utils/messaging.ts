@@ -1,4 +1,4 @@
-import i18next from "@app/i18n";
+import { i18next } from "@app/i18n";
 
 import type {
   app_device_ChannelMessagePayload,

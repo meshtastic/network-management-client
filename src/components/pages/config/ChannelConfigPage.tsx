@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import ConfigLayout from "@components/config/ConfigLayout";
-import ConfigOption from "@components/config/ConfigOption";
-import ChannelConfigDetail from "@components/config/channel/ChannelConfigDetail";
+import { ConfigLayout } from "@components/config/ConfigLayout";
+import { ConfigOption } from "@components/config/ConfigOption";
+import { ChannelConfigDetail } from "@components/config/channel/ChannelConfigDetail";
 
 import { requestCommitConfig } from "@features/config/actions";
 import { selectEditedAllChannelConfig } from "@features/config/selectors";
@@ -47,7 +47,7 @@ const getNumberOfPendingChanges = (
   );
 };
 
-const ChannelConfigPage = () => {
+export const ChannelConfigPage = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -125,5 +125,3 @@ const ChannelConfigPage = () => {
     </div>
   );
 };
-
-export default ChannelConfigPage;

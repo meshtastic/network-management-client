@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash.debounce";
 
 // import ConfigLabel from "@components/config/ConfigLabel";
-import ConfigInput from "@components/config/ConfigInput";
-import ConfigTitlebar from "@components/config/ConfigTitlebar";
+import { ConfigInput } from "@components/config/ConfigInput";
+import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
 import {
   selectCurrentModuleConfig,
@@ -33,7 +33,7 @@ const parseMQTTModuleConfigInput = (
   ...d,
 });
 
-const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
+export const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -168,5 +168,3 @@ const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
     </div>
   );
 };
-
-export default MQTTConfigPage;

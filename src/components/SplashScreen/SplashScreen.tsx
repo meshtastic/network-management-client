@@ -6,7 +6,7 @@ import { loadFull } from "tsparticles";
 import type { Engine } from "tsparticles-engine";
 
 import RainierSplashBackground from "@app/assets/rainier_splash_background.jpg";
-import SplashScreenLogo from "@components/SplashScreen/SplashScreenLogo";
+import { SplashScreenLogo } from "@components/SplashScreen/SplashScreenLogo";
 import { options } from "@components/SplashScreen/SplashScreenParticlesOptions";
 
 import "@components/SplashScreen/SplashScreen.css";
@@ -15,7 +15,7 @@ export interface ISplashScreenProps {
   unmountSelf: () => void;
 }
 
-const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
+export const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
   const [isParticlesLoaded, setParticlesLoaded] = useState(false);
   const [isScreenLoaded, setScreenLoaded] = useState(false);
   const [isScreenActive, setScreenActive] = useState(true);
@@ -136,7 +136,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
                 type="button"
                 className="hover:underline"
                 onClick={openExternalLink(
-                  "https://unsplash.com/@calebriston?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                  "https://unsplash.com/@calebriston?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
                 )}
               />
             ),
@@ -145,7 +145,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
                 type="button"
                 className="hover:underline"
                 onClick={openExternalLink(
-                  "https://unsplash.com/photos/TXiBwX0kg-Q?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+                  "https://unsplash.com/photos/TXiBwX0kg-Q?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText",
                 )}
               />
             ),
@@ -155,5 +155,3 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
     </div>
   );
 };
-
-export default SplashScreen;
