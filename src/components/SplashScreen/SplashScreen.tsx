@@ -24,6 +24,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
     await loadFull(engine);
   }, []);
 
+  // biome-ignore lint/nursery/useAwait: Need an async callback for particlesLoaded
   const particlesLoaded = useCallback(async () => {
     setParticlesLoaded(true);
   }, []);
@@ -79,7 +80,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
       <img
         className="absolute w-full h-full object-cover bg-gray-200 transition-all"
         src={RainierSplashBackground}
-        alt="Photo of Mount Rainier at sunset"
+        alt="Mount Rainier at sunset"
       />
 
       <div
@@ -132,6 +133,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
           components={{
             link1: (
               <button
+                type="button"
                 className="hover:underline"
                 onClick={openExternalLink(
                   "https://unsplash.com/@calebriston?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
@@ -140,6 +142,7 @@ const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
             ),
             link2: (
               <button
+                type="button"
                 className="hover:underline"
                 onClick={openExternalLink(
                   "https://unsplash.com/photos/TXiBwX0kg-Q?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"

@@ -4,7 +4,7 @@ import { ChangeEventHandler, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LngLat,
-  // biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
   MarkerDragEvent,
   NavigationControl,

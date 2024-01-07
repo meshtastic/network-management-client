@@ -8,7 +8,7 @@ import {
   Component,
   FileDigit,
   Mails,
-  // biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
+  // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
   MapPin,
   MessagesSquare,

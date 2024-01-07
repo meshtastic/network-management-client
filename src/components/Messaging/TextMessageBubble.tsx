@@ -1,6 +1,6 @@
 import { MapIcon } from "lucide-react";
 import maplibregl from "maplibre-gl";
-// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
+// biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
 import { Map, ScaleControl } from "react-map-gl";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

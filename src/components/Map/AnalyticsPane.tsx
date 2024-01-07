@@ -56,6 +56,7 @@ const AnalyticsPane = () => {
         </h2>
         <div className="flex flex-row justify-between space-x-6">
           <button
+            type="button"
             className=" border-2 rounded-md px-4 py-1 text-md hover:bg-gray-200 border-gray-300 self-end text-gray-700 font-semibold text-md"
             onClick={requestRunAlgorithms}
           >

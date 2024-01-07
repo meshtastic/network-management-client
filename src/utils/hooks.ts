@@ -13,7 +13,7 @@ export const useComponentReload = (interval: number) => {
   useEffect(() => {
     const intervalHandle = setInterval(() => setTime(Date.now()), interval);
     return () => clearInterval(intervalHandle);
-  }, []);
+  }, [interval]);
 
   return time;
 };
