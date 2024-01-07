@@ -71,6 +71,7 @@ export const CreateWaypointDialog = ({
   lngLat,
   closeDialog,
   existingWaypoint,
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Functional component
 }: ICreateWaypointDialogProps) => {
   const { t } = useTranslation();
 
@@ -175,7 +176,7 @@ export const CreateWaypointDialog = ({
 
   const flyToPosition = useMemo(
     () => (pos: LngLat) => map?.flyTo(getFlyToConfig(pos)),
-    [getFlyToConfig, map],
+    [map],
   );
 
   const handlePositionUpdate = useMemo(
@@ -184,7 +185,7 @@ export const CreateWaypointDialog = ({
         setWaypointPosition(e.lngLat);
         flyToPosition(e.lngLat);
       }, 300),
-    [map],
+    [flyToPosition],
   );
 
   const encodeEmoji = (emoji: string | null): number => {

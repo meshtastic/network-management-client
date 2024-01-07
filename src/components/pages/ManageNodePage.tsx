@@ -72,7 +72,7 @@ export const ManageNodePage = () => {
         },
       },
     ],
-    [nodes],
+    [t, i18n.language],
   );
 
   return (

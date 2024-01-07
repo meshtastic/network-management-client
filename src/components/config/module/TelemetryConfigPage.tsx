@@ -63,7 +63,7 @@ export const TelemetryConfigPage = ({
         device?.moduleConfig.telemetry ?? undefined,
         editedConfig.telemetry ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<TelemetryModuleConfigInput>) => {
@@ -74,7 +74,7 @@ export const TelemetryConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -96,14 +96,15 @@ export const TelemetryConfigPage = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.telemetry) return;

@@ -60,7 +60,7 @@ export const BluetoothConfigPage = ({
         device?.config.bluetooth ?? undefined,
         editedConfig.bluetooth ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<BluetoothConfigInput>) => {
@@ -71,7 +71,7 @@ export const BluetoothConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -93,14 +93,15 @@ export const BluetoothConfigPage = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.bluetooth) return;

@@ -57,7 +57,7 @@ export const StoreAndForwardConfigPage = ({
         device?.moduleConfig.storeForward ?? undefined,
         editedConfig.storeForward ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<StoreForwardModuleConfigInput>) => {
@@ -67,7 +67,7 @@ export const StoreAndForwardConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -91,14 +91,15 @@ export const StoreAndForwardConfigPage = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.storeForward) return;

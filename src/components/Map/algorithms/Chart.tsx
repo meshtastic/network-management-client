@@ -35,6 +35,7 @@ export const options = {
   },
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Component needs to be rewritten
 function convertToDataFormat() {
   // data: Map<string, Map<string, Map<string, number>>>
   const diffcen = {

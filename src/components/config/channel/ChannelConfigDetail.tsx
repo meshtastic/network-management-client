@@ -70,7 +70,7 @@ export const ChannelConfigDetail = ({
         currentConfig ?? undefined,
         editedConfig ?? undefined,
       ),
-    [],
+    [currentConfig, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<ChannelConfigInput>) => {
@@ -80,7 +80,7 @@ export const ChannelConfigDetail = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -106,14 +106,15 @@ export const ChannelConfigDetail = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags, channelNum],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentMeshChannel) return;

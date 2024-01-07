@@ -54,7 +54,7 @@ export const RemoteHardwareConfigPage = ({
         device?.moduleConfig.remoteHardware ?? undefined,
         editedConfig.remoteHardware ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (
@@ -66,7 +66,7 @@ export const RemoteHardwareConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -90,14 +90,15 @@ export const RemoteHardwareConfigPage = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.remoteHardware) return;

@@ -137,7 +137,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     dispatch(requestAutoConnectPort());
     dispatch(requestFetchLastTcpConnectionMeta());
     requestPorts();
-  }, []);
+  }, [dispatch, requestPorts]);
 
   // Initialize TCP state to persisted state
   useEffect(() => {

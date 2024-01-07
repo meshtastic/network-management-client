@@ -70,7 +70,7 @@ export const PositionConfigPage = ({
         device?.config.position ?? undefined,
         editedConfig.position ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<PositionConfigInput>) => {
@@ -81,7 +81,7 @@ export const PositionConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -103,14 +103,15 @@ export const PositionConfigPage = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.position) return;

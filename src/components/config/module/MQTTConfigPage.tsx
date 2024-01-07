@@ -52,7 +52,7 @@ export const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
         device?.moduleConfig.mqtt ?? undefined,
         editedConfig.mqtt ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<MQTTModuleConfigInput>) => {
@@ -62,7 +62,7 @@ export const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -84,14 +84,15 @@ export const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.mqtt) return;

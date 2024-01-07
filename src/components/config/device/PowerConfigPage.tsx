@@ -55,7 +55,7 @@ export const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
         device?.config.power ?? undefined,
         editedConfig.power ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const {
@@ -77,14 +77,15 @@ export const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {
         500,
         { leading: true },
       ),
-    [],
+    [dispatch],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.power) return;

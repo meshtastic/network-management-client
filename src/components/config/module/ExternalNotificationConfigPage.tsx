@@ -67,7 +67,7 @@ export const ExternalNotificationConfigPage = ({
         device?.moduleConfig.externalNotification ?? undefined,
         editedConfig.externalNotification ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (
@@ -81,7 +81,7 @@ export const ExternalNotificationConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [defaultValues, updateStateFlags]);
 
   const {
     register,
@@ -107,14 +107,15 @@ export const ExternalNotificationConfigPage = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.externalNotification) return;

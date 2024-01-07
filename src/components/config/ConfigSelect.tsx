@@ -15,6 +15,7 @@ export interface IConfigSelectProps
 
 export const ConfigSelect = forwardRef<
   HTMLSelectElement,
+  // biome-ignore lint/suspicious/noExplicitAny: Need any to simplify complexity of being config-agnostic
   IConfigSelectProps & ReturnType<UseFormRegister<any>>
 >(({ text, error, ...rest }, ref) => {
   return (

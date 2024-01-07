@@ -129,7 +129,7 @@ export const MapView = () => {
     }, 5000); // 5s
 
     return () => clearInterval(timeout);
-  }, []);
+  }, [dispatch]);
 
   const layers = useMemo(
     () => [
@@ -193,8 +193,6 @@ export const MapView = () => {
     [
       nodesFeatureCollection,
       edgesFeatureCollection,
-      setNodeHoverInfo,
-      setEdgeHoverInfo,
       handleNodeClick,
       activeNodeId,
     ],

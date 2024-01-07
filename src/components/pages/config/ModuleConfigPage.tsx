@@ -86,11 +86,13 @@ const getNumberOfPendingChanges = (
       if (editedConfigValue === undefined) return accum; // ! Need to allow falsy values
 
       const currentFieldValue =
+        // biome-ignore lint/suspicious/noExplicitAny: Need any for getting current config
         (currentModuleConfig as Record<string, any>)?.[configKey]?.[
           editedConfigKey
         ] ?? null;
 
       const editedFieldValue =
+        // biome-ignore lint/suspicious/noExplicitAny: Need any for getting current config
         (editedModuleConfig?.[configKey] as Record<string, any>)?.[
           editedConfigKey
         ] ?? null;

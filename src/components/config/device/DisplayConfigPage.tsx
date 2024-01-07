@@ -55,7 +55,7 @@ export const DisplayConfigPage = ({
         device?.config.display ?? undefined,
         editedConfig.display ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const {
@@ -77,14 +77,15 @@ export const DisplayConfigPage = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.display) return;

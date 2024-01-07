@@ -58,7 +58,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
         undefined,
         // editedConfig.audio ?? undefined
       ),
-    [],
+    [device],
   );
 
   const updateStateFlags = (d: DeepPartial<AudioModuleConfigInput>) => {
@@ -68,7 +68,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -91,14 +91,15 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
         500,
         { leading: true },
       ),
-    [],
+    [updateStateFlags], // dispatch
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.audio) return;

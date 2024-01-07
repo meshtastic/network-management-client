@@ -15,6 +15,7 @@ export interface IConfigInputProps
 
 export const ConfigInput = forwardRef<
   HTMLInputElement,
+  // biome-ignore lint/suspicious/noExplicitAny: Need any to simplify complexity of being config-agnostic
   IConfigInputProps & ReturnType<UseFormRegister<any>>
 >(({ text, error, ...rest }, ref) => {
   return (

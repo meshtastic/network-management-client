@@ -60,7 +60,7 @@ export const CannedMessageConfigPage = ({
         device?.moduleConfig.cannedMessage ?? undefined,
         editedConfig.cannedMessage ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<CannedMessageModuleConfigInput>) => {
@@ -70,7 +70,7 @@ export const CannedMessageConfigPage = ({
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -94,14 +94,15 @@ export const CannedMessageConfigPage = ({
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.cannedMessage) return;

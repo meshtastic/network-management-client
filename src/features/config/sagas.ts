@@ -27,6 +27,7 @@ import { requestSliceActions } from "@features/requests/slice";
 import type { CommandError } from "@utils/errors";
 import { getMeshChannelFromCurrentConfig } from "@utils/form";
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Saga, should be refactored in the future
 function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));

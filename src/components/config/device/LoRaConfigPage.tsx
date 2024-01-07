@@ -62,7 +62,7 @@ export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
         device?.config.lora ?? undefined,
         editedConfig.lora ?? undefined,
       ),
-    [],
+    [device, editedConfig],
   );
 
   const updateStateFlags = (d: DeepPartial<LoRaConfigInput>) => {
@@ -73,7 +73,7 @@ export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   useEffect(() => {
     if (!defaultValues) return;
     updateStateFlags(defaultValues);
-  }, [defaultValues]);
+  }, [updateStateFlags, defaultValues]);
 
   const {
     register,
@@ -95,14 +95,15 @@ export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
         500,
         { leading: true },
       ),
-    [],
+    [dispatch, updateStateFlags],
   );
 
+  watch(updateConfigHander);
+
+  // Cancel handlers when unmounting
   useEffect(() => {
     return () => updateConfigHander.cancel();
-  }, []);
-
-  watch(updateConfigHander);
+  }, [updateConfigHander]);
 
   const handleFormReset = () => {
     if (!currentConfig?.lora) return;

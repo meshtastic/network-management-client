@@ -49,7 +49,12 @@ export const selectAllUsersByNodeIds =
     selectAllNodes()(state).reduce(
       (accum, n) => {
         const { user } = n;
-        return user ? { ...accum, [n.nodeNum]: user } : accum;
+
+        if (user) {
+          accum[n.nodeNum] = user;
+        }
+
+        return accum;
       },
       [] as meshtastic_protobufs_User[],
     );

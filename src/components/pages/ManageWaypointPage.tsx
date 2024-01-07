@@ -71,7 +71,7 @@ export const ManageWaypointPage = () => {
         },
       },
     ],
-    [waypoints],
+    [t, users],
   );
 
   return (
