@@ -19,17 +19,14 @@ import {
   ConfigStatusChannel,
   DeviceDisconnectChannel,
   DeviceUpdateChannel,
-  GraphUpdateChannel,
   RebootChannel,
   createConfigStatusChannel,
   createDeviceDisconnectChannel,
   createDeviceUpdateChannel,
-  createGraphUpdateChannel,
   createRebootChannel,
   handleConfigStatusChannel,
   handleDeviceDisconnectChannel,
   handleDeviceUpdateChannel,
-  handleGraphUpdateChannel,
   handleRebootChannel,
 } from "@features/device/connectionHandlerSagas";
 import { deviceSliceActions } from "@features/device/slice";
@@ -86,10 +83,6 @@ function* subscribeAll() {
     createDeviceDisconnectChannel,
   );
 
-  const graphUpdateChannel: GraphUpdateChannel = yield call(
-    createGraphUpdateChannel,
-  );
-
   const configStatusChannel: ConfigStatusChannel = yield call(
     createConfigStatusChannel,
   );
@@ -99,7 +92,6 @@ function* subscribeAll() {
   yield all([
     call(handleDeviceUpdateChannel, deviceUpdateChannel),
     call(handleDeviceDisconnectChannel, deviceDisconnectChannel),
-    call(handleGraphUpdateChannel, graphUpdateChannel),
     call(handleConfigStatusChannel, configStatusChannel),
     call(handleRebootChannel, rebootChannel),
   ]);
@@ -132,7 +124,6 @@ function* initializeApplicationWorker(
   action: ReturnType<typeof requestInitializeApplication>,
 ) {
   try {
-    yield call(invoke, "initialize_graph_state");
     yield call(subscribeAll);
   } catch (error) {
     yield put(
@@ -169,8 +160,6 @@ function* connectToDeviceWorker(
     // Need to subscribe to events before connecting
     // * Can't block as these are infinite loops
     subscribeTask = yield fork(subscribeAll) as unknown as Task;
-
-    yield call(invoke, "initialize_graph_state");
 
     if (action.payload.params.type === ConnectionType.SERIAL) {
       yield call(invoke, "connect_to_serial_port", {

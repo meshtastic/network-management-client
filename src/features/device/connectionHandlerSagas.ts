@@ -7,18 +7,11 @@ import type { app_device_MeshDevice } from "@bindings/index";
 import { connectionSliceActions } from "@features/connection/slice";
 import { requestDisconnectFromDevice } from "@features/device/actions";
 import { deviceSliceActions } from "@features/device/slice";
-import { mapSliceActions } from "@features/map/slice";
 
 import type { DeviceKey } from "@utils/connections";
 
-export type GraphGeoJSONResult = {
-  nodes: GeoJSON.FeatureCollection;
-  edges: GeoJSON.FeatureCollection;
-};
-
 export type DeviceUpdateChannel = EventChannel<app_device_MeshDevice>;
 export type DeviceDisconnectChannel = EventChannel<string>;
-export type GraphUpdateChannel = EventChannel<GraphGeoJSONResult>;
 export type ConfigStatusChannel = EventChannel<boolean>;
 export type RebootChannel = EventChannel<number>;
 
@@ -75,34 +68,6 @@ export function* handleDeviceDisconnectChannel(
       const portName: string = yield take(channel);
       yield put(requestDisconnectFromDevice(portName));
       window.location.reload();
-    }
-  } catch (error) {
-    yield call(handleSagaError, error);
-  }
-}
-
-export const createGraphUpdateChannel = (): GraphUpdateChannel => {
-  return eventChannel((emitter) => {
-    listen<GraphGeoJSONResult>("graph_update", (event) => {
-      emitter(event.payload);
-    })
-      // .then((unlisten) => {
-      //   return unlisten;
-      // })
-      .catch(console.error);
-
-    // TODO UNLISTEN
-    return () => null;
-  });
-};
-
-export function* handleGraphUpdateChannel(channel: GraphUpdateChannel) {
-  try {
-    while (true) {
-      const { nodes, edges }: GraphGeoJSONResult = yield take(channel);
-
-      yield put(mapSliceActions.setNodesFeatureCollection(nodes));
-      yield put(mapSliceActions.setEdgesFeatureCollection(edges));
     }
   } catch (error) {
     yield call(handleSagaError, error);

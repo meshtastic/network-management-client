@@ -18,41 +18,22 @@ pub fn dispatch_updated_device(
     Ok(())
 }
 
-pub fn dispatch_updated_edges(
-    _handle: &tauri::AppHandle,
-    graph: &mut device::MeshGraph,
-) -> tauri::Result<()> {
-    debug!("Dispatching updated edges");
-
-    let _edges = super::helpers::generate_graph_edges_geojson(graph);
-    let _nodes = geojson::FeatureCollection {
-        bbox: None,
-        features: vec![],
-        foreign_members: None,
-    };
-
-    // * This is temporarily disabled until we can figure out how to get the graph to update in-place
-    // handle.emit_all::<GraphGeoJSONResult>("graph_update", GraphGeoJSONResult { nodes, edges })?;
-
-    debug!("Dispatched updated edges");
-
-    Ok(())
-}
-
-pub fn dispatch_configuration_status(
-    handle: &tauri::AppHandle,
-    status: ConfigurationStatus,
-) -> tauri::Result<()> {
+pub fn dispatch_configuration_status(handle: &tauri::AppHandle, status: ConfigurationStatus) -> () {
     debug!("Dispatching configuration status");
-    handle.emit_all("configuration_status", status)
+
+    handle
+        .emit_all("configuration_status", status)
+        .expect("Failed to dispatch configuration failure message");
 }
 
-pub fn dispatch_rebooting_event(handle: &tauri::AppHandle) -> tauri::Result<()> {
+pub fn dispatch_rebooting_event(handle: &tauri::AppHandle) -> () {
     debug!("Dispatching rebooting event");
     let current_time_sec = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+        .expect("Time went backwards")
         .as_secs();
 
-    handle.emit_all("reboot", current_time_sec)
+    handle
+        .emit_all("reboot", current_time_sec)
+        .expect("Failed to dispatch rebooting event");
 }

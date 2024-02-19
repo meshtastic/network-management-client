@@ -71,7 +71,6 @@ export const CreateWaypointDialog = ({
   lngLat,
   closeDialog,
   existingWaypoint,
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Functional component
 }: ICreateWaypointDialogProps) => {
   const { t } = useTranslation();
 

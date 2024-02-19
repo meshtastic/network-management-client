@@ -3,11 +3,7 @@
     windows_subsystem = "windows"
 )]
 
-mod analytics;
-mod constructors;
-mod data_conversion;
 mod device;
-mod graph;
 mod ipc;
 mod state;
 
@@ -88,7 +84,7 @@ fn main() {
     info!("Building TS types from Rust");
 
     #[cfg(debug_assertions)]
-    export_ts_types("../src/bindings/index.ts").unwrap();
+    export_ts_types("../src/bindings/index.ts").expect("Failed to export TS types");
 
     info!("Application starting");
 
@@ -98,14 +94,6 @@ fn main() {
 
     let initial_radio_connections_state = state::RadioConnections {
         inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
-    };
-
-    let initial_graph_state = state::NetworkGraph {
-        inner: Arc::new(async_runtime::Mutex::new(None)),
-    };
-
-    let initial_analytics_state = state::AnalyticsState {
-        inner: Arc::new(async_runtime::Mutex::new(None)),
     };
 
     let mut inital_autoconnect_state = state::AutoConnectState {
@@ -123,8 +111,6 @@ fn main() {
             // Manage application state
             app.app_handle().manage(initial_mesh_devices_state);
             app.app_handle().manage(initial_radio_connections_state);
-            app.app_handle().manage(initial_graph_state);
-            app.app_handle().manage(initial_analytics_state);
 
             // Autoconnect port state needs to be set after being mutated by CLI parser
             app.app_handle().manage(inital_autoconnect_state);
@@ -138,9 +124,6 @@ fn main() {
             ipc::commands::connections::connect_to_tcp_port,
             ipc::commands::connections::drop_device_connection,
             ipc::commands::connections::drop_all_device_connections,
-            ipc::commands::graph::initialize_graph_state,
-            ipc::commands::graph::get_node_edges,
-            ipc::commands::graph::run_algorithms,
             ipc::commands::mesh::send_text,
             ipc::commands::mesh::send_waypoint,
             ipc::commands::mesh::delete_waypoint,
