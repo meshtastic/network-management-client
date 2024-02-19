@@ -18,20 +18,22 @@ pub fn dispatch_updated_device(
     Ok(())
 }
 
-pub fn dispatch_configuration_status(
-    handle: &tauri::AppHandle,
-    status: ConfigurationStatus,
-) -> tauri::Result<()> {
+pub fn dispatch_configuration_status(handle: &tauri::AppHandle, status: ConfigurationStatus) -> () {
     debug!("Dispatching configuration status");
-    handle.emit_all("configuration_status", status)
+
+    handle
+        .emit_all("configuration_status", status)
+        .expect("Failed to dispatch configuration failure message");
 }
 
-pub fn dispatch_rebooting_event(handle: &tauri::AppHandle) -> tauri::Result<()> {
+pub fn dispatch_rebooting_event(handle: &tauri::AppHandle) -> () {
     debug!("Dispatching rebooting event");
     let current_time_sec = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+        .expect("Time went backwards")
         .as_secs();
 
-    handle.emit_all("reboot", current_time_sec)
+    handle
+        .emit_all("reboot", current_time_sec)
+        .expect("Failed to dispatch rebooting event");
 }

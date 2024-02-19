@@ -58,8 +58,7 @@ pub fn spawn_configuration_timeout_handler(
                     "Configuration timed out. Are you sure this is a Meshtastic device?".into(),
                 ),
             },
-        )
-        .expect("Failed to dispatch configuration failure message");
+        );
 
         trace!("Told UI to disconnect device");
     });
@@ -126,8 +125,8 @@ pub fn spawn_decoded_handler(
                         successful: true,
                         message: None,
                     },
-                )
-                .expect("Failed to dispatch configuration failure message");
+                );
+
                 device.set_status(SerialDeviceStatus::Connected);
             }
 
@@ -147,7 +146,7 @@ pub fn spawn_decoded_handler(
 
             if update_result.rebooting {
                 debug!("Device rebooting");
-                dispatch_rebooting_event(&handle).expect("Failed to dispatch rebooting event");
+                dispatch_rebooting_event(&handle);
             }
         }
     });

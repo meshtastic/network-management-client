@@ -84,7 +84,7 @@ fn main() {
     info!("Building TS types from Rust");
 
     #[cfg(debug_assertions)]
-    export_ts_types("../src/bindings/index.ts").unwrap();
+    export_ts_types("../src/bindings/index.ts").expect("Failed to export TS types");
 
     info!("Application starting");
 
