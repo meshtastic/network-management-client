@@ -1,6 +1,9 @@
-import { invoke } from "@tauri-apps/api";
 import type { Task } from "redux-saga";
 import { all, call, cancel, fork, put, takeEvery } from "redux-saga/effects";
+
+import * as radioApi from "@api/backend/radio";
+import * as meshApi from "@api/backend/mesh";
+import * as connectionApi from "@api/backend/connection";
 
 import { connectionSliceActions } from "@features/connection/slice";
 import {
@@ -38,13 +41,13 @@ import type { CommandError } from "@utils/errors";
 import { error } from "@utils/errors";
 
 // Currently this only suports serial ports
-function* getAutoConnectPortWorker(
+async function* getAutoConnectPortWorker(
   action: ReturnType<typeof requestAutoConnectPort>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    const portName = (yield call(invoke, "request_autoconnect_port")) as string;
+    const portName = await connectionApi.requestAutoConnectPort();
 
     yield put(deviceSliceActions.setAutoConnectPort(portName));
 
@@ -97,16 +100,13 @@ function* subscribeAll() {
   ]);
 }
 
-function* getAvailableSerialPortsWorker(
+async function* getAvailableSerialPortsWorker(
   action: ReturnType<typeof requestAvailablePorts>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    const serialPorts = (yield call(
-      invoke,
-      "get_all_serial_ports",
-    )) as string[];
+    const serialPorts = await connectionApi.getAllSerialPorts();
 
     yield put(deviceSliceActions.setAvailableSerialPorts(serialPorts));
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
@@ -135,7 +135,7 @@ function* initializeApplicationWorker(
   }
 }
 
-function* connectToDeviceWorker(
+async function* connectToDeviceWorker(
   action: ReturnType<typeof requestConnectToDevice>,
 ) {
   let subscribeTask: Task | null = null;
@@ -162,15 +162,16 @@ function* connectToDeviceWorker(
     subscribeTask = yield fork(subscribeAll) as unknown as Task;
 
     if (action.payload.params.type === ConnectionType.SERIAL) {
-      yield call(invoke, "connect_to_serial_port", {
-        portName: action.payload.params.portName,
-      });
+      await connectionApi.connectToSerialPort(
+        action.payload.params.portName,
+        undefined,
+        action.payload.params.dtr,
+        action.payload.params.rts,
+      );
     }
 
     if (action.payload.params.type === ConnectionType.TCP) {
-      yield call(invoke, "connect_to_tcp_port", {
-        address: action.payload.params.socketAddress,
-      });
+      await connectionApi.connectToTcpPort(action.payload.params.socketAddress);
     }
 
     if (action.payload.setPrimary) {
@@ -222,13 +223,12 @@ function* connectToDeviceWorker(
   }
 }
 
-function* disconnectFromDeviceWorker(
+async function* disconnectFromDeviceWorker(
   action: ReturnType<typeof requestDisconnectFromDevice>,
 ) {
   try {
-    yield call(invoke, "drop_device_connection", {
-      deviceKey: action.payload,
-    });
+    await connectionApi.dropDeviceConnection(action.payload);
+
     yield put(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
     yield put(uiSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
@@ -237,9 +237,10 @@ function* disconnectFromDeviceWorker(
   }
 }
 
-function* disconnectFromAllDevicesWorker() {
+async function* disconnectFromAllDevicesWorker() {
   try {
-    yield call(invoke, "drop_all_device_connections");
+    await connectionApi.dropAllDeviceConnections();
+
     yield put(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
     yield put(uiSliceActions.setActiveNode(null));
     yield put(deviceSliceActions.setDevice(null));
@@ -248,15 +249,15 @@ function* disconnectFromAllDevicesWorker() {
   }
 }
 
-function* sendTextWorker(action: ReturnType<typeof requestSendMessage>) {
+async function* sendTextWorker(action: ReturnType<typeof requestSendMessage>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    yield call(invoke, "send_text", {
-      deviceKey: action.payload.deviceKey,
-      channel: action.payload.channel,
-      text: action.payload.text,
-    });
+    await meshApi.sendText(
+      action.payload.deviceKey,
+      action.payload.channel,
+      action.payload.text,
+    );
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {
@@ -273,10 +274,7 @@ function* updateUserConfigWorker(action: ReturnType<typeof requestUpdateUser>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    yield call(invoke, "update_device_user", {
-      deviceKey: action.payload.deviceKey,
-      user: action.payload.user,
-    });
+    radioApi.updateDeviceUser(action.payload.deviceKey, action.payload.user);
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {
@@ -289,15 +287,17 @@ function* updateUserConfigWorker(action: ReturnType<typeof requestUpdateUser>) {
   }
 }
 
-function* sendWaypointWorker(action: ReturnType<typeof requestSendWaypoint>) {
+async function* sendWaypointWorker(
+  action: ReturnType<typeof requestSendWaypoint>,
+) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    yield call(invoke, "send_waypoint", {
-      deviceKey: action.payload.deviceKey,
-      channel: action.payload.channel,
-      waypoint: action.payload.waypoint,
-    });
+    await meshApi.sendWaypoint(
+      action.payload.deviceKey,
+      action.payload.channel,
+      action.payload.waypoint,
+    );
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {
@@ -312,16 +312,16 @@ function* sendWaypointWorker(action: ReturnType<typeof requestSendWaypoint>) {
   }
 }
 
-function* deleteWaypointWorker(
+async function* deleteWaypointWorker(
   action: ReturnType<typeof requestDeleteWaypoint>,
 ) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
 
-    yield call(invoke, "delete_waypoint", {
-      deviceKey: action.payload.deviceKey,
-      waypointId: action.payload.waypointId,
-    });
+    await meshApi.deleteWaypoint(
+      action.payload.deviceKey,
+      action.payload.waypointId,
+    );
 
     yield put(requestSliceActions.setRequestSuccessful({ name: action.type }));
   } catch (error) {

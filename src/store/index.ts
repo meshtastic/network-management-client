@@ -4,7 +4,6 @@ import createSagaMiddleware from "redux-saga";
 
 import { requestInitializeApplication } from "@features/device/actions";
 
-import { algorithmsReducer } from "@features/algorithms/slice";
 import { appConfigReducer } from "@features/appConfig/slice";
 import { configReducer } from "@features/config/slice";
 import { connectionReducer } from "@features/connection/slice";
@@ -20,7 +19,6 @@ const middleware = [sagaMiddleware, logger];
 
 export const store = configureStore({
   reducer: {
-    algorithms: algorithmsReducer,
     appConfig: appConfigReducer,
     config: configReducer,
     connection: connectionReducer,

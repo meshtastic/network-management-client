@@ -1,9 +1,10 @@
-import { invoke } from "@tauri-apps/api";
-import { all, call, put, select, takeEvery } from "redux-saga/effects";
+import { all, put, select, takeEvery } from "redux-saga/effects";
 
 import cloneDeep from "lodash.clonedeep";
 import merge from "lodash.merge";
 import mergeWith from "lodash.mergewith";
+
+import * as radioApi from "@api/backend/radio";
 
 import type {
   app_device_MeshChannel,
@@ -27,7 +28,6 @@ import { requestSliceActions } from "@features/requests/slice";
 import type { CommandError } from "@utils/errors";
 import { getMeshChannelFromCurrentConfig } from "@utils/form";
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Saga, should be refactored in the future
 function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
   try {
     yield put(requestSliceActions.setRequestPending({ name: action.type }));
@@ -127,10 +127,7 @@ function* commitConfigWorker(action: ReturnType<typeof requestCommitConfig>) {
 
     // Dispatch update to backend
 
-    yield call(invoke, "update_device_config_bulk", {
-      deviceKey: primaryDeviceKey,
-      config: configPayload,
-    });
+    radioApi.updateDeviceConfigBulk(primaryDeviceKey, configPayload);
 
     // Clear temporary config fields
 

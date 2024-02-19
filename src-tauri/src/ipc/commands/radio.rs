@@ -58,6 +58,7 @@ pub async fn update_device_user(
     Ok(())
 }
 
+// UNUSED
 #[tauri::command]
 pub async fn start_configuration_transaction(
     device_key: DeviceKey,
