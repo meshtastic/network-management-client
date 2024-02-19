@@ -132,7 +132,6 @@ function* initializeApplicationWorker(
   action: ReturnType<typeof requestInitializeApplication>,
 ) {
   try {
-    yield call(invoke, "initialize_graph_state");
     yield call(subscribeAll);
   } catch (error) {
     yield put(
@@ -169,8 +168,6 @@ function* connectToDeviceWorker(
     // Need to subscribe to events before connecting
     // * Can't block as these are infinite loops
     subscribeTask = yield fork(subscribeAll) as unknown as Task;
-
-    yield call(invoke, "initialize_graph_state");
 
     if (action.payload.params.type === ConnectionType.SERIAL) {
       yield call(invoke, "connect_to_serial_port", {

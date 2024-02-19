@@ -49,7 +49,6 @@ async fn create_new_connection<S>(
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
-    mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError>
 where
     S: AsyncReadExt + AsyncWriteExt + Send + 'static,
@@ -74,7 +73,6 @@ where
     let handle = app_handle.clone();
     let mesh_devices_arc = mesh_devices.inner.clone();
     let radio_connections_arc = radio_connections.inner.clone();
-    let graph_arc = mesh_graph.inner.clone();
 
     // Persist device struct in Tauri state
     {
@@ -100,13 +98,7 @@ where
 
     // Spawn decoded packet handler to route decoded packets
 
-    spawn_decoded_handler(
-        handle,
-        decoded_listener,
-        mesh_devices_arc,
-        graph_arc,
-        device_key,
-    );
+    spawn_decoded_handler(handle, decoded_listener, mesh_devices_arc, device_key);
 
     Ok(())
 }
@@ -120,7 +112,6 @@ pub async fn connect_to_serial_port(
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
-    mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     debug!(
         "Called connect_to_serial_port command with port \"{}\"",
@@ -140,7 +131,6 @@ pub async fn connect_to_serial_port(
         app_handle,
         mesh_devices,
         radio_connections,
-        mesh_graph,
     )
     .await?;
 
@@ -153,7 +143,6 @@ pub async fn connect_to_tcp_port(
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::MeshDevices>,
     radio_connections: tauri::State<'_, state::RadioConnections>,
-    mesh_graph: tauri::State<'_, state::NetworkGraph>,
 ) -> Result<(), CommandError> {
     debug!(
         "Called connect_to_tcp_port command with address \"{}\"",
@@ -173,7 +162,6 @@ pub async fn connect_to_tcp_port(
         app_handle,
         mesh_devices,
         radio_connections,
-        mesh_graph,
     )
     .await?;
 

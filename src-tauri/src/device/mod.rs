@@ -9,7 +9,6 @@ use self::helpers::{
     convert_location_field_to_protos, generate_rand_id, get_current_time_u32,
     normalize_location_field,
 };
-use crate::graph::graph_ds::Graph;
 
 pub mod handlers;
 pub mod helpers;
@@ -361,26 +360,6 @@ impl MeshDevice {
             ready: false,
             region_unset: true,
             ..Default::default()
-        }
-    }
-}
-
-/*
- * Just as the MeshDevice struct contains all the information about a device (in raw packet form)
- * the MeshGraph struct contains the network info in raw graph form. This is synchronized with
- * the MeshDevice struct, and is used to generate the graph visualization/algorithm
- * results (see analytics).
- */
-
-#[derive(Clone, Debug)]
-pub struct MeshGraph {
-    pub graph: Graph,
-}
-
-impl MeshGraph {
-    pub fn new() -> Self {
-        Self {
-            graph: Graph::new(),
         }
     }
 }
