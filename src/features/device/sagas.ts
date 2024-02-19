@@ -19,17 +19,14 @@ import {
   ConfigStatusChannel,
   DeviceDisconnectChannel,
   DeviceUpdateChannel,
-  GraphUpdateChannel,
   RebootChannel,
   createConfigStatusChannel,
   createDeviceDisconnectChannel,
   createDeviceUpdateChannel,
-  createGraphUpdateChannel,
   createRebootChannel,
   handleConfigStatusChannel,
   handleDeviceDisconnectChannel,
   handleDeviceUpdateChannel,
-  handleGraphUpdateChannel,
   handleRebootChannel,
 } from "@features/device/connectionHandlerSagas";
 import { deviceSliceActions } from "@features/device/slice";
@@ -86,10 +83,6 @@ function* subscribeAll() {
     createDeviceDisconnectChannel,
   );
 
-  const graphUpdateChannel: GraphUpdateChannel = yield call(
-    createGraphUpdateChannel,
-  );
-
   const configStatusChannel: ConfigStatusChannel = yield call(
     createConfigStatusChannel,
   );
@@ -99,7 +92,6 @@ function* subscribeAll() {
   yield all([
     call(handleDeviceUpdateChannel, deviceUpdateChannel),
     call(handleDeviceDisconnectChannel, deviceDisconnectChannel),
-    call(handleGraphUpdateChannel, graphUpdateChannel),
     call(handleConfigStatusChannel, configStatusChannel),
     call(handleRebootChannel, rebootChannel),
   ]);

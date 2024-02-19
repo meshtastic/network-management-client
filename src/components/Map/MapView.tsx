@@ -1,15 +1,11 @@
-import {
-  CollisionFilterExtension,
-  PathStyleExtension,
-} from "@deck.gl/extensions/typed";
+import { CollisionFilterExtension } from "@deck.gl/extensions/typed";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Separator from "@radix-ui/react-separator";
-import { invoke } from "@tauri-apps/api/tauri";
 import { GeoJsonLayer, PickingInfo } from "deck.gl/typed";
 import { MapPin, X } from "lucide-react";
 import maplibregl from "maplibre-gl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LngLat,
@@ -26,23 +22,22 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "react-use";
 
-import type { app_device_NormalizedWaypoint } from "@bindings/index";
+import type {
+  app_device_MeshNode,
+  app_device_NormalizedWaypoint,
+} from "@bindings/index";
 
 import { MapSelectedNodeMenu } from "@components/Map/MapSelectedNodeMenu";
-// * Note: hiding until reimplementation
-// import AnalyticsPane from "@components/Map/AnalyticsPane";
-// import MapInteractionPane from "@components/Map/MapInteractionPane";
 import { NodeSearchDock } from "@components/NodeSearch/NodeSearchDock";
 
 import { CreateWaypointDialog } from "@components/Map/CreateWaypointDialog";
 import { MapContextOption } from "@components/Map/MapContextOption";
-import { MapEdgeTooltip } from "@components/Map/MapEdgeTooltip";
 import { MapNodeTooltip } from "@components/Map/MapNodeTooltip";
 import { MeshWaypoint } from "@components/Waypoints/MeshWaypoint";
 import { WaypointMenu } from "@components/Waypoints/WaypointMenu";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
-import { selectAllWaypoints } from "@features/device/selectors";
+import { selectAllNodes, selectAllWaypoints } from "@features/device/selectors";
 import { selectMapState } from "@features/map/selectors";
 import { mapSliceActions } from "@features/map/slice";
 import {
@@ -68,23 +63,60 @@ const DeckGLOverlay = (props: IDeckGLOverlayProps) => {
   return null;
 };
 
+const convertNodesToFeatureCollection = (nodes: app_device_MeshNode[]) => {
+  const features = nodes.reduce<GeoJSON.Feature[]>(
+    (accum, node) => {
+      const lastPositionMetric =
+        node.positionMetrics[node.positionMetrics.length - 1];
+
+      if (!lastPositionMetric) {
+        return accum;
+      }
+
+      const { latitude, longitude } = lastPositionMetric;
+
+      if (!latitude || !longitude) {
+        return accum;
+      }
+
+      return [
+        ...accum,
+        {
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          properties: {
+            num: node.nodeNum,
+          },
+        },
+      ];
+    },
+    [] as GeoJSON.Feature[],
+  );
+
+  return {
+    type: "FeatureCollection",
+    features,
+  };
+};
+
 export const MapView = () => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId());
   const showInfoPane = useSelector(selectInfoPane());
+  const nodes = useSelector(selectAllNodes());
 
-  const { nodesFeatureCollection, edgesFeatureCollection, viewState } =
-    useSelector(selectMapState());
-
+  const { viewState } = useSelector(selectMapState());
   const { style } = useSelector(selectMapConfigState());
 
   const waypoints = useSelector(selectAllWaypoints());
   const activeWaypoint = useSelector(selectActiveWaypoint());
 
   const [nodeHoverInfo, setNodeHoverInfo] = useState<PickingInfo | null>(null);
-  const [edgeHoverInfo, setEdgeHoverInfo] = useState<PickingInfo | null>(null);
   const [isWaypointDialogOpen, setWaypointDialogOpen] = useState(false);
 
   const [contextMenuEvent, setContextMenuEvent] =
@@ -113,48 +145,12 @@ export const MapView = () => {
     [activeNodeId, dispatch],
   );
 
-  useEffect(() => {
-    const timeout = setInterval(() => {
-      invoke("get_node_edges")
-        .then((c) => {
-          const { nodes, edges } = c as {
-            nodes: GeoJSON.FeatureCollection;
-            edges: GeoJSON.FeatureCollection;
-          };
-
-          dispatch(mapSliceActions.setNodesFeatureCollection(nodes));
-          dispatch(mapSliceActions.setEdgesFeatureCollection(edges));
-        })
-        .catch(() => dispatch(mapSliceActions.setEdgesFeatureCollection(null)));
-    }, 5000); // 5s
-
-    return () => clearInterval(timeout);
-  }, [dispatch]);
-
   const layers = useMemo(
     () => [
       new GeoJsonLayer({
-        id: "edges",
-        data: edgesFeatureCollection || {},
-        pointType: "circle",
-        extensions: [new PathStyleExtension({ dash: true })],
-        getDashArray: [4, 4],
-        pickable: true,
-        dashJustified: true,
-        dashGapPickable: true,
-        filled: false,
-        lineWidthMinPixels: 2,
-
-        onHover: setEdgeHoverInfo,
-
-        getLineColor: () => {
-          return [55, 65, 81];
-        },
-      }),
-      new GeoJsonLayer({
         id: "nodes",
         pointType: "circle",
-        data: nodesFeatureCollection || {},
+        data: convertNodesToFeatureCollection(nodes) || {},
 
         pickable: true,
         stroked: false,
@@ -190,12 +186,7 @@ export const MapView = () => {
         },
       }),
     ],
-    [
-      nodesFeatureCollection,
-      edgesFeatureCollection,
-      handleNodeClick,
-      activeNodeId,
-    ],
+    [nodes, handleNodeClick, activeNodeId],
   );
 
   const handleClick = () => {
@@ -236,7 +227,6 @@ export const MapView = () => {
         onContextMenu={(e) => e.preventDefault()}
       >
         {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
-        {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
 
         {/* Map translation is a pain, assuming users will use translated map tiles https://maplibre.org/maplibre-gl-js/docs/examples/language-switch/ */}
         <Map
@@ -329,15 +319,10 @@ export const MapView = () => {
               setEditingWaypoint(w);
             }}
           />
-        ) : // : showInfoPane == "algos" ? (
-        //   <AnalyticsPane />
-        // )
-        null}
+        ) : null}
 
         <NodeSearchDock />
         <MapSelectedNodeMenu />
-        {/* Note: hiding algos until reimplementation */}
-        {/* <MapInteractionPane /> */}
       </div>
 
       {(lastRightClickLngLat || editingWaypoint) && (
