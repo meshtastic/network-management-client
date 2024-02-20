@@ -12,19 +12,11 @@ import { ConnectTab } from "@components/connection/ConnectTab";
 import { SerialConnectPane } from "@components/connection/SerialConnectPane";
 import { TcpConnectPane } from "@components/connection/TcpConnectPane";
 
-import {
-  requestFetchLastTcpConnectionMeta,
-  requestPersistLastTcpConnectionMeta,
-} from "@features/appConfig/actions";
+import { useAppConfigApi } from "@features/appConfig/api";
 import { selectPersistedTCPConnectionMeta } from "@features/appConfig/selectors";
 import { selectConnectionStatus } from "@features/connection/selectors";
 import { connectionSliceActions } from "@features/connection/slice";
-import {
-  requestAutoConnectPort,
-  requestAvailablePorts,
-  requestConnectToDevice,
-  requestDisconnectFromAllDevices,
-} from "@features/device/actions";
+import { DeviceApiActions, useDeviceApi } from "@features/device/api";
 import {
   selectAutoConnectPort,
   selectAvailablePorts,
@@ -45,6 +37,9 @@ export interface IOnboardPageProps {
 
 export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const { t } = useTranslation();
+
+  const appConfigApi = useAppConfigApi();
+  const deviceApi = useDeviceApi();
 
   const { isDarkMode } = useIsDarkMode();
 
@@ -84,34 +79,30 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   );
 
   const requestPorts = useCallback(() => {
-    dispatch(requestAvailablePorts());
+    deviceApi.getAvailableSerialPorts();
   }, [dispatch]);
 
   const handleSocketConnect: FormEventHandler = (e) => {
     e.preventDefault();
 
-    dispatch(
-      requestPersistLastTcpConnectionMeta({
-        address: socketAddress,
-        port: parseInt(socketPort),
-      }),
-    );
+    appConfigApi.persistLastTcpConnectionMeta({
+      address: socketAddress,
+      port: parseInt(socketPort),
+    });
 
-    dispatch(
-      requestConnectToDevice({
-        params: {
-          type: ConnectionType.TCP,
-          socketAddress: getFullSocketAddress(socketAddress, socketPort),
-        },
-        setPrimary: true,
-      }),
-    );
+    deviceApi.connectToDevice({
+      params: {
+        type: ConnectionType.TCP,
+        socketAddress: getFullSocketAddress(socketAddress, socketPort),
+      },
+      setPrimary: true,
+    });
   };
 
   const refreshPorts = () => {
     dispatch(
       requestSliceActions.clearRequestState({
-        name: requestConnectToDevice.type,
+        name: DeviceApiActions.ConnectToDevice,
       }),
     );
     dispatch(connectionSliceActions.clearAllConnectionState());
@@ -120,12 +111,10 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   const handlePortSelected = (portName: string) => {
     setSelectedPortName(portName);
-    dispatch(
-      requestConnectToDevice({
-        params: { type: ConnectionType.SERIAL, portName, dtr, rts },
-        setPrimary: true,
-      }),
-    );
+    deviceApi.connectToDevice({
+      params: { type: ConnectionType.SERIAL, portName, dtr, rts },
+      setPrimary: true,
+    });
   };
 
   const openExternalLink = (url: string) => () => {
@@ -133,9 +122,11 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   };
 
   useEffect(() => {
-    dispatch(requestDisconnectFromAllDevices());
-    dispatch(requestAutoConnectPort());
-    dispatch(requestFetchLastTcpConnectionMeta());
+    deviceApi.disconnectFromAllDevices();
+    deviceApi.getAutoConnectPort();
+
+    appConfigApi.fetchLastTcpConnectionMeta();
+
     requestPorts();
   }, [dispatch, requestPorts]);
 

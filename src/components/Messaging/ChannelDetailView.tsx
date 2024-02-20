@@ -8,7 +8,7 @@ import { MessagingInput } from "@components/Messaging/MessagingInput";
 import { TextMessageBubble } from "@components/Messaging/TextMessageBubble";
 import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import { requestSendMessage } from "@features/device/actions";
+import { useDeviceApi } from "@features/device/api";
 import { selectPrimaryDeviceKey } from "@features/device/selectors";
 
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
@@ -26,6 +26,8 @@ export const ChannelDetailView = ({
   const dispatch = useDispatch();
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
 
+  const deviceApi = useDeviceApi();
+
   const navigateTo = useNavigate();
 
   const handleMessageSubmit = (message: string) => {
@@ -39,13 +41,11 @@ export const ChannelDetailView = ({
       return;
     }
 
-    dispatch(
-      requestSendMessage({
-        deviceKey: primaryDeviceKey,
-        text: message,
-        channel: channel.config.index,
-      }),
-    );
+    deviceApi.sendText({
+      deviceKey: primaryDeviceKey,
+      text: message,
+      channel: channel.config.index,
+    });
   };
 
   return (

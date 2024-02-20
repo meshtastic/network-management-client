@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
 import { App } from "@app/App";
+import { AppInitWrapper } from "@components/AppInitWrapper";
 import { store } from "@store/index";
 
 // Load translations
@@ -53,9 +54,11 @@ root.render(
     <Suspense fallback={<div>Loading locales...</div>}>
       <BrowserRouter>
         <Provider store={store}>
-          <MapProvider>
-            <App />
-          </MapProvider>
+          <AppInitWrapper>
+            <MapProvider>
+              <App />
+            </MapProvider>
+          </AppInitWrapper>
         </Provider>
       </BrowserRouter>
     </Suspense>
