@@ -1,4 +1,6 @@
 import { PropsWithChildren, useEffect, useState } from "react";
+import { attachConsole } from "tauri-plugin-log-api";
+import { info } from "tauri-plugin-log-api";
 
 import {
   useCreateConfigStatusChannel,
@@ -21,6 +23,16 @@ export const AppInitWrapper = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     appConfigApi.initializeAppConfig();
+  }, []);
+
+  useAsyncUnlistenUseEffect(async () => {
+    const detachConsole = await attachConsole();
+
+    info("Console logger attached");
+
+    return () => {
+      detachConsole();
+    };
   }, []);
 
   useAsyncUnlistenUseEffect(async () => {

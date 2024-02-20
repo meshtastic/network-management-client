@@ -1,6 +1,7 @@
 import { Edit3 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { warn } from "tauri-plugin-log-api";
 
 import type { app_device_MeshChannel } from "@bindings/index";
 
@@ -37,7 +38,7 @@ export const ChannelDetailView = ({
     }
 
     if (!primaryDeviceKey) {
-      console.warn("No primary serial port, not sending message");
+      warn("No primary serial port, not sending message");
       return;
     }
 

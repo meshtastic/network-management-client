@@ -25,6 +25,7 @@ import {
   useMap,
 } from "react-map-gl";
 import { useDispatch, useSelector } from "react-redux";
+import { warn } from "tauri-plugin-log-api";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
@@ -225,7 +226,7 @@ export const CreateWaypointDialog = ({
     };
 
     if (!primaryDeviceKey) {
-      console.warn("No primary device key port, not creating waypoint");
+      warn("No primary device key port, not creating waypoint");
       return;
     }
 

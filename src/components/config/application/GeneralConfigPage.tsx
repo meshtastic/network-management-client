@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 } from "uuid";
+import { warn } from "tauri-plugin-log-api";
 
 // import { ConfigInput } from "@components/config/ConfigInput";
 import { ConfigSelect } from "@components/config/ConfigSelect";
@@ -44,7 +45,9 @@ export const GeneralConfigPage = ({
 
   const handleFormSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    handleSubmit(handleSubmitSuccess, console.warn)(e);
+    handleSubmit(handleSubmitSuccess, (err) => {
+      warn(`Encountered error submitting form: ${err}`);
+    })(e);
   };
 
   const formId = useMemo(() => v4(), []);

@@ -7,34 +7,14 @@ mod device;
 mod ipc;
 mod state;
 
-use log::{debug, error, info};
+use log::{error, info, LevelFilter};
 use meshtastic::ts::specta::{
     export::ts_with_cfg,
     ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior, TsExportError},
 };
-use std::time::SystemTime;
 use std::{collections::HashMap, sync::Arc};
 use tauri::{async_runtime, Manager};
-
-/// https://docs.rs/fern/0.6.2/fern/
-fn setup_logger() -> Result<(), fern::InitError> {
-    fern::Dispatch::new()
-        .format(|out, message, record| {
-            out.finish(format_args!(
-                "[{} {} {}] {}",
-                humantime::format_rfc3339_seconds(SystemTime::now()),
-                record.level(),
-                record.target(),
-                message
-            ))
-        })
-        .level(log::LevelFilter::Debug)
-        .chain(std::io::stderr())
-        .chain(fern::log_file("output.log")?)
-        .apply()?;
-
-    Ok(())
-}
+use tauri_plugin_log::LogTarget;
 
 fn handle_cli_matches(
     app: &mut tauri::App,
@@ -77,32 +57,38 @@ fn export_ts_types(file_path: &str) -> Result<(), TsExportError> {
 }
 
 fn main() {
-    #[cfg(debug_assertions)]
-    setup_logger().expect("Logging setup failed");
-    debug!("Logger initialized");
-
-    info!("Building TS types from Rust");
-
-    #[cfg(debug_assertions)]
-    export_ts_types("../src/bindings/index.ts").expect("Failed to export TS types");
-
-    info!("Application starting");
-
-    let initial_mesh_devices_state = state::MeshDevices {
-        inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
-    };
-
-    let initial_radio_connections_state = state::RadioConnections {
-        inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
-    };
-
-    let mut inital_autoconnect_state = state::AutoConnectState {
-        inner: Arc::new(async_runtime::Mutex::new(None)),
-    };
-
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::default()
+                .target(LogTarget::LogDir)
+                .level(LevelFilter::Debug)
+                .target(LogTarget::Stdout)
+                .level(LevelFilter::Info)
+                .target(LogTarget::Webview)
+                .build(),
+        )
         .plugin(tauri_plugin_store::Builder::default().build())
+        .setup(|_app| {
+            info!("Building TS types from Rust");
+
+            #[cfg(debug_assertions)]
+            export_ts_types("../src/bindings/index.ts")?;
+
+            Ok(())
+        })
         .setup(|app| {
+            let initial_mesh_devices_state = state::MeshDevices {
+                inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
+            };
+
+            let initial_radio_connections_state = state::RadioConnections {
+                inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
+            };
+
+            let mut inital_autoconnect_state = state::AutoConnectState {
+                inner: Arc::new(async_runtime::Mutex::new(None)),
+            };
+
             match handle_cli_matches(app, &mut inital_autoconnect_state) {
                 Ok(_) => {}
                 Err(err) => panic!("Failed to parse CLI args:\n{}", err),
