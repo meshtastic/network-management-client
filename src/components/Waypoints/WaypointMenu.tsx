@@ -2,6 +2,7 @@ import { Copy, Lock, MapPin, Timer, TimerOff, Unlock, X } from "lucide-react";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import { warn } from "tauri-plugin-log-api";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
@@ -41,7 +42,7 @@ export const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
 
   const handleEditWaypoint = () => {
     if (!primaryDeviceKey) {
-      console.warn("No primary device key set, cannot edit waypoint");
+      warn("No primary device key set, cannot edit waypoint");
       return;
     }
 
@@ -50,7 +51,7 @@ export const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
 
   const handleDeleteWaypoint = () => {
     if (!primaryDeviceKey) {
-      console.warn("No primary device key set, cannot delete waypoint");
+      warn("No primary device key set, cannot delete waypoint");
       return;
     }
 

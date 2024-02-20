@@ -1,5 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import { useDispatch } from "react-redux";
+import { warn } from "tauri-plugin-log-api";
 
 import { app_device_MeshDevice } from "@bindings/index";
 
@@ -89,7 +90,7 @@ export const useCreateRebootChannel = () => {
       const rebootTimestampSec = event.payload;
 
       const reboot_time = new Date(rebootTimestampSec * 1000);
-      console.warn("Rebooting at", reboot_time);
+      warn(`Rebooting at ${reboot_time}`);
       window.location.reload();
     });
 

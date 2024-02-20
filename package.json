@@ -68,6 +68,7 @@
     "react-use": "^17.4.0",
     "redux-logger": "^3.0.6",
     "tailwindcss-radix": "^2.8.0",
+    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
     "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#v1",
     "timeago-react": "^3.0.5",
     "tsparticles": "^2.7.1",

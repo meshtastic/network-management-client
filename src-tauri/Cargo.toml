@@ -32,12 +32,12 @@ time = { version = "0.3.17", features = ["macros", "serde"] }
 thiserror = "1.0.38"
 geojson = "0.24.0"
 log = "0.4.20"
-fern = "0.6"
 humantime = "2.1.0"
 tokio-util = "0.7.7"
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tokio-serial = "5.4.4"
 meshtastic = { git = "https://github.com/meshtastic/rust", features = ["ts-gen"] }
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [features]
 # by default Tauri runs in production mode
