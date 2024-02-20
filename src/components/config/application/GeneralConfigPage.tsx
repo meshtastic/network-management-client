@@ -10,9 +10,9 @@ import { v4 } from "uuid";
 import { ConfigSelect } from "@components/config/ConfigSelect";
 import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import { requestPersistGeneralConfig } from "@features/appConfig/actions";
 import { selectGeneralConfigState } from "@features/appConfig/selectors";
 import type { ColorMode } from "@features/appConfig/slice";
+import { useAppConfigApi } from "@features/appConfig/api";
 
 export interface IGeneralConfigPageProps {
   className?: string;
@@ -30,6 +30,8 @@ export const GeneralConfigPage = ({
   const dispatch = useDispatch();
   const { colorMode } = useSelector(selectGeneralConfigState());
 
+  const appConfigApi = useAppConfigApi();
+
   const {
     register,
     handleSubmit,
@@ -37,7 +39,7 @@ export const GeneralConfigPage = ({
   } = useForm<GeneralConfigFormInput>({ defaultValues: { colorMode } });
 
   const handleSubmitSuccess = (data: GeneralConfigFormInput) => {
-    dispatch(requestPersistGeneralConfig({ colorMode: data.colorMode }));
+    appConfigApi.persistGeneralConfig({ colorMode: data.colorMode });
   };
 
   const handleFormSubmit: FormEventHandler = (e) => {

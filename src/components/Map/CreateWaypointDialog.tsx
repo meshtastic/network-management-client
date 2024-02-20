@@ -34,7 +34,7 @@ import { ConnectionInput } from "@components/connection/ConnectionInput";
 import { ConnectionSwitch } from "@components/connection/ConnectionSwitch";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
-import { requestSendWaypoint } from "@features/device/actions";
+import { useDeviceApi } from "@features/device/api";
 import {
   selectDevice,
   selectDeviceChannels,
@@ -81,6 +81,8 @@ export const CreateWaypointDialog = ({
   const deviceChannels = useSelector(selectDeviceChannels());
   const { style } = useSelector(selectMapConfigState());
   const device = useSelector(selectDevice());
+
+  const deviceApi = useDeviceApi();
 
   const { [MapIDs.CreateWaypointDialog]: map } = useMap();
 
@@ -227,13 +229,11 @@ export const CreateWaypointDialog = ({
       return;
     }
 
-    dispatch(
-      requestSendWaypoint({
-        deviceKey: primaryDeviceKey,
-        waypoint: createdWaypoint,
-        channel: channelNum,
-      }),
-    );
+    deviceApi.sendWaypoint({
+      deviceKey: primaryDeviceKey,
+      waypoint: createdWaypoint,
+      channel: channelNum,
+    });
 
     closeDialog();
   };

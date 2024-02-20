@@ -1,16 +1,9 @@
 {
-  "include": [
-    "src",
-    "types"
-  ],
+  "include": ["src", "types"],
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -25,33 +18,18 @@
     "jsx": "react-jsx",
     "baseUrl": "./",
     "paths": {
-      "@bindings/*": [
-        "src/bindings/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@features/*": [
-        "src/features/*"
-      ],
-      "@store/*": [
-        "src/store/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@app/*": [
-        "src/*"
-      ],
+      "@api/*": ["src/api/*"],
+      "@bindings/*": ["src/bindings/*"],
+      "@components/*": ["src/components/*"],
+      "@features/*": ["src/features/*"],
+      "@store/*": ["src/store/*"],
+      "@utils/*": ["src/utils/*"],
+      "@app/*": ["src/*"]
     },
     "importHelpers": true,
     "removeComments": true,
     "strictNullChecks": true,
-    "types": [
-      "vite/client",
-      "node",
-      "jest"
-    ],
+    "types": ["vite/client", "node", "jest"],
     "strictPropertyInitialization": false,
     "experimentalDecorators": true
   }

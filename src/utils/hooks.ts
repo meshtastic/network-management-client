@@ -1,5 +1,5 @@
-import { error } from "@utils/errors";
 import { useEffect, useState } from "react";
+import { throwError } from "@utils/errors";
 
 /**
  * This hook is intended for use in components that need to rerender
@@ -35,7 +35,7 @@ export interface IUseDarkMode {
 export const useIsDarkMode = (): IUseDarkMode => {
   // Browser needs to support matchMedia but can't make useState conditional
   if (!window.matchMedia) {
-    error("Browser doesn't support window.matchMedia method");
+    throwError("Browser doesn't support window.matchMedia method");
   }
 
   const runQuery = () => window.matchMedia(COLOR_SCHEME_QUERY);
