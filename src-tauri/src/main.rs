@@ -51,6 +51,7 @@ fn main() {
             let initial_radio_connections_state =
                 state::radio_connections::RadioConnectionsState::new();
             let mut inital_autoconnect_state = state::autoconnect::AutoConnectState::new();
+            let initial_graph_state = state::graph::GraphState::new();
 
             match cli::handle_cli_matches(app, &mut inital_autoconnect_state) {
                 Ok(_) => {}
@@ -60,6 +61,7 @@ fn main() {
             app.app_handle().manage(initial_mesh_devices_state);
             app.app_handle().manage(initial_radio_connections_state);
             app.app_handle().manage(inital_autoconnect_state); // Needs to be set after being mutated by CLI parser
+            app.app_handle().manage(initial_graph_state);
 
             Ok(())
         })

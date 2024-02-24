@@ -7,7 +7,6 @@ use super::DeviceKey;
 
 pub type MeshDevicesStateInner = Arc<async_runtime::Mutex<HashMap<DeviceKey, MeshPacketApi>>>;
 
-#[derive(Debug)]
 pub struct MeshDevicesState {
     pub inner: MeshDevicesStateInner,
 }

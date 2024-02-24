@@ -2,20 +2,25 @@ pub mod handlers;
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use crate::{
         device::{
             self,
             helpers::{generate_rand_id, get_current_time_u32},
         },
+        graph::ds::graph::MeshGraph,
         packet_api::MeshPacketApi,
     };
 
     use meshtastic::{connections::PacketRouter, protobufs};
+    use tokio::sync::Mutex;
 
     fn initialize_mock_packet_handler() -> MeshPacketApi {
         let mock_device = device::MeshDevice::new();
+        let mock_graph = Arc::new(Mutex::new(MeshGraph::new()));
 
-        MeshPacketApi::new(mock_device)
+        MeshPacketApi::new(mock_device, mock_graph)
     }
 
     fn generate_mock_fromradio_packet(

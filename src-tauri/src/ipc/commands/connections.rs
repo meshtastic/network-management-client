@@ -50,6 +50,7 @@ async fn create_new_connection<S>(
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
     radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
 ) -> Result<(), CommandError>
 where
     S: AsyncReadExt + AsyncWriteExt + Send + 'static,
@@ -57,7 +58,7 @@ where
     // Initialize device and StreamApi instances
 
     let device = device::MeshDevice::new();
-    let mut packet_api = MeshPacketApi::new(device);
+    let mut packet_api = MeshPacketApi::new(device, mesh_graph.inner.clone());
 
     let stream_api = StreamApi::new();
 
@@ -117,6 +118,7 @@ pub async fn connect_to_serial_port(
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
     radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
 ) -> Result<(), CommandError> {
     debug!(
         "Called connect_to_serial_port command with port \"{}\"",
@@ -136,6 +138,7 @@ pub async fn connect_to_serial_port(
         app_handle,
         mesh_devices,
         radio_connections,
+        mesh_graph,
     )
     .await?;
 
@@ -148,6 +151,7 @@ pub async fn connect_to_tcp_port(
     app_handle: tauri::AppHandle,
     mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
     radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
 ) -> Result<(), CommandError> {
     debug!(
         "Called connect_to_tcp_port command with address \"{}\"",
@@ -167,6 +171,7 @@ pub async fn connect_to_tcp_port(
         app_handle,
         mesh_devices,
         radio_connections,
+        mesh_graph,
     )
     .await?;
 
