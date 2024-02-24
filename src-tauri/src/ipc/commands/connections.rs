@@ -58,7 +58,7 @@ where
     // Initialize device and StreamApi instances
 
     let device = device::MeshDevice::new();
-    let mut packet_api = MeshPacketApi::new(device, mesh_graph.inner.clone());
+    let mut packet_api = MeshPacketApi::new(app_handle.clone(), device, mesh_graph.inner.clone());
 
     let stream_api = StreamApi::new();
 

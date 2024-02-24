@@ -38,15 +38,12 @@ fn main() {
                 .build(),
         )
         .plugin(tauri_plugin_store::Builder::default().build())
-        .setup(|_app| {
+        .setup(|app| {
             info!("Building TS types from Rust");
 
             #[cfg(debug_assertions)]
             export_ts_types("../src/bindings/index.ts")?;
 
-            Ok(())
-        })
-        .setup(|app| {
             let initial_mesh_devices_state = state::mesh_devices::MeshDevicesState::new();
             let initial_radio_connections_state =
                 state::radio_connections::RadioConnectionsState::new();
@@ -80,6 +77,7 @@ fn main() {
             ipc::commands::radio::start_configuration_transaction,
             ipc::commands::radio::commit_configuration_transaction,
             ipc::commands::radio::update_device_config_bulk,
+            ipc::commands::graph::get_graph_state,
         ])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application");

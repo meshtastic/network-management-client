@@ -14,13 +14,15 @@ mod tests {
     };
 
     use meshtastic::{connections::PacketRouter, protobufs};
+    use tauri::Manager;
     use tokio::sync::Mutex;
 
-    fn initialize_mock_packet_handler() -> MeshPacketApi {
+    fn initialize_mock_packet_handler() -> MeshPacketApi<tauri::test::MockRuntime> {
+        let mock_app = tauri::test::mock_app();
         let mock_device = device::MeshDevice::new();
         let mock_graph = Arc::new(Mutex::new(MeshGraph::new()));
 
-        MeshPacketApi::new(mock_device, mock_graph)
+        MeshPacketApi::new(mock_app.app_handle(), mock_device, mock_graph)
     }
 
     fn generate_mock_fromradio_packet(

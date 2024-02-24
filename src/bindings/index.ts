@@ -103,6 +103,10 @@ export type meshtastic_protobufs_module_config_CannedMessageConfig = { rotary1En
  */
 export type meshtastic_protobufs_MyNodeInfo = { myNodeNum: number; rebootCount: number; minAppVersion: number }
 
+export type app_device_MeshNode = { nodeNum: number; lastHeard: app_device_LastHeardMetadata | null; user: meshtastic_protobufs_User | null; deviceMetrics: app_device_MeshNodeDeviceMetrics[]; environmentMetrics: app_device_MeshNodeEnvironmentMetrics[]; positionMetrics: app_device_NormalizedPosition[] }
+
+export type app_device_WaypointPacket = { packet: meshtastic_protobufs_MeshPacket; data: app_device_NormalizedWaypoint }
+
 export type meshtastic_protobufs_Config = { payloadVariant: meshtastic_protobufs_config_PayloadVariant | null }
 
 export type meshtastic_protobufs_config_bluetooth_config_PairingMode = "randomPin" | "fixedPin" | "noPin"
@@ -128,11 +132,6 @@ export type meshtastic_protobufs_config_network_config_IpV4Config = { ip: number
  */
 export type meshtastic_protobufs_ChannelFile = { channels: meshtastic_protobufs_Channel[]; version: number }
 
-/**
- * Currently a re-export of `protobufs::Position` with normalized lat, long
- */
-export type app_device_NormalizedPosition = { latitude: number; longitude: number; altitude: number; time: number; locationSource: meshtastic_protobufs_position_LocSource; altitudeSource: meshtastic_protobufs_position_AltSource; timestamp: number; timestampMillisAdjust: number; altitudeHae: number; altitudeGeoidalSeparation: number; pdop: number; hdop: number; vdop: number; gpsAccuracy: number; groundSpeed: number; groundTrack: number; fixQuality: number; fixType: number; satsInView: number; sensorId: number; nextUpdate: number; seqNumber: number }
-
 export type meshtastic_protobufs_config_BluetoothConfig = { enabled: boolean; mode: number; fixedPin: number }
 
 export type meshtastic_protobufs_DeviceConnectionStatus = { wifi: meshtastic_protobufs_WifiConnectionStatus | null; ethernet: meshtastic_protobufs_EthernetConnectionStatus | null; bluetooth: meshtastic_protobufs_BluetoothConnectionStatus | null; serial: meshtastic_protobufs_SerialConnectionStatus | null }
@@ -149,11 +148,7 @@ export type meshtastic_protobufs_log_record_Level = "unset" | "critical" | "erro
  */
 export type meshtastic_protobufs_config_NetworkConfig = { wifiEnabled: boolean; wifiSsid: string; wifiPsk: string; ntpServer: string; ethEnabled: boolean; addressMode: number; ipv4Config: meshtastic_protobufs_config_network_config_IpV4Config | null; rsyslogServer: string }
 
-export type app_device_UserPacket = { packet: meshtastic_protobufs_MeshPacket; data: meshtastic_protobufs_User }
-
-export type app_device_TelemetryPacket = { packet: meshtastic_protobufs_MeshPacket; data: meshtastic_protobufs_Telemetry }
-
-export type app_device_LastHeardMetadata = { timestamp: number; snr: number; channel: number }
+export type app_device_PositionPacket = { packet: meshtastic_protobufs_MeshPacket; data: meshtastic_protobufs_Position }
 
 /**
  * 
@@ -163,6 +158,11 @@ export type app_device_LastHeardMetadata = { timestamp: number; snr: number; cha
  * at which point the next item in the FIFO will be populated.
  */
 export type meshtastic_protobufs_FromRadio = { id: number; payloadVariant: meshtastic_protobufs_from_radio_PayloadVariant | null }
+
+/**
+ * Currently a re-export of `protobufs::Position` with normalized lat, long
+ */
+export type app_device_NormalizedPosition = { latitude: number; longitude: number; altitude: number; time: number; locationSource: meshtastic_protobufs_position_LocSource; altitudeSource: meshtastic_protobufs_position_AltSource; timestamp: number; timestampMillisAdjust: number; altitudeHae: number; altitudeGeoidalSeparation: number; pdop: number; hdop: number; vdop: number; gpsAccuracy: number; groundSpeed: number; groundTrack: number; fixQuality: number; fixType: number; satsInView: number; sensorId: number; nextUpdate: number; seqNumber: number }
 
 /**
  * 
@@ -177,6 +177,8 @@ export type meshtastic_protobufs_position_AltSource = "altUnset" | "altManual" |
  */
 export type meshtastic_protobufs_config_DisplayConfig = { screenOnSecs: number; gpsFormat: number; autoScreenCarouselSecs: number; compassNorthTop: boolean; flipScreen: boolean; units: number; oled: number; displaymode: number; headingBold: boolean; wakeOnTapOrMotion: boolean }
 
+export type app_device_NormalizedNodeInfo = { num: number; user: meshtastic_protobufs_User | null; position: meshtastic_protobufs_Position | null; snr: number; lastHeard: number; deviceMetrics: meshtastic_protobufs_DeviceMetrics | null; channel: number }
+
 /**
  * 
  * Ethernet or WiFi connection status
@@ -188,6 +190,8 @@ export type meshtastic_protobufs_NetworkConnectionStatus = { ipAddress: number; 
  * How the GPS coordinates are displayed on the OLED screen.
  */
 export type meshtastic_protobufs_config_display_config_GpsCoordinateFormat = "dec" | "dms" | "utm" | "mgrs" | "olc" | "osgr"
+
+export type app_device_ChannelMessageState = "pending" | "acknowledged" | { error: string }
 
 /**
  * 
@@ -201,8 +205,6 @@ export type meshtastic_protobufs_config_lo_ra_config_ModemPreset = "longFast" | 
  * Position Config
  */
 export type meshtastic_protobufs_config_PositionConfig = { positionBroadcastSecs: number; positionBroadcastSmartEnabled: boolean; fixedPosition: boolean; gpsEnabled: boolean; gpsUpdateInterval: number; gpsAttemptTime: number; positionFlags: number; rxGpio: number; txGpio: number; broadcastSmartMinimumDistance: number; broadcastSmartMinimumIntervalSecs: number }
-
-export type app_device_SerialDeviceStatus = "restarting" | "disconnected" | "connecting" | "reconnecting" | "connected" | "configuring" | "configured"
 
 /**
  * 
@@ -230,15 +232,13 @@ export type meshtastic_protobufs_admin_message_ModuleConfigType = "mqttConfig" |
  */
 export type meshtastic_protobufs_ToRadio = { payloadVariant: meshtastic_protobufs_to_radio_PayloadVariant | null }
 
-export type app_device_MeshNodeDeviceMetrics = { metrics: meshtastic_protobufs_DeviceMetrics; timestamp: number; snr: number }
-
 /**
  * 
  * TODO: REPLACE
  */
 export type meshtastic_protobufs_admin_message_PayloadVariant = { getChannelRequest: number } | { getChannelResponse: meshtastic_protobufs_Channel } | { getOwnerRequest: boolean } | { getOwnerResponse: meshtastic_protobufs_User } | { getConfigRequest: number } | { getConfigResponse: meshtastic_protobufs_Config } | { getModuleConfigRequest: number } | { getModuleConfigResponse: meshtastic_protobufs_ModuleConfig } | { getCannedMessageModuleMessagesRequest: boolean } | { getCannedMessageModuleMessagesResponse: string } | { getDeviceMetadataRequest: boolean } | { getDeviceMetadataResponse: meshtastic_protobufs_DeviceMetadata } | { getRingtoneRequest: boolean } | { getRingtoneResponse: string } | { getDeviceConnectionStatusRequest: boolean } | { getDeviceConnectionStatusResponse: meshtastic_protobufs_DeviceConnectionStatus } | { setHamMode: meshtastic_protobufs_HamParameters } | { getNodeRemoteHardwarePinsRequest: boolean } | { getNodeRemoteHardwarePinsResponse: meshtastic_protobufs_NodeRemoteHardwarePinsResponse } | { setOwner: meshtastic_protobufs_User } | { setChannel: meshtastic_protobufs_Channel } | { setConfig: meshtastic_protobufs_Config } | { setModuleConfig: meshtastic_protobufs_ModuleConfig } | { setCannedMessageModuleMessages: string } | { setRingtoneMessage: string } | { beginEditSettings: boolean } | { commitEditSettings: boolean } | { rebootOtaSeconds: number } | { exitSimulator: boolean } | { rebootSeconds: number } | { shutdownSeconds: number } | { factoryReset: number } | { nodedbReset: number }
 
-export type app_device_ChannelMessageState = "pending" | "acknowledged" | { error: string }
+export type app_graph_ds_node_GraphNode<> = null
 
 /**
  * 
@@ -277,8 +277,6 @@ export type meshtastic_protobufs_ModuleConfig = { payloadVariant: meshtastic_pro
  */
 export type meshtastic_protobufs_channel_Role = "disabled" | "primary" | "secondary"
 
-export type app_device_MeshNodeEnvironmentMetrics = { metrics: meshtastic_protobufs_EnvironmentMetrics; timestamp: number; snr: number }
-
 /**
  * 
  * This message wraps a MeshPacket with extra metadata about the sender and how it arrived.
@@ -315,6 +313,8 @@ export type meshtastic_protobufs_config_device_config_Role = "client" | "clientM
  */
 export type meshtastic_protobufs_HardwareMessage = { type: number; gpioMask: string; gpioValue: string }
 
+export type app_device_ChannelMessagePayload = ({ type: "text" } & app_device_TextPacket) | ({ type: "waypoint" } & app_device_WaypointPacket)
+
 /**
  * 
  * Configuration
@@ -335,8 +335,6 @@ export type meshtastic_protobufs_config_LoRaConfig = { usePreset: boolean; modem
  */
 export type meshtastic_protobufs_AirQualityMetrics = { pm10Standard: number; pm25Standard: number; pm100Standard: number; pm10Environmental: number; pm25Environmental: number; pm100Environmental: number; particles03Um: number; particles05Um: number; particles10Um: number; particles25Um: number; particles50Um: number; particles100Um: number }
 
-export type app_device_WaypointPacket = { packet: meshtastic_protobufs_MeshPacket; data: app_device_NormalizedWaypoint }
-
 export type meshtastic_protobufs_mesh_packet_PayloadVariant = { decoded: meshtastic_protobufs_Data } | { encrypted: number[] }
 
 /**
@@ -350,6 +348,8 @@ export type meshtastic_protobufs_DeviceMetrics = { batteryLevel: number; voltage
  * Serial connection status
  */
 export type meshtastic_protobufs_SerialConnectionStatus = { baud: number; isConnected: boolean }
+
+export type app_device_MeshDevice = { configId: number; ready: boolean; status: app_device_SerialDeviceStatus; channels: { [key: number]: app_device_MeshChannel }; config: meshtastic_protobufs_LocalConfig; moduleConfig: meshtastic_protobufs_LocalModuleConfig; myNodeInfo: meshtastic_protobufs_MyNodeInfo; nodes: { [key: number]: app_device_MeshNode }; regionUnset: boolean; deviceMetrics: meshtastic_protobufs_DeviceMetrics; waypoints: { [key: number]: app_device_NormalizedWaypoint }; neighbors: { [key: number]: app_device_NeighborInfoPacket }; configInProgress: boolean }
 
 /**
  * 
@@ -373,6 +373,8 @@ export type meshtastic_protobufs_RemoteHardwarePin = { gpioPin: number; name: st
  */
 export type meshtastic_protobufs_NodeRemoteHardwarePin = { nodeNum: number; pin: meshtastic_protobufs_RemoteHardwarePin | null }
 
+export type app_device_TextPacket = { packet: meshtastic_protobufs_MeshPacket; data: string }
+
 export type meshtastic_protobufs_routing_Variant = { routeRequest: meshtastic_protobufs_RouteDiscovery } | { routeReply: meshtastic_protobufs_RouteDiscovery } | { errorReason: number }
 
 /**
@@ -385,14 +387,14 @@ export type meshtastic_protobufs_routing_Variant = { routeRequest: meshtastic_pr
  */
 export type meshtastic_protobufs_ChannelSet = { settings: meshtastic_protobufs_ChannelSettings[]; loraConfig: meshtastic_protobufs_config_LoRaConfig | null }
 
+export type app_graph_ds_edge_GraphEdge<> = null
+
 /**
  * 
  * This can be used for customizing the firmware distribution. If populated,
  * show a secondary bootup screen with custom logo and text for 2.5 seconds.
  */
 export type meshtastic_protobufs_OemStore = { oemIconWidth: number; oemIconHeight: number; oemIconBits: number[]; oemFont: number; oemText: string; oemAesKey: number[]; oemLocalConfig: meshtastic_protobufs_LocalConfig | null; oemLocalModuleConfig: meshtastic_protobufs_LocalModuleConfig | null }
-
-export type app_device_NeighborInfoPacket = { packet: meshtastic_protobufs_MeshPacket; data: meshtastic_protobufs_NeighborInfo }
 
 /**
  * 
@@ -418,8 +420,6 @@ export type meshtastic_protobufs_LocalModuleConfig = { mqtt: meshtastic_protobuf
  */
 export type meshtastic_protobufs_config_display_config_OledType = "oledAuto" | "oledSsd1306" | "oledSh1106" | "oledSh1107"
 
-export type app_device_NormalizedWaypoint = { id: number; latitude: number; longitude: number; expire: number; lockedTo: number; name: string; description: string; icon: number }
-
 /**
  * 
  * Device metadata response
@@ -437,6 +437,10 @@ export type meshtastic_protobufs_from_radio_PayloadVariant = { packet: meshtasti
  * Compressed message payload
  */
 export type meshtastic_protobufs_Compressed = { portnum: number; data: number[] }
+
+export type app_device_ChannelMessageWithState = { payload: app_device_ChannelMessagePayload; state: app_device_ChannelMessageState }
+
+export type app_device_MeshChannel = { config: meshtastic_protobufs_Channel; lastInteraction: number; messages: app_device_ChannelMessageWithState[] }
 
 /**
  * 
@@ -464,7 +468,7 @@ export type meshtastic_protobufs_StoreAndForward = { rr: number; variant: meshta
  */
 export type meshtastic_protobufs_ChannelSettings = { channelNum: number; psk: number[]; name: string; id: number; uplinkEnabled: boolean; downlinkEnabled: boolean }
 
-export type app_device_MeshChannel = { config: meshtastic_protobufs_Channel; lastInteraction: number; messages: app_device_ChannelMessageWithState[] }
+export type app_device_SerialDeviceStatus = "restarting" | "disconnected" | "connecting" | "reconnecting" | "connected" | "configuring" | "configured"
 
 /**
  * 
@@ -481,8 +485,6 @@ export type meshtastic_protobufs_NeighborInfo = { nodeId: number; lastSentById: 
  * and then extend as needed by emitting multiple records.
  */
 export type meshtastic_protobufs_LogRecord = { message: string; time: number; source: string; level: number }
-
-export type app_device_PositionPacket = { packet: meshtastic_protobufs_MeshPacket; data: meshtastic_protobufs_Position }
 
 /**
  * 
@@ -528,6 +530,8 @@ export type meshtastic_protobufs_Data = { portnum: number; payload: number[]; wa
  */
 export type meshtastic_protobufs_module_config_serial_config_SerialMode = "default" | "simple" | "proto" | "textmsg" | "nmea" | "caltopo"
 
+export type app_device_TelemetryPacket = { packet: meshtastic_protobufs_MeshPacket; data: meshtastic_protobufs_Telemetry }
+
 /**
  * Ambient Lighting Module - Settings for control of onboard LEDs to allow users to adjust the brightness levels and respective color levels.
  * Initially created for the RAK14001 RGB LED module.
@@ -539,8 +543,6 @@ export type meshtastic_protobufs_module_config_AmbientLightingConfig = { ledStat
  * External Notifications Config
  */
 export type meshtastic_protobufs_module_config_ExternalNotificationConfig = { enabled: boolean; outputMs: number; output: number; outputVibra: number; outputBuzzer: number; active: boolean; alertMessage: boolean; alertMessageVibra: boolean; alertMessageBuzzer: boolean; alertBell: boolean; alertBellVibra: boolean; alertBellBuzzer: boolean; usePwm: boolean; nagTimeout: number }
-
-export type app_device_ChannelMessageWithState = { payload: app_device_ChannelMessagePayload; state: app_device_ChannelMessageState }
 
 /**
  * 
@@ -565,8 +567,6 @@ export type meshtastic_protobufs_store_and_forward_Statistics = { messagesTotal:
  * Types of Measurements the telemetry module is equipped to handle
  */
 export type meshtastic_protobufs_Telemetry = { time: number; variant: meshtastic_protobufs_telemetry_Variant | null }
-
-export type app_device_MeshNode = { nodeNum: number; lastHeard: app_device_LastHeardMetadata | null; user: meshtastic_protobufs_User | null; deviceMetrics: app_device_MeshNodeDeviceMetrics[]; environmentMetrics: app_device_MeshNodeEnvironmentMetrics[]; positionMetrics: app_device_NormalizedPosition[] }
 
 /**
  * 
@@ -604,6 +604,8 @@ export type meshtastic_protobufs_config_device_config_RebroadcastMode = "all" | 
 
 export type app_ipc_APMincutStringResults = { apResult: number[]; mincutResult: ([number, number])[]; diffcenResult: { [key: number]: { [key: number]: { [key: number]: number } } } }
 
+export type app_device_MeshNodePositionMetrics = { metrics: app_device_NormalizedPosition; timestamp: number; snr: number }
+
 export type app_ipc_ConfigurationStatus = { deviceKey: string; successful: boolean; message: string | null }
 
 /**
@@ -611,6 +613,8 @@ export type app_ipc_ConfigurationStatus = { deviceKey: string; successful: boole
  * Baudrate for codec2 voice
  */
 export type meshtastic_protobufs_module_config_audio_config_AudioBaud = "codec2Default" | "codec23200" | "codec22400" | "codec21600" | "codec21400" | "codec21300" | "codec21200" | "codec2700" | "codec2700B"
+
+export type app_device_LastHeardMetadata = { timestamp: number; snr: number; channel: number }
 
 /**
  * 
@@ -630,13 +634,15 @@ export type meshtastic_protobufs_store_and_forward_Heartbeat = { period: number;
  */
 export type meshtastic_protobufs_module_config_RangeTestConfig = { enabled: boolean; sender: number; save: boolean }
 
+export type app_device_NormalizedWaypoint = { id: number; latitude: number; longitude: number; expire: number; lockedTo: number; name: string; description: string; icon: number }
+
 /**
  * 
  * TODO: REPLACE
  */
 export type meshtastic_protobufs_admin_message_ConfigType = "deviceConfig" | "positionConfig" | "powerConfig" | "networkConfig" | "displayConfig" | "loraConfig" | "bluetoothConfig"
 
-export type app_device_MeshDevice = { configId: number; ready: boolean; status: app_device_SerialDeviceStatus; channels: { [key: number]: app_device_MeshChannel }; config: meshtastic_protobufs_LocalConfig; moduleConfig: meshtastic_protobufs_LocalModuleConfig; myNodeInfo: meshtastic_protobufs_MyNodeInfo; nodes: { [key: number]: app_device_MeshNode }; regionUnset: boolean; deviceMetrics: meshtastic_protobufs_DeviceMetrics; waypoints: { [key: number]: app_device_NormalizedWaypoint }; neighbors: { [key: number]: app_device_NeighborInfoPacket }; configInProgress: boolean }
+export type app_device_NeighborInfoPacket = { packet: meshtastic_protobufs_MeshPacket; data: meshtastic_protobufs_NeighborInfo }
 
 /**
  * 
@@ -670,19 +676,15 @@ export type meshtastic_protobufs_DeviceProfile = { longName: string | null; shor
  */
 export type meshtastic_protobufs_User = { id: string; longName: string; shortName: string; macaddr: number[]; hwModel: number; isLicensed: boolean }
 
-export type app_device_NormalizedNodeInfo = { num: number; user: meshtastic_protobufs_User | null; position: meshtastic_protobufs_Position | null; snr: number; lastHeard: number; deviceMetrics: meshtastic_protobufs_DeviceMetrics | null; channel: number }
-
 export type meshtastic_protobufs_config_lo_ra_config_RegionCode = "unset" | "us" | "eu433" | "eu868" | "cn" | "jp" | "anz" | "kr" | "tw" | "ru" | "in" | "nz865" | "th" | "lora24" | "ua433" | "ua868"
+
+export type app_device_MeshNodeEnvironmentMetrics = { metrics: meshtastic_protobufs_EnvironmentMetrics; timestamp: number; snr: number }
 
 /**
  * 
  * Shared constants between device and phone
  */
 export type meshtastic_protobufs_Constants = "zero" | "dataPayloadLen"
-
-export type app_device_MeshNodePositionMetrics = { metrics: app_device_NormalizedPosition; timestamp: number; snr: number }
-
-export type app_device_TextPacket = { packet: meshtastic_protobufs_MeshPacket; data: string }
 
 /**
  * 
@@ -746,6 +748,8 @@ export type meshtastic_protobufs_routing_Error = "none" | "noRoute" | "gotNak" |
  */
 export type meshtastic_protobufs_CannedMessageModuleConfig = { messages: string }
 
+export type app_device_UserPacket = { packet: meshtastic_protobufs_MeshPacket; data: meshtastic_protobufs_User }
+
 /**
  * 
  * Waypoint message, used to share arbitrary locations across the mesh
@@ -802,6 +806,8 @@ export type meshtastic_protobufs_to_radio_PayloadVariant = { packet: meshtastic_
  */
 export type meshtastic_protobufs_position_LocSource = "locUnset" | "locManual" | "locInternal" | "locExternal"
 
+export type app_device_MeshNodeDeviceMetrics = { metrics: meshtastic_protobufs_DeviceMetrics; timestamp: number; snr: number }
+
 /**
  * 
  * Payload Variant
@@ -813,8 +819,6 @@ export type meshtastic_protobufs_config_PayloadVariant = { device: meshtastic_pr
  * TODO: REPLACE
  */
 export type meshtastic_protobufs_module_config_PayloadVariant = { mqtt: meshtastic_protobufs_module_config_MqttConfig } | { serial: meshtastic_protobufs_module_config_SerialConfig } | { externalNotification: meshtastic_protobufs_module_config_ExternalNotificationConfig } | { storeForward: meshtastic_protobufs_module_config_StoreForwardConfig } | { rangeTest: meshtastic_protobufs_module_config_RangeTestConfig } | { telemetry: meshtastic_protobufs_module_config_TelemetryConfig } | { cannedMessage: meshtastic_protobufs_module_config_CannedMessageConfig } | { audio: meshtastic_protobufs_module_config_AudioConfig } | { remoteHardware: meshtastic_protobufs_module_config_RemoteHardwareConfig } | { neighborInfo: meshtastic_protobufs_module_config_NeighborInfoConfig } | { ambientLighting: meshtastic_protobufs_module_config_AmbientLightingConfig } | { detectionSensor: meshtastic_protobufs_module_config_DetectionSensorConfig }
-
-export type app_device_ChannelMessagePayload = ({ type: "text" } & app_device_TextPacket) | ({ type: "waypoint" } & app_device_WaypointPacket)
 
 /**
  * 
