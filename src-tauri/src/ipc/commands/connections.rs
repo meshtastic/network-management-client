@@ -3,6 +3,7 @@ use crate::device::SerialDeviceStatus;
 use crate::ipc::helpers::spawn_configuration_timeout_handler;
 use crate::ipc::helpers::spawn_decoded_handler;
 use crate::ipc::CommandError;
+use crate::packet_api::MeshPacketApi;
 use crate::state;
 use crate::state::DeviceKey;
 
@@ -14,7 +15,7 @@ use tokio::io::AsyncWriteExt;
 
 #[tauri::command]
 pub async fn request_autoconnect_port(
-    autoconnect_state: tauri::State<'_, state::AutoConnectState>,
+    autoconnect_state: tauri::State<'_, state::autoconnect::AutoConnectState>,
 ) -> Result<String, CommandError> {
     debug!("Called request_autoconnect_port command");
 
@@ -47,26 +48,30 @@ async fn create_new_connection<S>(
     device_key: DeviceKey,
     timeout_duration: Duration,
     app_handle: tauri::AppHandle,
-    mesh_devices: tauri::State<'_, state::MeshDevices>,
-    radio_connections: tauri::State<'_, state::RadioConnections>,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
 ) -> Result<(), CommandError>
 where
     S: AsyncReadExt + AsyncWriteExt + Send + 'static,
 {
     // Initialize device and StreamApi instances
 
-    let mut device = device::MeshDevice::new();
+    let device = device::MeshDevice::new();
+    let mut packet_api = MeshPacketApi::new(device);
+
     let stream_api = StreamApi::new();
 
     // Connect to device via stream API
 
-    device.set_status(SerialDeviceStatus::Connecting);
+    packet_api.device.set_status(SerialDeviceStatus::Connecting);
     let (decoded_listener, stream_api) = stream_api.connect(stream).await;
 
     // Configure device via stream API
 
-    device.set_status(SerialDeviceStatus::Configuring);
-    let stream_api = stream_api.configure(device.config_id).await?;
+    packet_api
+        .device
+        .set_status(SerialDeviceStatus::Configuring);
+    let stream_api = stream_api.configure(packet_api.device.config_id).await?;
 
     // Persist connection in Tauri state
 
@@ -77,7 +82,7 @@ where
     // Persist device struct in Tauri state
     {
         let mut devices_guard = mesh_devices_arc.lock().await;
-        devices_guard.insert(device_key.clone(), device);
+        devices_guard.insert(device_key.clone(), packet_api);
     }
 
     // Persist StreamApi instance Tauri state
@@ -110,8 +115,8 @@ pub async fn connect_to_serial_port(
     dtr: Option<bool>,
     rts: Option<bool>,
     app_handle: tauri::AppHandle,
-    mesh_devices: tauri::State<'_, state::MeshDevices>,
-    radio_connections: tauri::State<'_, state::RadioConnections>,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
 ) -> Result<(), CommandError> {
     debug!(
         "Called connect_to_serial_port command with port \"{}\"",
@@ -141,8 +146,8 @@ pub async fn connect_to_serial_port(
 pub async fn connect_to_tcp_port(
     address: String,
     app_handle: tauri::AppHandle,
-    mesh_devices: tauri::State<'_, state::MeshDevices>,
-    radio_connections: tauri::State<'_, state::RadioConnections>,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
 ) -> Result<(), CommandError> {
     debug!(
         "Called connect_to_tcp_port command with address \"{}\"",
@@ -171,8 +176,8 @@ pub async fn connect_to_tcp_port(
 #[tauri::command]
 pub async fn drop_device_connection(
     device_key: DeviceKey,
-    mesh_devices: tauri::State<'_, state::MeshDevices>,
-    radio_connections: tauri::State<'_, state::RadioConnections>,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
 ) -> Result<(), CommandError> {
     debug!("Called drop_device_connection command");
 
@@ -194,8 +199,10 @@ pub async fn drop_device_connection(
 
         // Clear corresponding state device
 
-        if let Some(device) = state_devices.get_mut(&device_key) {
-            device.set_status(SerialDeviceStatus::Disconnected);
+        if let Some(packet_api) = state_devices.get_mut(&device_key) {
+            packet_api
+                .device
+                .set_status(SerialDeviceStatus::Disconnected);
         }
 
         state_devices.remove(&device_key);
@@ -206,8 +213,8 @@ pub async fn drop_device_connection(
 
 #[tauri::command]
 pub async fn drop_all_device_connections(
-    mesh_devices: tauri::State<'_, state::MeshDevices>,
-    radio_connections: tauri::State<'_, state::RadioConnections>,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
 ) -> Result<(), CommandError> {
     debug!("Called drop_all_device_connections command");
 
@@ -224,8 +231,10 @@ pub async fn drop_all_device_connections(
 
         let mut state_devices = mesh_devices.inner.lock().await;
 
-        for (_port_name, device) in state_devices.iter_mut() {
-            device.set_status(SerialDeviceStatus::Disconnected);
+        for (_port_name, packet_api) in state_devices.iter_mut() {
+            packet_api
+                .device
+                .set_status(SerialDeviceStatus::Disconnected);
         }
 
         // This could be removed in the future to maintain state on previous devices

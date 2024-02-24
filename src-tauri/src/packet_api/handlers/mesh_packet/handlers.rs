@@ -1,11 +1,13 @@
 use log::debug;
 use meshtastic::protobufs;
 
-use crate::device::{
-    handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
-    helpers::{get_channel_name, get_node_user_name},
-    ChannelMessageState, MeshDevice, NeighborInfoPacket, NormalizedWaypoint, PositionPacket,
-    TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
+use crate::{
+    device::{
+        helpers::{get_channel_name, get_node_user_name},
+        ChannelMessageState, MeshDevice, NeighborInfoPacket, NormalizedWaypoint, PositionPacket,
+        TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
+    },
+    packet_api::handlers::{DeviceUpdateError, DeviceUpdateMetadata, NotificationConfig},
 };
 use meshtastic::Message;
 

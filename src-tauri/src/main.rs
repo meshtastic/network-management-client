@@ -3,50 +3,20 @@
     windows_subsystem = "windows"
 )]
 
+mod cli;
 mod device;
+mod graph;
 mod ipc;
+mod packet_api;
 mod state;
 
-use log::{error, info, LevelFilter};
+use log::{info, LevelFilter};
 use meshtastic::ts::specta::{
     export::ts_with_cfg,
     ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior, TsExportError},
 };
-use std::{collections::HashMap, sync::Arc};
-use tauri::{async_runtime, Manager};
+use tauri::Manager;
 use tauri_plugin_log::LogTarget;
-
-fn handle_cli_matches(
-    app: &mut tauri::App,
-    inital_autoconnect_state: &mut state::AutoConnectState,
-) -> Result<(), String> {
-    match app.get_cli_matches() {
-        Ok(matches) => {
-            let args = matches.args;
-
-            // Check if user has specified a port name to automatically connect to
-            // If so, store it for future connection attempts
-            if let Some(port_arg) = args.get("port") {
-                if port_arg.occurrences == 0 {
-                    info!("No occurences of \"port\" CLI argument, skipping...");
-                    return Ok(());
-                }
-
-                if let serde_json::Value::String(port_name) = port_arg.value.clone() {
-                    *inital_autoconnect_state = state::AutoConnectState {
-                        inner: Arc::new(async_runtime::Mutex::new(Some(port_name))),
-                    };
-                }
-            }
-
-            Ok(())
-        }
-        Err(err) => {
-            error!("Failed to get CLI matches: {}", err);
-            Err(err.to_string())
-        }
-    }
-}
 
 fn export_ts_types(file_path: &str) -> Result<(), TsExportError> {
     let ts_export_config = ExportConfiguration::default()
@@ -77,29 +47,19 @@ fn main() {
             Ok(())
         })
         .setup(|app| {
-            let initial_mesh_devices_state = state::MeshDevices {
-                inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
-            };
+            let initial_mesh_devices_state = state::mesh_devices::MeshDevicesState::new();
+            let initial_radio_connections_state =
+                state::radio_connections::RadioConnectionsState::new();
+            let mut inital_autoconnect_state = state::autoconnect::AutoConnectState::new();
 
-            let initial_radio_connections_state = state::RadioConnections {
-                inner: Arc::new(async_runtime::Mutex::new(HashMap::new())),
-            };
-
-            let mut inital_autoconnect_state = state::AutoConnectState {
-                inner: Arc::new(async_runtime::Mutex::new(None)),
-            };
-
-            match handle_cli_matches(app, &mut inital_autoconnect_state) {
+            match cli::handle_cli_matches(app, &mut inital_autoconnect_state) {
                 Ok(_) => {}
                 Err(err) => panic!("Failed to parse CLI args:\n{}", err),
             }
 
-            // Manage application state
             app.app_handle().manage(initial_mesh_devices_state);
             app.app_handle().manage(initial_radio_connections_state);
-
-            // Autoconnect port state needs to be set after being mutated by CLI parser
-            app.app_handle().manage(inital_autoconnect_state);
+            app.app_handle().manage(inital_autoconnect_state); // Needs to be set after being mutated by CLI parser
 
             Ok(())
         })
@@ -120,5 +80,5 @@ fn main() {
             ipc::commands::radio::update_device_config_bulk,
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("Error while running tauri application");
 }

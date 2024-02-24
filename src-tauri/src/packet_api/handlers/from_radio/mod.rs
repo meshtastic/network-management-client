@@ -2,15 +2,20 @@ pub mod handlers;
 
 #[cfg(test)]
 mod tests {
-    use crate::device::{
-        self,
-        helpers::{generate_rand_id, get_current_time_u32},
+    use crate::{
+        device::{
+            self,
+            helpers::{generate_rand_id, get_current_time_u32},
+        },
+        packet_api::MeshPacketApi,
     };
 
     use meshtastic::{connections::PacketRouter, protobufs};
 
-    fn initialize_mock_device() -> device::MeshDevice {
-        device::MeshDevice::new()
+    fn initialize_mock_packet_handler() -> MeshPacketApi {
+        let mock_device = device::MeshDevice::new();
+
+        MeshPacketApi::new(mock_device)
     }
 
     fn generate_mock_fromradio_packet(
@@ -34,8 +39,8 @@ mod tests {
 
         let variant1 = protobufs::from_radio::PayloadVariant::Channel(channel1);
 
-        let mut device = initialize_mock_device();
-        let result1 = device
+        let mut packet_api = initialize_mock_packet_handler();
+        let result1 = packet_api
             .handle_packet_from_radio(generate_mock_fromradio_packet(variant1))
             .unwrap();
 
@@ -45,9 +50,9 @@ mod tests {
         assert!(!result1.regenerate_graph);
         assert!(result1.notification_config.is_none());
 
-        assert!(device.channels.get(&1).is_some());
+        assert!(packet_api.device.channels.get(&1).is_some());
         assert_eq!(
-            device.channels.get(&1).unwrap().config.role,
+            packet_api.device.channels.get(&1).unwrap().config.role,
             protobufs::channel::Role::Secondary as i32
         );
 
@@ -60,15 +65,15 @@ mod tests {
         };
 
         let variant2 = protobufs::from_radio::PayloadVariant::Channel(channel2);
-        let _result2 = device
+        let _result2 = packet_api
             .handle_packet_from_radio(generate_mock_fromradio_packet(variant2))
             .unwrap();
 
         // Assert channel updated correctly
 
-        assert!(device.channels.get(&1).is_some());
+        assert!(packet_api.device.channels.get(&1).is_some());
         assert_eq!(
-            device.channels.get(&1).unwrap().config.role,
+            packet_api.device.channels.get(&1).unwrap().config.role,
             protobufs::channel::Role::Primary as i32
         );
     }
@@ -85,8 +90,8 @@ mod tests {
 
         let variant = protobufs::from_radio::PayloadVariant::Config(config_packet);
 
-        let mut device = initialize_mock_device();
-        let result = device
+        let mut packet_api = initialize_mock_packet_handler();
+        let result = packet_api
             .handle_packet_from_radio(generate_mock_fromradio_packet(variant))
             .unwrap();
 
@@ -94,7 +99,7 @@ mod tests {
         assert!(!result.regenerate_graph);
         assert!(result.notification_config.is_none());
 
-        assert!(device.config.display.is_some());
+        assert!(packet_api.device.config.display.is_some());
     }
 
     #[test]
@@ -103,8 +108,8 @@ mod tests {
 
         let variant = protobufs::from_radio::PayloadVariant::MyInfo(my_node_info);
 
-        let mut device = initialize_mock_device();
-        let result = device
+        let mut packet_api = initialize_mock_packet_handler();
+        let result = packet_api
             .handle_packet_from_radio(generate_mock_fromradio_packet(variant))
             .unwrap();
 
@@ -125,8 +130,8 @@ mod tests {
 
         let variant1 = protobufs::from_radio::PayloadVariant::NodeInfo(node_info1);
 
-        let mut device = initialize_mock_device();
-        let result1 = device
+        let mut packet_api = initialize_mock_packet_handler();
+        let result1 = packet_api
             .handle_packet_from_radio(generate_mock_fromradio_packet(variant1))
             .unwrap();
 
@@ -136,12 +141,13 @@ mod tests {
         assert!(!result1.regenerate_graph);
         assert!(result1.notification_config.is_none());
 
-        assert!(device.nodes.get(&1).is_some());
+        assert!(packet_api.device.nodes.get(&1).is_some());
 
         // Check time set within a second of current time
         assert!(
             get_current_time_u32() - 1000
-                < device
+                < packet_api
+                    .device
                     .nodes
                     .get(&1)
                     .unwrap()
@@ -160,18 +166,19 @@ mod tests {
         };
 
         let variant2 = protobufs::from_radio::PayloadVariant::NodeInfo(node_info2);
-        let _result2 = device
+        let _result2 = packet_api
             .handle_packet_from_radio(generate_mock_fromradio_packet(variant2))
             .unwrap();
 
         // Assert NodeInfo updated correctly
 
-        assert!(device.nodes.get(&1).is_some());
+        assert!(packet_api.device.nodes.get(&1).is_some());
 
         // Check time set within a second of current time
         assert!(
             get_current_time_u32() - 1000
-                < device
+                < packet_api
+                    .device
                     .nodes
                     .get(&1)
                     .unwrap()

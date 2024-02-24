@@ -13,7 +13,7 @@ use crate::state::{self, DeviceKey};
 
 pub fn spawn_configuration_timeout_handler(
     handle: tauri::AppHandle,
-    connected_devices_inner: state::MeshDevicesInner,
+    connected_devices_inner: state::mesh_devices::MeshDevicesStateInner,
     device_key: DeviceKey,
     timeout: Duration,
 ) {
@@ -26,7 +26,7 @@ pub fn spawn_configuration_timeout_handler(
         trace!("Device configuration timeout completed");
 
         let mut devices_guard = connected_devices_inner.lock().await;
-        let device = match devices_guard
+        let packet_api = match devices_guard
             .get_mut(&device_key)
             .ok_or("Device not initialized")
         {
@@ -40,7 +40,7 @@ pub fn spawn_configuration_timeout_handler(
         // If the device is not registered as configuring, take no action
         // since this means the device configuration has succeeded
 
-        if device.status != SerialDeviceStatus::Configuring {
+        if packet_api.device.status != SerialDeviceStatus::Configuring {
             return;
         }
 
@@ -67,7 +67,7 @@ pub fn spawn_configuration_timeout_handler(
 pub fn spawn_decoded_handler(
     handle: tauri::AppHandle,
     mut decoded_listener: UnboundedReceiver<protobufs::FromRadio>,
-    connected_devices_arc: state::MeshDevicesInner,
+    connected_devices_arc: state::mesh_devices::MeshDevicesStateInner,
     device_key: DeviceKey,
 ) {
     tauri::async_runtime::spawn(async move {
@@ -77,7 +77,7 @@ pub fn spawn_decoded_handler(
             debug!("Received packet from device: {:?}", packet);
 
             let mut devices_guard = connected_devices_arc.lock().await;
-            let device = match devices_guard
+            let packet_api = match devices_guard
                 .get_mut(&device_key)
                 .ok_or("Device not initialized")
             {
@@ -88,7 +88,7 @@ pub fn spawn_decoded_handler(
                 }
             };
 
-            let update_result = match device.handle_packet_from_radio(packet) {
+            let update_result = match packet_api.handle_packet_from_radio(packet) {
                 Ok(result) => result,
                 Err(err) => {
                     warn!("{}", err);
@@ -97,7 +97,7 @@ pub fn spawn_decoded_handler(
             };
 
             if update_result.device_updated {
-                match events::dispatch_updated_device(&handle, device) {
+                match events::dispatch_updated_device(&handle, &packet_api.device) {
                     Ok(_) => (),
                     Err(e) => {
                         error!("Failed to dispatch device to client:\n{}", e);
@@ -111,7 +111,7 @@ pub fn spawn_decoded_handler(
             }
 
             if update_result.configuration_success
-                && device.status == SerialDeviceStatus::Configured
+                && packet_api.device.status == SerialDeviceStatus::Configured
             {
                 debug!(
                     "Emitting successful configuration of device \"{}\"",
@@ -127,7 +127,7 @@ pub fn spawn_decoded_handler(
                     },
                 );
 
-                device.set_status(SerialDeviceStatus::Connected);
+                packet_api.device.set_status(SerialDeviceStatus::Connected);
             }
 
             if let Some(notification_config) = update_result.notification_config {

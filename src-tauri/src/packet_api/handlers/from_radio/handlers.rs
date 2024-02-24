@@ -1,9 +1,8 @@
 use meshtastic::protobufs;
 
-use crate::device::{
-    handlers::{DeviceUpdateError, DeviceUpdateMetadata},
-    helpers::get_current_time_u32,
-    MeshChannel, MeshDevice, SerialDeviceStatus,
+use crate::{
+    device::{helpers::get_current_time_u32, MeshChannel, MeshDevice, SerialDeviceStatus},
+    packet_api::handlers::{DeviceUpdateError, DeviceUpdateMetadata},
 };
 
 pub fn handle_channel_packet(
