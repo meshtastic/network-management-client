@@ -103,6 +103,8 @@ pub fn handle_node_info_packet<R: tauri::Runtime>(
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
         .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
 
+    log::warn!("Graph regeneration not implemented");
+
     Ok(())
 }
 
