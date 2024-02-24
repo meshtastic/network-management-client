@@ -3,43 +3,14 @@ use std::{error::Error, fmt};
 pub mod from_radio;
 pub mod mesh_packet;
 
-#[derive(Clone, Debug, Default)]
-pub struct NotificationConfig {
-    pub title: String,
-    pub body: String,
-}
-
-impl NotificationConfig {
-    pub fn new() -> Self {
-        Self {
-            ..Default::default()
-        }
-    }
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct DeviceUpdateMetadata {
-    pub device_updated: bool,
-    pub regenerate_graph: bool,
-    pub configuration_success: bool,
-    pub notification_config: Option<NotificationConfig>,
-    pub rebooting: bool,
-}
-
-impl DeviceUpdateMetadata {
-    pub fn new() -> Self {
-        Self {
-            ..Default::default()
-        }
-    }
-}
-
 #[derive(Clone, Debug)]
 pub enum DeviceUpdateError {
     PacketNotSupported(String),
     RadioMessageNotSupported(String),
     DecodeFailure(String),
     GeneralFailure(String),
+    DispatchError(String),
+    NotificationError(String),
 }
 
 impl fmt::Display for DeviceUpdateError {
@@ -66,6 +37,18 @@ impl fmt::Display for DeviceUpdateError {
                 f.write_fmt(format_args!(
                     "General device update failure:\n{}",
                     failure_reason
+                ))?;
+            }
+            DeviceUpdateError::DispatchError(ref dispatch_error) => {
+                f.write_fmt(format_args!(
+                    "Failed to dispatch device to client:\n{}",
+                    dispatch_error
+                ))?;
+            }
+            DeviceUpdateError::NotificationError(ref notification_error) => {
+                f.write_fmt(format_args!(
+                    "Failed to send system-level notification:\n{}",
+                    notification_error
                 ))?;
             }
         }

@@ -5,8 +5,8 @@ use tauri::Manager;
 
 use super::ConfigurationStatus;
 
-pub fn dispatch_updated_device(
-    handle: &tauri::AppHandle,
+pub fn dispatch_updated_device<R: tauri::Runtime>(
+    handle: &tauri::AppHandle<R>,
     device: &device::MeshDevice,
 ) -> tauri::Result<()> {
     debug!("Dispatching updated device");
@@ -18,22 +18,28 @@ pub fn dispatch_updated_device(
     Ok(())
 }
 
-pub fn dispatch_configuration_status(handle: &tauri::AppHandle, status: ConfigurationStatus) -> () {
+pub fn dispatch_configuration_status<R: tauri::Runtime>(
+    handle: &tauri::AppHandle<R>,
+    status: ConfigurationStatus,
+) -> tauri::Result<()> {
     debug!("Dispatching configuration status");
 
-    handle
-        .emit_all("configuration_status", status)
-        .expect("Failed to dispatch configuration failure message");
+    handle.emit_all("configuration_status", status)?;
+
+    Ok(())
 }
 
-pub fn dispatch_rebooting_event(handle: &tauri::AppHandle) -> () {
+pub fn dispatch_rebooting_event<R: tauri::Runtime>(
+    handle: &tauri::AppHandle<R>,
+) -> tauri::Result<()> {
     debug!("Dispatching rebooting event");
+
     let current_time_sec = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .expect("Time went backwards")
         .as_secs();
 
-    handle
-        .emit_all("reboot", current_time_sec)
-        .expect("Failed to dispatch rebooting event");
+    handle.emit_all("reboot", current_time_sec)?;
+
+    Ok(())
 }

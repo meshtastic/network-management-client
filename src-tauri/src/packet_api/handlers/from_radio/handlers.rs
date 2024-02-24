@@ -1,78 +1,107 @@
+use log::debug;
 use meshtastic::protobufs;
 
 use crate::{
-    device::{helpers::get_current_time_u32, MeshChannel, MeshDevice, SerialDeviceStatus},
-    packet_api::handlers::{DeviceUpdateError, DeviceUpdateMetadata},
+    device::{helpers::get_current_time_u32, MeshChannel, SerialDeviceStatus},
+    ipc::{events, ConfigurationStatus},
+    packet_api::{handlers::DeviceUpdateError, MeshPacketApi},
 };
 
-pub fn handle_channel_packet(
-    device: &mut MeshDevice,
-    update_result: &mut DeviceUpdateMetadata,
+pub fn handle_channel_packet<R: tauri::Runtime>(
+    packet_api: &mut MeshPacketApi<R>,
+
     channel: protobufs::Channel,
 ) -> Result<(), DeviceUpdateError> {
-    device.add_channel(MeshChannel {
+    packet_api.device.add_channel(MeshChannel {
         config: channel,
         last_interaction: get_current_time_u32(),
         messages: vec![],
     });
 
-    update_result.device_updated = true;
+    events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
+        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
 
     Ok(())
 }
 
-pub fn handle_config_packet(
-    device: &mut MeshDevice,
-    update_result: &mut DeviceUpdateMetadata,
+pub fn handle_config_packet<R: tauri::Runtime>(
+    packet_api: &mut MeshPacketApi<R>,
+
     config: protobufs::Config,
 ) -> Result<(), DeviceUpdateError> {
-    device.set_config(config);
-    update_result.device_updated = true;
+    packet_api.device.set_config(config);
+
+    events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
+        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
 
     Ok(())
 }
 
-pub fn handle_module_config_packet(
-    device: &mut MeshDevice,
-    update_result: &mut DeviceUpdateMetadata,
+pub fn handle_module_config_packet<R: tauri::Runtime>(
+    packet_api: &mut MeshPacketApi<R>,
+
     module_config: protobufs::ModuleConfig,
 ) -> Result<(), DeviceUpdateError> {
-    device.set_module_config(module_config);
-    update_result.device_updated = true;
+    packet_api.device.set_module_config(module_config);
+
+    events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
+        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
 
     Ok(())
 }
 
-pub fn handle_config_complete_packet(
-    device: &mut MeshDevice,
-    update_result: &mut DeviceUpdateMetadata,
+pub fn handle_config_complete_packet<R: tauri::Runtime>(
+    packet_api: &mut MeshPacketApi<R>,
 ) -> Result<(), DeviceUpdateError> {
-    device.set_status(SerialDeviceStatus::Configured);
+    packet_api.device.set_status(SerialDeviceStatus::Configured);
 
-    update_result.device_updated = true;
-    update_result.configuration_success = true;
+    events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
+        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+
+    if packet_api.device.status == SerialDeviceStatus::Configured {
+        debug!(
+            "Emitting successful configuration of device \"{}\"",
+            packet_api.device_key.clone()
+        );
+
+        events::dispatch_configuration_status(
+            &packet_api.app_handle,
+            ConfigurationStatus {
+                device_key: packet_api.device_key.clone(),
+                successful: true,
+                message: None,
+            },
+        )
+        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+
+        packet_api.device.set_status(SerialDeviceStatus::Connected);
+    }
 
     Ok(())
 }
 
-pub fn handle_my_node_info_packet(
-    device: &mut MeshDevice,
-    update_result: &mut DeviceUpdateMetadata,
+pub fn handle_my_node_info_packet<R: tauri::Runtime>(
+    packet_api: &mut MeshPacketApi<R>,
+
     my_node_info: protobufs::MyNodeInfo,
 ) -> Result<(), DeviceUpdateError> {
-    device.set_my_node_info(my_node_info);
-    update_result.device_updated = true;
+    packet_api.device.set_my_node_info(my_node_info);
+
+    events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
+        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
 
     Ok(())
 }
 
-pub fn handle_node_info_packet(
-    device: &mut MeshDevice,
-    update_result: &mut DeviceUpdateMetadata,
+pub fn handle_node_info_packet<R: tauri::Runtime>(
+    packet_api: &mut MeshPacketApi<R>,
+
     node_info: protobufs::NodeInfo,
 ) -> Result<(), DeviceUpdateError> {
-    device.add_node_info(node_info);
-    update_result.device_updated = true;
+    packet_api.device.add_node_info(node_info);
+
+    events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
+        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
 
     Ok(())
 }

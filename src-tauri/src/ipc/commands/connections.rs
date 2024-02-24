@@ -10,6 +10,7 @@ use crate::state::DeviceKey;
 use log::debug;
 use meshtastic::connections::stream_api::StreamApi;
 use std::time::Duration;
+use tauri::Manager;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
@@ -58,7 +59,12 @@ where
     // Initialize device and StreamApi instances
 
     let device = device::MeshDevice::new();
-    let mut packet_api = MeshPacketApi::new(app_handle.clone(), device, mesh_graph.inner.clone());
+    let mut packet_api = MeshPacketApi::new(
+        app_handle.app_handle(),
+        device_key.clone(),
+        device,
+        mesh_graph.inner.clone(),
+    );
 
     let stream_api = StreamApi::new();
 
@@ -104,7 +110,7 @@ where
 
     // Spawn decoded packet handler to route decoded packets
 
-    spawn_decoded_handler(handle, decoded_listener, mesh_devices_arc, device_key);
+    spawn_decoded_handler(decoded_listener, mesh_devices_arc, device_key);
 
     Ok(())
 }
