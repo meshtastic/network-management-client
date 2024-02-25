@@ -19,7 +19,7 @@ pub fn handle_channel_packet<R: tauri::Runtime>(
     });
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
@@ -32,7 +32,7 @@ pub fn handle_config_packet<R: tauri::Runtime>(
     packet_api.device.set_config(config);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
@@ -45,7 +45,7 @@ pub fn handle_module_config_packet<R: tauri::Runtime>(
     packet_api.device.set_module_config(module_config);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
@@ -56,7 +56,7 @@ pub fn handle_config_complete_packet<R: tauri::Runtime>(
     packet_api.device.set_status(SerialDeviceStatus::Configured);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     if packet_api.device.status == SerialDeviceStatus::Configured {
         debug!(
@@ -72,7 +72,7 @@ pub fn handle_config_complete_packet<R: tauri::Runtime>(
                 message: None,
             },
         )
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
         packet_api.device.set_status(SerialDeviceStatus::Connected);
     }
@@ -88,22 +88,28 @@ pub fn handle_my_node_info_packet<R: tauri::Runtime>(
     packet_api.device.set_my_node_info(my_node_info);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
 
 pub fn handle_node_info_packet<R: tauri::Runtime>(
     packet_api: &mut MeshPacketApi<R>,
-
     node_info: protobufs::NodeInfo,
 ) -> Result<(), DeviceUpdateError> {
-    packet_api.device.add_node_info(node_info);
+    packet_api.device.add_node_info(node_info.clone());
+
+    let mut graph = packet_api
+        .get_locked_graph()
+        .map_err(|e| DeviceUpdateError::GeneralFailure(e.to_string()))?;
+
+    graph.update_from_node_info(node_info);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
-    log::warn!("Graph regeneration not implemented");
+    events::dispatch_updated_graph(&packet_api.app_handle, graph.clone())
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }

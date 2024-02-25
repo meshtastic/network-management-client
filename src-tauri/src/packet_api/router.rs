@@ -68,7 +68,7 @@ impl<R: tauri::Runtime> PacketRouter<(), DeviceUpdateError> for MeshPacketApi<R>
             protobufs::from_radio::PayloadVariant::Rebooted(_) => {
                 debug!("Device rebooting");
                 events::dispatch_rebooting_event(&self.app_handle)
-                    .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+                    .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
             }
             protobufs::from_radio::PayloadVariant::XmodemPacket(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported("xmodem".into()));

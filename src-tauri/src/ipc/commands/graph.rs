@@ -8,7 +8,7 @@ pub async fn get_graph_state(
 ) -> Result<MeshGraph, CommandError> {
     debug!("Called get_graph_state command");
 
-    let mesh_graph_handle = mesh_graph.inner.lock().await;
+    let mesh_graph_handle = mesh_graph.inner.lock().map_err(|e| e.to_string())?;
     let mesh_graph = mesh_graph_handle.clone();
 
     Ok(mesh_graph)

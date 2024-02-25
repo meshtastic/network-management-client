@@ -1,5 +1,4 @@
-use crate::device;
-// use crate::{ipc::commands::GraphGeoJSONResult};
+use crate::{device, graph::ds::graph::MeshGraph};
 use log::{debug, trace};
 use tauri::Manager;
 
@@ -40,6 +39,17 @@ pub fn dispatch_rebooting_event<R: tauri::Runtime>(
         .as_secs();
 
     handle.emit_all("reboot", current_time_sec)?;
+
+    Ok(())
+}
+
+pub fn dispatch_updated_graph<R: tauri::Runtime>(
+    handle: &tauri::AppHandle<R>,
+    graph: MeshGraph,
+) -> tauri::Result<()> {
+    debug!("Dispatching updated graph arc");
+
+    handle.emit_all("graph_update", graph)?;
 
     Ok(())
 }

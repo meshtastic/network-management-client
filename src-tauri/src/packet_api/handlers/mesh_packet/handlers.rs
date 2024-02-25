@@ -25,7 +25,7 @@ pub fn handle_user_mesh_packet<R: tauri::Runtime>(
     packet_api.device.add_user(UserPacket { packet, data });
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
@@ -39,14 +39,22 @@ pub fn handle_position_mesh_packet<R: tauri::Runtime>(
     let data = protobufs::Position::decode(data.payload.as_slice())
         .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
-    packet_api
-        .device
-        .add_position(PositionPacket { packet, data });
+    packet_api.device.add_position(PositionPacket {
+        packet,
+        data: data.clone(),
+    });
+
+    let mut graph = packet_api
+        .get_locked_graph()
+        .map_err(|e| DeviceUpdateError::GeneralFailure(e.to_string()))?;
+
+    graph.update_from_position(data);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
-    log::warn!("Graph regeneration not implemented");
+    events::dispatch_updated_graph(&packet_api.app_handle, graph.clone())
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
@@ -110,7 +118,7 @@ pub fn handle_routing_mesh_packet<R: tauri::Runtime>(
                     }
 
                     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-                        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+                        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
                 }
             }
             protobufs::routing::Variant::RouteReply(r) => {
@@ -139,7 +147,7 @@ pub fn handle_telemetry_mesh_packet<R: tauri::Runtime>(
         .set_device_metrics(TelemetryPacket { packet, data });
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
@@ -166,7 +174,7 @@ pub fn handle_text_message_mesh_packet<R: tauri::Runtime>(
 
     // Always keep updates at bottom in case of failure during functions
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Notification::new(
         packet_api
@@ -180,7 +188,7 @@ pub fn handle_text_message_mesh_packet<R: tauri::Runtime>(
     .title(format!("{} in {}", from_user_name, channel_name))
     .body(data)
     .notify(&packet_api.app_handle)
-    .map_err(|e| DeviceUpdateError::NotificationError(e.to_string()))?;
+    .map_err(|e| DeviceUpdateError::NotificationDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
@@ -209,7 +217,7 @@ pub fn handle_waypoint_mesh_packet<R: tauri::Runtime>(
         .unwrap_or_else(|| "Unknown channel".into());
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Notification::new(
         packet_api
@@ -226,7 +234,7 @@ pub fn handle_waypoint_mesh_packet<R: tauri::Runtime>(
         converted_data.name, converted_data.latitude, converted_data.longitude
     ))
     .notify(&packet_api.app_handle)
-    .map_err(|e| DeviceUpdateError::NotificationError(e.to_string()))?;
+    .map_err(|e| DeviceUpdateError::NotificationDispatchFailure(e.to_string()))?;
 
     Ok(())
 }
@@ -240,14 +248,22 @@ pub fn handle_neighbor_info_mesh_packet<R: tauri::Runtime>(
     let data = protobufs::NeighborInfo::decode(data.payload.as_slice())
         .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
-    packet_api
-        .device
-        .add_neighborinfo(NeighborInfoPacket { packet, data });
+    packet_api.device.add_neighborinfo(NeighborInfoPacket {
+        packet,
+        data: data.clone(),
+    });
+
+    let mut graph = packet_api
+        .get_locked_graph()
+        .map_err(|e| DeviceUpdateError::GeneralFailure(e.to_string()))?;
+
+    graph.update_from_neighbor_info(data);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
-        .map_err(|e| DeviceUpdateError::DispatchError(e.to_string()))?;
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
-    log::warn!("Graph regeneration not implemented");
+    events::dispatch_updated_graph(&packet_api.app_handle, graph.clone())
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())
 }

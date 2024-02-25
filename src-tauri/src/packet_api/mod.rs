@@ -1,7 +1,6 @@
-use std::sync::Arc;
+use std::sync::{Arc, LockResult, Mutex};
 
 // use meshtastic::connections::stream_api::{state::Configured, StreamApi};
-use tokio::sync::Mutex;
 
 use crate::{device::MeshDevice, graph::ds::graph::MeshGraph, state::DeviceKey};
 
@@ -28,5 +27,9 @@ impl<R: tauri::Runtime> MeshPacketApi<R> {
             device,
             graph_arc,
         }
+    }
+
+    pub fn get_locked_graph(&self) -> LockResult<std::sync::MutexGuard<MeshGraph>> {
+        self.graph_arc.lock()
     }
 }

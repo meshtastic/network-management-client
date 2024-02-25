@@ -9,8 +9,8 @@ pub enum DeviceUpdateError {
     RadioMessageNotSupported(String),
     DecodeFailure(String),
     GeneralFailure(String),
-    DispatchError(String),
-    NotificationError(String),
+    EventDispatchFailure(String),
+    NotificationDispatchFailure(String),
 }
 
 impl fmt::Display for DeviceUpdateError {
@@ -39,13 +39,13 @@ impl fmt::Display for DeviceUpdateError {
                     failure_reason
                 ))?;
             }
-            DeviceUpdateError::DispatchError(ref dispatch_error) => {
+            DeviceUpdateError::EventDispatchFailure(ref dispatch_error) => {
                 f.write_fmt(format_args!(
                     "Failed to dispatch device to client:\n{}",
                     dispatch_error
                 ))?;
             }
-            DeviceUpdateError::NotificationError(ref notification_error) => {
+            DeviceUpdateError::NotificationDispatchFailure(ref notification_error) => {
                 f.write_fmt(format_args!(
                     "Failed to send system-level notification:\n{}",
                     notification_error
