@@ -1,6 +1,7 @@
 use log::debug;
-use meshtastic::connections::PacketRouter;
+use meshtastic::packet::PacketRouter;
 use meshtastic::protobufs;
+use meshtastic::types::NodeId;
 
 use crate::ipc::events;
 
@@ -11,8 +12,8 @@ use super::handlers::{
 use super::MeshPacketApi;
 
 impl<R: tauri::Runtime> PacketRouter<(), DeviceUpdateError> for MeshPacketApi<R> {
-    fn get_source_node_id(&self) -> u32 {
-        self.device.my_node_info.my_node_num
+    fn source_node_id(&self) -> NodeId {
+        NodeId::new(self.device.my_node_info.my_node_num)
     }
 
     fn handle_packet_from_radio(

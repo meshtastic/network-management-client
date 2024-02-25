@@ -8,7 +8,9 @@ use crate::state;
 use crate::state::DeviceKey;
 
 use log::debug;
-use meshtastic::connections::stream_api::StreamApi;
+use meshtastic::api::{StreamApi, StreamHandle};
+use meshtastic::utils::stream::build_serial_stream;
+use meshtastic::utils::stream::build_tcp_stream;
 use std::time::Duration;
 use tauri::Manager;
 use tokio::io::AsyncReadExt;
@@ -45,7 +47,7 @@ pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
 }
 
 async fn create_new_connection<S>(
-    stream: S,
+    stream: StreamHandle<S>,
     device_key: DeviceKey,
     timeout_duration: Duration,
     app_handle: tauri::AppHandle,
@@ -78,7 +80,11 @@ where
     packet_api
         .device
         .set_status(SerialDeviceStatus::Configuring);
-    let stream_api = stream_api.configure(packet_api.device.config_id).await?;
+
+    let stream_api = stream_api
+        .configure(packet_api.device.config_id)
+        .await
+        .map_err(|e| e.to_string())?;
 
     // Persist connection in Tauri state
 
@@ -133,7 +139,8 @@ pub async fn connect_to_serial_port(
 
     // Create serial connection stream
 
-    let stream = StreamApi::build_serial_stream(port_name.clone(), baud_rate, dtr, rts)?;
+    let stream =
+        build_serial_stream(port_name.clone(), baud_rate, dtr, rts).map_err(|e| e.to_string())?;
 
     // Create and persist new connection
 
@@ -166,7 +173,9 @@ pub async fn connect_to_tcp_port(
 
     // Create TCP connection stream
 
-    let stream = StreamApi::build_tcp_stream(address.clone()).await?;
+    let stream = build_tcp_stream(address.clone())
+        .await
+        .map_err(|e| e.to_string())?;
 
     // Create and persist new connection
 
@@ -235,7 +244,7 @@ pub async fn drop_all_device_connections(
         // Disconnect from all open connections and empty HashMap
 
         for (_, connection) in connections_guard.drain() {
-            connection.disconnect().await?;
+            connection.disconnect().await.map_err(|e| e.to_string())?;
         }
 
         // Set all state devices as disconnected and empty HashMap

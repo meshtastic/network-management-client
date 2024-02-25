@@ -28,7 +28,10 @@ pub async fn update_device_config(
         .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
-    connection.update_config(packet_api, config).await?;
+    connection
+        .update_config(packet_api, config)
+        .await
+        .map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -53,7 +56,11 @@ pub async fn update_device_user(
         .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
-    connection.update_user(packet_api, user).await?;
+    connection
+        .update_user(packet_api, user)
+        .await
+        .map_err(|e| e.to_string())
+        .map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -81,7 +88,11 @@ pub async fn start_configuration_transaction(
         return Err("Configuration transaction already started".into());
     }
 
-    connection.start_config_transaction().await?;
+    connection
+        .start_config_transaction()
+        .await
+        .map_err(|e| e.to_string())?;
+
     packet_api.device.config_in_progress = true;
 
     Ok(())
@@ -110,7 +121,11 @@ pub async fn commit_configuration_transaction(
         return Err("Configuration transaction not started".into());
     }
 
-    connection.commit_config_transaction().await?;
+    connection
+        .commit_config_transaction()
+        .await
+        .map_err(|e| e.to_string())?;
+
     packet_api.device.config_in_progress = false;
 
     Ok(())
@@ -136,27 +151,36 @@ pub async fn update_device_config_bulk(
         .get_mut(&device_key)
         .ok_or("Radio connection not initialized")?;
 
-    connection.start_config_transaction().await?;
+    connection
+        .start_config_transaction()
+        .await
+        .map_err(|e| e.to_string())?;
 
     if let Some(radio_config) = config.radio {
         connection
             .set_local_config(packet_api, radio_config)
-            .await?;
+            .await
+            .map_err(|e| e.to_string())?;
     }
 
     if let Some(module_config) = config.module {
         connection
             .set_local_module_config(packet_api, module_config)
-            .await?;
+            .await
+            .map_err(|e| e.to_string())?;
     }
 
     if let Some(channel_config) = config.channels {
         connection
             .set_message_channel_config(packet_api, channel_config)
-            .await?;
+            .await
+            .map_err(|e| e.to_string())?;
     }
 
-    connection.commit_config_transaction().await?;
+    connection
+        .commit_config_transaction()
+        .await
+        .map_err(|e| e.to_string())?;
 
     events::dispatch_updated_device(&app_handle, &packet_api.device).map_err(|e| e.to_string())?;
 

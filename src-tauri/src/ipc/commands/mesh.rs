@@ -4,7 +4,8 @@ use crate::ipc::CommandError;
 use crate::state::{self, DeviceKey};
 
 use log::{debug, trace};
-use meshtastic::connections::PacketDestination;
+use meshtastic::packet::PacketDestination;
+use meshtastic::types::MeshChannel;
 
 #[tauri::command]
 pub async fn send_text(
@@ -34,9 +35,10 @@ pub async fn send_text(
             text.clone(),
             PacketDestination::Broadcast,
             true,
-            channel,
+            MeshChannel::new(channel).map_err(|e| e.to_string())?,
         )
-        .await?;
+        .await
+        .map_err(|e| e.to_string())?;
 
     events::dispatch_updated_device(&app_handle, &packet_api.device).map_err(|e| e.to_string())?;
 
@@ -71,9 +73,10 @@ pub async fn send_waypoint(
             waypoint.into(),
             PacketDestination::Broadcast,
             true,
-            channel,
+            MeshChannel::new(channel).map_err(|e| e.to_string())?,
         )
-        .await?;
+        .await
+        .map_err(|e| e.to_string())?;
 
     events::dispatch_updated_device(&app_handle, &packet_api.device).map_err(|e| e.to_string())?;
 

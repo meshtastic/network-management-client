@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use log::{debug, trace, warn};
-use meshtastic::connections::PacketRouter;
+use meshtastic::packet::PacketRouter;
 use meshtastic::protobufs;
 use tokio::sync::mpsc::UnboundedReceiver;
 

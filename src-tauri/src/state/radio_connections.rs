@@ -1,11 +1,11 @@
-use meshtastic::connections::stream_api::{state::Configured, StreamApi};
+use meshtastic::api::ConnectedStreamApi;
 use std::{collections::HashMap, sync::Arc};
 use tauri::async_runtime;
 
 use super::DeviceKey;
 
 pub type RadioConnectionsStateInner =
-    Arc<async_runtime::Mutex<HashMap<DeviceKey, StreamApi<Configured>>>>;
+    Arc<async_runtime::Mutex<HashMap<DeviceKey, ConnectedStreamApi>>>;
 
 pub struct RadioConnectionsState {
     pub inner: RadioConnectionsStateInner,
