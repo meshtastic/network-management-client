@@ -3,4 +3,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
-pub struct GraphEdge {}
+pub struct GraphEdge {
+    snr: f64,
+}

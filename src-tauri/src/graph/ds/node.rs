@@ -1,6 +1,6 @@
-// use std::time::Duration;
+use std::time::Duration;
 
-// use chrono::NaiveDateTime;
+use chrono::NaiveDateTime;
 use meshtastic::ts::specta::{self, Type};
 use serde::{Deserialize, Serialize};
 
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GraphNode {
-    // pub node_num: u32,
-    // pub last_heard: NaiveDateTime,
-    // pub timeout_duration: Duration,
+    pub node_num: u32,
+    pub last_heard: NaiveDateTime,
+    pub timeout_duration: Duration,
 }
