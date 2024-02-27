@@ -15,7 +15,6 @@ use meshtastic::Message;
 
 pub fn handle_user_mesh_packet<R: tauri::Runtime>(
     packet_api: &mut MeshPacketApi<R>,
-
     packet: protobufs::MeshPacket,
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
@@ -32,7 +31,6 @@ pub fn handle_user_mesh_packet<R: tauri::Runtime>(
 
 pub fn handle_position_mesh_packet<R: tauri::Runtime>(
     packet_api: &mut MeshPacketApi<R>,
-
     packet: protobufs::MeshPacket,
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
@@ -40,7 +38,7 @@ pub fn handle_position_mesh_packet<R: tauri::Runtime>(
         .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
     packet_api.device.add_position(PositionPacket {
-        packet,
+        packet: packet.clone(),
         data: data.clone(),
     });
 
@@ -48,7 +46,7 @@ pub fn handle_position_mesh_packet<R: tauri::Runtime>(
         .get_locked_graph()
         .map_err(|e| DeviceUpdateError::GeneralFailure(e.to_string()))?;
 
-    graph.update_from_position(data);
+    graph.update_from_position(packet, data);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
         .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
@@ -61,7 +59,6 @@ pub fn handle_position_mesh_packet<R: tauri::Runtime>(
 
 pub fn handle_routing_mesh_packet<R: tauri::Runtime>(
     packet_api: &mut MeshPacketApi<R>,
-
     packet: protobufs::MeshPacket,
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
@@ -135,7 +132,6 @@ pub fn handle_routing_mesh_packet<R: tauri::Runtime>(
 
 pub fn handle_telemetry_mesh_packet<R: tauri::Runtime>(
     packet_api: &mut MeshPacketApi<R>,
-
     packet: protobufs::MeshPacket,
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
@@ -154,7 +150,6 @@ pub fn handle_telemetry_mesh_packet<R: tauri::Runtime>(
 
 pub fn handle_text_message_mesh_packet<R: tauri::Runtime>(
     packet_api: &mut MeshPacketApi<R>,
-
     packet: protobufs::MeshPacket,
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
@@ -195,7 +190,6 @@ pub fn handle_text_message_mesh_packet<R: tauri::Runtime>(
 
 pub fn handle_waypoint_mesh_packet<R: tauri::Runtime>(
     packet_api: &mut MeshPacketApi<R>,
-
     packet: protobufs::MeshPacket,
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
@@ -241,7 +235,6 @@ pub fn handle_waypoint_mesh_packet<R: tauri::Runtime>(
 
 pub fn handle_neighbor_info_mesh_packet<R: tauri::Runtime>(
     packet_api: &mut MeshPacketApi<R>,
-
     packet: protobufs::MeshPacket,
     data: protobufs::Data,
 ) -> Result<(), DeviceUpdateError> {
@@ -249,7 +242,7 @@ pub fn handle_neighbor_info_mesh_packet<R: tauri::Runtime>(
         .map_err(|e| DeviceUpdateError::DecodeFailure(e.to_string()))?;
 
     packet_api.device.add_neighborinfo(NeighborInfoPacket {
-        packet,
+        packet: packet.clone(),
         data: data.clone(),
     });
 
@@ -257,7 +250,7 @@ pub fn handle_neighbor_info_mesh_packet<R: tauri::Runtime>(
         .get_locked_graph()
         .map_err(|e| DeviceUpdateError::GeneralFailure(e.to_string()))?;
 
-    graph.update_from_neighbor_info(data);
+    graph.update_from_neighbor_info(packet, data);
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
         .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
