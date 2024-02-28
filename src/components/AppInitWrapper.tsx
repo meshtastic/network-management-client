@@ -6,6 +6,7 @@ import {
   useCreateConfigStatusChannel,
   useCreateDeviceDisconnectChannel,
   useCreateDeviceUpdateChannel,
+  useCreateGraphUpdateChannel,
   useCreateRebootChannel,
 } from "@api/events";
 import { useAppConfigApi } from "@features/appConfig/api";
@@ -18,6 +19,7 @@ export const AppInitWrapper = ({ children }: PropsWithChildren) => {
   const createDeviceDisconnectChannel = useCreateDeviceDisconnectChannel();
   const createConfigStatusChannel = useCreateConfigStatusChannel();
   const createRebootChannel = useCreateRebootChannel();
+  const createGraphUpdateChannel = useCreateGraphUpdateChannel();
 
   const [hasLoaded, setLoaded] = useState(false);
 
@@ -40,6 +42,7 @@ export const AppInitWrapper = ({ children }: PropsWithChildren) => {
     const unlistenDeviceDisconnect = await createDeviceDisconnectChannel();
     const unlistenConfigStatus = await createConfigStatusChannel();
     const unlistenReboot = await createRebootChannel();
+    const unlistenGraphUpdate = await createGraphUpdateChannel();
 
     setLoaded(true);
 
@@ -48,6 +51,7 @@ export const AppInitWrapper = ({ children }: PropsWithChildren) => {
       unlistenDeviceDisconnect();
       unlistenConfigStatus();
       unlistenReboot();
+      unlistenGraphUpdate();
     };
   }, []);
 

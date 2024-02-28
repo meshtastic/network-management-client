@@ -2,11 +2,13 @@ import { listen } from "@tauri-apps/api/event";
 import { useDispatch } from "react-redux";
 import { warn } from "tauri-plugin-log-api";
 
+import { MeshGraph } from "@app/types/graph";
 import { app_device_MeshDevice } from "@bindings/index";
 
 import { connectionSliceActions } from "@features/connection/slice";
 import { deviceSliceActions } from "@features/device/slice";
 import { useDeviceApi } from "@features/device/api";
+import { graphSliceActions } from "@features/graph/slice";
 
 import { DeviceKey } from "@utils/connections";
 
@@ -92,6 +94,20 @@ export const useCreateRebootChannel = () => {
       const reboot_time = new Date(rebootTimestampSec * 1000);
       warn(`Rebooting at ${reboot_time}`);
       window.location.reload();
+    });
+
+    return unlisten;
+  };
+
+  return createChannel;
+};
+
+export const useCreateGraphUpdateChannel = () => {
+  const dispatch = useDispatch();
+
+  const createChannel = async () => {
+    const unlisten = await listen<MeshGraph>("graph_update", (event) => {
+      dispatch(graphSliceActions.setGraph(event.payload));
     });
 
     return unlisten;
