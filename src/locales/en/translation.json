@@ -51,6 +51,7 @@
     "settingsGroup": "Settings",
     "applicationState": "Application State",
     "applicationSettings": "Application Settings",
+    "graphDebugger": "Graph Debugger",
     "expand": "Expand Sidebar",
     "collapse": "Collapse Sidebar"
   },
@@ -470,7 +471,9 @@
       }
     }
   },
-  "applicationState": { "title": "Application State" },
+  "applicationState": {
+    "title": "Application State"
+  },
   "applicationSettings": {
     "title": "Settings",
     "saveChanges": "Save Changes",

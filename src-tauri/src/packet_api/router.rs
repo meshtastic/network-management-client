@@ -1,22 +1,25 @@
-use meshtastic::connections::PacketRouter;
+use log::debug;
+use meshtastic::packet::PacketRouter;
 use meshtastic::protobufs;
+use meshtastic::types::NodeId;
 
-use crate::device::MeshDevice;
+use crate::ipc::events;
 
-use super::{
+use super::handlers::{
     from_radio::handlers as from_radio_handlers, mesh_packet::handlers as mesh_packet_handlers,
-    DeviceUpdateError, DeviceUpdateMetadata,
+    DeviceUpdateError,
 };
+use super::MeshPacketApi;
 
-impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
-    fn get_source_node_id(&self) -> u32 {
-        self.my_node_info.my_node_num
+impl<R: tauri::Runtime> PacketRouter<(), DeviceUpdateError> for MeshPacketApi<R> {
+    fn source_node_id(&self) -> NodeId {
+        NodeId::new(self.device.my_node_info.my_node_num)
     }
 
     fn handle_packet_from_radio(
         &mut self,
         packet: protobufs::FromRadio,
-    ) -> Result<DeviceUpdateMetadata, DeviceUpdateError> {
+    ) -> Result<(), DeviceUpdateError> {
         let variant = match packet.payload_variant {
             Some(v) => v,
             None => {
@@ -26,17 +29,15 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
             }
         };
 
-        let mut update_result = DeviceUpdateMetadata::new();
-
         match variant {
             protobufs::from_radio::PayloadVariant::Channel(channel) => {
-                from_radio_handlers::handle_channel_packet(self, &mut update_result, channel)?;
+                from_radio_handlers::handle_channel_packet(self, channel)?;
             }
             protobufs::from_radio::PayloadVariant::Config(config) => {
-                from_radio_handlers::handle_config_packet(self, &mut update_result, config)?;
+                from_radio_handlers::handle_config_packet(self, config)?;
             }
             protobufs::from_radio::PayloadVariant::ConfigCompleteId(_) => {
-                from_radio_handlers::handle_config_complete_packet(self, &mut update_result)?;
+                from_radio_handlers::handle_config_complete_packet(self)?;
             }
             protobufs::from_radio::PayloadVariant::LogRecord(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported(
@@ -49,24 +50,16 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
                 ));
             }
             protobufs::from_radio::PayloadVariant::ModuleConfig(module_config) => {
-                from_radio_handlers::handle_module_config_packet(
-                    self,
-                    &mut update_result,
-                    module_config,
-                )?;
+                from_radio_handlers::handle_module_config_packet(self, module_config)?;
             }
             protobufs::from_radio::PayloadVariant::MyInfo(my_node_info) => {
-                from_radio_handlers::handle_my_node_info_packet(
-                    self,
-                    &mut update_result,
-                    my_node_info,
-                )?;
+                from_radio_handlers::handle_my_node_info_packet(self, my_node_info)?;
             }
             protobufs::from_radio::PayloadVariant::NodeInfo(node_info) => {
-                from_radio_handlers::handle_node_info_packet(self, &mut update_result, node_info)?;
+                from_radio_handlers::handle_node_info_packet(self, node_info)?;
             }
             protobufs::from_radio::PayloadVariant::Packet(mesh_packet) => {
-                update_result = self.handle_mesh_packet(mesh_packet)?;
+                self.handle_mesh_packet(mesh_packet)?;
             }
             protobufs::from_radio::PayloadVariant::QueueStatus(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported(
@@ -74,7 +67,9 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
                 ));
             }
             protobufs::from_radio::PayloadVariant::Rebooted(_) => {
-                update_result.rebooting = true;
+                debug!("Device rebooting");
+                events::dispatch_rebooting_event(&self.app_handle)
+                    .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
             }
             protobufs::from_radio::PayloadVariant::XmodemPacket(_) => {
                 return Err(DeviceUpdateError::RadioMessageNotSupported("xmodem".into()));
@@ -86,14 +81,13 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
             }
         };
 
-        Ok(update_result)
+        Ok(())
     }
 
     fn handle_mesh_packet(
         &mut self,
         packet: protobufs::MeshPacket,
-    ) -> Result<DeviceUpdateMetadata, DeviceUpdateError> {
-        let mut update_result = DeviceUpdateMetadata::new();
+    ) -> Result<(), DeviceUpdateError> {
         let variant = packet
             .clone()
             .payload_variant
@@ -117,20 +111,10 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
                     return Err(DeviceUpdateError::PacketNotSupported("IP tunnel".into()));
                 }
                 protobufs::PortNum::NodeinfoApp => {
-                    mesh_packet_handlers::handle_user_mesh_packet(
-                        self,
-                        &mut update_result,
-                        packet,
-                        data,
-                    )?;
+                    mesh_packet_handlers::handle_user_mesh_packet(self, packet, data)?;
                 }
                 protobufs::PortNum::PositionApp => {
-                    mesh_packet_handlers::handle_position_mesh_packet(
-                        self,
-                        &mut update_result,
-                        packet,
-                        data,
-                    )?;
+                    mesh_packet_handlers::handle_position_mesh_packet(self, packet, data)?;
                 }
                 protobufs::PortNum::PrivateApp => {
                     return Err(DeviceUpdateError::PacketNotSupported("admin".into()));
@@ -147,12 +131,7 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
                     return Err(DeviceUpdateError::PacketNotSupported("reply".into()));
                 }
                 protobufs::PortNum::RoutingApp => {
-                    mesh_packet_handlers::handle_routing_mesh_packet(
-                        self,
-                        &mut update_result,
-                        packet,
-                        data,
-                    )?;
+                    mesh_packet_handlers::handle_routing_mesh_packet(self, packet, data)?;
                 }
                 protobufs::PortNum::SerialApp => {
                     return Err(DeviceUpdateError::PacketNotSupported("serial".into()));
@@ -166,20 +145,10 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
                     ));
                 }
                 protobufs::PortNum::TelemetryApp => {
-                    mesh_packet_handlers::handle_telemetry_mesh_packet(
-                        self,
-                        &mut update_result,
-                        packet,
-                        data,
-                    )?;
+                    mesh_packet_handlers::handle_telemetry_mesh_packet(self, packet, data)?;
                 }
                 protobufs::PortNum::TextMessageApp => {
-                    mesh_packet_handlers::handle_text_message_mesh_packet(
-                        self,
-                        &mut update_result,
-                        packet,
-                        data,
-                    )?;
+                    mesh_packet_handlers::handle_text_message_mesh_packet(self, packet, data)?;
                 }
                 protobufs::PortNum::TextMessageCompressedApp => {
                     return Err(DeviceUpdateError::PacketNotSupported(
@@ -187,23 +156,13 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
                     ));
                 }
                 protobufs::PortNum::WaypointApp => {
-                    mesh_packet_handlers::handle_waypoint_mesh_packet(
-                        self,
-                        &mut update_result,
-                        packet,
-                        data,
-                    )?;
+                    mesh_packet_handlers::handle_waypoint_mesh_packet(self, packet, data)?;
                 }
                 protobufs::PortNum::ZpsApp => {
                     return Err(DeviceUpdateError::PacketNotSupported("ZPS".into()));
                 }
                 protobufs::PortNum::NeighborinfoApp => {
-                    mesh_packet_handlers::handle_neighbor_info_mesh_packet(
-                        self,
-                        &mut update_result,
-                        packet,
-                        data,
-                    )?;
+                    mesh_packet_handlers::handle_neighbor_info_mesh_packet(self, packet, data)?;
                 }
                 protobufs::PortNum::TracerouteApp => {
                     return Err(DeviceUpdateError::PacketNotSupported("traceroute".into()));
@@ -229,6 +188,6 @@ impl PacketRouter<DeviceUpdateMetadata, DeviceUpdateError> for MeshDevice {
             }
         }
 
-        Ok(update_result)
+        Ok(())
     }
 }

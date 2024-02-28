@@ -12,6 +12,7 @@ import {
   Map,
   MapPin,
   MessagesSquare,
+  Network,
   RadioTower,
   Router,
   Settings,
@@ -131,6 +132,15 @@ export const Sidebar = () => {
             title={t("sidebar.settingsGroup")}
             isSidebarExpanded={isSidebarExpanded}
           >
+            <SidebarIcon
+              name={t("sidebar.graphDebugger")}
+              isActive={location.pathname === AppRoutes.GRAPH_DEBUGGER}
+              isSidebarExpanded={isSidebarExpanded}
+              onClick={() => navigateTo(AppRoutes.GRAPH_DEBUGGER)}
+            >
+              <Network strokeWidth={1.5} className="w-6 h-6" />
+            </SidebarIcon>
+
             <SidebarIcon
               name={t("sidebar.applicationState")}
               isActive={location.pathname === AppRoutes.APPLICATION_STATE}

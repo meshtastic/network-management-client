@@ -10,7 +10,6 @@ use self::helpers::{
     normalize_location_field,
 };
 
-pub mod handlers;
 pub mod helpers;
 pub mod state;
 

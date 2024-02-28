@@ -15,6 +15,7 @@ import { MessagingPage } from "@components/pages/MessagingPage";
 import { ApplicationSettingsPage } from "@components/pages/config/ApplicationSettingsPage";
 import { ChannelConfigPage } from "@components/pages/config/ChannelConfigPage";
 import { RadioConfigPage } from "@components/pages/config/RadioConfigPage";
+import { GraphDebuggerPage } from "@components/pages/GraphDebuggerPage";
 
 import { AppRoutes } from "@utils/routing";
 
@@ -77,6 +78,12 @@ export const App = () => {
             path={AppRoutes.APPLICATION_SETTINGS}
             element={<ApplicationSettingsPage />}
           />
+
+          <Route
+            path={AppRoutes.GRAPH_DEBUGGER}
+            element={<GraphDebuggerPage />}
+          />
+
           <Route path="*" element={<FallbackPage />} />
         </Route>
       </Routes>

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use log::{debug, trace, warn};
+use log::{debug, trace};
 use meshtastic::protobufs;
 
 use super::helpers::get_current_time_u32;
@@ -275,23 +275,21 @@ impl MeshDevice {
     }
 
     pub fn add_neighborinfo(&mut self, neighborinfo: NeighborInfoPacket) {
-        let existing_node = self.neighbors.get_mut(&neighborinfo.packet.from);
+        let result = self
+            .neighbors
+            .insert(neighborinfo.packet.from, neighborinfo.clone());
 
-        warn!("NOT FULLY IMPLEMENTED");
-
-        if existing_node.is_some() {
+        if result.is_some() {
             debug!(
-                "Updating neighborinfo of existing node {:?}: {:?}",
+                "Updated neighborinfo of existing node {:?}: {:?}",
                 neighborinfo.packet.from, neighborinfo.data
             );
         } else {
             debug!(
-                "Adding neighborinfo to new node {:?}: {:?}",
+                "Added neighborinfo to new node {:?}: {:?}",
                 neighborinfo.packet.from, neighborinfo.data
             );
         }
-        self.neighbors
-            .insert(neighborinfo.packet.from, neighborinfo);
     }
 
     pub fn add_text_message(&mut self, message: TextPacket) {
