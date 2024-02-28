@@ -147,7 +147,7 @@ pub async fn connect_to_serial_port(
     create_new_connection(
         stream,
         port_name,
-        Duration::from_millis(3000),
+        Duration::from_millis(15000),
         app_handle,
         mesh_devices,
         radio_connections,
@@ -182,7 +182,7 @@ pub async fn connect_to_tcp_port(
     create_new_connection(
         stream,
         address,
-        Duration::from_millis(3000),
+        Duration::from_millis(15000),
         app_handle,
         mesh_devices,
         radio_connections,
