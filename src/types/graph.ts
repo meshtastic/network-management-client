@@ -12,4 +12,5 @@ export interface StableGraph {
 
 export interface MeshGraph {
   graph: StableGraph;
+  nodesLookup: Record<number, app_graph_ds_node_GraphNode>;
 }

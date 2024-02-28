@@ -7,15 +7,27 @@ use meshtastic::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(
-    Debug, Clone, Serialize, Deserialize, Copy, Hash, PartialEq, Eq, PartialOrd, Ord, Type,
-)]
+#[derive(Debug, Clone, Serialize, Deserialize, Copy, Hash, PartialOrd, Ord, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct GraphNode {
     pub node_num: u32,
     pub last_heard: NaiveDateTime,
     pub timeout_duration: Duration,
 }
+
+impl PartialEq<GraphNode> for GraphNode {
+    fn eq(&self, other: &GraphNode) -> bool {
+        self.node_num == other.node_num
+    }
+}
+
+impl PartialEq<u32> for GraphNode {
+    fn eq(&self, other: &u32) -> bool {
+        self.node_num == *other
+    }
+}
+
+impl Eq for GraphNode {}
 
 impl From<Neighbor> for GraphNode {
     fn from(neighbor: Neighbor) -> Self {
