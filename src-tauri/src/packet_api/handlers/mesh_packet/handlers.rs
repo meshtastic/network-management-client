@@ -42,7 +42,16 @@ pub fn handle_position_mesh_packet<R: tauri::Runtime>(
         data: data.clone(),
     });
 
+    let mut graph = packet_api
+        .get_locked_graph()
+        .map_err(|e| DeviceUpdateError::GeneralFailure(e.to_string()))?;
+
+    graph.update_from_position(packet, data);
+
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
+        .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
+
+    events::dispatch_updated_graph(&packet_api.app_handle, graph.clone())
         .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
 
     Ok(())

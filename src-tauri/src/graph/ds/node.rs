@@ -3,7 +3,7 @@ use std::time::Duration;
 use chrono::NaiveDateTime;
 use log::trace;
 use meshtastic::{
-    protobufs::Neighbor,
+    protobufs::{self, Neighbor},
     ts::specta::{self, Type},
 };
 use serde::{Deserialize, Serialize};
@@ -31,6 +31,33 @@ impl PartialEq<u32> for GraphNode {
 }
 
 impl Eq for GraphNode {}
+
+impl From<protobufs::NeighborInfo> for GraphNode {
+    fn from(neighbor_info: protobufs::NeighborInfo) -> Self {
+        let timeout_secs: u64 = if neighbor_info.node_broadcast_interval_secs == 0 {
+            trace!(
+                "Using default node timeout duration for neighbor info from node {}",
+                neighbor_info.node_id
+            );
+            DEFAULT_NODE_TIMEOUT_DURATION.as_secs()
+        } else {
+            neighbor_info.node_broadcast_interval_secs as u64
+        };
+
+        log::debug!(
+            "Updating node from neighbor info {}, timing out in {} seconds",
+            neighbor_info.node_id,
+            timeout_secs
+        );
+
+        Self {
+            node_num: neighbor_info.node_id,
+            last_heard: NaiveDateTime::from_timestamp_millis(chrono::Utc::now().timestamp_millis())
+                .expect("Failed to convert timestamp to NaiveDateTime"),
+            timeout_duration: Duration::from_secs(timeout_secs),
+        }
+    }
+}
 
 impl From<Neighbor> for GraphNode {
     fn from(neighbor: Neighbor) -> Self {

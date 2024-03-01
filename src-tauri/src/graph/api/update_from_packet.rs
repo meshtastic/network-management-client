@@ -19,10 +19,12 @@ impl MeshGraph {
 
         // Update own node
 
-        let own_node = GraphNode {
-            node_num: packet.from,
-            last_heard: chrono::Utc::now().naive_utc(),
-            timeout_duration: DEFAULT_NODE_TIMEOUT_DURATION,
+        let own_node = match self.get_node(packet.from) {
+            Some(node) => GraphNode {
+                last_heard: chrono::Utc::now().naive_utc(),
+                ..node
+            },
+            None => neighbor_info.clone().into(),
         };
 
         self.upsert_node(own_node.clone());
@@ -44,5 +46,26 @@ impl MeshGraph {
                 GraphEdge::from_neighbor(own_node.node_num, neighbor),
             );
         }
+    }
+
+    pub fn update_from_position(&mut self, packet: MeshPacket, _position: protobufs::Position) {
+        log::info!(
+            "Updating graph from position packet from node {}",
+            packet.from
+        );
+
+        let own_node = match self.get_node(packet.from) {
+            Some(node) => GraphNode {
+                last_heard: chrono::Utc::now().naive_utc(),
+                ..node
+            },
+            None => GraphNode {
+                node_num: packet.from,
+                last_heard: chrono::Utc::now().naive_utc(),
+                timeout_duration: DEFAULT_NODE_TIMEOUT_DURATION,
+            },
+        };
+
+        self.upsert_node(own_node);
     }
 }
