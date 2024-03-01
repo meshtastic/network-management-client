@@ -9,11 +9,16 @@
     ]
   },
   "organizeImports": {
-    "enabled": true
+    "enabled": false
   },
   "linter": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
     "ignore": [
-      "src/bindings/index.ts"
+      "src/bindings/index.ts",
+      "src/locales/**/*"
     ],
     "enabled": true,
     "rules": {
