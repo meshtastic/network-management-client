@@ -14,6 +14,7 @@ import { NodeSearchInput } from "@components/NodeSearch/NodeSearchInput";
 import { NodeSearchResult } from "@components/NodeSearch/NodeSearchResult";
 
 import { selectAllNodes, selectDevice } from "@features/device/selectors";
+import { selectGraph } from "@features/graph/selectors";
 import { selectMapUIState } from "@features/map/selectors";
 import { mapSliceActions } from "@features/map/slice";
 import { selectActiveNodeId } from "@features/ui/selectors";
@@ -39,7 +40,7 @@ const _NodeSearchDock = ({
   if (!filteredNodes.length && !!device) {
     return (
       <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
-        <Trans i18nKey="map.panes.search.noResults" values={{ query }} />
+        <Trans i18nKey="map.panes.search.noResults" />
       </p>
     );
   }
@@ -63,8 +64,25 @@ const _NodeSearchDock = ({
 };
 
 const filterNodes =
-  (query: string) =>
+  (graphNodes: Set<number>, query: string) =>
   (node: app_device_MeshNode): boolean => {
+    if (!graphNodes.has(node.nodeNum)) return false;
+
+    const lastPositionMetric = node.positionMetrics.at(
+      node.positionMetrics.length - 1,
+    );
+
+    if (!lastPositionMetric) {
+      return false;
+    }
+
+    if (
+      lastPositionMetric.latitude === 0 &&
+      lastPositionMetric.longitude === 0
+    ) {
+      return false;
+    }
+
     // Show all nodes on empty query
     if (!query) {
       return true;
@@ -88,6 +106,13 @@ export const NodeSearchDock = () => {
 
   const dispatch = useDispatch();
   const { [MapIDs.MapView]: map } = useMap();
+
+  const graph = useSelector(selectGraph());
+
+  const graphNodes: Set<number> = new Set();
+  for (const node of graph?.nodes || []) {
+    graphNodes.add(node.nodeNum);
+  }
 
   const nodes = useSelector(selectAllNodes());
   const device = useSelector(selectDevice());
@@ -133,7 +158,7 @@ export const NodeSearchDock = () => {
       {searchDockExpanded && (
         <div className="flex flex-col gap-4 px-4 py-3 default-overlay overflow-auto hide-scrollbar max-h-72">
           <_NodeSearchDock
-            filteredNodes={nodes.filter(filterNodes(query))}
+            filteredNodes={nodes.filter(filterNodes(graphNodes, query))}
             device={device}
             activeNodeId={activeNodeId}
             query={query}

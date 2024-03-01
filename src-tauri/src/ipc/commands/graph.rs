@@ -2,7 +2,11 @@ use std::time::Duration;
 
 use log::{debug, error, info};
 
-use crate::{graph::ds::graph::MeshGraph, ipc::CommandError, state};
+use crate::{
+    graph::ds::graph::MeshGraph,
+    ipc::{events::dispatch_updated_graph, CommandError},
+    state,
+};
 
 pub const DEFAULT_GRAPH_CLEAN_SECONDS: u64 = 60;
 
@@ -20,6 +24,7 @@ pub async fn get_graph_state(
 
 #[tauri::command]
 pub async fn initialize_timeout_handler(
+    app_handle: tauri::AppHandle,
     mesh_graph_state: tauri::State<'_, state::graph::GraphState>,
 ) -> Result<(), CommandError> {
     debug!("Called initialize_timeout_handler command");
@@ -39,6 +44,8 @@ pub async fn initialize_timeout_handler(
             DEFAULT_GRAPH_CLEAN_SECONDS
         );
 
+        let app_handle = app_handle;
+
         loop {
             tokio::time::sleep(Duration::from_secs(DEFAULT_GRAPH_CLEAN_SECONDS)).await;
 
@@ -54,6 +61,9 @@ pub async fn initialize_timeout_handler(
                 };
 
                 mesh_graph_handle.clean();
+
+                dispatch_updated_graph(&app_handle, mesh_graph_handle.clone())
+                    .expect("Error dispatching updated graph event");
             }
 
             debug!(

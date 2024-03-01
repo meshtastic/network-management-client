@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use chrono::NaiveDateTime;
+use log::trace;
 use meshtastic::{
     protobufs::Neighbor,
     ts::specta::{self, Type},
@@ -22,13 +23,18 @@ pub struct GraphEdge {
 impl GraphEdge {
     pub fn from_neighbor(to_node_id: u32, neighbor: Neighbor) -> Self {
         let timeout_secs: u64 = if neighbor.node_broadcast_interval_secs == 0 {
+            trace!(
+                "Using default edge timeout duration for edge between {} and {}",
+                neighbor.node_id,
+                to_node_id
+            );
             DEFAULT_NODE_TIMEOUT_DURATION.as_secs()
         } else {
             neighbor.node_broadcast_interval_secs as u64
         };
 
         log::debug!(
-            "Updating edge from neighbor between {} to {}, timing out in {} seconds",
+            "Creating edge from neighbor between {} to {}, timing out in {} seconds",
             neighbor.node_id,
             to_node_id,
             timeout_secs

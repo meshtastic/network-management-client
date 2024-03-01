@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use chrono::NaiveDateTime;
+use log::trace;
 use meshtastic::{
     protobufs::Neighbor,
     ts::specta::{self, Type},
@@ -34,6 +35,10 @@ impl Eq for GraphNode {}
 impl From<Neighbor> for GraphNode {
     fn from(neighbor: Neighbor) -> Self {
         let timeout_secs: u64 = if neighbor.node_broadcast_interval_secs == 0 {
+            trace!(
+                "Using default node timeout duration for neighbor from node {}",
+                neighbor.node_id
+            );
             DEFAULT_NODE_TIMEOUT_DURATION.as_secs()
         } else {
             neighbor.node_broadcast_interval_secs as u64

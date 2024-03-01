@@ -4,7 +4,7 @@ import * as Separator from "@radix-ui/react-separator";
 import { PickingInfo } from "deck.gl/typed";
 import { MapPin, X } from "lucide-react";
 import maplibregl from "maplibre-gl";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LngLat,
@@ -110,26 +110,16 @@ export const MapView = () => {
     [activeNodeId, dispatch],
   );
 
-  const layers = useMemo(
-    () => [
-      createGraphEdgesLayer(graph, nodes, setEdgeHoverInfo), // Need this above nodes
-      createGraphNodesLayer(
-        graph,
-        nodes,
-        activeNodeId,
-        handleNodeClick,
-        setNodeHoverInfo,
-      ),
-    ],
-    [
+  const layers = [
+    createGraphEdgesLayer(graph, nodes, setEdgeHoverInfo), // Need this above nodes
+    createGraphNodesLayer(
       graph,
       nodes,
       activeNodeId,
       handleNodeClick,
       setNodeHoverInfo,
-      setEdgeHoverInfo,
-    ],
-  );
+    ),
+  ];
 
   const handleClick = () => {
     // Clear right click menu while saving value

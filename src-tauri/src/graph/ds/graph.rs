@@ -41,7 +41,7 @@ impl MeshGraph {
 }
 
 impl MeshGraph {
-    pub fn add_node(&mut self, node: GraphNode) -> GraphNode {
+    fn add_node(&mut self, node: GraphNode) -> GraphNode {
         let created_node = self.graph.add_node(node);
         self.nodes_lookup.insert(node.node_num, node);
         created_node
@@ -55,30 +55,37 @@ impl MeshGraph {
         self.nodes_lookup.contains_key(&node_num)
     }
 
-    pub fn update_node(&mut self, node: GraphNode) -> GraphNode {
-        self.remove_node(node.node_num);
+    pub fn upsert_node(&mut self, node: GraphNode) -> GraphNode {
+        if self.contains_node(node.node_num) {
+            self.remove_node(node.node_num);
+        }
+
         self.add_node(node)
     }
 
     pub fn remove_node(&mut self, node_num: u32) -> Option<GraphNode> {
-        let helper_node = GraphNode {
-            node_num,
-            last_heard: chrono::Utc::now().naive_utc(),
-            timeout_duration: std::time::Duration::from_secs(30),
-        };
+        let graph_node = self.get_node(node_num)?;
 
-        self.graph.remove_node(helper_node);
+        if self.graph.remove_node(graph_node) == false {
+            log::error!("Node with num {} not removed from graph", node_num);
+            return None;
+        }
+
         self.nodes_lookup.remove(&node_num)
     }
 }
 
 impl MeshGraph {
-    pub fn add_edge(
+    pub fn upsert_edge(
         &mut self,
         source: GraphNode,
         target: GraphNode,
         edge: edge::GraphEdge,
     ) -> Option<edge::GraphEdge> {
+        if self.graph.contains_edge(source, target) {
+            self.remove_edge(source, target); // Remove the edge if it exists
+        }
+
         self.graph.add_edge(source, target, edge)
     }
 
@@ -91,33 +98,24 @@ impl MeshGraph {
     pub fn clean(&mut self) {
         let now = chrono::Utc::now().naive_utc();
 
+        // Edges will be removed if either the source or target node is removed
         let mut nodes_to_remove = vec![];
-        let mut edges_to_remove = vec![];
 
-        for node in self.graph.nodes() {
+        for node in self.nodes_lookup.values() {
             if now - node.last_heard
                 > chrono::TimeDelta::from_std(node.timeout_duration)
                     .expect("Duration out of range of TimeDelta")
             {
-                nodes_to_remove.push(node);
-            }
-
-            for (edge_from, edge_to, edge) in self.graph.edges(node) {
-                if now - edge.last_heard
-                    > chrono::TimeDelta::from_std(edge.timeout_duration)
-                        .expect("Duration out of range of TimeDelta")
-                {
-                    edges_to_remove.push((edge_from, edge_to));
-                }
+                log::trace!("Node {} has timed out", node.node_num);
+                nodes_to_remove.push(node.node_num);
+            } else {
+                log::trace!("Node {} has not timed out", node.node_num);
             }
         }
 
-        for node in nodes_to_remove {
-            self.remove_node(node.node_num);
-        }
-
-        for (edge_from, edge_to) in edges_to_remove {
-            self.graph.remove_edge(edge_from, edge_to);
+        for node_num in nodes_to_remove {
+            self.remove_node(node_num);
+            log::debug!("Node {} removed from graph", node_num);
         }
     }
 }
