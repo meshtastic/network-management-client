@@ -59,7 +59,7 @@
     "panes": {
       "search": {
         "placeholder": "Filter nodes",
-        "noResults": "No results for \"{{query}}\"",
+        "noResults": "No nodes found",
         "collapseList": "Collapse node list",
         "expandList": "Expand node list",
         "selectNode": "Show node on map",

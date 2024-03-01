@@ -5,6 +5,7 @@ import { appConfigReducer } from "@features/appConfig/slice";
 import { configReducer } from "@features/config/slice";
 import { connectionReducer } from "@features/connection/slice";
 import { deviceReducer } from "@features/device/slice";
+import { graphReducer } from "@features/graph/slice";
 import { mapReducer } from "@features/map/slice";
 import { requestReducer } from "@features/requests/slice";
 import { uiReducer } from "@features/ui/slice";
@@ -17,6 +18,7 @@ export const store = configureStore({
     config: configReducer,
     connection: connectionReducer,
     devices: deviceReducer,
+    graph: graphReducer,
     map: mapReducer,
     requests: requestReducer,
     ui: uiReducer,

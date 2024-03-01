@@ -86,6 +86,8 @@ export type meshtastic_protobufs_DeviceMetadata = { firmwareVersion: string; dev
  */
 export type meshtastic_protobufs_NetworkConnectionStatus = { ipAddress: number; isConnected: boolean; isMqttConnected: boolean; isSyslogConnected: boolean }
 
+export type app_graph_ds_edge_GraphEdge = { snr: number; from: number; to: number; lastHeard: string; timeoutDuration: string }
+
 /**
  * 
  * Payload Variant
@@ -723,8 +725,6 @@ export type meshtastic_protobufs_hardware_message_Type = "unset" | "writeGpios" 
  */
 export type meshtastic_protobufs_NeighborInfo = { nodeId: number; lastSentById: number; nodeBroadcastIntervalSecs: number; neighbors: meshtastic_protobufs_Neighbor[] }
 
-export type app_graph_ds_edge_GraphEdge = { snr: number; from: number; to: number }
-
 /**
  * 
  * Shared constants between device and phone
@@ -751,6 +751,8 @@ export type meshtastic_protobufs_AdminMessage = { payloadVariant: meshtastic_pro
  * A Routing control Data packet handled by the routing module
  */
 export type meshtastic_protobufs_Routing = { variant: meshtastic_protobufs_routing_Variant | null }
+
+export type app_graph_ds_node_GraphNode = { nodeNum: number; lastHeard: string; timeoutDuration: string }
 
 /**
  * 
@@ -805,8 +807,6 @@ export type meshtastic_protobufs_store_and_forward_Heartbeat = { period: number;
 export type meshtastic_protobufs_config_DeviceConfig = { role: number; serialEnabled: boolean; debugLogEnabled: boolean; buttonGpio: number; buzzerGpio: number; rebroadcastMode: number; nodeInfoBroadcastSecs: number; doubleTapAsButtonPress: boolean; isManaged: boolean }
 
 export type app_device_MeshNodeDeviceMetrics = { metrics: meshtastic_protobufs_DeviceMetrics; timestamp: number; snr: number }
-
-export type app_graph_ds_node_GraphNode = { nodeNum: number; lastHeard: string; timeoutDuration: string }
 
 /**
  * 
