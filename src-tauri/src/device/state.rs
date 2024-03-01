@@ -229,15 +229,17 @@ impl MeshDevice {
         let found_node = self.nodes.get_mut(&user.packet.from);
 
         if let Some(node) = found_node {
-            debug!(
+            trace!(
                 "Updating user of existing node {:?}: {:?}",
-                user.packet.from, user.data
+                user.packet.from,
+                user.data
             );
             node.user = Some(user.data);
         } else {
-            debug!(
+            trace!(
                 "Adding user to new node {:?}: {:?}",
-                user.packet.from, user.data
+                user.packet.from,
+                user.data
             );
 
             let mut new_node = MeshNode::new(self.my_node_info.my_node_num);
@@ -256,15 +258,17 @@ impl MeshDevice {
         let found_node = self.nodes.get_mut(&position.packet.from);
 
         if let Some(node) = found_node {
-            debug!(
+            trace!(
                 "Updating position of existing node {:?}: {:?}",
-                position.packet.from, position.data
+                position.packet.from,
+                position.data
             );
             node.position_metrics.push(position.data.into());
         } else {
-            debug!(
+            trace!(
                 "Adding position to new node {:?}: {:?}",
-                position.packet.from, position.data
+                position.packet.from,
+                position.data
             );
 
             let mut new_node = MeshNode::new(self.my_node_info.my_node_num);
@@ -280,14 +284,16 @@ impl MeshDevice {
             .insert(neighborinfo.packet.from, neighborinfo.clone());
 
         if result.is_some() {
-            debug!(
+            trace!(
                 "Updated neighborinfo of existing node {:?}: {:?}",
-                neighborinfo.packet.from, neighborinfo.data
+                neighborinfo.packet.from,
+                neighborinfo.data
             );
         } else {
-            debug!(
+            trace!(
                 "Added neighborinfo to new node {:?}: {:?}",
-                neighborinfo.packet.from, neighborinfo.data
+                neighborinfo.packet.from,
+                neighborinfo.data
             );
         }
     }

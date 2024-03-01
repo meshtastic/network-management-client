@@ -36,7 +36,7 @@ humantime = "2.1.0"
 tokio-util = "0.7.7"
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tokio-serial = "5.4.4"
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"] }
 chrono = { version = "0.4.34", features = ["serde"] }
 meshtastic = { git = "https://github.com/meshtastic/rust", branch = "main", features = ["ts-gen"] }
 

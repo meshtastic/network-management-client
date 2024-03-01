@@ -71,7 +71,7 @@ pub fn spawn_decoded_handler(
 ) {
     tauri::async_runtime::spawn(async move {
         while let Some(packet) = decoded_listener.recv().await {
-            debug!("Received packet from device: {:?}", packet);
+            trace!("Received packet from device: {:?}", packet);
 
             let mut devices_guard = connected_devices_arc.lock().await;
             let packet_api = match devices_guard

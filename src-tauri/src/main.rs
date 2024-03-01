@@ -16,7 +16,7 @@ use meshtastic::ts::specta::{
     ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior, TsExportError},
 };
 use tauri::Manager;
-use tauri_plugin_log::LogTarget;
+use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
 
 fn export_ts_types(file_path: &str) -> Result<(), TsExportError> {
     let ts_export_config = ExportConfiguration::default()
@@ -26,15 +26,19 @@ fn export_ts_types(file_path: &str) -> Result<(), TsExportError> {
     ts_with_cfg(file_path, &ts_export_config)
 }
 
+#[cfg(debug_assertions)]
+const LOG_LEVEL: LevelFilter = LevelFilter::Debug;
+
+#[cfg(not(debug_assertions))]
+const LOG_LEVEL: LevelFilter = LevelFilter::Trace;
+
 fn main() {
     tauri::Builder::default()
         .plugin(
             tauri_plugin_log::Builder::default()
-                .target(LogTarget::LogDir)
-                .level(LevelFilter::Debug)
-                .target(LogTarget::Stdout)
-                .level(LevelFilter::Info)
-                .target(LogTarget::Webview)
+                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
+                .level(LOG_LEVEL)
+                .with_colors(ColoredLevelConfig::default())
                 .build(),
         )
         .plugin(tauri_plugin_store::Builder::default().build())
