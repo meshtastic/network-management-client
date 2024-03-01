@@ -4,7 +4,7 @@ use meshtastic::protobufs::{self, MeshPacket};
 
 use crate::graph::ds::{edge::GraphEdge, graph::MeshGraph, node::GraphNode};
 
-pub const DEFAULT_NODE_TIMEOUT_DURATION: Duration = Duration::from_secs(2 * 60);
+pub const DEFAULT_NODE_TIMEOUT_DURATION: Duration = Duration::from_secs(15 * 60);
 
 impl MeshGraph {
     pub fn update_from_neighbor_info(
