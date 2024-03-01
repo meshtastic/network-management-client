@@ -78,6 +78,8 @@ fn main() {
             ipc::commands::radio::commit_configuration_transaction,
             ipc::commands::radio::update_device_config_bulk,
             ipc::commands::graph::get_graph_state,
+            ipc::commands::graph::initialize_timeout_handler,
+            ipc::commands::graph::stop_timeout_handler,
         ])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application");

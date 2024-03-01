@@ -2,6 +2,8 @@ import { PropsWithChildren, useEffect, useState } from "react";
 import { attachConsole } from "tauri-plugin-log-api";
 import { info } from "tauri-plugin-log-api";
 
+import * as backendGraphApi from "@api/graph";
+
 import {
   useCreateConfigStatusChannel,
   useCreateDeviceDisconnectChannel,
@@ -25,6 +27,11 @@ export const AppInitWrapper = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     appConfigApi.initializeAppConfig();
+    backendGraphApi.initializeTimeoutHandler();
+
+    return () => {
+      backendGraphApi.stopTimeoutHandler();
+    };
   }, []);
 
   useAsyncUnlistenUseEffect(async () => {

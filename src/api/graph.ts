@@ -6,3 +6,18 @@ export const fetchGraph = async () => {
 
   return response;
 };
+
+export const initializeTimeoutHandler = async () => {
+  const response = (await invoke(
+    "initialize_timeout_handler",
+    {},
+  )) as undefined;
+
+  return response;
+};
+
+export const stopTimeoutHandler = async () => {
+  const response = (await invoke("stop_timeout_handler", {})) as undefined;
+
+  return response;
+};

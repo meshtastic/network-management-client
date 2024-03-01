@@ -3,7 +3,7 @@ import { CollisionFilterExtension } from "@deck.gl/extensions/typed";
 
 import { MeshGraph } from "@app/types/graph";
 import { app_device_MeshNode } from "@bindings/index";
-import { warn } from "tauri-plugin-log-api";
+import { trace } from "tauri-plugin-log-api";
 
 const convertGraphNodesToFeatureCollection = (
   graph: MeshGraph["graph"],
@@ -13,7 +13,7 @@ const convertGraphNodesToFeatureCollection = (
     const ownNode = nodes.find((n) => n.nodeNum === node.nodeNum);
 
     if (!ownNode) {
-      warn(`No node found for graph node ${node.nodeNum}`);
+      trace(`No node found for graph node ${node.nodeNum}`);
       return accum;
     }
 
@@ -21,14 +21,14 @@ const convertGraphNodesToFeatureCollection = (
       ownNode.positionMetrics[ownNode.positionMetrics.length - 1];
 
     if (!lastPositionMetric) {
-      warn(`No position metrics for node ${ownNode.nodeNum}`);
+      trace(`No position metrics for node ${ownNode.nodeNum}`);
       return accum;
     }
 
     const { latitude, longitude } = lastPositionMetric;
 
     if (!latitude || !longitude) {
-      warn(`No latitude or longitude for node ${ownNode.nodeNum}`);
+      trace(`No latitude or longitude for node ${ownNode.nodeNum}`);
       return accum;
     }
 

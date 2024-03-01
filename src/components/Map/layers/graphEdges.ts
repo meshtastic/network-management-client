@@ -1,4 +1,4 @@
-import { warn } from "tauri-plugin-log-api";
+import { trace } from "tauri-plugin-log-api";
 import { GeoJsonLayer, GeoJsonLayerProps } from "deck.gl/typed";
 import { PathStyleExtension } from "@deck.gl/extensions/typed";
 
@@ -17,7 +17,7 @@ const convertGraphEdgesToFeatureCollection = (
       const targetGraphNode = graph.nodes[toNodeIndex] ?? null;
 
       if (!sourceGraphNode || !targetGraphNode) {
-        warn("Missing source or target graph node for edge");
+        trace("Missing source or target graph node for edge");
         return accum;
       }
 
@@ -25,7 +25,7 @@ const convertGraphEdgesToFeatureCollection = (
       const targetNode = nodes.find((node) => node.nodeNum === toNodeNum);
 
       if (!sourceNode || !targetNode) {
-        warn("Missing source or target node for edge");
+        trace("Missing source or target node for edge");
         return accum;
       }
 
@@ -35,7 +35,7 @@ const convertGraphEdgesToFeatureCollection = (
         targetNode.positionMetrics[targetNode.positionMetrics.length - 1];
 
       if (!lastSourcePositionMetric || !lastTargetPositionMetric) {
-        warn("Missing source or target position metric for edge");
+        trace("Missing source or target position metric for edge");
         return accum;
       }
 
@@ -43,7 +43,7 @@ const convertGraphEdgesToFeatureCollection = (
         !lastSourcePositionMetric.latitude ||
         !lastSourcePositionMetric.longitude
       ) {
-        warn("Missing source latitude or longitude for edge");
+        trace("Missing source latitude or longitude for edge");
         return accum;
       }
 
@@ -51,7 +51,7 @@ const convertGraphEdgesToFeatureCollection = (
         !lastTargetPositionMetric.latitude ||
         !lastTargetPositionMetric.longitude
       ) {
-        warn("Missing target latitude or longitude for edge");
+        trace("Missing target latitude or longitude for edge");
         return accum;
       }
 

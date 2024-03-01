@@ -4,7 +4,7 @@ use meshtastic::protobufs::{self, MeshPacket};
 
 use crate::graph::ds::{edge::GraphEdge, graph::MeshGraph, node::GraphNode};
 
-pub const DEFAULT_TIMEOUT_DURATION: Duration = Duration::from_secs(15 * 60);
+pub const DEFAULT_NODE_TIMEOUT_DURATION: Duration = Duration::from_secs(15 * 60);
 
 impl MeshGraph {
     pub fn update_from_neighbor_info(
@@ -22,7 +22,7 @@ impl MeshGraph {
         let own_node = GraphNode {
             node_num: packet.from,
             last_heard: chrono::Utc::now().naive_utc(),
-            timeout_duration: DEFAULT_TIMEOUT_DURATION,
+            timeout_duration: DEFAULT_NODE_TIMEOUT_DURATION,
         };
 
         self.add_node(own_node.clone());
@@ -59,7 +59,7 @@ impl MeshGraph {
                 let new_graph_node = GraphNode {
                     node_num: node_info.num,
                     last_heard: chrono::Utc::now().naive_utc(),
-                    timeout_duration: DEFAULT_TIMEOUT_DURATION,
+                    timeout_duration: DEFAULT_NODE_TIMEOUT_DURATION,
                 };
                 new_graph_node
             }
