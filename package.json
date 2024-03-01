@@ -13,7 +13,7 @@
     "ui:lint": "biome lint src",
     "ui:format": "biome format --write src",
     "ui:check": "biome check src",
-    "ui:check:ci": "biome ci src",
+    "ui:check:ci": "biome ci src --config-path=.",
     "ui:test": "jest --passWithNoTests",
     "ui:preview": "vite preview"
   },
