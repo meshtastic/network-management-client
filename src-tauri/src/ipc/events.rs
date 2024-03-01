@@ -47,7 +47,7 @@ pub fn dispatch_updated_graph<R: tauri::Runtime>(
     handle: &tauri::AppHandle<R>,
     graph: MeshGraph,
 ) -> tauri::Result<()> {
-    debug!("Dispatching updated graph arc");
+    debug!("Dispatching updated graph");
 
     handle.emit_all("graph_update", graph)?;
 

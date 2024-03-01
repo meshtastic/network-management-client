@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { invoke } from "@tauri-apps/api";
 import {
   GraphCanvas,
   GraphNode as VisGraphNode,
@@ -9,29 +8,26 @@ import {
 } from "reagraph";
 import uniqBy from "lodash.uniqby";
 
-import { MeshGraph } from "@app/types/graph";
 import { NavigationBacktrace } from "@components/NavigationBacktrace";
 import { selectAllNodes } from "@features/device/selectors";
+import { useGraphApi } from "@features/graph/api";
+import { selectGraph } from "@features/graph/selectors";
 
 export const GraphDebuggerPage = () => {
   const { t } = useTranslation();
 
-  const [graph, setGraph] = useState<MeshGraph | null>(null);
+  const graphApi = useGraphApi();
 
+  const graph = useSelector(selectGraph());
   const nodes = useSelector(selectAllNodes());
 
-  const fetchGraph = async () => {
-    const graph: MeshGraph = await invoke("get_graph_state");
-    setGraph(graph);
-  };
-
   useEffect(() => {
-    fetchGraph();
+    graphApi.fetchGraph();
   }, []);
 
   const graphNodes =
     uniqBy(
-      graph?.graph.nodes.map<VisGraphNode>((n) => ({
+      graph?.nodes.map<VisGraphNode>((n) => ({
         id: `${n.nodeNum}`,
         label:
           nodes.find((sn) => sn.nodeNum === n.nodeNum)?.user?.longName ||
@@ -42,7 +38,7 @@ export const GraphDebuggerPage = () => {
 
   const graphEdges =
     uniqBy(
-      graph?.graph.edges.map<VisGraphEdge>(([, , e]) => {
+      graph?.edges.map<VisGraphEdge>(([, , e]) => {
         return {
           source: `${e.from}`,
           target: `${e.to}`,
