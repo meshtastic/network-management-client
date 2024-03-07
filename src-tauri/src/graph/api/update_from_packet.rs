@@ -48,6 +48,35 @@ impl MeshGraph {
         }
     }
 
+    pub fn update_from_node_info(&mut self, node_info: protobufs::NodeInfo) {
+        log::info!(
+            "Updating graph from node info packet from node {}",
+            node_info.num
+        );
+
+        if node_info.position.is_none() {
+            log::info!(
+                "Node info packet from node {} has no position, not adding to graph",
+                node_info.num
+            );
+            return;
+        }
+
+        let own_node = match self.get_node(node_info.num) {
+            Some(node) => GraphNode {
+                last_heard: chrono::Utc::now().naive_utc(),
+                ..node
+            },
+            None => GraphNode {
+                node_num: node_info.num,
+                last_heard: chrono::Utc::now().naive_utc(),
+                timeout_duration: DEFAULT_NODE_TIMEOUT_DURATION,
+            },
+        };
+
+        self.upsert_node(own_node);
+    }
+
     pub fn update_from_position(&mut self, packet: MeshPacket, _position: protobufs::Position) {
         log::info!(
             "Updating graph from position packet from node {}",
