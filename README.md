@@ -119,13 +119,14 @@ This project is built in Rust and React TypeScript, and managed using the PNPM p
 
 ### Installation
 
-For the time being, the only way to run this project is to clone this repository. To do this, follow the steps below:
+To run this project locally, follow the steps below:
 
 1. Ensure you have Rust, Node.js, and PNPM installed (see [Prerequisites](#prerequisites))
-2. Clone this repositiory to a local directory. This can be done by running `git clone https://github.com/meshtastic/network-management-client.git`
-3. Recursively clone our Git submodules by running `git submodule update --init`
-4. Install all required NPM packages with `pnpm i`
-5. Once you have completed these steps, verify your installation with the `pnpm run rust:dev` command. The application should compile successfully, and you should see the application open successfully. If this process fails for you, please [let us know](https://github.com/meshtastic/network-management-client/issues)!
+2. Ensure that you have all [Tauri dependencies installed](https://tauri.app/v1/guides/getting-started/prerequisites/) (depends on your OS)
+3. Clone this repositiory to a local directory. This can be done by running `git clone https://github.com/meshtastic/network-management-client.git`
+4. Recursively clone our Git submodules by running `git submodule update --init`
+5. Install all required NPM packages with `pnpm i`
+6. Once you have completed these steps, verify your installation with the `pnpm run rust:dev` command. The application should compile successfully, and you should see the application open successfully. If this process fails for you, please [let us know](https://github.com/meshtastic/network-management-client/issues)!
 
 ### Recommended IDE Setup
 
