@@ -138,6 +138,7 @@
   "manageNodes": {
     "title": "Manage Nodes",
     "id": "ID",
+    "longName": "Long Name",
     "shortName": "Short Name",
     "noUserInfo": "No user info",
     "lastHeard": "Last Heard",
