@@ -1,6 +1,7 @@
 import { Edit3 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { warn } from "tauri-plugin-log-api";
 
 import type { app_device_MeshChannel } from "@bindings/index";
 
@@ -8,7 +9,7 @@ import { MessagingInput } from "@components/Messaging/MessagingInput";
 import { TextMessageBubble } from "@components/Messaging/TextMessageBubble";
 import { ConfigTitlebar } from "@components/config/ConfigTitlebar";
 
-import { requestSendMessage } from "@features/device/actions";
+import { useDeviceApi } from "@features/device/api";
 import { selectPrimaryDeviceKey } from "@features/device/selectors";
 
 import { getChannelName, getNumMessagesText } from "@utils/messaging";
@@ -26,6 +27,8 @@ export const ChannelDetailView = ({
   const dispatch = useDispatch();
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
 
+  const deviceApi = useDeviceApi();
+
   const navigateTo = useNavigate();
 
   const handleMessageSubmit = (message: string) => {
@@ -35,17 +38,15 @@ export const ChannelDetailView = ({
     }
 
     if (!primaryDeviceKey) {
-      console.warn("No primary serial port, not sending message");
+      warn("No primary serial port, not sending message");
       return;
     }
 
-    dispatch(
-      requestSendMessage({
-        deviceKey: primaryDeviceKey,
-        text: message,
-        channel: channel.config.index,
-      }),
-    );
+    deviceApi.sendText({
+      deviceKey: primaryDeviceKey,
+      text: message,
+      channel: channel.config.index,
+    });
   };
 
   return (

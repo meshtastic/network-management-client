@@ -20,7 +20,7 @@ import { SerialModuleConfigPage } from "@components/config/module/SerialModuleCo
 import { StoreAndForwardConfigPage } from "@components/config/module/StoreAndForwardConfigPage";
 import { TelemetryConfigPage } from "@components/config/module/TelemetryConfigPage";
 
-import { requestCommitConfig } from "@features/config/actions";
+import { useConfigApi } from "@features/config/api";
 import {
   selectCurrentModuleConfig,
   selectEditedModuleConfig,
@@ -118,6 +118,8 @@ export const ModuleConfigPage = () => {
   const currentModuleConfig = useSelector(selectCurrentModuleConfig());
   const editedModuleConfig = useSelector(selectEditedModuleConfig());
 
+  const configApi = useConfigApi();
+
   const { configKey } = useParams();
 
   const [activeOption, setActiveOption] =
@@ -135,7 +137,7 @@ export const ModuleConfigPage = () => {
         backtrace={[t("sidebar.configureModules")]}
         renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
         titleIconTooltip={t("config.uploadChanges")}
-        onTitleIconClick={() => dispatch(requestCommitConfig(["module"]))}
+        onTitleIconClick={() => configApi.commitConfig(["module"])}
         renderOptions={() =>
           Object.entries(ModuleConfigOptions).map(([k, displayName]) => {
             // * This is a limitation of Object.entries typing

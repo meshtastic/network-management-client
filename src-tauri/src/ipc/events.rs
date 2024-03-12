@@ -1,12 +1,11 @@
-use crate::device;
-// use crate::{ipc::commands::GraphGeoJSONResult};
+use crate::{device, graph::ds::graph::MeshGraph};
 use log::{debug, trace};
 use tauri::Manager;
 
 use super::ConfigurationStatus;
 
-pub fn dispatch_updated_device(
-    handle: &tauri::AppHandle,
+pub fn dispatch_updated_device<R: tauri::Runtime>(
+    handle: &tauri::AppHandle<R>,
     device: &device::MeshDevice,
 ) -> tauri::Result<()> {
     debug!("Dispatching updated device");
@@ -18,41 +17,39 @@ pub fn dispatch_updated_device(
     Ok(())
 }
 
-pub fn dispatch_updated_edges(
-    _handle: &tauri::AppHandle,
-    graph: &mut device::MeshGraph,
+pub fn dispatch_configuration_status<R: tauri::Runtime>(
+    handle: &tauri::AppHandle<R>,
+    status: ConfigurationStatus,
 ) -> tauri::Result<()> {
-    debug!("Dispatching updated edges");
+    debug!("Dispatching configuration status");
 
-    let _edges = super::helpers::generate_graph_edges_geojson(graph);
-    let _nodes = geojson::FeatureCollection {
-        bbox: None,
-        features: vec![],
-        foreign_members: None,
-    };
-
-    // * This is temporarily disabled until we can figure out how to get the graph to update in-place
-    // handle.emit_all::<GraphGeoJSONResult>("graph_update", GraphGeoJSONResult { nodes, edges })?;
-
-    debug!("Dispatched updated edges");
+    handle.emit_all("configuration_status", status)?;
 
     Ok(())
 }
 
-pub fn dispatch_configuration_status(
-    handle: &tauri::AppHandle,
-    status: ConfigurationStatus,
+pub fn dispatch_rebooting_event<R: tauri::Runtime>(
+    handle: &tauri::AppHandle<R>,
 ) -> tauri::Result<()> {
-    debug!("Dispatching configuration status");
-    handle.emit_all("configuration_status", status)
-}
-
-pub fn dispatch_rebooting_event(handle: &tauri::AppHandle) -> tauri::Result<()> {
     debug!("Dispatching rebooting event");
+
     let current_time_sec = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
+        .expect("Time went backwards")
         .as_secs();
 
-    handle.emit_all("reboot", current_time_sec)
+    handle.emit_all("reboot", current_time_sec)?;
+
+    Ok(())
+}
+
+pub fn dispatch_updated_graph<R: tauri::Runtime>(
+    handle: &tauri::AppHandle<R>,
+    graph: MeshGraph,
+) -> tauri::Result<()> {
+    debug!("Dispatching updated graph");
+
+    handle.emit_all("graph_update", graph)?;
+
+    Ok(())
 }

@@ -1,17 +1,15 @@
 #![allow(dead_code)]
 
-use log::{debug, trace, warn};
+use log::{debug, trace};
 use meshtastic::protobufs;
 
 use super::helpers::get_current_time_u32;
 use super::{
-    ChannelMessagePayload, ChannelMessageWithState, MeshChannel, MeshDevice, MeshGraph, MeshNode,
+    ChannelMessagePayload, ChannelMessageWithState, MeshChannel, MeshDevice, MeshNode,
     MeshNodeDeviceMetrics, MeshNodeEnvironmentMetrics, NeighborInfoPacket, NormalizedWaypoint,
     PositionPacket, SerialDeviceStatus, TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
 };
 
-use crate::constructors::init::init_edge_map::init_edge_map;
-use crate::constructors::init::init_graph::init_graph;
 use crate::device::{ChannelMessageState, LastHeardMetadata};
 
 impl MeshDevice {
@@ -231,15 +229,17 @@ impl MeshDevice {
         let found_node = self.nodes.get_mut(&user.packet.from);
 
         if let Some(node) = found_node {
-            debug!(
+            trace!(
                 "Updating user of existing node {:?}: {:?}",
-                user.packet.from, user.data
+                user.packet.from,
+                user.data
             );
             node.user = Some(user.data);
         } else {
-            debug!(
+            trace!(
                 "Adding user to new node {:?}: {:?}",
-                user.packet.from, user.data
+                user.packet.from,
+                user.data
             );
 
             let mut new_node = MeshNode::new(self.my_node_info.my_node_num);
@@ -258,15 +258,17 @@ impl MeshDevice {
         let found_node = self.nodes.get_mut(&position.packet.from);
 
         if let Some(node) = found_node {
-            debug!(
+            trace!(
                 "Updating position of existing node {:?}: {:?}",
-                position.packet.from, position.data
+                position.packet.from,
+                position.data
             );
             node.position_metrics.push(position.data.into());
         } else {
-            debug!(
+            trace!(
                 "Adding position to new node {:?}: {:?}",
-                position.packet.from, position.data
+                position.packet.from,
+                position.data
             );
 
             let mut new_node = MeshNode::new(self.my_node_info.my_node_num);
@@ -277,23 +279,23 @@ impl MeshDevice {
     }
 
     pub fn add_neighborinfo(&mut self, neighborinfo: NeighborInfoPacket) {
-        let existing_node = self.neighbors.get_mut(&neighborinfo.packet.from);
+        let result = self
+            .neighbors
+            .insert(neighborinfo.packet.from, neighborinfo.clone());
 
-        warn!("NOT FULLY IMPLEMENTED");
-
-        if existing_node.is_some() {
-            debug!(
-                "Updating neighborinfo of existing node {:?}: {:?}",
-                neighborinfo.packet.from, neighborinfo.data
+        if result.is_some() {
+            trace!(
+                "Updated neighborinfo of existing node {:?}: {:?}",
+                neighborinfo.packet.from,
+                neighborinfo.data
             );
         } else {
-            debug!(
-                "Adding neighborinfo to new node {:?}: {:?}",
-                neighborinfo.packet.from, neighborinfo.data
+            trace!(
+                "Added neighborinfo to new node {:?}: {:?}",
+                neighborinfo.packet.from,
+                neighborinfo.data
             );
         }
-        self.neighbors
-            .insert(neighborinfo.packet.from, neighborinfo);
     }
 
     pub fn add_text_message(&mut self, message: TextPacket) {
@@ -355,13 +357,5 @@ impl MeshDevice {
                 m.state = state;
             }
         }
-    }
-}
-
-impl MeshGraph {
-    pub fn regenerate_graph_from_device_info(&mut self, device: &MeshDevice) {
-        let edge_hashmap = init_edge_map(&device.neighbors);
-        self.graph = init_graph(&edge_hashmap, &device.nodes);
-        trace!("Graph: {:?}", self.graph);
     }
 }

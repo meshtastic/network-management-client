@@ -25,6 +25,7 @@ import {
   useMap,
 } from "react-map-gl";
 import { useDispatch, useSelector } from "react-redux";
+import { warn } from "tauri-plugin-log-api";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
@@ -34,7 +35,7 @@ import { ConnectionInput } from "@components/connection/ConnectionInput";
 import { ConnectionSwitch } from "@components/connection/ConnectionSwitch";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
-import { requestSendWaypoint } from "@features/device/actions";
+import { useDeviceApi } from "@features/device/api";
 import {
   selectDevice,
   selectDeviceChannels,
@@ -71,7 +72,6 @@ export const CreateWaypointDialog = ({
   lngLat,
   closeDialog,
   existingWaypoint,
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Functional component
 }: ICreateWaypointDialogProps) => {
   const { t } = useTranslation();
 
@@ -82,6 +82,8 @@ export const CreateWaypointDialog = ({
   const deviceChannels = useSelector(selectDeviceChannels());
   const { style } = useSelector(selectMapConfigState());
   const device = useSelector(selectDevice());
+
+  const deviceApi = useDeviceApi();
 
   const { [MapIDs.CreateWaypointDialog]: map } = useMap();
 
@@ -224,17 +226,15 @@ export const CreateWaypointDialog = ({
     };
 
     if (!primaryDeviceKey) {
-      console.warn("No primary device key port, not creating waypoint");
+      warn("No primary device key port, not creating waypoint");
       return;
     }
 
-    dispatch(
-      requestSendWaypoint({
-        deviceKey: primaryDeviceKey,
-        waypoint: createdWaypoint,
-        channel: channelNum,
-      }),
-    );
+    deviceApi.sendWaypoint({
+      deviceKey: primaryDeviceKey,
+      waypoint: createdWaypoint,
+      channel: channelNum,
+    });
 
     closeDialog();
   };

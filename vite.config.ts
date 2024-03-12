@@ -27,6 +27,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@app": resolve(__dirname, "./src"),
+      "@api": resolve(__dirname, "./src/api"),
       "@bindings": resolve(__dirname, "./src/bindings"),
       "@components": resolve(__dirname, "./src/components"),
       "@features": resolve(__dirname, "./src/features"),

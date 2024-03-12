@@ -18,7 +18,7 @@ import { NetworkConfigPage } from "@components/config/device/NetworkConfigPage";
 import { PositionConfigPage } from "@components/config/device/PositionConfigPage";
 import { PowerConfigPage } from "@components/config/device/PowerConfigPage";
 
-import { requestCommitConfig } from "@features/config/actions";
+import { useConfigApi } from "@features/config/api";
 import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
@@ -110,6 +110,8 @@ export const RadioConfigPage = () => {
   const currentRadioConfig = useSelector(selectCurrentRadioConfig());
   const editedRadioConfig = useSelector(selectEditedRadioConfig());
 
+  const configApi = useConfigApi();
+
   const { configKey } = useParams();
 
   const [activeOption, setActiveOption] =
@@ -127,7 +129,7 @@ export const RadioConfigPage = () => {
         backtrace={[t("sidebar.configureRadio")]}
         renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
         titleIconTooltip={t("config.uploadChanges")}
-        onTitleIconClick={() => dispatch(requestCommitConfig(["radio"]))}
+        onTitleIconClick={() => configApi.commitConfig(["radio"])}
         renderOptions={() =>
           Object.entries(RadioConfigOptions).map(([k, displayName]) => {
             // * This is a limitation of Object.entries typing

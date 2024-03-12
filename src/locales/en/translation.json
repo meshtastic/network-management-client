@@ -51,6 +51,7 @@
     "settingsGroup": "Settings",
     "applicationState": "Application State",
     "applicationSettings": "Application Settings",
+    "graphDebugger": "Graph Debugger",
     "expand": "Expand Sidebar",
     "collapse": "Collapse Sidebar"
   },
@@ -58,7 +59,7 @@
     "panes": {
       "search": {
         "placeholder": "Filter nodes",
-        "noResults": "No results for \"{{query}}\"",
+        "noResults": "No nodes found",
         "collapseList": "Collapse node list",
         "expandList": "Expand node list",
         "selectNode": "Show node on map",
@@ -137,6 +138,7 @@
   "manageNodes": {
     "title": "Manage Nodes",
     "id": "ID",
+    "longName": "Long Name",
     "shortName": "Short Name",
     "noUserInfo": "No user info",
     "lastHeard": "Last Heard",
@@ -470,7 +472,9 @@
       }
     }
   },
-  "applicationState": { "title": "Application State" },
+  "applicationState": {
+    "title": "Application State"
+  },
   "applicationSettings": {
     "title": "Settings",
     "saveChanges": "Save Changes",

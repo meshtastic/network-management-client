@@ -2,10 +2,11 @@ import { Copy, Lock, MapPin, Timer, TimerOff, Unlock, X } from "lucide-react";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import { warn } from "tauri-plugin-log-api";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
-import { requestDeleteWaypoint } from "@features/device/actions";
+import { useDeviceApi } from "@features/device/api";
 import {
   selectAllUsersByNodeIds,
   selectDevice,
@@ -34,12 +35,14 @@ export const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
   const device = useSelector(selectDevice());
   const usersMap = useSelector(selectAllUsersByNodeIds());
 
+  const deviceApi = useDeviceApi();
+
   // Only show if there is an active waypoint
   if (!activeWaypoint) return null;
 
   const handleEditWaypoint = () => {
     if (!primaryDeviceKey) {
-      console.warn("No primary device key set, cannot edit waypoint");
+      warn("No primary device key set, cannot edit waypoint");
       return;
     }
 
@@ -48,16 +51,14 @@ export const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
 
   const handleDeleteWaypoint = () => {
     if (!primaryDeviceKey) {
-      console.warn("No primary device key set, cannot delete waypoint");
+      warn("No primary device key set, cannot delete waypoint");
       return;
     }
 
-    dispatch(
-      requestDeleteWaypoint({
-        deviceKey: primaryDeviceKey,
-        waypointId: activeWaypoint.id,
-      }),
-    );
+    deviceApi.deleteWaypoint({
+      deviceKey: primaryDeviceKey,
+      waypointId: activeWaypoint.id,
+    });
   };
 
   const { description, latitude, longitude, expire, icon, lockedTo } =

@@ -8,7 +8,7 @@ import { ConfigLayout } from "@components/config/ConfigLayout";
 import { ConfigOption } from "@components/config/ConfigOption";
 import { ChannelConfigDetail } from "@components/config/channel/ChannelConfigDetail";
 
-import { requestCommitConfig } from "@features/config/actions";
+import { useConfigApi } from "@features/config/api";
 import { selectEditedAllChannelConfig } from "@features/config/selectors";
 import type { ChannelConfigInput } from "@features/config/slice";
 import { selectDeviceChannels } from "@features/device/selectors";
@@ -55,6 +55,8 @@ export const ChannelConfigPage = () => {
   const dispatch = useDispatch();
   const meshChannels = useSelector(selectDeviceChannels());
 
+  const configApi = useConfigApi();
+
   const { channelId } = useParams();
 
   const currentChannelConfig = useMemo(
@@ -82,7 +84,7 @@ export const ChannelConfigPage = () => {
         backtrace={[t("sidebar.configureChannels")]}
         renderTitleIcon={(c) => <Upload strokeWidth={1.5} className={`${c}`} />}
         titleIconTooltip={t("config.uploadChanges")}
-        onTitleIconClick={() => dispatch(requestCommitConfig(["channel"]))}
+        onTitleIconClick={() => configApi.commitConfig(["channel"])}
         renderOptions={() =>
           meshChannels.map((c) => {
             const displayName = getChannelName(c);

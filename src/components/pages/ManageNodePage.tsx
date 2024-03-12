@@ -28,6 +28,10 @@ export const ManageNodePage = () => {
         },
       },
       {
+        id: t("manageNodes.longName"),
+        accessorFn: (n) => n.user?.longName ?? t("manageNodes.noUserInfo"),
+      },
+      {
         id: t("manageNodes.shortName"),
         accessorFn: (n) => n.user?.shortName ?? t("manageNodes.noUserInfo"),
       },

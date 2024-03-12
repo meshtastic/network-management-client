@@ -7,11 +7,16 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v1
+      - uses: actions/checkout@v3
+      - run: git submodule update --init
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
-          version: latest
+          version: 8
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
       - name: Run Biome
-        run: biome ci src
+        run: pnpm run ui:check:ci

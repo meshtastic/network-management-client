@@ -1,15 +1,10 @@
-import {
-  CollisionFilterExtension,
-  PathStyleExtension,
-} from "@deck.gl/extensions/typed";
 import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Separator from "@radix-ui/react-separator";
-import { invoke } from "@tauri-apps/api/tauri";
-import { GeoJsonLayer, PickingInfo } from "deck.gl/typed";
+import { PickingInfo } from "deck.gl/typed";
 import { MapPin, X } from "lucide-react";
 import maplibregl from "maplibre-gl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   LngLat,
@@ -29,20 +24,21 @@ import { useDebounce } from "react-use";
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 
 import { MapSelectedNodeMenu } from "@components/Map/MapSelectedNodeMenu";
-// * Note: hiding until reimplementation
-// import AnalyticsPane from "@components/Map/AnalyticsPane";
-// import MapInteractionPane from "@components/Map/MapInteractionPane";
 import { NodeSearchDock } from "@components/NodeSearch/NodeSearchDock";
 
 import { CreateWaypointDialog } from "@components/Map/CreateWaypointDialog";
 import { MapContextOption } from "@components/Map/MapContextOption";
-import { MapEdgeTooltip } from "@components/Map/MapEdgeTooltip";
 import { MapNodeTooltip } from "@components/Map/MapNodeTooltip";
+import { MapEdgeTooltip } from "@components/Map/MapEdgeTooltip";
+import { createGraphNodesLayer } from "@components/Map/layers/graphNodes";
+import { createGraphEdgesLayer } from "@components/Map/layers/graphEdges";
+
 import { MeshWaypoint } from "@components/Waypoints/MeshWaypoint";
 import { WaypointMenu } from "@components/Waypoints/WaypointMenu";
 
 import { selectMapConfigState } from "@features/appConfig/selectors";
-import { selectAllWaypoints } from "@features/device/selectors";
+import { selectAllNodes, selectAllWaypoints } from "@features/device/selectors";
+import { selectGraph } from "@features/graph/selectors";
 import { selectMapState } from "@features/map/selectors";
 import { mapSliceActions } from "@features/map/slice";
 import {
@@ -74,10 +70,10 @@ export const MapView = () => {
   const dispatch = useDispatch();
   const activeNodeId = useSelector(selectActiveNodeId());
   const showInfoPane = useSelector(selectInfoPane());
+  const graph = useSelector(selectGraph());
+  const nodes = useSelector(selectAllNodes());
 
-  const { nodesFeatureCollection, edgesFeatureCollection, viewState } =
-    useSelector(selectMapState());
-
+  const { viewState } = useSelector(selectMapState());
   const { style } = useSelector(selectMapConfigState());
 
   const waypoints = useSelector(selectAllWaypoints());
@@ -101,6 +97,7 @@ export const MapView = () => {
 
   const handleNodeClick = useCallback(
     (info: PickingInfo) => {
+      console.warn("Node click", info);
       const nodeId: number | null = info.object?.properties?.num ?? null;
 
       if (nodeId === activeNodeId) {
@@ -113,90 +110,16 @@ export const MapView = () => {
     [activeNodeId, dispatch],
   );
 
-  useEffect(() => {
-    const timeout = setInterval(() => {
-      invoke("get_node_edges")
-        .then((c) => {
-          const { nodes, edges } = c as {
-            nodes: GeoJSON.FeatureCollection;
-            edges: GeoJSON.FeatureCollection;
-          };
-
-          dispatch(mapSliceActions.setNodesFeatureCollection(nodes));
-          dispatch(mapSliceActions.setEdgesFeatureCollection(edges));
-        })
-        .catch(() => dispatch(mapSliceActions.setEdgesFeatureCollection(null)));
-    }, 5000); // 5s
-
-    return () => clearInterval(timeout);
-  }, [dispatch]);
-
-  const layers = useMemo(
-    () => [
-      new GeoJsonLayer({
-        id: "edges",
-        data: edgesFeatureCollection || {},
-        pointType: "circle",
-        extensions: [new PathStyleExtension({ dash: true })],
-        getDashArray: [4, 4],
-        pickable: true,
-        dashJustified: true,
-        dashGapPickable: true,
-        filled: false,
-        lineWidthMinPixels: 2,
-
-        onHover: setEdgeHoverInfo,
-
-        getLineColor: () => {
-          return [55, 65, 81];
-        },
-      }),
-      new GeoJsonLayer({
-        id: "nodes",
-        pointType: "circle",
-        data: nodesFeatureCollection || {},
-
-        pickable: true,
-        stroked: false,
-
-        onClick: handleNodeClick,
-        onHover: setNodeHoverInfo,
-
-        pointRadiusUnits: "pixels",
-        getPointRadius: (info) => {
-          if (activeNodeId && info.properties?.num === activeNodeId) {
-            return 6;
-          }
-          return 4;
-        },
-
-        getFillColor: (info) => {
-          if (activeNodeId && info.properties?.num === activeNodeId) {
-            return [59, 130, 246];
-          }
-          return [55, 65, 81];
-        },
-
-        extensions: [new CollisionFilterExtension()],
-
-        updateTriggers: {
-          getFillColor: { activeNodeId },
-          getPointRadius: { activeNodeId },
-        },
-
-        transitions: {
-          getFillColor: 40,
-          getPointRadius: 40,
-        },
-      }),
-    ],
-    [
-      nodesFeatureCollection,
-      edgesFeatureCollection,
-      handleNodeClick,
+  const layers = [
+    createGraphEdgesLayer(graph, nodes, setEdgeHoverInfo), // Need this above nodes
+    createGraphNodesLayer(
+      graph,
+      nodes,
       activeNodeId,
-    ],
-  );
+      handleNodeClick,
+      setNodeHoverInfo,
+    ),
+  ];
 
   const handleClick = () => {
     // Clear right click menu while saving value
@@ -329,15 +252,10 @@ export const MapView = () => {
               setEditingWaypoint(w);
             }}
           />
-        ) : // : showInfoPane == "algos" ? (
-        //   <AnalyticsPane />
-        // )
-        null}
+        ) : null}
 
         <NodeSearchDock />
         <MapSelectedNodeMenu />
-        {/* Note: hiding algos until reimplementation */}
-        {/* <MapInteractionPane /> */}
       </div>
 
       {(lastRightClickLngLat || editingWaypoint) && (

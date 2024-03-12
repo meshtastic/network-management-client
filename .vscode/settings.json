@@ -10,5 +10,7 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
-  }
+  },
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "rust-analyzer.showUnlinkedFileNotification": false
 }

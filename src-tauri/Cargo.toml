@@ -22,7 +22,7 @@ defaultdict = "0.13.0"
 reqwest = { version = "0.11", features = ["json"] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.1.1", features = ["cli", "clipboard-write-text", "dialog-message", "http-all", "notification-all", "path-all", "shell-open", "windows7-compat"] }
+tauri = { version = "1.1.1", features = ["cli", "clipboard-write-text", "dialog-message", "http-all", "notification-all", "path-all", "shell-open", "test", "windows7-compat"] }
 tokio = { version = "1.21.2", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"
@@ -32,12 +32,13 @@ time = { version = "0.3.17", features = ["macros", "serde"] }
 thiserror = "1.0.38"
 geojson = "0.24.0"
 log = "0.4.20"
-fern = "0.6"
 humantime = "2.1.0"
 tokio-util = "0.7.7"
 tauri-plugin-store = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tokio-serial = "5.4.4"
-meshtastic = { git = "https://github.com/meshtastic/rust", features = ["ts-gen"] }
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"] }
+chrono = { version = "0.4.34", features = ["serde"] }
+meshtastic = { git = "https://github.com/meshtastic/rust", branch = "main", features = ["ts-gen"] }
 
 [features]
 # by default Tauri runs in production mode

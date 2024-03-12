@@ -19,23 +19,40 @@ export interface IPersistedState {
   [PersistedStateKeys.MapConfig]?: IMapConfigState;
 }
 
-export function* setValueInPersistedStore<TKey extends keyof IPersistedState>(
+export async function setAndValidateValueInPersistedStore<
+  TKey extends keyof IPersistedState,
+  TValue extends IPersistedState[TKey],
+>(
   store: Store,
   key: TKey,
-  value: IPersistedState[TKey],
+  value: TValue,
   save = true,
+  errorMessage: string | null = null,
 ) {
-  yield store.set(key, value);
+  await setValueInPersistedStore(store, key, value, save);
 
-  if (save) {
-    yield store.save();
+  const fetchedValue = await getValueFromPersistedStore(store, key);
+
+  if (JSON.stringify(fetchedValue) !== JSON.stringify(value)) {
+    throw new Error(
+      errorMessage ?? "Failed to persist value in persistent store",
+    );
   }
 }
 
-export function* getValueFromPersistedStore<TKey extends keyof IPersistedState>(
-  store: Store,
-  key: TKey,
-) {
-  const val = (yield store.get(key)) as IPersistedState[TKey];
+export async function setValueInPersistedStore<
+  TKey extends keyof IPersistedState,
+>(store: Store, key: TKey, value: IPersistedState[TKey], save = true) {
+  await store.set(key, value);
+
+  if (save) {
+    await store.save();
+  }
+}
+
+export async function getValueFromPersistedStore<
+  TKey extends keyof IPersistedState,
+>(store: Store, key: TKey) {
+  const val = await store.get<IPersistedState[TKey]>(key);
   return val;
 }
