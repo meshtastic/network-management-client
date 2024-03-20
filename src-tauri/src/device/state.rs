@@ -109,6 +109,7 @@ impl MeshDevice {
                 protobufs::module_config::PayloadVariant::NeighborInfo(_config) => {}
                 protobufs::module_config::PayloadVariant::AmbientLighting(_config) => {}
                 protobufs::module_config::PayloadVariant::DetectionSensor(_config) => {}
+                protobufs::module_config::PayloadVariant::Paxcounter(_config) => {}
             }
         }
     }
@@ -160,6 +161,10 @@ impl MeshDevice {
                     protobufs::telemetry::Variant::AirQualityMetrics(air_quality_metrics) => {
                         debug!("Received air quality metrics, not handling");
                         trace!("{:?}", air_quality_metrics);
+                    }
+                    protobufs::telemetry::Variant::PowerMetrics(power_metrics) => {
+                        debug!("Received power metrics, not handling");
+                        trace!("{:?}", power_metrics);
                     }
                 }
             }

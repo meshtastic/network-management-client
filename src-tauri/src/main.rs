@@ -11,7 +11,7 @@ mod packet_api;
 mod state;
 
 use log::{info, LevelFilter};
-use meshtastic::ts::specta::{
+use specta::{
     export::ts_with_cfg,
     ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior, TsExportError},
 };

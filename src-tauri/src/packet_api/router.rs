@@ -182,6 +182,15 @@ impl<R: tauri::Runtime> PacketRouter<(), DeviceUpdateError> for MeshPacketApi<R>
                         "Received packet on portnum MAX".into(),
                     ));
                 }
+                protobufs::PortNum::PaxcounterApp => {
+                    return Err(DeviceUpdateError::PacketNotSupported("paxcounter".into()));
+                }
+                protobufs::PortNum::AtakPlugin => {
+                    return Err(DeviceUpdateError::PacketNotSupported("atakplugin".into()));
+                }
+                protobufs::PortNum::MapReportApp => {
+                    return Err(DeviceUpdateError::PacketNotSupported("mapreport".into()));
+                }
             },
             protobufs::mesh_packet::PayloadVariant::Encrypted(_e) => {
                 return Err(DeviceUpdateError::PacketNotSupported("encrypted".into()));
