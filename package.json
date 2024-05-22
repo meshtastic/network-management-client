@@ -1,6 +1,6 @@
 {
   "name": "meshtastic-network-management-client",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Meshtastic client for network management",
   "license": "GPL-3.0-only",
   "type": "module",
