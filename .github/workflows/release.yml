@@ -48,7 +48,7 @@ jobs:
         if: matrix.platform == 'ARM64'
         run: |
           apt-get update
-          apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf openssl
 
       - name: Install frontend dependencies
         run: pnpm install
