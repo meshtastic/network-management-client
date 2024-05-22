@@ -7,7 +7,7 @@ jobs:
       contents: write
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        platform: [macos-latest, ubuntu-20.04, windows-latest, ARM64]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -35,6 +35,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
+      - name: Install dependencies (ARM only)
+        if: matrix.platform == 'ARM64'
+        run: |
+          apt-get update
+          apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+
       - name: Run test suite
         working-directory: ./src-tauri
         run: cargo test
@@ -44,7 +50,7 @@ jobs:
       contents: write
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        platform: [macos-latest, ubuntu-20.04, windows-latest, ARM64]
         node-version: [16]
 
     runs-on: ${{ matrix.platform }}
