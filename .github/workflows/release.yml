@@ -18,7 +18,7 @@ jobs:
       - run: git submodule update --init
 
       - name: Initialize Rust Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/src-tauri/target
