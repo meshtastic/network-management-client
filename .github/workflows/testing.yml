@@ -7,7 +7,7 @@ jobs:
       contents: write
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest, ARM64]
+        platform: [macos-latest, ubuntu-22.04, windows-latest, ARM64]
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -30,7 +30,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Install dependencies (Ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
@@ -50,8 +50,8 @@ jobs:
       contents: write
     strategy:
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest, ARM64]
-        node-version: [16]
+        platform: [macos-latest, ubuntu-22.04, windows-latest, ARM64]
+        node-version: [18]
 
     runs-on: ${{ matrix.platform }}
     steps:
