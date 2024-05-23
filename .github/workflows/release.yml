@@ -54,7 +54,7 @@ jobs:
         run: pnpm install
 
       - name: Build Tauri application
-        uses: tauri-apps/tauri-action@fix/arm-appimage
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
