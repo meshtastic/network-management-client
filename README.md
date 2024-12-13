@@ -1,3 +1,8 @@
+> [!IMPORTANT] 
+> **📢 Meshtastic Network Management Client needs a new platform owner / maintainer 📢**
+>
+> More details are available in [Issue #473](https://github.com/meshtastic/network-management-client/issues/473).
+
 ![GitHub Header (V2)](https://github.com/ajmcquilkin/meshtastic-network-management-client/assets/46639306/d1d66bc5-a0ea-4945-98fe-aaa2d552b2de)
 
 <div align="center">
