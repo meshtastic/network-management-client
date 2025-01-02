@@ -150,9 +150,9 @@ export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           />
 
           <ConfigSelect
-              text={t("config.radio.lora.modemPreset.title")}
-              disabled={!useModemPreset}
-              {...register("modemPreset")}
+            text={t("config.radio.lora.modemPreset.title")}
+            disabled={!useModemPreset}
+            {...register("modemPreset")}
           >
             <option value="0">
               {t("config.radio.lora.modemPreset.longFast")}
@@ -181,9 +181,9 @@ export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
           </ConfigSelect>
 
           <ConfigInput
-              disabled={useModemPreset}
-              type="number"
-              text={t("config.radio.lora.bandwidth")}
+            disabled={useModemPreset}
+            type="number"
+            text={t("config.radio.lora.bandwidth")}
             error={errors.bandwidth?.message as string}
             {...register("bandwidth")}
           />
