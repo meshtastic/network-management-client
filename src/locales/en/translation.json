@@ -197,14 +197,14 @@
         "deviceRole": {
           "title": "Device Role",
           "client": "Client",
-          "clientMuted": "Client (muted)",
+          "clientMute": "Client Mute",
           "router": "Router",
           "routerClient": "Router + Client",
           "repeater": "Repeater",
           "tracker": "Tracker",
           "sensor": "Sensor",
           "tak": "Tak",
-          "clientHidden": "Client (hidden)",
+          "clientHidden": "Client Hidden",
           "lostFound": "Lost and Found",
           "takTracker": "Tak Tracker",
           "routerLate": "Router Late"

@@ -106,7 +106,7 @@ export const DeviceConfigPage = ({
               {t("config.radio.device.deviceRole.client")}
             </option>
             <option value="1">
-              {t("config.radio.device.deviceRole.clientMuted")}
+              {t("config.radio.device.deviceRole.clientMute")}
             </option>
             <option value="2">
               {t("config.radio.device.deviceRole.router")}
