@@ -36,11 +36,11 @@ const getAcknowledgementText = (
   message: app_device_ChannelMessageWithState,
 ): { text: string; isError: boolean } => {
   if (message.state === "acknowledged") {
-    return { text: i18next.t("messaging.transmitting"), isError: false };
+    return { text: i18next.t("messaging.acknowledged"), isError: false };
   }
 
   if (message.state === "pending") {
-    return { text: i18next.t("messaging.acknowledged"), isError: false };
+    return { text: i18next.t("messaging.transmitting"), isError: false };
   }
 
   return { text: message.state.error, isError: true };
