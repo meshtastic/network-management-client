@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedModuleConfig,
 } from "@features/config/selectors";
 import {
-  RangeTestModuleConfigInput,
+  type RangeTestModuleConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -31,7 +31,7 @@ const parseRangeTestModuleConfigInput = (
   d: DeepPartial<RangeTestModuleConfigInput>,
 ): DeepPartial<RangeTestModuleConfigInput> => ({
   ...d,
-  sender: parseInt(d.sender as unknown as string),
+  sender: Number.parseInt(d.sender as unknown as string),
 });
 
 export const RangeTestConfigPage = ({

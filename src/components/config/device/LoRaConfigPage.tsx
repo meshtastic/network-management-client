@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,7 +14,7 @@ import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
-import { LoRaConfigInput, configSliceActions } from "@features/config/slice";
+import { type LoRaConfigInput, configSliceActions } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,15 +28,15 @@ const parseLoRaConfigInput = (
   d: DeepPartial<LoRaConfigInput>,
 ): DeepPartial<LoRaConfigInput> => ({
   ...d,
-  region: parseInt(d.region as unknown as string),
-  modemPreset: parseInt(d.modemPreset as unknown as string),
-  bandwidth: parseInt(d.bandwidth as unknown as string),
-  spreadFactor: parseInt(d.spreadFactor as unknown as string),
-  codingRate: parseInt(d.codingRate as unknown as string),
-  frequencyOffset: parseInt(d.frequencyOffset as unknown as string),
-  hopLimit: parseInt(d.hopLimit as unknown as string),
-  txPower: parseInt(d.txPower as unknown as string),
-  channelNum: parseInt(d.channelNum as unknown as string),
+  region: Number.parseInt(d.region as unknown as string),
+  modemPreset: Number.parseInt(d.modemPreset as unknown as string),
+  bandwidth: Number.parseInt(d.bandwidth as unknown as string),
+  spreadFactor: Number.parseInt(d.spreadFactor as unknown as string),
+  codingRate: Number.parseInt(d.codingRate as unknown as string),
+  frequencyOffset: Number.parseInt(d.frequencyOffset as unknown as string),
+  hopLimit: Number.parseInt(d.hopLimit as unknown as string),
+  txPower: Number.parseInt(d.txPower as unknown as string),
+  channelNum: Number.parseInt(d.channelNum as unknown as string),
 });
 
 export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {

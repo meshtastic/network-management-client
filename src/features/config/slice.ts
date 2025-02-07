@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import cloneDeep from "lodash.clonedeep";
 import merge from "lodash.merge";
 import type { DeepPartial } from "react-hook-form";

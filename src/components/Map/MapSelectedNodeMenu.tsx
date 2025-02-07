@@ -121,14 +121,14 @@ export const MapSelectedNodeMenu = () => {
               strokeWidth={1.5}
             />
             <h2 className="text-gray-500 dark:text-gray-400 text-base leading-6 font-normal pl-2">
-              {!(deviceLatCoord && deviceLngCoord) ? (
-                <span>{t("map.panes.nodeInfo.unknownValue")}</span>
-              ) : (
+              {(deviceLatCoord && deviceLngCoord) ? (
                 <span>
                   {`${formatLocation(deviceLatCoord)}, ${formatLocation(
                     deviceLngCoord,
                   )}`}
                 </span>
+              ) : (
+                <span>{t("map.panes.nodeInfo.unknownValue")}</span>
               )}
             </h2>
           </div>

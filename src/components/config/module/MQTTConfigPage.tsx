@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedModuleConfig,
 } from "@features/config/selectors";
 import {
-  MQTTModuleConfigInput,
+  type MQTTModuleConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -27,7 +27,7 @@ export interface IMQTTConfigPageProps {
 }
 
 // See https://github.com/react-hook-form/react-hook-form/issues/10378
-const parseMQTTModuleConfigInput = (
+const parseMqttModuleConfigInput = (
   d: DeepPartial<MQTTModuleConfigInput>,
 ): DeepPartial<MQTTModuleConfigInput> => ({
   ...d,
@@ -77,7 +77,7 @@ export const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
     () =>
       debounce(
         (d: DeepPartial<MQTTModuleConfigInput>) => {
-          const data = parseMQTTModuleConfigInput(d);
+          const data = parseMqttModuleConfigInput(d);
           updateStateFlags(data);
           dispatch(configSliceActions.updateModuleConfig({ mqtt: data }));
         },

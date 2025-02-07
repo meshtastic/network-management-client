@@ -164,17 +164,16 @@ export const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
 
             <div className="flex justify-between pb-1 text-gray-500 dark:text-gray-400">
               <div className="flex justify-start">
-                {!expire ? (
-                  <TimerOff strokeWidth={1.5} />
-                ) : (
+                {expire ? (
                   <Timer strokeWidth={1.5} />
+                ) : (
+                  <TimerOff strokeWidth={1.5} />
                 )}
                 <h2 className="text-base leading-6 font-normal pl-2">
-                  {!expire
-                    ? t("map.panes.waypointInfo.doesNotExpire")
-                    : t("map.panes.waypointInfo.expires", {
+                  {expire
+                    ? t("map.panes.waypointInfo.expires", {
                         fromNow: moment(expire * 1000).fromNow(),
-                      })}
+                      }) : t("map.panes.waypointInfo.doesNotExpire")}
                 </h2>
               </div>
 
@@ -182,11 +181,10 @@ export const WaypointMenu = ({ editWaypoint }: IWaypointMenuProps) => {
                 type="button"
                 onClick={() =>
                   writeValueToClipboard(
-                    !expire
-                      ? t("map.panes.waypointInfo.doesNotExpire")
-                      : t("map.panes.waypointInfo.expires", {
+                    expire
+                      ? t("map.panes.waypointInfo.expires", {
                           fromNow: moment(expire * 1000).fromNow(),
-                        }),
+                        }) : t("map.panes.waypointInfo.doesNotExpire"),
                   )
                 }
               >

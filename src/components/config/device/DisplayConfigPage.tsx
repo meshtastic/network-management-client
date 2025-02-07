@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,7 +14,7 @@ import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
-import { DisplayConfigInput, configSliceActions } from "@features/config/slice";
+import { type DisplayConfigInput, configSliceActions } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,14 +28,14 @@ const parseDisplayConfigInput = (
   d: DeepPartial<DisplayConfigInput>,
 ): DeepPartial<DisplayConfigInput> => ({
   ...d,
-  autoScreenCarouselSecs: parseInt(
+  autoScreenCarouselSecs: Number.parseInt(
     d.autoScreenCarouselSecs as unknown as string,
   ),
-  screenOnSecs: parseInt(d.screenOnSecs as unknown as string),
-  displaymode: parseInt(d.displaymode as unknown as string),
-  gpsFormat: parseInt(d.gpsFormat as unknown as string),
-  oled: parseInt(d.oled as unknown as string),
-  units: parseInt(d.units as unknown as string),
+  screenOnSecs: Number.parseInt(d.screenOnSecs as unknown as string),
+  displaymode: Number.parseInt(d.displaymode as unknown as string),
+  gpsFormat: Number.parseInt(d.gpsFormat as unknown as string),
+  oled: Number.parseInt(d.oled as unknown as string),
+  units: Number.parseInt(d.units as unknown as string),
 });
 
 export const DisplayConfigPage = ({

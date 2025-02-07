@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedModuleConfig,
 } from "@features/config/selectors";
 import {
-  SerialModuleConfigInput,
+  type SerialModuleConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -31,11 +31,11 @@ const parseSerialModuleConfigInput = (
   d: DeepPartial<SerialModuleConfigInput>,
 ): DeepPartial<SerialModuleConfigInput> => ({
   ...d,
-  mode: parseInt(d.mode as unknown as string),
-  rxd: parseInt(d.rxd as unknown as string),
-  txd: parseInt(d.txd as unknown as string),
-  baud: parseInt(d.baud as unknown as string),
-  timeout: parseInt(d.timeout as unknown as string),
+  mode: Number.parseInt(d.mode as unknown as string),
+  rxd: Number.parseInt(d.rxd as unknown as string),
+  txd: Number.parseInt(d.txd as unknown as string),
+  baud: Number.parseInt(d.baud as unknown as string),
+  timeout: Number.parseInt(d.timeout as unknown as string),
 });
 
 export const SerialModuleConfigPage = ({

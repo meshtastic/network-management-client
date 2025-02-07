@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedModuleConfig,
 } from "@features/config/selectors";
 import {
-  ExternalNotificationModuleConfigInput,
+  type ExternalNotificationModuleConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -31,11 +31,11 @@ const parseExternalNotificationModuleConfigInput = (
   d: DeepPartial<ExternalNotificationModuleConfigInput>,
 ): DeepPartial<ExternalNotificationModuleConfigInput> => ({
   ...d,
-  outputMs: parseInt(d.outputMs as unknown as string),
-  output: parseInt(d.output as unknown as string),
-  outputVibra: parseInt(d.outputVibra as unknown as string),
-  outputBuzzer: parseInt(d.outputBuzzer as unknown as string),
-  nagTimeout: parseInt(d.nagTimeout as unknown as string),
+  outputMs: Number.parseInt(d.outputMs as unknown as string),
+  output: Number.parseInt(d.output as unknown as string),
+  outputVibra: Number.parseInt(d.outputVibra as unknown as string),
+  outputBuzzer: Number.parseInt(d.outputBuzzer as unknown as string),
+  nagTimeout: Number.parseInt(d.nagTimeout as unknown as string),
 });
 
 export const ExternalNotificationConfigPage = ({

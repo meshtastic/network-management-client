@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedModuleConfig,
 } from "@features/config/selectors";
 import {
-  TelemetryModuleConfigInput,
+  type TelemetryModuleConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -31,11 +31,11 @@ const parseTelemetryModuleConfigInput = (
   d: DeepPartial<TelemetryModuleConfigInput>,
 ): DeepPartial<TelemetryModuleConfigInput> => ({
   ...d,
-  deviceUpdateInterval: parseInt(d.deviceUpdateInterval as unknown as string),
-  environmentUpdateInterval: parseInt(
+  deviceUpdateInterval: Number.parseInt(d.deviceUpdateInterval as unknown as string),
+  environmentUpdateInterval: Number.parseInt(
     d.environmentUpdateInterval as unknown as string,
   ),
-  airQualityInterval: parseInt(d.airQualityInterval as unknown as string),
+  airQualityInterval: Number.parseInt(d.airQualityInterval as unknown as string),
 });
 
 export const TelemetryConfigPage = ({

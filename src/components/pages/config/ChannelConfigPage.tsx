@@ -66,12 +66,12 @@ export const ChannelConfigPage = () => {
   const editedChannelConfig = useSelector(selectEditedAllChannelConfig());
 
   const [activeChannelIndex, setActiveChannelIndex] = useState<number | null>(
-    parseInt(Object.entries(currentChannelConfig)[0]?.[0]) ?? null,
+    Number.parseInt(Object.entries(currentChannelConfig)[0]?.[0]) ?? null,
   );
 
   useLayoutEffect(() => {
     if (!channelId) return;
-    const parsedChannelId = parseInt(channelId);
+    const parsedChannelId = Number.parseInt(channelId);
 
     if (Number.isNaN(parsedChannelId)) return;
     setActiveChannelIndex(parsedChannelId);

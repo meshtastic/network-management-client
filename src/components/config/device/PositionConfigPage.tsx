@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedRadioConfig,
 } from "@features/config/selectors";
 import {
-  PositionConfigInput,
+  type PositionConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -31,16 +31,16 @@ const parsePositionConfigInput = (
   d: DeepPartial<PositionConfigInput>,
 ): DeepPartial<PositionConfigInput> => ({
   ...d,
-  positionBroadcastSecs: parseInt(d.positionBroadcastSecs as unknown as string),
-  gpsUpdateInterval: parseInt(d.gpsUpdateInterval as unknown as string),
-  gpsAttemptTime: parseInt(d.gpsAttemptTime as unknown as string),
+  positionBroadcastSecs: Number.parseInt(d.positionBroadcastSecs as unknown as string),
+  gpsUpdateInterval: Number.parseInt(d.gpsUpdateInterval as unknown as string),
+  gpsAttemptTime: Number.parseInt(d.gpsAttemptTime as unknown as string),
   // positionFlags: parseInt(d.positionFlags as unknown as string),
-  rxGpio: parseInt(d.rxGpio as unknown as string),
-  txGpio: parseInt(d.txGpio as unknown as string),
-  broadcastSmartMinimumDistance: parseInt(
+  rxGpio: Number.parseInt(d.rxGpio as unknown as string),
+  txGpio: Number.parseInt(d.txGpio as unknown as string),
+  broadcastSmartMinimumDistance: Number.parseInt(
     d.broadcastSmartMinimumDistance as unknown as string,
   ),
-  broadcastSmartMinimumIntervalSecs: parseInt(
+  broadcastSmartMinimumIntervalSecs: Number.parseInt(
     d.broadcastSmartMinimumIntervalSecs as unknown as string,
   ),
 });

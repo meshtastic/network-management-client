@@ -28,9 +28,9 @@ export const selectActiveWaypointId = () => (state: RootState) =>
 export const selectActiveWaypoint =
   () =>
   (state: RootState): app_device_NormalizedWaypoint | null => {
-    const activeID = selectActiveWaypointId()(state);
-    if (activeID === null) return null;
-    return selectWaypointById(activeID)(state);
+    const activeId = selectActiveWaypointId()(state);
+    if (activeId === null) return null;
+    return selectWaypointById(activeId)(state);
   };
 
 // What info pane are we showing

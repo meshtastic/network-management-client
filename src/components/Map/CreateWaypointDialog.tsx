@@ -13,13 +13,13 @@ import debounce from "lodash.debounce";
 import { Locate, Plus, X } from "lucide-react";
 import maplibregl from "maplibre-gl";
 import moment from "moment";
-import { ChangeEventHandler, useMemo, useRef, useState } from "react";
+import { type ChangeEventHandler, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  LngLat,
+  type LngLat,
   // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
-  MarkerDragEvent,
+  type MarkerDragEvent,
   NavigationControl,
   ScaleControl,
   useMap,
@@ -194,7 +194,7 @@ export const CreateWaypointDialog = ({
     if (!emoji) return 0; // Catches null or empty string
 
     const emojiUnicodeString = (emoji.codePointAt(0) ?? 0).toString(16);
-    return parseInt(emojiUnicodeString, 16);
+    return Number.parseInt(emojiUnicodeString, 16);
   };
 
   const handleUpdateExpireTime: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -418,7 +418,7 @@ export const CreateWaypointDialog = ({
                   </p>
                   <Select.Root
                     value={`${channelNum}`}
-                    onValueChange={(e) => setChannelNum(parseInt(e))}
+                    onValueChange={(e) => setChannelNum(Number.parseInt(e))}
                   >
                     <Select.Trigger
                       className="flex-1 border px-5 py-4 border-gray-400 rounded-lg text-gray-700 dark:text-gray-400 h-full bg-transparent focus:outline-none disabled:cursor-wait inline-flex items-center justify-center"

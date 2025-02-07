@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,7 +14,7 @@ import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
-import { PowerConfigInput, configSliceActions } from "@features/config/slice";
+import { type PowerConfigInput, configSliceActions } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,16 +28,16 @@ const parsePowerConfigInput = (
   d: DeepPartial<PowerConfigInput>,
 ): DeepPartial<PowerConfigInput> => ({
   ...d,
-  onBatteryShutdownAfterSecs: parseInt(
+  onBatteryShutdownAfterSecs: Number.parseInt(
     d.onBatteryShutdownAfterSecs as unknown as string,
   ),
-  adcMultiplierOverride: parseFloat(
+  adcMultiplierOverride: Number.parseFloat(
     d.adcMultiplierOverride as unknown as string,
   ),
-  waitBluetoothSecs: parseInt(d.waitBluetoothSecs as unknown as string),
-  sdsSecs: parseInt(d.sdsSecs as unknown as string),
-  lsSecs: parseInt(d.lsSecs as unknown as string),
-  minWakeSecs: parseInt(d.minWakeSecs as unknown as string),
+  waitBluetoothSecs: Number.parseInt(d.waitBluetoothSecs as unknown as string),
+  sdsSecs: Number.parseInt(d.sdsSecs as unknown as string),
+  lsSecs: Number.parseInt(d.lsSecs as unknown as string),
+  minWakeSecs: Number.parseInt(d.minWakeSecs as unknown as string),
 });
 
 export const PowerConfigPage = ({ className = "" }: IPowerConfigPageProps) => {

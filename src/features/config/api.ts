@@ -5,7 +5,7 @@ import mergeWith from "lodash.mergewith";
 
 import * as backendRadioApi from "@api/radio";
 
-import { IConfigState, configSliceActions } from "./slice";
+import { type IConfigState, configSliceActions } from "./slice";
 import {
   selectCurrentAllChannelConfig,
   selectCurrentModuleConfig,
@@ -15,7 +15,7 @@ import {
   selectEditedRadioConfig,
 } from "./selectors";
 
-import {
+import type {
   app_device_MeshChannel,
   app_ipc_DeviceBulkConfig,
 } from "@bindings/index";
@@ -32,9 +32,9 @@ export const useConfigApi = () => {
   const dispatch = useDispatch();
 
   const commitConfig = async (config: (keyof IConfigState)[]) => {
-    const TYPE = ConfigApiActions.CommitConfig;
+    const type = ConfigApiActions.CommitConfig;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       const fieldFlags = config;
 
       const includeRadioConfig = fieldFlags.includes("radio");
@@ -91,7 +91,7 @@ export const useConfigApi = () => {
 
         for (const [idx, config] of Object.entries(editedChannelConfig)) {
           if (!config) continue;
-          const channelNum = parseInt(idx);
+          const channelNum = Number.parseInt(idx);
           const meshChannel = getMeshChannelFromCurrentConfig(config);
 
           mergedConfig[channelNum] = mergeWith(

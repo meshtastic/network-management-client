@@ -1,9 +1,9 @@
 import { trace } from "tauri-plugin-log-api";
-import { GeoJsonLayer, GeoJsonLayerProps } from "deck.gl/typed";
+import { GeoJsonLayer, type GeoJsonLayerProps } from "deck.gl/typed";
 import { PathStyleExtension } from "@deck.gl/extensions/typed";
 
-import { MeshGraph } from "@app/types/graph";
-import { app_device_MeshNode } from "@bindings/index";
+import type { MeshGraph } from "@app/types/graph";
+import type { app_device_MeshNode } from "@bindings/index";
 
 const convertGraphEdgesToFeatureCollection = (
   graph: MeshGraph["graph"],

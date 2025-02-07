@@ -1,4 +1,4 @@
-import { Marker, MarkerProps } from "react-map-gl";
+import { Marker, type MarkerProps } from "react-map-gl";
 
 import type { app_device_NormalizedWaypoint } from "@bindings/index";
 import { WaypointIcon } from "@components/Waypoints/WaypointIcon";

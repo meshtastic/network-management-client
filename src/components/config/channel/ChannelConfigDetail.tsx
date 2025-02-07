@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,7 +14,7 @@ import {
   selectCurrentChannelConfig,
   selectEditedChannelConfig,
 } from "@features/config/selectors";
-import { ChannelConfigInput, configSliceActions } from "@features/config/slice";
+import { type ChannelConfigInput, configSliceActions } from "@features/config/slice";
 
 import {
   getCurrentConfigFromMeshChannel,
@@ -33,7 +33,7 @@ const parseChannelConfigInput = (
 ): DeepPartial<ChannelConfigInput> => ({
   ...d,
   role:
-    d.role !== undefined ? parseInt(d.role as unknown as string) : undefined,
+    d.role !== undefined ? Number.parseInt(d.role as unknown as string) : undefined,
 });
 
 export const ChannelConfigDetail = ({

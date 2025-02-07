@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
-import { app_device_NormalizedWaypoint } from "@bindings/index";
-import { DeviceKey } from "@utils/connections";
+import type { app_device_NormalizedWaypoint } from "@bindings/index";
+import type { DeviceKey } from "@utils/connections";
 
 export const sendText = async (
   deviceKey: DeviceKey,

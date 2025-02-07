@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { type PropsWithChildren, useEffect, useState } from "react";
 import { attachConsole } from "tauri-plugin-log-api";
 import { info } from "tauri-plugin-log-api";
 

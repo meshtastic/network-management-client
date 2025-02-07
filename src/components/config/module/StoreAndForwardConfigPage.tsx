@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedModuleConfig,
 } from "@features/config/selectors";
 import {
-  StoreForwardModuleConfigInput,
+  type StoreForwardModuleConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -31,9 +31,9 @@ const parseStoreAndForwardModuleConfigInput = (
   d: DeepPartial<StoreForwardModuleConfigInput>,
 ): DeepPartial<StoreForwardModuleConfigInput> => ({
   ...d,
-  records: parseInt(d.records as unknown as string),
-  historyReturnMax: parseInt(d.historyReturnMax as unknown as string),
-  historyReturnWindow: parseInt(d.historyReturnWindow as unknown as string),
+  records: Number.parseInt(d.records as unknown as string),
+  historyReturnMax: Number.parseInt(d.historyReturnMax as unknown as string),
+  historyReturnWindow: Number.parseInt(d.historyReturnWindow as unknown as string),
 });
 
 export const StoreAndForwardConfigPage = ({

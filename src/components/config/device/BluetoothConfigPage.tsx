@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedRadioConfig,
 } from "@features/config/selectors";
 import {
-  BluetoothConfigInput,
+  type BluetoothConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -31,8 +31,8 @@ const parseBluetoothConfigInput = (
   d: DeepPartial<BluetoothConfigInput>,
 ): DeepPartial<BluetoothConfigInput> => ({
   ...d,
-  fixedPin: d.fixedPin ? parseInt(d.fixedPin as unknown as string) : undefined,
-  mode: d.mode ? parseInt(d.mode as unknown as string) : undefined,
+  fixedPin: d.fixedPin ? Number.parseInt(d.fixedPin as unknown as string) : undefined,
+  mode: d.mode ? Number.parseInt(d.mode as unknown as string) : undefined,
 });
 
 export const BluetoothConfigPage = ({

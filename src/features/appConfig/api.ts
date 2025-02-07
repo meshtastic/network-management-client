@@ -8,9 +8,9 @@ import {
   getValueFromPersistedStore,
 } from "@utils/persistence";
 import {
-  IGeneralConfigState,
-  IMapConfigState,
-  TcpConnectionMeta,
+  type IGeneralConfigState,
+  type IMapConfigState,
+  type TcpConnectionMeta,
   appConfigSliceActions,
 } from "./slice";
 import { setColorModeClass } from "@utils/ui";
@@ -29,9 +29,9 @@ export const useAppConfigApi = () => {
 
   // TODO can probably be integrated into general initialization
   const fetchLastTcpConnectionMeta = async () => {
-    const TYPE = AppConfigApiActions.FetchLastTcpConnectionMeta;
+    const type = AppConfigApiActions.FetchLastTcpConnectionMeta;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       const persistedValue = await getValueFromPersistedStore(
         defaultStore,
         PersistedStateKeys.LastTcpConnection,
@@ -46,9 +46,9 @@ export const useAppConfigApi = () => {
   const persistLastTcpConnectionMeta = async (
     payload: TcpConnectionMeta | null,
   ) => {
-    const TYPE = AppConfigApiActions.PersistLastTcpConnectionMeta;
+    const type = AppConfigApiActions.PersistLastTcpConnectionMeta;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await setAndValidateValueInPersistedStore(
         defaultStore,
         PersistedStateKeys.LastTcpConnection,
@@ -65,9 +65,9 @@ export const useAppConfigApi = () => {
   };
 
   const persistGeneralConfig = async (generalConfig: IGeneralConfigState) => {
-    const TYPE = AppConfigApiActions.PersistGeneralConfig;
+    const type = AppConfigApiActions.PersistGeneralConfig;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await setAndValidateValueInPersistedStore(
         defaultStore,
         PersistedStateKeys.GeneralConfig,
@@ -85,9 +85,9 @@ export const useAppConfigApi = () => {
   };
 
   const persistMapConfig = async (mapConfig: IMapConfigState) => {
-    const TYPE = AppConfigApiActions.PersistMapConfig;
+    const type = AppConfigApiActions.PersistMapConfig;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await setAndValidateValueInPersistedStore(
         defaultStore,
         PersistedStateKeys.MapConfig,
@@ -101,9 +101,9 @@ export const useAppConfigApi = () => {
   };
 
   const initializeAppConfig = async () => {
-    const TYPE = AppConfigApiActions.InitializeAppConfig;
+    const type = AppConfigApiActions.InitializeAppConfig;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       const persistedGeneralConfig = await getValueFromPersistedStore(
         defaultStore,
         PersistedStateKeys.GeneralConfig,

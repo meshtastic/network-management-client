@@ -1,5 +1,5 @@
-import { MeshGraph } from "@app/types/graph";
-import { RootState } from "@store/index";
+import type { MeshGraph } from "@app/types/graph";
+import type { RootState } from "@store/index";
 
 export const selectGraph =
   () =>

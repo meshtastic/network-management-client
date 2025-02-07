@@ -4,7 +4,7 @@ import * as backendRadioApi from "@api/radio";
 import * as backendMeshApi from "@api/mesh";
 import * as backendConnectionApi from "@api/connection";
 
-import {
+import type {
   app_device_NormalizedWaypoint,
   meshtastic_protobufs_User,
 } from "@bindings/index";
@@ -15,8 +15,8 @@ import { uiSliceActions } from "@features/ui/slice";
 import { deviceSliceActions } from "./slice";
 
 import { trackRequestOperation } from "@utils/api";
-import { ConnectionType, DeviceKey } from "@utils/connections";
-import { CommandError, throwError } from "@utils/errors";
+import { ConnectionType, type DeviceKey } from "@utils/connections";
+import { type CommandError, throwError } from "@utils/errors";
 
 export enum DeviceApiActions {
   GetAutoConnectPort = "device/getAutoConnectPort",
@@ -36,9 +36,9 @@ export const useDeviceApi = () => {
   const dispatch = useDispatch();
 
   const getAutoConnectPort = async () => {
-    const TYPE = DeviceApiActions.GetAutoConnectPort;
+    const type = DeviceApiActions.GetAutoConnectPort;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       const portName = await backendConnectionApi.requestAutoConnectPort();
 
       dispatch(deviceSliceActions.setAutoConnectPort(portName));
@@ -59,9 +59,9 @@ export const useDeviceApi = () => {
   };
 
   const getAvailableSerialPorts = async () => {
-    const TYPE = DeviceApiActions.GetAvailableSerialPorts;
+    const type = DeviceApiActions.GetAvailableSerialPorts;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       const serialPorts = await backendConnectionApi.getAllSerialPorts();
 
       dispatch(deviceSliceActions.setAvailableSerialPorts(serialPorts));
@@ -79,7 +79,7 @@ export const useDeviceApi = () => {
       | { type: ConnectionType.TCP; socketAddress: string };
     setPrimary: boolean;
   }) => {
-    const TYPE = DeviceApiActions.ConnectToDevice;
+    const type = DeviceApiActions.ConnectToDevice;
 
     const deviceKey: DeviceKey =
       payload.params.type === ConnectionType.SERIAL
@@ -89,7 +89,7 @@ export const useDeviceApi = () => {
           : throwError("Neither portName nor socketAddress were set");
 
     await trackRequestOperation(
-      TYPE,
+      type,
       dispatch,
       async () => {
         dispatch(
@@ -149,9 +149,9 @@ export const useDeviceApi = () => {
   };
 
   const disconnectFromDevice = async (payload: DeviceKey) => {
-    const TYPE = DeviceApiActions.DisconnectFromDevice;
+    const type = DeviceApiActions.DisconnectFromDevice;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await backendConnectionApi.dropDeviceConnection(payload);
 
       dispatch(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
@@ -161,9 +161,9 @@ export const useDeviceApi = () => {
   };
 
   const disconnectFromAllDevices = async () => {
-    const TYPE = DeviceApiActions.DisconnectFromAllDevices;
+    const type = DeviceApiActions.DisconnectFromAllDevices;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await backendConnectionApi.dropAllDeviceConnections();
 
       dispatch(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
@@ -177,9 +177,9 @@ export const useDeviceApi = () => {
     text: string;
     channel: number;
   }) => {
-    const TYPE = DeviceApiActions.SendText;
+    const type = DeviceApiActions.SendText;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await backendMeshApi.sendText(
         payload.deviceKey,
         payload.channel,
@@ -192,9 +192,9 @@ export const useDeviceApi = () => {
     deviceKey: string;
     user: meshtastic_protobufs_User;
   }) => {
-    const TYPE = DeviceApiActions.UpdateUserConfig;
+    const type = DeviceApiActions.UpdateUserConfig;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await backendRadioApi.updateDeviceUser(payload.deviceKey, payload.user);
     });
   };
@@ -204,9 +204,9 @@ export const useDeviceApi = () => {
     waypoint: app_device_NormalizedWaypoint;
     channel: number;
   }) => {
-    const TYPE = DeviceApiActions.SendWaypoint;
+    const type = DeviceApiActions.SendWaypoint;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await backendMeshApi.sendWaypoint(
         payload.deviceKey,
         payload.channel,
@@ -219,9 +219,9 @@ export const useDeviceApi = () => {
     deviceKey: string;
     waypointId: number;
   }) => {
-    const TYPE = DeviceApiActions.DeleteWaypoint;
+    const type = DeviceApiActions.DeleteWaypoint;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       await backendMeshApi.deleteWaypoint(
         payload.deviceKey,
         payload.waypointId,

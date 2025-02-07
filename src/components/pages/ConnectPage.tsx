@@ -1,12 +1,12 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { open } from "@tauri-apps/api/shell";
-import { FormEventHandler, useCallback, useEffect, useState } from "react";
+import { type FormEventHandler, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
 import MeshLogoDark from "@app/assets/Mesh_Logo_Dark.svg";
 import MeshLogoLight from "@app/assets/Mesh_Logo_Light.svg";
-import Hero_Image from "@app/assets/onboard_hero_image.jpg";
+import heroImage from "@app/assets/onboard_hero_image.jpg";
 
 import { ConnectTab } from "@components/connection/ConnectTab";
 import { SerialConnectPane } from "@components/connection/SerialConnectPane";
@@ -74,7 +74,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     status: "IDLE",
   };
 
-  const persistedTCPConnectionMeta = useSelector(
+  const persistedTcpConnectionMeta = useSelector(
     selectPersistedTCPConnectionMeta(),
   );
 
@@ -87,7 +87,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
     appConfigApi.persistLastTcpConnectionMeta({
       address: socketAddress,
-      port: parseInt(socketPort),
+      port: Number.parseInt(socketPort),
     });
 
     deviceApi.connectToDevice({
@@ -132,12 +132,12 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   // Initialize TCP state to persisted state
   useEffect(() => {
-    if (!persistedTCPConnectionMeta) return;
+    if (!persistedTcpConnectionMeta) return;
 
-    const { address, port } = persistedTCPConnectionMeta;
+    const { address, port } = persistedTcpConnectionMeta;
     setSocketAddress(address);
     setSocketPort(port.toString());
-  }, [persistedTCPConnectionMeta]);
+  }, [persistedTcpConnectionMeta]);
 
   // Wait to allow user to recognize serial connection succeeded
   useEffect(() => {
@@ -263,7 +263,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       <div className="flex-1 relative hidden xl:block">
         <img
           className="w-full h-full object-cover object-center bg-gray-700"
-          src={Hero_Image}
+          src={heroImage}
           alt="Meshtastic Emergency Response Client hero"
         />
         <p className="landing-screen-opacity-transition absolute bottom-3 right-3 text-right text-sm text-gray-600">

@@ -1,6 +1,6 @@
 import { requestSliceActions } from "@features/requests/slice";
-import { AppDispatch } from "@store/index";
-import { CommandError, isCommandError } from "./errors";
+import type { AppDispatch } from "@store/index";
+import { type CommandError, isCommandError } from "./errors";
 
 export async function trackRequestOperation(
   type: string,

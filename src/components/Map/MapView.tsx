@@ -1,21 +1,21 @@
-import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
+import { MapboxOverlay, type MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Separator from "@radix-ui/react-separator";
-import { PickingInfo } from "deck.gl/typed";
+import type { PickingInfo } from "deck.gl/typed";
 import { MapPin, X } from "lucide-react";
 import maplibregl from "maplibre-gl";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  LngLat,
+  type LngLat,
   // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
-  MapLayerMouseEvent,
+  type MapLayerMouseEvent,
   Marker,
   NavigationControl,
   ScaleControl,
-  ViewState,
-  ViewStateChangeEvent,
+  type ViewState,
+  type ViewStateChangeEvent,
   useControl,
 } from "react-map-gl";
 import { useDispatch, useSelector } from "react-redux";
@@ -56,7 +56,7 @@ export interface IDeckGLOverlayProps extends MapboxOverlayProps {
   interleaved?: boolean;
 }
 
-const DeckGLOverlay = (props: IDeckGLOverlayProps) => {
+const deckGlOverlay = (props: IDeckGLOverlayProps) => {
   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
 
   overlay.setProps(props);
@@ -173,7 +173,7 @@ export const MapView = () => {
           onClick={handleClick}
           onContextMenu={handleContextMenu}
         >
-          <DeckGLOverlay pickingRadius={12} layers={layers} />
+          <deckGlOverlay pickingRadius={12} layers={layers} />
 
           {contextMenuEvent && lastRightClickLngLat && (
             <Marker

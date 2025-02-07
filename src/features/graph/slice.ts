@@ -1,5 +1,5 @@
-import { MeshGraph } from "@app/types/graph";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import type { MeshGraph } from "@app/types/graph";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export type IGraphState = {
   graph: MeshGraph["graph"] | null;

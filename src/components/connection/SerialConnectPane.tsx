@@ -95,7 +95,7 @@ export const SerialConnectPane = ({
             type="number"
             placeholder={t("connectPage.tabs.serial.baudTitle")}
             value={baudRate}
-            onChange={(e) => setBaudRate(parseInt(e.target.value))}
+            onChange={(e) => setBaudRate(Number.parseInt(e.target.value))}
           />
 
           <div className="flex flex-row justify-between">

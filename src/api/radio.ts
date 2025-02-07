@@ -1,11 +1,11 @@
 import { invoke } from "@tauri-apps/api";
 
-import {
+import type {
   app_ipc_DeviceBulkConfig,
   meshtastic_protobufs_Config,
   meshtastic_protobufs_User,
 } from "@bindings/index";
-import { DeviceKey } from "@utils/connections";
+import type { DeviceKey } from "@utils/connections";
 
 export const updateDeviceConfig = async (
   deviceKey: DeviceKey,

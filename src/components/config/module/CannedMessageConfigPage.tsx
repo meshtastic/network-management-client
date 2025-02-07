@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ import {
   selectEditedModuleConfig,
 } from "@features/config/selectors";
 import {
-  CannedMessageModuleConfigInput,
+  type CannedMessageModuleConfigInput,
   configSliceActions,
 } from "@features/config/slice";
 
@@ -31,12 +31,12 @@ const parseCannedMessageModuleConfigInput = (
   d: DeepPartial<CannedMessageModuleConfigInput>,
 ): DeepPartial<CannedMessageModuleConfigInput> => ({
   ...d,
-  inputbrokerPinA: parseInt(d.inputbrokerPinA as unknown as string),
-  inputbrokerPinB: parseInt(d.inputbrokerPinB as unknown as string),
-  inputbrokerPinPress: parseInt(d.inputbrokerPinPress as unknown as string),
-  inputbrokerEventCw: parseInt(d.inputbrokerEventCw as unknown as string),
-  inputbrokerEventCcw: parseInt(d.inputbrokerEventCcw as unknown as string),
-  inputbrokerEventPress: parseInt(d.inputbrokerEventPress as unknown as string),
+  inputbrokerPinA: Number.parseInt(d.inputbrokerPinA as unknown as string),
+  inputbrokerPinB: Number.parseInt(d.inputbrokerPinB as unknown as string),
+  inputbrokerPinPress: Number.parseInt(d.inputbrokerPinPress as unknown as string),
+  inputbrokerEventCw: Number.parseInt(d.inputbrokerEventCw as unknown as string),
+  inputbrokerEventCcw: Number.parseInt(d.inputbrokerEventCcw as unknown as string),
+  inputbrokerEventPress: Number.parseInt(d.inputbrokerEventPress as unknown as string),
 });
 
 export const CannedMessageConfigPage = ({

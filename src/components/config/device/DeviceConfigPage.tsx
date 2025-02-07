@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,7 +14,7 @@ import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
-import { DeviceConfigInput, configSliceActions } from "@features/config/slice";
+import { type DeviceConfigInput, configSliceActions } from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -28,9 +28,9 @@ const parseDeviceConfigInput = (
   d: DeepPartial<DeviceConfigInput>,
 ): DeepPartial<DeviceConfigInput> => ({
   ...d,
-  nodeInfoBroadcastSecs: parseInt(d.nodeInfoBroadcastSecs as unknown as string),
-  role: parseInt(d.role as unknown as string),
-  rebroadcastMode: parseInt(d.rebroadcastMode as unknown as string),
+  nodeInfoBroadcastSecs: Number.parseInt(d.nodeInfoBroadcastSecs as unknown as string),
+  role: Number.parseInt(d.role as unknown as string),
+  rebroadcastMode: Number.parseInt(d.rebroadcastMode as unknown as string),
 });
 
 export const DeviceConfigPage = ({

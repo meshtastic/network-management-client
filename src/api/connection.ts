@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
-import { app_ipc_DeviceBulkConfig } from "@bindings/index";
-import { DeviceKey } from "@utils/connections";
+import type { app_ipc_DeviceBulkConfig } from "@bindings/index";
+import type { DeviceKey } from "@utils/connections";
 
 export const updateDeviceConfigBulk = async (
   deviceKey: DeviceKey,

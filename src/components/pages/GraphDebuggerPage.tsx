@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import {
   GraphCanvas,
-  GraphNode as VisGraphNode,
-  GraphEdge as VisGraphEdge,
+  type GraphNode as VisGraphNode,
+  type GraphEdge as VisGraphEdge,
 } from "reagraph";
 import uniqBy from "lodash.uniqby";
 

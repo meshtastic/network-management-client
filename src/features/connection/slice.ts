@@ -1,5 +1,5 @@
 import type { RequestStatus } from "@features/requests/slice";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { DeviceKey } from "@utils/connections";
 
 export interface IConnectionState {

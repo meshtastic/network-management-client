@@ -13,9 +13,9 @@ export const useGraphApi = () => {
   const dispatch = useDispatch();
 
   const fetchGraph = async () => {
-    const TYPE = GraphApiActions.FetchGraph;
+    const type = GraphApiActions.FetchGraph;
 
-    await trackRequestOperation(TYPE, dispatch, async () => {
+    await trackRequestOperation(type, dispatch, async () => {
       const meshGraph = await backendGraphApi.fetchGraph();
 
       dispatch(graphSliceActions.setGraph(meshGraph));

@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
@@ -31,12 +31,12 @@ export const parseAudioModuleConfigInput = (
   d: DeepPartial<AudioModuleConfigInput>,
 ): DeepPartial<AudioModuleConfigInput> => ({
   ...d,
-  pttPin: parseInt(d.pttPin as unknown as string),
-  bitrate: parseInt(d.bitrate as unknown as string),
-  i2SWs: parseInt(d.i2SWs as unknown as string),
-  i2SSd: parseInt(d.i2SSd as unknown as string),
-  i2SDin: parseInt(d.i2SDin as unknown as string),
-  i2SSck: parseInt(d.i2SSck as unknown as string),
+  pttPin: Number.parseInt(d.pttPin as unknown as string),
+  bitrate: Number.parseInt(d.bitrate as unknown as string),
+  i2SWs: Number.parseInt(d.i2SWs as unknown as string),
+  i2SSd: Number.parseInt(d.i2SSd as unknown as string),
+  i2SDin: Number.parseInt(d.i2SDin as unknown as string),
+  i2SSck: Number.parseInt(d.i2SSck as unknown as string),
 });
 
 const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
