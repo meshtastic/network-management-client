@@ -33,7 +33,8 @@
         "noAccumulatingSpread": "off"
       },
       "suspicious": {
-        "noDoubleEquals": "warn"
+        "noDoubleEquals": "warn",
+        "noReactSpecificProps": "off"
       },
       "style": {
         "noImplicitBoolean": "off"
