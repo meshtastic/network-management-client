@@ -137,8 +137,7 @@ To run this project locally, follow the steps below:
 
 While this project can be developed within any text editor, we recommend the [Visual Studio Code](https://code.visualstudio.com/) editor. If using VSCode, we strongly recommend that you install the following Visual Studio Code extensions. These extensions both enforce code style and enable language and framework support for our tech stack.
 
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - Formatter for our UI code
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) - Linter for our UI code
+- [Biome](https://marketplace.visualstudio.com/items?itemName=biomejs.biome) - JavaScript LSP with formatting and linting
 - [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) - Rust LSP with code linting, formatting, and quality suggestions
 
 Some optional extensions that aren't required but we find very helpful:
