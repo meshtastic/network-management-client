@@ -59,6 +59,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-charts": "3.0.0-beta.54",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^5.0.0",
     "react-hook-form": "^7.43.9",
     "react-i18next": "^13.0.1",
     "react-json-view": "^1.21.3",
