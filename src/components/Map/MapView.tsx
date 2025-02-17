@@ -152,19 +152,20 @@ export const MapView = () => {
   };
 
   return (
-    <Dialog.Root
-      open={isWaypointDialogOpen}
-      onOpenChange={handleDialogIsOpenChange}
-    >
-      <div
-        className="relative w-full h-full z-0"
-        onContextMenu={(e) => e.preventDefault()}
+    <ErrorBoundary fallbackRender={ErrorFallback}>
+      <Dialog.Root
+        open={isWaypointDialogOpen}
+        onOpenChange={handleDialogIsOpenChange}
       >
-        {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
-        {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
+        <div
+          className="relative w-full h-full z-0"
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
+          {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
 
-        {/* Map translation is a pain, assuming users will use translated map tiles https://maplibre.org/maplibre-gl-js/docs/examples/language-switch/ */}
-        <ErrorBoundary fallbackRender={ErrorFallback}>
+          {/* Map translation is a pain, assuming users will use translated map tiles https://maplibre.org/maplibre-gl-js/docs/examples/language-switch/ */}
+
           <Map
             id={MapIDs.MapView}
             reuseMaps={false} // ! Crashes map on switch back to map tab if set to `true`
@@ -246,39 +247,39 @@ export const MapView = () => {
                 />
               ))}
           </Map>
-        </ErrorBoundary>
 
-        {/* Popups */}
-        {showInfoPane === "waypoint" ? (
-          <WaypointMenu
-            editWaypoint={(w) => {
-              setWaypointDialogOpen(true);
-              setEditingWaypoint(w);
+          {/* Popups */}
+          {showInfoPane === "waypoint" ? (
+            <WaypointMenu
+              editWaypoint={(w) => {
+                setWaypointDialogOpen(true);
+                setEditingWaypoint(w);
+              }}
+            />
+          ) : null}
+
+          <NodeSearchDock />
+          <MapSelectedNodeMenu />
+        </div>
+
+        {(lastRightClickLngLat || editingWaypoint) && (
+          <CreateWaypointDialog
+            lngLat={
+              lastRightClickLngLat ??
+              ({
+                lng: 0,
+                lat: 0,
+              } as LngLat)
+            }
+            closeDialog={() => {
+              setEditingWaypoint(null);
+              setLastRightClickLngLat(null);
+              setWaypointDialogOpen(false);
             }}
+            existingWaypoint={editingWaypoint}
           />
-        ) : null}
-
-        <NodeSearchDock />
-        <MapSelectedNodeMenu />
-      </div>
-
-      {(lastRightClickLngLat || editingWaypoint) && (
-        <CreateWaypointDialog
-          lngLat={
-            lastRightClickLngLat ??
-            ({
-              lng: 0,
-              lat: 0,
-            } as LngLat)
-          }
-          closeDialog={() => {
-            setEditingWaypoint(null);
-            setLastRightClickLngLat(null);
-            setWaypointDialogOpen(false);
-          }}
-          existingWaypoint={editingWaypoint}
-        />
-      )}
-    </Dialog.Root>
+        )}
+      </Dialog.Root>
+    </ErrorBoundary>
   );
 };
