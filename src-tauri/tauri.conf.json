@@ -7,7 +7,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "Meshtastic",
+    "productName": "Meshtastic Network Management Client",
     "version": "0.3.1"
   },
   "tauri": {
