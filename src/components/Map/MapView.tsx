@@ -183,7 +183,7 @@ export const MapView = () => {
               longitude={lastRightClickLngLat.lng}
               style={{ zIndex: 30 }}
             >
-              <div className="translate-y-1/2 z-30">
+              <div className="translate-y-1/2">
                 {/* https://www.kindacode.com/article/how-to-create-triangles-with-tailwind-css-4-examples/ */}
                 <div className="w-full">
                   <div className="mx-auto w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px]  border-b-gray-200 dark:border-b-gray-800 border-r-[6px] border-r-transparent" />
@@ -214,6 +214,18 @@ export const MapView = () => {
               </div>
             </Marker>
           )}
+
+          {/* Controls at bottom right */}
+          <ScaleControl
+            maxWidth={144}
+            position="bottom-right"
+            unit="imperial"
+          />
+          <NavigationControl
+            position="bottom-right"
+            showCompass
+            visualizePitch
+          />
 
           {/* Visualize all waypoints */}
           {waypoints
