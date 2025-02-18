@@ -172,6 +172,7 @@ export const MapView = () => {
           initialViewState={viewState}
           onClick={handleClick}
           onContextMenu={handleContextMenu}
+          className="z-10"
         >
           <DeckGLOverlay pickingRadius={12} layers={layers} />
 
@@ -254,8 +255,10 @@ export const MapView = () => {
           />
         ) : null}
 
-        <NodeSearchDock />
-        <MapSelectedNodeMenu />
+        <div className="z-20">
+          <NodeSearchDock />
+          <MapSelectedNodeMenu />
+        </div>
       </div>
 
       {(lastRightClickLngLat || editingWaypoint) && (
