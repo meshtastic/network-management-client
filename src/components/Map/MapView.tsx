@@ -158,8 +158,10 @@ export const MapView = () => {
         className="relative w-full h-full z-0"
         onContextMenu={(e) => e.preventDefault()}
       >
-        {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
-        {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
+        <div className="z-40">
+          {nodeHoverInfo && <MapNodeTooltip hoverInfo={nodeHoverInfo} />}
+          {edgeHoverInfo && <MapEdgeTooltip hoverInfo={edgeHoverInfo} />}
+        </div>
 
         {/* Map translation is a pain, assuming users will use translated map tiles https://maplibre.org/maplibre-gl-js/docs/examples/language-switch/ */}
         <Map
@@ -180,8 +182,9 @@ export const MapView = () => {
             <Marker
               latitude={lastRightClickLngLat.lat}
               longitude={lastRightClickLngLat.lng}
+              style={{ zIndex: 30 }}
             >
-              <div className="translate-y-1/2">
+              <div className="translate-y-1/2 z-30">
                 {/* https://www.kindacode.com/article/how-to-create-triangles-with-tailwind-css-4-examples/ */}
                 <div className="w-full">
                   <div className="mx-auto w-0 h-0 border-l-[6px] border-l-transparent border-b-[8px]  border-b-gray-200 dark:border-b-gray-800 border-r-[6px] border-r-transparent" />
@@ -245,19 +248,17 @@ export const MapView = () => {
             ))}
         </Map>
 
-        {/* Popups */}
-        {showInfoPane === "waypoint" ? (
-          <WaypointMenu
-            editWaypoint={(w) => {
-              setWaypointDialogOpen(true);
-              setEditingWaypoint(w);
-            }}
-          />
-        ) : null}
-
         <div className="z-20">
           <NodeSearchDock />
           <MapSelectedNodeMenu />
+          {showInfoPane === "waypoint" ? (
+            <WaypointMenu
+              editWaypoint={(w) => {
+                setWaypointDialogOpen(true);
+                setEditingWaypoint(w);
+              }}
+            />
+          ) : null}
         </div>
       </div>
 
