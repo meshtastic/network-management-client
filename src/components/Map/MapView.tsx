@@ -174,7 +174,6 @@ export const MapView = () => {
           initialViewState={viewState}
           onClick={handleClick}
           onContextMenu={handleContextMenu}
-          className="z-10"
         >
           <DeckGLOverlay pickingRadius={12} layers={layers} />
 
@@ -216,18 +215,6 @@ export const MapView = () => {
             </Marker>
           )}
 
-          {/* Controls at bottom right */}
-          <ScaleControl
-            maxWidth={144}
-            position="bottom-right"
-            unit="imperial"
-          />
-          <NavigationControl
-            position="bottom-right"
-            showCompass
-            visualizePitch
-          />
-
           {/* Visualize all waypoints */}
           {waypoints
             // Filter invalid locations (falsy lat or long, includes 0,0)
@@ -244,6 +231,7 @@ export const MapView = () => {
                     ),
                   )
                 }
+                style={{ zIndex: 10 }}
               />
             ))}
         </Map>
