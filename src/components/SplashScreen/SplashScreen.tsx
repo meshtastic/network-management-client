@@ -48,7 +48,7 @@ export const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
 
     const fadeOutHandle = setTimeout(() => {
       setScreenActive(false);
-    }, 4500);
+    }, 2500);
 
     return () => {
       clearTimeout(fadeOutHandle);

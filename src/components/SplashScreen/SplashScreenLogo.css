@@ -3,9 +3,9 @@
   stroke-dashoffset: 180;
 
   animation-name: dash-mountain;
-  animation-duration: 2000ms;
+  animation-duration: 1000ms;
   animation-timing-function: ease-in-out;
-  animation-delay: 1000ms;
+  animation-delay: 500ms;
   animation-fill-mode: forwards;
 }
 
@@ -14,9 +14,9 @@
   stroke-dashoffset: 100;
 
   animation-name: dash-mountain;
-  animation-duration: 1000ms;
+  animation-duration: 500ms;
   animation-timing-function: ease-out;
-  animation-delay: 2000ms;
+  animation-delay: 1000ms;
   animation-fill-mode: forwards;
 }
 
@@ -27,7 +27,7 @@
   animation-name: dash-plus;
   animation-duration: 300ms;
   animation-timing-function: ease-in-out;
-  animation-delay: 2900ms;
+  animation-delay: 1600ms;
   animation-fill-mode: forwards;
 }
 
@@ -38,7 +38,7 @@
   animation-name: dash-plus;
   animation-duration: 300ms;
   animation-timing-function: ease-in-out;
-  animation-delay: 3050ms;
+  animation-delay: 1900ms;
   animation-fill-mode: forwards;
 }
 
