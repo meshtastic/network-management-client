@@ -63,6 +63,7 @@ export const MapConfigPage = ({ className = "" }: IMapConfigPageProps) => {
             text={t("applicationSettings.map.mapboxStyle")}
             error={errors.style?.message}
             {...register("style")}
+            required={true}
           />
         </form>
       </ConfigTitlebar>
