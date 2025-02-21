@@ -20,28 +20,6 @@
   animation-fill-mode: forwards;
 }
 
-#logo-plus-horizontal {
-  stroke-dasharray: 24;
-  stroke-dashoffset: 24;
-
-  animation-name: dash-plus;
-  animation-duration: 300ms;
-  animation-timing-function: ease-in-out;
-  animation-delay: 1600ms;
-  animation-fill-mode: forwards;
-}
-
-#logo-plus-vertical {
-  stroke-dasharray: 24;
-  stroke-dashoffset: 24;
-
-  animation-name: dash-plus;
-  animation-duration: 300ms;
-  animation-timing-function: ease-in-out;
-  animation-delay: 1900ms;
-  animation-fill-mode: forwards;
-}
-
 @keyframes dash-mountain {
   to {
     stroke-dashoffset: 0;
@@ -49,12 +27,6 @@
 }
 
 @keyframes dash-slope {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes dash-plus {
   to {
     stroke-dashoffset: 0;
   }
