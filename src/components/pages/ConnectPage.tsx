@@ -27,6 +27,7 @@ import { ConnectionType } from "@utils/connections";
 import { useIsDarkMode } from "@utils/hooks";
 
 import "@components/SplashScreen/SplashScreen.css";
+import { MeshtasticLogo } from "@app/assets/Meshtastic";
 
 const getFullSocketAddress = (address: string, port: string) =>
   `${address}:${port}`;
@@ -177,11 +178,9 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
       <div className="flex flex-col flex-1 py-24 overflow-auto no-gutter hide-scrollbar">
         <div className="flex justify-center">
           <div className="h-1/8">
-            <img
-              className="h-9"
-              src={isDarkMode ? MeshLogoLight : MeshLogoDark}
-              alt="Mesh Logo"
-            />
+            <div className="h-9 dark:text-white text-black">
+              <MeshtasticLogo />
+            </div>
           </div>
         </div>
 

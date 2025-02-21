@@ -30,18 +30,6 @@ export const SplashScreenLogo = ({ className }: ISplashScreenLogoProps) => {
           strokeWidth="12"
           strokeLinejoin="round"
         />
-        <path
-          id="logo-plus-horizontal"
-          d="M24 14L0 14"
-          stroke="#FFFFFF"
-          strokeWidth="8"
-        />
-        <path
-          id="logo-plus-vertical"
-          d="M12 2L12 26"
-          stroke="#FFFFFF"
-          strokeWidth="8"
-        />
       </g>
       <defs>
         <clipPath id="clip0_528_1404">
