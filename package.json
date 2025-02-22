@@ -4,6 +4,7 @@
   "description": "Meshtastic client for network management",
   "license": "GPL-3.0-only",
   "type": "module",
+  "packageManager": "pnpm@10.1.0",
   "scripts": {
     "rust:dev": "tauri dev -- --no-default-features --",
     "rust:build": "tauri build --",
