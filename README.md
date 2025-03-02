@@ -166,6 +166,33 @@ We are currently working to add support for the [Storybook](https://storybook.js
 
 > **Note:** On Linux, your user may not have permission to access a given serial port. If this happens, you will likely need to add your user to the group that controls the serial port you want to access. You can find the group that controls a serial port via the `ls -ld PATH_TO_PORT_HERE` command. You can add your user to this group via the `usermod -a -G GROUP_NAME_HERE $USER` command.
 
+## :whale: Using the Devcontainer
+
+This project includes a devcontainer configuration for Visual Studio Code, which allows you to develop inside a containerized environment. This ensures that all developers have a consistent development environment, regardless of their local machine setup.
+
+### Prerequisites
+
+To use the devcontainer, you need to have the following installed:
+
+- [Docker](https://www.docker.com/get-started)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) for Visual Studio Code
+
+### Setup
+
+1. Open the project in Visual Studio Code.
+2. Press `F1` to open the command palette, and type `Remote-Containers: Open Folder in Container...`.
+3. Select the project folder. Visual Studio Code will build the devcontainer and open the project inside it.
+4. The `postCreateCommand` specified in the `devcontainer.json` will automatically run `git submodule update --init && pnpm i` to set up the project.
+
+### Development
+
+Once the devcontainer is set up, you can use the same development commands as described in the [Development Commands](#development-commands) section. The devcontainer includes all necessary dependencies and tools for developing and testing the project.
+
+> **Note:** If you encounter any issues with permissions, you may need to adjust the user permissions inside the container. Refer to the [Tauri documentation](https://tauri.app/v1/guides/getting-started/prerequisites/) for more details.
+
+By using the devcontainer, you ensure that your development environment is consistent with the rest of the team, reducing the likelihood of environment-specific issues.
+
 ## :heart: Contributing
 
 As we are still very early in development, we don't yet have a standardized framework for accepting contributions. This being said, we are very open to suggestions and/or code changes! If you're interested in contributing to this repository, we would ask that you first check our issue board to ensure your work isn't duplicating the work of others. Then, please make an issue on our board so we know what you're interested in working on. If you have any questions about the project, we would love to hear from you!
