@@ -15,7 +15,6 @@ import moment from "moment";
 import { ChangeEventHandler, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  LngLat,
   // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
   MarkerDragEvent,
@@ -47,6 +46,7 @@ import { MapIDs, formatLocation, getFlyToConfig } from "@utils/map";
 import { getChannelName } from "@utils/messaging";
 
 import "@components/Map/MapView.css";
+import { LngLat } from "maplibre-gl";
 
 const WAYPOINT_NAME_MAX_LEN = 30;
 const WAYPOINT_DESC_MAX_LEN = 100;
@@ -106,10 +106,7 @@ export const CreateWaypointDialog = ({
 
   const [waypointPosition, setWaypointPosition] = useState<LngLat>(
     existingWaypoint
-      ? ({
-          lng: existingWaypoint.longitude,
-          lat: existingWaypoint.latitude,
-        } as LngLat)
+      ? new LngLat(existingWaypoint.longitude, existingWaypoint.latitude)
       : lngLat,
   );
 
@@ -183,8 +180,9 @@ export const CreateWaypointDialog = ({
   const handlePositionUpdate = useMemo(
     () =>
       debounce<(e: MarkerDragEvent) => void>((e) => {
-        setWaypointPosition(e.lngLat as LngLat);
-        flyToPosition(e.lngLat as LngLat);
+        const location = new LngLat(e.lngLat.lng, e.lngLat.lat);
+        setWaypointPosition(location);
+        flyToPosition(location);
       }, 300),
     [flyToPosition],
   );
