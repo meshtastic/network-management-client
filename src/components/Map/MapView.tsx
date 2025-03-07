@@ -3,11 +3,10 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Separator from "@radix-ui/react-separator";
 import { PickingInfo } from "deck.gl/typed";
 import { MapPin, X } from "lucide-react";
-import maplibregl from "maplibre-gl";
+import maplibregl, { LngLat } from "maplibre-gl";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  LngLat,
   // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
   MapLayerMouseEvent,
@@ -17,7 +16,7 @@ import {
   ViewState,
   ViewStateChangeEvent,
   useControl,
-} from "react-map-gl";
+} from "react-map-gl/maplibre";
 import { useDispatch, useSelector } from "react-redux";
 import { useDebounce } from "react-use";
 
@@ -268,13 +267,7 @@ export const MapView = () => {
 
         {(lastRightClickLngLat || editingWaypoint) && (
           <CreateWaypointDialog
-            lngLat={
-              lastRightClickLngLat ??
-              ({
-                lng: 0,
-                lat: 0,
-              } as LngLat)
-            }
+            lngLat={lastRightClickLngLat ?? new LngLat(0, 0)}
             closeDialog={() => {
               setEditingWaypoint(null);
               setLastRightClickLngLat(null);
