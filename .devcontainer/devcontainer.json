@@ -47,7 +47,8 @@
 	},
 	"forwardPorts": [
 		5173,
-		443
+		443,
+		4403
 	],
 	"portsAttributes": {
 		"443": {
