@@ -95,7 +95,9 @@ This project is still in early stages of development, but here's a rough roadmap
   - [x] On-map waypoint tooltip
 - [ ] :globe_with_meridians: Web client parity (UI)
   - [x] Map node view
-  - [x] Text messaging
+  - [ ] Messaging
+    - [x] Channel messaging
+    - [ ] Direct messaging
   - [ ] Channel import/export via QR code
   - [x] Configuration
     - [x] Device configuration
