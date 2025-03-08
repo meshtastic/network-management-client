@@ -1,2 +1,5 @@
 General:
   MACAddress: AA:BB:CC:DD:EE:FF
+Webserver:
+  Port: 443
+  RootPath: /usr/share/doc/meshtasticd/web

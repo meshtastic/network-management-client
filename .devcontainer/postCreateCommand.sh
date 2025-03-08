@@ -7,4 +7,4 @@ echo 'deb http://download.opensuse.org/repositories/network:/Meshtastic:/beta/De
 curl -fsSL https://download.opensuse.org/repositories/network:Meshtastic:beta/Debian_12/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/network_Meshtastic_beta.gpg > /dev/null
 sudo apt update && sudo apt install meshtasticd -y
 
-sudo cp /etc/meshtasticd/available.d/lora-MeshAdv-900M30S.yaml /etc/meshtasticd/config.d/
+sudo cp /etc/meshtasticd/available.d/lora-waveshare-sxxx.yaml /etc/meshtasticd/config.d/
