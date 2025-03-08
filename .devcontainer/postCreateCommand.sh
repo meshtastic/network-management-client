@@ -8,4 +8,3 @@ curl -fsSL https://download.opensuse.org/repositories/network:Meshtastic:beta/De
 sudo apt update && sudo apt install meshtasticd -y
 
 sudo cp /etc/meshtasticd/available.d/lora-MeshAdv-900M30S.yaml /etc/meshtasticd/config.d/
-nohup meshtasticd > nohup-meshtasticd.out &
