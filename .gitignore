@@ -24,3 +24,6 @@ dist-ssr
 *.sln
 *.sw?
 node_modules
+
+# nohup output
+nohup*.out
