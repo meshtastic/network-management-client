@@ -2,6 +2,9 @@
 
 This project includes a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) configuration for Visual Studio Code, which allows you to develop inside a containerized environment. This ensures that all developers have a consistent development environment, regardless of their local machine setup.
 
+> **Note:** The devcontainer is tested on:\
+Windows 11 with Docker Desktop and WSL2 Ubuntu.
+
 ### Prerequisites
 
 To use the devcontainer, you need to have the following installed:
