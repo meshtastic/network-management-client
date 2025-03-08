@@ -29,4 +29,6 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 
 USER vscode
 
+RUN echo 'export DISPLAY="${DISPLAY:-:1}"' | tee -a ~/.bashrc >> ~/.zshrc
+
 HEALTHCHECK NONE
