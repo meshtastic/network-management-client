@@ -68,7 +68,6 @@
 	"runArgs": [
 		// Use "--device=" to make a local device available inside the container.
 		// "--device=/dev/ttyACM0",
-		"--privileged"
 	],
 	"postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
 	"postStartCommand": "bash .devcontainer/postStartCommand.sh"
