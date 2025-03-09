@@ -3,7 +3,8 @@
 This project includes a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) configuration for Visual Studio Code, which allows you to develop inside a containerized environment. This ensures that all developers have a consistent development environment, regardless of their local machine setup.
 
 > **Note:** The devcontainer is tested on:\
-Windows 11 with Docker Desktop and WSL2 Ubuntu.
+Windows 11 with Docker Desktop and WSL2 Ubuntu.\
+Ubuntu, use command `xhost +` let the display through.
 
 ### Prerequisites
 
@@ -20,13 +21,15 @@ To use the devcontainer, you need to have the following installed:
 3. Clone this repository in container volume. (Dev Volumes)
 4. Launch the Dev Container.
 
+By using the devcontainer, you ensure that your development environment is consistent with the rest of the team, reducing the likelihood of environment-specific issues.
+
 ## Application
 
 Once the devcontainer is set up, you can use the same development commands as described in the [Development Commands](/README.md#development-commands) section. The devcontainer includes all necessary dependencies and tools for developing and testing the project.
 
-> **Note:** If you encounter any issues you can always refresh the devcontainer by rebuilding it. `F1` > `Dev Containers: Rebuild Container`
+Start the application by running command `pnpm run rust:dev`.
 
-By using the devcontainer, you ensure that your development environment is consistent with the rest of the team, reducing the likelihood of environment-specific issues.
+> **Note:** If you encounter any issues you can always refresh the devcontainer by rebuilding it. `F1` > `Dev Containers: Rebuild Container`.
 
 ## Meshtasticd and CLI
 
