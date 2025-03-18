@@ -4,7 +4,8 @@ This project includes a [devcontainer](https://code.visualstudio.com/docs/devcon
 
 > **Note:** The devcontainer is tested on:\
 Windows 11 with Docker Desktop and WSL2 Ubuntu.\
-Ubuntu, use command `xhost +` let the display through.
+Ubuntu, use command `xhost +` let the display through.\
+Fedora/Nobara 41.
 
 ### Prerequisites
 
