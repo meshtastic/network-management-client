@@ -166,7 +166,7 @@ export const Sidebar = () => {
         <hr className="border-gray-100 dark:border-gray-700" />
 
         <SidebarIcon
-          name={isSidebarExpanded ? t("sidebar.expand") : t("sidebar.collapse")}
+          name={isSidebarExpanded ? t("sidebar.collapse") : t("sidebar.expand")}
           isActive={false}
           isSidebarExpanded={isSidebarExpanded}
           onClick={() => setSidebarExpanded(!isSidebarExpanded)}
