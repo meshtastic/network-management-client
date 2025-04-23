@@ -37,7 +37,7 @@
     "@radix-ui/react-tooltip": "^1.0.5",
     "@reduxjs/toolkit": "^1.8.6",
     "@tanstack/react-table": "8.7.9",
-    "@tauri-apps/api": "^1.1.0",
+    "@tauri-apps/api": "^1.6.0",
     "base64-js": "^1.5.1",
     "chart.js": "^4.2.1",
     "deck.gl": "^8.9.7",
@@ -80,7 +80,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "~1.4.1",
-    "@tauri-apps/cli": "^1.1.1",
+    "@tauri-apps/cli": "^1.6.3",
     "@types/jest": "^29.2.0",
     "@types/lodash.clonedeep": "^4.5.7",
     "@types/lodash.debounce": "^4.0.7",
