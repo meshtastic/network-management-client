@@ -26,11 +26,7 @@ fn export_ts_types(file_path: &str) -> Result<(), TsExportError> {
     ts_with_cfg(file_path, &ts_export_config)
 }
 
-#[cfg(debug_assertions)]
 const LOG_LEVEL: LevelFilter = LevelFilter::Debug;
-
-#[cfg(not(debug_assertions))]
-const LOG_LEVEL: LevelFilter = LevelFilter::Trace;
 
 fn main() {
     tauri::Builder::default()
@@ -43,10 +39,9 @@ fn main() {
         )
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
-            info!("Building TS types from Rust");
-
-            #[cfg(debug_assertions)]
-            export_ts_types("../src/bindings/index.ts")?;
+            // info!("Building TS types from Rust");
+            // #[cfg(debug_assertions)]
+            // export_ts_types("../src/bindings/index.ts")?;
 
             let initial_mesh_devices_state = state::mesh_devices::MeshDevicesState::new();
             let initial_radio_connections_state =
