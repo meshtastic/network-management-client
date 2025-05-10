@@ -105,9 +105,8 @@ This project is still in early stages of development, but here's a rough roadmap
 
 ## 📻 Hardware Requirements
 
-This project is built on the Meshtastic hardware ecosystem, and as such this client requires that you have access to a Meshtastic radio. This may change in the future, but for the time being a physical radio is required to use this client.
-
-I've written up some personal hardware recommendations [here](./HARDWARE.MD).
+This project is built on the Meshtastic hardware ecosystem, and as such this client requires that you have access to a Meshtastic radio.
+See the [Meshtastic docs for hardware recommendations](https://meshtastic.org/docs/hardware/devices/).
 
 ## :computer: Development
 
