@@ -1,5 +1,5 @@
 import * as Tabs from "@radix-ui/react-tabs";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { FormEventHandler, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";

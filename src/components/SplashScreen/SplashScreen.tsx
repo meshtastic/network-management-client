@@ -1,4 +1,4 @@
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { useCallback, useEffect, useState } from "react";
 import { Trans } from "react-i18next";
 import { Particles } from "react-tsparticles";

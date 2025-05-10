@@ -1,0 +1,29 @@
+{
+  "identifier": "migrated",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "shell:allow-open",
+    "dialog:allow-message",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "http://127.0.0.1:5000/*"
+        }
+      ]
+    },
+    "notification:default",
+    "clipboard-manager:allow-write-text",
+    "dialog:default",
+    "shell:default",
+    "notification:default",
+    "store:default",
+    "clipboard-manager:default",
+    "http:default"
+  ]
+}
