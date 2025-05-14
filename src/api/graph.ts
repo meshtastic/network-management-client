@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { MeshGraph } from "@app/types/graph";
 
 export const fetchGraph = async () => {

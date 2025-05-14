@@ -16,7 +16,7 @@ use specta::{
     ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior, TsExportError},
 };
 use tauri::Manager;
-use tauri_plugin_log::{fern::colors::ColoredLevelConfig, LogTarget};
+use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 fn export_ts_types(file_path: &str) -> Result<(), TsExportError> {
     let ts_export_config = ExportConfiguration::default()
@@ -37,15 +37,17 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_cli::init())
         .plugin(
             tauri_plugin_log::Builder::default()
-                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
+                .targets([Target::new(TargetKind::LogDir {file_name: Some(String::from("meshtastic.log"))}), Target::new(TargetKind::Stdout), Target::new(TargetKind::Webview)])
                 .level(LOG_LEVEL)
                 .with_colors(ColoredLevelConfig::default())
                 .build(),
         )
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
+            // TODO(matthewCmatt): Re-enable Typescript generation
             // info!("Building TS types from Rust");
             // #[cfg(debug_assertions)]
             // export_ts_types("../src/bindings/index.ts")?;
