@@ -13,14 +13,14 @@ export default defineConfig({
     strictPort: true,
     watch: {
       // tell vite to ignore watching `src-tauri`
-      ignored: ['**/src-tauri/**'],
+      ignored: ["**/src-tauri/**"],
     },
   },
   // Env variables starting with the item of `envPrefix` will be exposed in tauri's source code through `import.meta.env`.
   envPrefix: ["VITE_", "TAURI_ENV_*"],
   build: {
     // Tauri supports es2021
-    target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari15',
+    target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari15",
     // don't minify for debug builds
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds

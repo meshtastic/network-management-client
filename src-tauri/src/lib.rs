@@ -40,7 +40,13 @@ pub fn run() {
         .plugin(tauri_plugin_cli::init())
         .plugin(
             tauri_plugin_log::Builder::default()
-                .targets([Target::new(TargetKind::LogDir {file_name: Some(String::from("meshtastic.log"))}), Target::new(TargetKind::Stdout), Target::new(TargetKind::Webview)])
+                .targets([
+                    Target::new(TargetKind::LogDir {
+                        file_name: Some(String::from("meshtastic.log")),
+                    }),
+                    Target::new(TargetKind::Stdout),
+                    Target::new(TargetKind::Webview),
+                ])
                 .level(LOG_LEVEL)
                 .with_colors(ColoredLevelConfig::default())
                 .build(),
