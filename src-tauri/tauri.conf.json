@@ -3,80 +3,48 @@
   "build": {
     "beforeBuildCommand": "pnpm run ui:build",
     "beforeDevCommand": "pnpm run ui:dev",
-    "devPath": "http://localhost:5173",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5173"
   },
-  "package": {
-    "productName": "Meshtastic Network Management Client",
-    "version": "0.3.1"
-  },
-  "tauri": {
-    "allowlist": {
-      "clipboard": {
-        "all": false,
-        "readText": false,
-        "writeText": true
-      },
-      "dialog": {
-        "all": false,
-        "ask": false,
-        "confirm": false,
-        "message": true,
-        "open": false,
-        "save": false
-      },
-      "http": {
-        "all": true,
-        "request": true,
-        "scope": [" http://127.0.0.1:5000/*"]
-      },
-      "notification": {
-        "all": true
-      },
-      "path": {
-        "all": true
-      },
-      "shell": {
-        "all": false,
-        "execute": false,
-        "open": true,
-        "scope": [],
-        "sidecar": false
-      }
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "targets": "all",
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": ""
     },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "linux": {
       "deb": {
         "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "org.meshtastic.network-management",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": "-"
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
       }
-    },
+    }
+  },
+  "productName": "Meshtastic Network Management Client",
+  "mainBinaryName": "Meshtastic Network Management Client",
+  "version": "0.3.1",
+  "identifier": "org.meshtastic.network-management",
+  "plugins": {
     "cli": {
       "description": "A command line interface for launching the (unofficial) Meshtastic Emergency Response Client.",
       "longDescription": "A CLI that allows for programatic connection to Meshtastic devices while launching the desktop client.",
@@ -88,19 +56,19 @@
           "multiple": false
         }
       ]
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": false
-    },
+    }
+  },
+  "app": {
     "windows": [
       {
         "maximized": true,
         "resizable": true,
-        "title": "Meshtastic Network Management Client"
+        "title": "Meshtastic Network Management Client",
+        "useHttpsScheme": true
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
   }
 }

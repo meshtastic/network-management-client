@@ -1,6 +1,6 @@
 use crate::{device, graph::ds::graph::MeshGraph};
 use log::{debug, trace};
-use tauri::Manager;
+use tauri::Emitter;
 
 use super::ConfigurationStatus;
 
@@ -10,7 +10,7 @@ pub fn dispatch_updated_device<R: tauri::Runtime>(
 ) -> tauri::Result<()> {
     debug!("Dispatching updated device");
 
-    handle.emit_all("device_update", device)?;
+    handle.emit("device_update", device)?;
 
     trace!("Dispatched updated device");
 
@@ -23,7 +23,7 @@ pub fn dispatch_configuration_status<R: tauri::Runtime>(
 ) -> tauri::Result<()> {
     debug!("Dispatching configuration status");
 
-    handle.emit_all("configuration_status", status)?;
+    handle.emit("configuration_status", status)?;
 
     Ok(())
 }
@@ -38,7 +38,7 @@ pub fn dispatch_rebooting_event<R: tauri::Runtime>(
         .expect("Time went backwards")
         .as_secs();
 
-    handle.emit_all("reboot", current_time_sec)?;
+    handle.emit("reboot", current_time_sec)?;
 
     Ok(())
 }
@@ -49,7 +49,7 @@ pub fn dispatch_updated_graph<R: tauri::Runtime>(
 ) -> tauri::Result<()> {
     debug!("Dispatching updated graph");
 
-    handle.emit_all("graph_update", graph)?;
+    handle.emit("graph_update", graph)?;
 
     Ok(())
 }

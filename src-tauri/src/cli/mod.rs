@@ -6,7 +6,8 @@ pub fn handle_cli_matches(
     app: &mut tauri::App,
     inital_autoconnect_state: &mut state::autoconnect::AutoConnectState,
 ) -> Result<(), String> {
-    match app.get_cli_matches() {
+    use tauri_plugin_cli::CliExt;
+    match app.cli().matches() {
         Ok(matches) => {
             let args = matches.args;
 

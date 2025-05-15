@@ -62,7 +62,7 @@ where
 
     let device = device::MeshDevice::new();
     let mut packet_api = MeshPacketApi::new(
-        app_handle.app_handle(),
+        app_handle.clone(),
         device_key.clone(),
         device,
         mesh_graph.inner.clone(),

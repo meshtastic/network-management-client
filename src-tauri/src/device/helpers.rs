@@ -49,13 +49,6 @@ pub fn get_channel_name(device: &mut MeshDevice, channel_id: &u32) -> Option<Str
 ///
 /// * `f32` - The converted mesh location field.
 ///
-/// # Example
-///
-/// ```
-/// let lat = 27_030_000; // Represents 2.703 latitude
-/// let norm_lat = normalize_location_field(latitude);
-/// assert_eq!(norm_lat, 2.703);
-/// ```
 pub fn normalize_location_field(field: i32) -> f32 {
     (field as f64 / 1e7) as f32
 }
@@ -71,13 +64,25 @@ pub fn normalize_location_field(field: i32) -> f32 {
 ///
 /// * `i32` - The converted location field.
 ///
-/// # Example
-///
-/// ```
-/// let lat = 2.703;
-/// let mesh_lat = convert_location_field_to_protos(lat);
-/// assert_eq!(mesh_lat, 27_030_000);
-/// ```
 pub fn convert_location_field_to_protos(field: f32) -> i32 {
     (field * 1e7).floor() as i32
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_normalize_location_field() {
+        let lat = 27_030_000; // Represents 2.703 latitude
+        let norm_lat = normalize_location_field(lat);
+        assert!((norm_lat - 2.703).abs() < 1e-6); // Use tolerance for float comparison
+    }
+
+    #[test]
+    fn test_convert_location_field_to_protos() {
+        let lat = 2.703;
+        let mesh_lat = convert_location_field_to_protos(lat);
+        assert_eq!(mesh_lat, 27_030_000);
+    }
 }
