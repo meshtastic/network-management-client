@@ -58,6 +58,16 @@ impl MeshDevice {
                     trace!("Updated own bluetooth config: {:?}", bluetooth);
                     self.config.bluetooth = Some(bluetooth);
                 }
+                protobufs::config::PayloadVariant::Security(security) => {
+                    trace!("Updated own security config: {:?}", security);
+                    self.config.security = Some(security);
+                }
+                protobufs::config::PayloadVariant::Sessionkey(session_key) => {
+                    trace!("Received session key config: {:?}", session_key);
+                }
+                protobufs::config::PayloadVariant::DeviceUi(device_ui) => {
+                    trace!("Received Device UI config: {:?}", device_ui);
+                }
             }
         }
     }
@@ -165,6 +175,14 @@ impl MeshDevice {
                     protobufs::telemetry::Variant::PowerMetrics(power_metrics) => {
                         debug!("Received power metrics, not handling");
                         trace!("{:?}", power_metrics);
+                    }
+                    protobufs::telemetry::Variant::LocalStats(local_stats) => {
+                        debug!("Received local stats, not handling");
+                        trace!("{:?}", local_stats);
+                    }
+                    protobufs::telemetry::Variant::HealthMetrics(health_metrics) => {
+                        debug!("Received health metrics, not handling");
+                        trace!("{:?}", health_metrics);
                     }
                 }
             }
