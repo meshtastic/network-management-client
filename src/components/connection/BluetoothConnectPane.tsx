@@ -13,14 +13,6 @@ export interface ISerialConnectPaneProps {
   activePort: string;
   activePortState: RequestStatus;
   handlePortSelected: (portName: string) => void;
-  isAdvancedOpen: boolean;
-  setAdvancedOpen: (isAdvancedOpen: boolean) => void;
-  baudRate: number;
-  setBaudRate: (baudRate: number) => void;
-  dtr: boolean;
-  setDtr: (dtr: boolean) => void;
-  rts: boolean;
-  setRts: (rts: boolean) => void;
   refreshPorts: () => void;
 }
 
@@ -30,37 +22,15 @@ export const BluetoothConnectPane = ({
   activePortState,
   handlePortSelected,
   refreshPorts,
-  isAdvancedOpen,
-  setAdvancedOpen,
-  baudRate,
-  setBaudRate,
-  dtr,
-  setDtr,
-  rts,
-  setRts,
 }: ISerialConnectPaneProps) => {
   const { t } = useTranslation();
 
   return (
-    <Collapsible.Root open={isAdvancedOpen} onOpenChange={setAdvancedOpen}>
+    <Collapsible.Root open={true}>
       <div className="flex flex-col mt-4">
         <div className="flex flex-col gap-4">
-          {availableSerialPorts?.length ? (
-            availableSerialPorts.map((portName) => (
-              <SerialPortOption
-                key={portName}
-                name={portName}
-                connectionState={
-                  activePort === portName ? activePortState : { status: "IDLE" }
-                }
-                onClick={handlePortSelected}
-              />
-            ))
-          ) : (
-            <p className="text-base leading-6 font-normal text-gray-500 dark:text-gray-400 pl-40 pr-40 text-center">
-              {t("connectPage.tabs.serial.empty")}
-            </p>
-          )}
+          <button onClick={() => {handlePortSelected(activePort)}}>Connect!</button>
+          {activePortState.status}
         </div>
       </div>
 
@@ -74,45 +44,6 @@ export const BluetoothConnectPane = ({
           {t("connectPage.tabs.serial.refresh")}
         </p>
       </button>
-
-      <Collapsible.Trigger asChild>
-        <button
-          type="button"
-          className="flex flex-row align-middle justify-between w-full mt-5 mb-2"
-        >
-          <p className="my-auto text-base font-normal text-gray-500 dark:text-gray-400">
-            {t("connectPage.tabs.serial.advancedTitle")}
-          </p>
-          <span className="my-auto text-gray-500 dark:text-gray-400">
-            {isAdvancedOpen ? <Cross2Icon /> : <RowSpacingIcon />}
-          </span>
-        </button>
-      </Collapsible.Trigger>
-
-      <Collapsible.Content>
-        <div className="flex flex-col gap-4">
-          <ConnectionInput
-            type="number"
-            placeholder={t("connectPage.tabs.serial.baudTitle")}
-            value={baudRate}
-            onChange={(e) => setBaudRate(parseInt(e.target.value))}
-          />
-
-          <div className="flex flex-row justify-between">
-            <p className="text-base font-normal text-gray-500 dark:text-gray-400">
-              {t("connectPage.tabs.serial.dtrTitle")}
-            </p>
-            <ConnectionSwitch checked={dtr} setChecked={setDtr} />
-          </div>
-
-          <div className="flex flex-row justify-between">
-            <p className="text-base font-normal text-gray-500 dark:text-gray-400">
-              {t("connectPage.tabs.serial.rtsTitle")}
-            </p>
-            <ConnectionSwitch checked={rts} setChecked={setRts} />
-          </div>
-        </div>
-      </Collapsible.Content>
     </Collapsible.Root>
   );
 };

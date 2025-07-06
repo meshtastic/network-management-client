@@ -17,6 +17,7 @@ import { selectConnectionStatus } from "@features/connection/selectors";
 import { connectionSliceActions } from "@features/connection/slice";
 import { DeviceApiActions, useDeviceApi } from "@features/device/api";
 import {
+  selectAutoConnectBluetooth,
   selectAutoConnectPort,
   selectAvailablePorts,
 } from "@features/device/selectors";
@@ -43,16 +44,24 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const autoConnectPort = useSelector(selectAutoConnectPort());
+  const autoConnectBluetooth = useSelector(selectAutoConnectBluetooth());
 
   // UI state
   const [isScreenActive, setScreenActive] = useState(true);
   const [isAdvancedOpen, setAdvancedOpen] = useState(false);
 
   // Connection-level state, held here to persist across tab switches
-  const [selectedBluetoothName, setSelectedBluetoothName] = useState("");
+  const [selectedBluetoothName, setSelectedBluetoothName] = useState("mxie_2128");
   const [selectedPortName, setSelectedPortName] = useState("");
   const [socketAddress, setSocketAddress] = useState("");
   const [socketPort, setSocketPort] = useState("4403");
+
+  // autoConnectPort takes priority over selectedPortName if it exists
+  const activeBluetooth = autoConnectBluetooth ?? selectedBluetoothName;
+
+  const activeBluetoothState = useSelector(selectConnectionStatus(activeBluetooth)) ?? {
+    status: "IDLE",
+  };
 
   // Advanced serial options, held here to persist across tab switches
   const [baudRate, setBaudRate] = useState(115_200);
@@ -148,6 +157,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   // Wait to allow user to recognize serial connection succeeded
   useEffect(() => {
     if (
+      activeBluetoothState.status !== "SUCCESSFUL" &&
       activePortState.status !== "SUCCESSFUL" &&
       activeSocketState.status !== "SUCCESSFUL"
     )
@@ -160,7 +170,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     return () => {
       clearTimeout(delayHandle);
     };
-  }, [activePortState, activeSocketState]);
+  }, [activeBluetoothState, activePortState, activeSocketState]);
 
   // Move to main page upon successful port connection (need to trigger when port is succesfully connected)
   useEffect(() => {
@@ -240,18 +250,10 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
             <Tabs.Content value={ConnectionType.BLUETOOTH}>
               <BluetoothConnectPane
                 availableSerialPorts={availableSerialPorts}
-                activePort={activePort}
-                activePortState={activePortState}
-                handlePortSelected={handlePortSelected}
+                activePort={activeBluetooth}
+                activePortState={activeBluetoothState}
+                handlePortSelected={handleBluetoothSelected}
                 refreshPorts={refreshPorts}
-                isAdvancedOpen={isAdvancedOpen}
-                setAdvancedOpen={setAdvancedOpen}
-                baudRate={baudRate}
-                setBaudRate={setBaudRate}
-                dtr={dtr}
-                setDtr={setDtr}
-                rts={rts}
-                setRts={setRts}
               />
             </Tabs.Content>
 

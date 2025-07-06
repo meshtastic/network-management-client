@@ -79,6 +79,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             ipc::commands::connections::request_autoconnect_port,
             ipc::commands::connections::get_all_serial_ports,
+            ipc::commands::connections::connect_to_bluetooth,
             ipc::commands::connections::connect_to_serial_port,
             ipc::commands::connections::connect_to_tcp_port,
             ipc::commands::connections::drop_device_connection,

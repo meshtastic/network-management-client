@@ -9,8 +9,10 @@ use crate::state::DeviceKey;
 
 use log::debug;
 use meshtastic::api::{StreamApi, StreamHandle};
+use meshtastic::utils::stream::build_ble_stream;
 use meshtastic::utils::stream::build_serial_stream;
 use meshtastic::utils::stream::build_tcp_stream;
+use meshtastic::utils::stream::BleId;
 use std::time::Duration;
 use tauri::Manager;
 use tokio::io::AsyncReadExt;
@@ -117,6 +119,40 @@ where
     // Spawn decoded packet handler to route decoded packets
 
     spawn_decoded_handler(decoded_listener, mesh_devices_arc, device_key);
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn connect_to_bluetooth(
+    bluetooth_name: String,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
+) -> Result<(), CommandError> {
+    debug!(
+        "Called connect_to_bluetooth command with device name \"{}\"",
+        bluetooth_name
+    );
+
+    // Create serial connection stream
+
+    let stream =
+        build_ble_stream(&BleId::from_name(&bluetooth_name), Duration::from_secs(5)).await.unwrap();
+
+    // Create and persist new connection
+
+    create_new_connection(
+        stream,
+        bluetooth_name,
+        Duration::from_millis(15000),
+        app_handle,
+        mesh_devices,
+        radio_connections,
+        mesh_graph,
+    )
+    .await?;
 
     Ok(())
 }

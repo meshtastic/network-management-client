@@ -97,3 +97,6 @@ export const selectWaypointByLocation =
 
 export const selectAutoConnectPort = () => (state: RootState) =>
   state.devices.autoConnectPort;
+
+export const selectAutoConnectBluetooth = () => (state: RootState) =>
+  state.devices.autoConnectBluetooth;
