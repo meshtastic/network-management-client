@@ -71,6 +71,10 @@ export const useDeviceApi = () => {
   const connectToDevice = async (payload: {
     params:
       | {
+          type: ConnectionType.BLUETOOTH;
+          bluetoothName: string;
+        }
+      | {
           type: ConnectionType.SERIAL;
           portName: string;
           dtr: boolean;
@@ -100,6 +104,12 @@ export const useDeviceApi = () => {
             },
           }),
         );
+
+        if (payload.params.type === ConnectionType.BLUETOOTH) {
+          await backendConnectionApi.connectToBluetooth(
+            payload.params.bluetoothName,
+          );
+        }
 
         if (payload.params.type === ConnectionType.SERIAL) {
           await backendConnectionApi.connectToSerialPort(
