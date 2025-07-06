@@ -56,7 +56,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const [isAdvancedOpen, setAdvancedOpen] = useState(false);
 
   // Connection-level state, held here to persist across tab switches
-  const [selectedBluetoothName, setSelectedBluetoothName] = useState("mxie_2128");
+  const [selectedBluetoothName, setSelectedBluetoothName] = useState("");
   const [selectedPortName, setSelectedPortName] = useState("");
   const [socketAddress, setSocketAddress] = useState("");
   const [socketPort, setSocketPort] = useState("4403");

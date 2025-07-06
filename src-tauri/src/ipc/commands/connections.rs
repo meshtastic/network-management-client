@@ -7,6 +7,7 @@ use crate::packet_api::MeshPacketApi;
 use crate::state;
 use crate::state::DeviceKey;
 
+use btleplug::api::ScanFilter;
 use log::debug;
 use meshtastic::api::{StreamApi, StreamHandle};
 use meshtastic::utils::stream::build_ble_stream;
@@ -14,7 +15,6 @@ use meshtastic::utils::stream::build_serial_stream;
 use meshtastic::utils::stream::build_tcp_stream;
 use meshtastic::utils::stream::BleId;
 use std::time::Duration;
-use tauri::Manager;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 
@@ -34,13 +34,55 @@ pub async fn request_autoconnect_port(
 
     Ok(autoconnect_port)
 }
+use btleplug::api::{Central, Manager as _, Peripheral as _};
+use btleplug::platform::Manager;
+use tokio::time;
 
-// Tauri command
 #[tauri::command]
-pub fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
+pub async fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
     debug!("Called get_all_bluetooth command");
 
-    let devices = vec!["mxie_2128".to_string(), "woaha".to_string(), "Freak out!".to_string()];
+    // Initialize Bluetooth manager
+    let manager = Manager::new()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    // Get available Bluetooth adapters
+    let adapters = manager.adapters().await
+        .map_err(|e| e.to_string())?;
+
+    let adapter = adapters
+        .into_iter()
+        .next()
+        .ok_or_else(|| "failed to find adapter")?;
+
+    // Start scanning for devices
+    adapter.start_scan(ScanFilter::default()).await
+        .map_err(|e| e.to_string())?;
+
+    debug!("Started Bluetooth scan");
+
+    // Allow some time for devices to be discovered
+    time::sleep(std::time::Duration::from_secs(5)).await;
+
+    let peripherals = adapter.peripherals().await
+        .map_err(|e| e.to_string())?;
+
+    let mut devices = Vec::new();
+
+    for peripheral in peripherals {
+        if let Ok(Some(props)) = peripheral.properties().await {
+            if let Some(name) = props.local_name {
+                devices.push(name);
+            }
+            // else skip this peripheral
+        }
+    // else skip this peripheral
+    }
+
+    devices.sort();
+
+    debug!("Discovered Bluetooth devices: {:?}", devices);
 
     Ok(devices)
 }
