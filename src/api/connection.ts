@@ -70,9 +70,7 @@ export const dropAllDeviceConnections = async () => {
   return response;
 };
 
-export const connectToBluetooth = async (
-  bluetoothName: string,
-) => {
+export const connectToBluetooth = async (bluetoothName: string) => {
   const response = (await invoke("connect_to_bluetooth", {
     bluetoothName,
   })) as undefined;

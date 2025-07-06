@@ -43,7 +43,9 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const deviceApi = useDeviceApi();
 
   const dispatch = useDispatch();
-  const availableBluetoothDevices = useSelector(selectAvailableBluetoothDevices());
+  const availableBluetoothDevices = useSelector(
+    selectAvailableBluetoothDevices(),
+  );
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const autoConnectPort = useSelector(selectAutoConnectPort());
   const autoConnectBluetooth = useSelector(selectAutoConnectBluetooth());
@@ -61,7 +63,9 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   // autoConnectPort takes priority over selectedPortName if it exists
   const activeBluetooth = autoConnectBluetooth ?? selectedBluetoothName;
 
-  const activeBluetoothState = useSelector(selectConnectionStatus(activeBluetooth)) ?? {
+  const activeBluetoothState = useSelector(
+    selectConnectionStatus(activeBluetooth),
+  ) ?? {
     status: "IDLE",
   };
 

@@ -30,7 +30,6 @@ export const BluetoothConnectPane = ({
     <Collapsible.Root open={true}>
       <div className="flex flex-col mt-4">
         <div className="flex flex-col gap-4">
-
           {availableBluetoothDevices?.length ? (
             availableBluetoothDevices.map((portName) => (
               <BluetoothDeviceOption

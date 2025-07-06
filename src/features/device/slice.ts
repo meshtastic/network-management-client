@@ -17,7 +17,7 @@ export const initialDeviceState: IDeviceState = {
   availableSerialPorts: null,
   primaryDeviceKey: null,
   autoConnectPort: null,
-  autoConnectBluetooth: null
+  autoConnectBluetooth: null,
 };
 
 export const deviceSlice = createSlice({
