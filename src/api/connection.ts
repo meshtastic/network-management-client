@@ -20,6 +20,12 @@ export const requestAutoConnectPort = async () => {
   return response;
 };
 
+export const getAllBluetooth = async () => {
+  const response = (await invoke("get_all_bluetooth")) as string[];
+
+  return response;
+};
+
 export const getAllSerialPorts = async () => {
   const response = (await invoke("get_all_serial_ports")) as string[];
 

@@ -46,6 +46,7 @@ tauri-plugin-notification = "2"
 tauri-plugin-clipboard-manager = "2"
 tauri-plugin-http = "2"
 tauri-plugin-cli = "2"
+btleplug = "0.11.8"
 
 [features]
 # by default Tauri runs in production mode

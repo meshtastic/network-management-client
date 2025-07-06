@@ -4,6 +4,7 @@ import type { app_device_MeshDevice } from "@bindings/index";
 
 export interface IDeviceState {
   device: app_device_MeshDevice | null;
+  availableBluetoothDevices: string[] | null;
   availableSerialPorts: string[] | null;
   primaryDeviceKey: string | null; // port or socket ddress
   autoConnectPort: string | null; // Port to automatically connect to on startup
@@ -12,6 +13,7 @@ export interface IDeviceState {
 
 export const initialDeviceState: IDeviceState = {
   device: null,
+  availableBluetoothDevices: null,
   availableSerialPorts: null,
   primaryDeviceKey: null,
   autoConnectPort: null,
@@ -22,6 +24,12 @@ export const deviceSlice = createSlice({
   name: "device",
   initialState: initialDeviceState,
   reducers: {
+    setAvailableBluetoothDevices: (
+      state,
+      action: PayloadAction<string[] | null>,
+    ) => {
+      state.availableBluetoothDevices = action.payload;
+    },
     setAvailableSerialPorts: (
       state,
       action: PayloadAction<string[] | null>,

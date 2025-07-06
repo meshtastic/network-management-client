@@ -35,6 +35,16 @@ pub async fn request_autoconnect_port(
     Ok(autoconnect_port)
 }
 
+// Tauri command
+#[tauri::command]
+pub fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
+    debug!("Called get_all_bluetooth command");
+
+    let devices = vec!["mxie_2128".to_string(), "woaha".to_string(), "Freak out!".to_string()];
+
+    Ok(devices)
+}
+
 #[tauri::command]
 pub fn get_all_serial_ports() -> Result<Vec<String>, CommandError> {
     debug!("Called get_all_serial_ports command");
