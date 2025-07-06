@@ -180,9 +180,9 @@ pub struct NormalizedPosition {
 impl From<protobufs::Position> for NormalizedPosition {
     fn from(position: protobufs::Position) -> Self {
         Self {
-            latitude: normalize_location_field(position.latitude_i),
-            longitude: normalize_location_field(position.longitude_i),
-            altitude: position.altitude,
+            latitude: normalize_location_field(position.latitude_i.unwrap_or_default()),
+            longitude: normalize_location_field(position.longitude_i.unwrap_or_default()),
+            altitude: position.altitude.unwrap_or_default(),
             time: position.time,
             location_source: protobufs::position::LocSource::from_i32(position.location_source)
                 .expect("Could not convert i32 to LocSource"),
@@ -190,14 +190,14 @@ impl From<protobufs::Position> for NormalizedPosition {
                 .expect("Could not convert i32 to AltSource"),
             timestamp: position.timestamp,
             timestamp_millis_adjust: position.timestamp_millis_adjust,
-            altitude_hae: position.altitude_hae,
-            altitude_geoidal_separation: position.altitude_geoidal_separation,
+            altitude_hae: position.altitude_hae.unwrap_or_default(),
+            altitude_geoidal_separation: position.altitude_geoidal_separation.unwrap_or_default(),
             pdop: position.pdop,
             hdop: position.hdop,
             vdop: position.vdop,
             gps_accuracy: position.gps_accuracy,
-            ground_speed: position.ground_speed,
-            ground_track: position.ground_track,
+            ground_speed: position.ground_speed.unwrap_or_default(),
+            ground_track: position.ground_track.unwrap_or_default(),
             fix_quality: position.fix_quality,
             fix_type: position.fix_type,
             sats_in_view: position.sats_in_view,
@@ -283,8 +283,8 @@ impl From<protobufs::Waypoint> for NormalizedWaypoint {
         Self {
             id: waypoint.id,
             // Converting to f64 first to cover entire i32 range
-            latitude: normalize_location_field(waypoint.latitude_i),
-            longitude: normalize_location_field(waypoint.longitude_i),
+            latitude: normalize_location_field(waypoint.latitude_i.unwrap_or_default()),
+            longitude: normalize_location_field(waypoint.longitude_i.unwrap_or_default()),
             expire: waypoint.expire,
             locked_to: waypoint.locked_to,
             name: waypoint.name,
@@ -299,8 +299,8 @@ impl Into<protobufs::Waypoint> for NormalizedWaypoint {
         protobufs::Waypoint {
             id: self.id,
             // Converting to f64 first to cover entire i32 range
-            latitude_i: convert_location_field_to_protos(self.latitude),
-            longitude_i: convert_location_field_to_protos(self.longitude),
+            latitude_i: Some(convert_location_field_to_protos(self.latitude)),
+            longitude_i: Some(convert_location_field_to_protos(self.longitude)),
             expire: self.expire,
             locked_to: self.locked_to,
             name: self.name,
