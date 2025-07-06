@@ -9,6 +9,7 @@ import Hero_Image from "@app/assets/onboard_hero_image.jpg";
 import { ConnectTab } from "@components/connection/ConnectTab";
 import { SerialConnectPane } from "@components/connection/SerialConnectPane";
 import { TcpConnectPane } from "@components/connection/TcpConnectPane";
+import { BluetoothConnectPane } from "@components/connection/BluetoothConnectPane";
 
 import { useAppConfigApi } from "@features/appConfig/api";
 import { selectPersistedTCPConnectionMeta } from "@features/appConfig/selectors";
@@ -48,6 +49,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const [isAdvancedOpen, setAdvancedOpen] = useState(false);
 
   // Connection-level state, held here to persist across tab switches
+  const [selectedBluetoothName, setSelectedBluetoothName] = useState("");
   const [selectedPortName, setSelectedPortName] = useState("");
   const [socketAddress, setSocketAddress] = useState("");
   const [socketPort, setSocketPort] = useState("4403");
@@ -103,6 +105,14 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     );
     dispatch(connectionSliceActions.clearAllConnectionState());
     requestPorts();
+  };
+
+  const handleBluetoothSelected = (bluetoothName: string) => {
+    setSelectedBluetoothName(bluetoothName);
+    deviceApi.connectToDevice({
+      params: { type: ConnectionType.BLUETOOTH, bluetoothName },
+      setPrimary: true,
+    });
   };
 
   const handlePortSelected = (portName: string) => {
@@ -211,6 +221,11 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
               aria-label="Choose a connection type"
             >
               <ConnectTab
+                label={t("connectPage.tabs.bluetooth.title")}
+                tooltip={t("connectPage.tabs.bluetooth.tooltip")}
+                value={ConnectionType.BLUETOOTH}
+              />
+              <ConnectTab
                 label={t("connectPage.tabs.serial.title")}
                 tooltip={t("connectPage.tabs.serial.tooltip")}
                 value={ConnectionType.SERIAL}
@@ -221,6 +236,24 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                 value={ConnectionType.TCP}
               />
             </Tabs.List>
+
+            <Tabs.Content value={ConnectionType.BLUETOOTH}>
+              <BluetoothConnectPane
+                availableSerialPorts={availableSerialPorts}
+                activePort={activePort}
+                activePortState={activePortState}
+                handlePortSelected={handlePortSelected}
+                refreshPorts={refreshPorts}
+                isAdvancedOpen={isAdvancedOpen}
+                setAdvancedOpen={setAdvancedOpen}
+                baudRate={baudRate}
+                setBaudRate={setBaudRate}
+                dtr={dtr}
+                setDtr={setDtr}
+                rts={rts}
+                setRts={setRts}
+              />
+            </Tabs.Content>
 
             <Tabs.Content value={ConnectionType.SERIAL}>
               <SerialConnectPane
