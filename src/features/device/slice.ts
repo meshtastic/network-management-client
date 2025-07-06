@@ -7,6 +7,7 @@ export interface IDeviceState {
   availableSerialPorts: string[] | null;
   primaryDeviceKey: string | null; // port or socket ddress
   autoConnectPort: string | null; // Port to automatically connect to on startup
+  autoConnectBluetooth: string | null;
 }
 
 export const initialDeviceState: IDeviceState = {
@@ -14,6 +15,7 @@ export const initialDeviceState: IDeviceState = {
   availableSerialPorts: null,
   primaryDeviceKey: null,
   autoConnectPort: null,
+  autoConnectBluetooth: null
 };
 
 export const deviceSlice = createSlice({
