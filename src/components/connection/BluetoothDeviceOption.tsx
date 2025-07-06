@@ -58,8 +58,8 @@ export const BluetoothDeviceOption = ({
               <XCircleIcon className="text-red-600 dark:text-red-400 w-6 h-6" />
               <h1 className="ml-4 text-base leading-6 font-normal text-red-600 dark:text-red-400">
                 <Trans
-                i18nKey="connectPage.tabs.bluetooth.portOption"
-                values={{ deviceName: name }}
+                  i18nKey="connectPage.tabs.bluetooth.portOption"
+                  values={{ deviceName: name }}
                 />
               </h1>
             </div>
@@ -82,8 +82,8 @@ export const BluetoothDeviceOption = ({
               <Bluetooth className="text-gray-500 dark:text-gray-400 w-6 h-6" />
               <h1 className="ml-4 text-base leading-6 font-normal text-gray-600 dark:text-gray-300 mt-0.5">
                 <Trans
-                i18nKey="connectPage.tabs.bluetooth.portOption"
-                values={{ deviceName: name }}
+                  i18nKey="connectPage.tabs.bluetooth.portOption"
+                  values={{ deviceName: name }}
                 />
               </h1>
             </div>

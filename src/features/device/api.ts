@@ -65,7 +65,9 @@ export const useDeviceApi = () => {
     await trackRequestOperation(TYPE, dispatch, async () => {
       const bluetoothDevices = await backendConnectionApi.getAllBluetooth();
 
-      dispatch(deviceSliceActions.setAvailableBluetoothDevices(bluetoothDevices));
+      dispatch(
+        deviceSliceActions.setAvailableBluetoothDevices(bluetoothDevices),
+      );
     });
   };
 
@@ -96,19 +98,21 @@ export const useDeviceApi = () => {
   }) => {
     const TYPE = DeviceApiActions.ConnectToDevice;
 
-    let deviceKey: DeviceKey
+    let deviceKey: DeviceKey;
     switch (payload.params.type) {
       case ConnectionType.BLUETOOTH:
-        deviceKey = payload.params.bluetoothName
-        break
+        deviceKey = payload.params.bluetoothName;
+        break;
       case ConnectionType.SERIAL:
-        deviceKey = payload.params.portName
-        break
+        deviceKey = payload.params.portName;
+        break;
       case ConnectionType.TCP:
-        deviceKey = payload.params.socketAddress
-        break
+        deviceKey = payload.params.socketAddress;
+        break;
       default:
-        throwError("Neither bluetoothName, portName nor socketAddress were set");
+        throwError(
+          "Neither bluetoothName, portName nor socketAddress were set",
+        );
     }
 
     await trackRequestOperation(
