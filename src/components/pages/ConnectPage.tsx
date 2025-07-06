@@ -19,6 +19,7 @@ import { DeviceApiActions, useDeviceApi } from "@features/device/api";
 import {
   selectAutoConnectBluetooth,
   selectAutoConnectPort,
+  selectAvailableBluetoothDevices,
   selectAvailablePorts,
 } from "@features/device/selectors";
 import { requestSliceActions } from "@features/requests/slice";
@@ -45,6 +46,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const { isDarkMode } = useIsDarkMode();
 
   const dispatch = useDispatch();
+  const availableBluetoothDevices = useSelector(selectAvailableBluetoothDevices());
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const autoConnectPort = useSelector(selectAutoConnectPort());
   const autoConnectBluetooth = useSelector(selectAutoConnectBluetooth());
@@ -88,6 +90,10 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     selectPersistedTCPConnectionMeta(),
   );
 
+  const requestBluetoothDevices = useCallback(() => {
+    deviceApi.getAvailableBluetoothDevices();
+  }, [dispatch]);
+
   const requestPorts = useCallback(() => {
     deviceApi.getAvailableSerialPorts();
   }, [dispatch]);
@@ -117,6 +123,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     );
     dispatch(connectionSliceActions.clearAllConnectionState());
     requestPorts();
+    requestBluetoothDevices();
   };
 
   const handleBluetoothSelected = (bluetoothName: string) => {
@@ -146,6 +153,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     appConfigApi.fetchLastTcpConnectionMeta();
 
     requestPorts();
+    requestBluetoothDevices();
   }, [dispatch, requestPorts]);
 
   // Initialize TCP state to persisted state
@@ -252,7 +260,7 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
             <Tabs.Content value={ConnectionType.BLUETOOTH}>
               <BluetoothConnectPane
-                availableSerialPorts={availableSerialPorts}
+                availableBluetoothDevices={availableBluetoothDevices}
                 activePort={activeBluetooth}
                 activePortState={activeBluetoothState}
                 handlePortSelected={handleBluetoothSelected}

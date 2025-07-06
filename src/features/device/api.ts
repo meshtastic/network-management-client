@@ -21,6 +21,7 @@ import { CommandError, throwError } from "@utils/errors";
 export enum DeviceApiActions {
   GetAutoConnectPort = "device/getAutoConnectPort",
   SubscribeAll = "device/subscribeAll",
+  GetAvailableBluetoothDevices = "device/getAvailableBluetoothDevices",
   GetAvailableSerialPorts = "device/getAvailableSerialPorts",
   InitializeApplication = "device/initializeApplication",
   ConnectToDevice = "device/connectToDevice",
@@ -55,6 +56,16 @@ export const useDeviceApi = () => {
           setPrimary: true,
         });
       }
+    });
+  };
+
+  const getAvailableBluetoothDevices = async () => {
+    const TYPE = DeviceApiActions.GetAvailableBluetoothDevices;
+
+    await trackRequestOperation(TYPE, dispatch, async () => {
+      const bluetoothDevices = await backendConnectionApi.getAllBluetooth();
+
+      dispatch(deviceSliceActions.setAvailableBluetoothDevices(bluetoothDevices));
     });
   };
 
@@ -260,6 +271,7 @@ export const useDeviceApi = () => {
 
   return {
     getAutoConnectPort,
+    getAvailableBluetoothDevices,
     getAvailableSerialPorts,
     connectToDevice,
     disconnectFromDevice,

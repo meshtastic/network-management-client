@@ -8,6 +8,11 @@ import type {
   meshtastic_protobufs_User,
 } from "@bindings/index";
 
+export const selectAvailableBluetoothDevices =
+  () =>
+  (state: RootState): string[] | null =>
+    state.devices.availableBluetoothDevices;
+
 export const selectAvailablePorts =
   () =>
   (state: RootState): string[] | null =>

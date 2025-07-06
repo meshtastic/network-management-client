@@ -7,9 +7,10 @@ import { ConnectionInput } from "@components/connection/ConnectionInput";
 import { ConnectionSwitch } from "@components/connection/ConnectionSwitch";
 import { SerialPortOption } from "@components/connection/SerialPortOption";
 import type { RequestStatus } from "@features/requests/slice";
+import { BluetoothDeviceOption } from "@components/connection/BluetoothDeviceOption";
 
 export interface ISerialConnectPaneProps {
-  availableSerialPorts: string[] | null;
+  availableBluetoothDevices: string[] | null;
   activePort: string;
   activePortState: RequestStatus;
   handlePortSelected: (portName: string) => void;
@@ -17,7 +18,7 @@ export interface ISerialConnectPaneProps {
 }
 
 export const BluetoothConnectPane = ({
-  availableSerialPorts,
+  availableBluetoothDevices,
   activePort,
   activePortState,
   handlePortSelected,
@@ -29,8 +30,23 @@ export const BluetoothConnectPane = ({
     <Collapsible.Root open={true}>
       <div className="flex flex-col mt-4">
         <div className="flex flex-col gap-4">
-          <button onClick={() => {handlePortSelected(activePort)}}>Connect!</button>
-          {activePortState.status}
+
+          {availableBluetoothDevices?.length ? (
+            availableBluetoothDevices.map((portName) => (
+              <BluetoothDeviceOption
+                key={portName}
+                name={portName}
+                connectionState={
+                  activePort === portName ? activePortState : { status: "IDLE" }
+                }
+                onClick={handlePortSelected}
+              />
+            ))
+          ) : (
+            <p className="text-base leading-6 font-normal text-gray-500 dark:text-gray-400 pl-40 pr-40 text-center">
+              {t("connectPage.tabs.serial.empty")}
+            </p>
+          )}
         </div>
       </div>
 
