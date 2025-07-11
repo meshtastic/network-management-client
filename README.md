@@ -10,13 +10,11 @@
     <img alt="Application testing action status" src="https://github.com/meshtastic/network-management-client/actions/workflows/testing.yml/badge.svg">
   </a>
   
-  <a href="">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/meshtastic/network-management-client">
-  </a>
-  
   <a href="https://github.com/meshtastic/network-management-client/issues">
     <img alt="GitHub issues" src="https://img.shields.io/github/issues/meshtastic/network-management-client">
   </a>
+  
+  <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/meshtastic/network-management-client/total">
   
   <a href="https://opencollective.com/meshtastic">
     <img alt="Open Collective backers" src="https://img.shields.io/opencollective/backers/meshtastic?label=support%20meshtastic">
