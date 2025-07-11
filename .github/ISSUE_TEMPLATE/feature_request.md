@@ -1,10 +1,9 @@
 ---
 name: Feature request
-about: Suggest a feature for this project.
-title: "[Feature Request]: "
+about: Suggest a feature for the application.
+title: ""
 labels: feature request, needs investigation
-assignees: ''
-
+assignees: ""
 ---
 
 ## Is your feature request related to a problem? Please describe.

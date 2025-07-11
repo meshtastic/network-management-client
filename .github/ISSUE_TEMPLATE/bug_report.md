@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Tell us about something that isn't working.
-title: "[Bug]: "
+title: ""
 labels: bug, needs investigation
-assignees: ''
-
+assignees: ""
 ---
 
 ## Describe the bug
@@ -26,11 +25,16 @@ A clear and concise description of what you expected to happen.
 
 If applicable, add screenshots to help explain your problem.
 
-## Machine Information
+## Software/Hardware Info
 
- - OS: [e.g., Ubuntu]
- - Version: [e.g., 23.04 LTS]
+### Client
 
-## Additional context
+-   Network Management Client version: (e.g. v0.3.1)
+-   Operating System: (e.g. Ubuntu 24.04 LTS)
+-   Architecture: (e.g. ARM, x86)
 
-Add any other context about the problem here.
+### Meshtastic Node(s)
+
+-   Hardware: (e.g. WisMesh Pocket V2 with nRF52840)
+-   Firmware Version: (e.g. 2.6.11.60ec05e Beta)
+-   Connection Mode: (e.g. Internet/Network, USB, Bluetooth)
