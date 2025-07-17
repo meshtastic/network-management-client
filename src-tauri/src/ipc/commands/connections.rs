@@ -45,6 +45,8 @@ use tokio::time;
 pub async fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
     debug!("Called get_all_bluetooth command");
 
+    const SCAN_DURATION: std::time::Duration = std::time::Duration::from_secs(5);
+
     // Initialize Bluetooth manager
     let manager = Manager::new()
         .await
@@ -57,7 +59,7 @@ pub async fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
     let adapter = adapters
         .into_iter()
         .next()
-        .ok_or_else(|| "failed to find adapter")?;
+        .ok_or("failed to find adapter")?;
 
     // Start scanning for devices
     adapter.start_scan(ScanFilter {
@@ -68,7 +70,7 @@ pub async fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
     debug!("Started Bluetooth scan");
 
     // Allow some time for devices to be discovered
-    time::sleep(std::time::Duration::from_secs(5)).await;
+    time::sleep(SCAN_DURATION).await;
 
     let peripherals = adapter.peripherals().await
         .map_err(|e| e.to_string())?;
