@@ -17,6 +17,9 @@ use meshtastic::utils::stream::BleId;
 use std::time::Duration;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
+use uuid::Uuid;
+
+const MSH_SERVICE: Uuid = Uuid::from_u128(0x6ba1b218_15a8_461f_9fa8_5dcae273eafd);
 
 #[tauri::command]
 pub async fn request_autoconnect_port(
@@ -57,7 +60,9 @@ pub async fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
         .ok_or_else(|| "failed to find adapter")?;
 
     // Start scanning for devices
-    adapter.start_scan(ScanFilter::default()).await
+    adapter.start_scan(ScanFilter {
+                services: vec![MSH_SERVICE],
+            }).await
         .map_err(|e| e.to_string())?;
 
     debug!("Started Bluetooth scan");

@@ -47,6 +47,7 @@ tauri-plugin-clipboard-manager = "2"
 tauri-plugin-http = "2"
 tauri-plugin-cli = "2"
 btleplug = "0.11.8"
+uuid = "1.17.0"
 
 [features]
 # by default Tauri runs in production mode
