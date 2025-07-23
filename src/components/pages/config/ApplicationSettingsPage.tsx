@@ -30,7 +30,7 @@ const _ActiveOption = ({
     case "map":
       return <MapConfigPage />;
     case "about":
-      return <AboutPage />
+      return <AboutPage />;
     default:
       return (
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">

@@ -33,7 +33,7 @@ export const initialAppConfigState: IAppConfigState = {
   general: {
     colorMode: "system",
   },
-  about: null
+  about: null,
 };
 
 export const appConfigSlice = createSlice({
