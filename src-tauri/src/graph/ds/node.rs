@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use log::trace;
 use meshtastic::{
     protobufs::{self, Neighbor},
@@ -14,7 +14,7 @@ use crate::graph::api::update_from_packet::DEFAULT_NODE_TIMEOUT_DURATION;
 #[serde(rename_all = "camelCase")]
 pub struct GraphNode {
     pub node_num: u32,
-    pub last_heard: NaiveDateTime,
+    pub last_heard: DateTime<Utc>,
     pub timeout_duration: Duration,
 }
 
@@ -52,8 +52,8 @@ impl From<protobufs::NeighborInfo> for GraphNode {
 
         Self {
             node_num: neighbor_info.node_id,
-            last_heard: NaiveDateTime::from_timestamp_millis(chrono::Utc::now().timestamp_millis())
-                .expect("Failed to convert timestamp to NaiveDateTime"),
+            last_heard: DateTime::from_timestamp_millis(chrono::Utc::now().timestamp_millis())
+                .expect("Failed to convert timestamp to DateTime"),
             timeout_duration: Duration::from_secs(timeout_secs),
         }
     }
@@ -85,8 +85,8 @@ impl From<Neighbor> for GraphNode {
 
         Self {
             node_num: neighbor.node_id,
-            last_heard: NaiveDateTime::from_timestamp_millis(last_heard_secs * 1000)
-                .expect("Failed to convert timestamp to NaiveDateTime"),
+            last_heard: DateTime::from_timestamp_millis(last_heard_secs * 1000)
+                .expect("Failed to convert timestamp to DateTime"),
             timeout_duration: Duration::from_secs(timeout_secs),
         }
     }

@@ -96,7 +96,7 @@ impl MeshGraph {
 
 impl MeshGraph {
     pub fn clean(&mut self) {
-        let now = chrono::Utc::now().naive_utc();
+        let now = chrono::Utc::now();
 
         // Edges will be removed if either the source or target node is removed
         let mut nodes_to_remove = vec![];

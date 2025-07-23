@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use log::trace;
 use meshtastic::{
     protobufs::Neighbor,
@@ -16,7 +16,7 @@ pub struct GraphEdge {
     snr: f64,
     from: u32,
     to: u32,
-    pub last_heard: NaiveDateTime,
+    pub last_heard: DateTime<Utc>,
     pub timeout_duration: Duration,
 }
 
@@ -44,7 +44,7 @@ impl GraphEdge {
             snr: neighbor.snr.into(),
             from: neighbor.node_id,
             to: to_node_id,
-            last_heard: chrono::Utc::now().naive_utc(),
+            last_heard: chrono::Utc::now(),
             timeout_duration: Duration::from_secs(timeout_secs),
         }
     }
