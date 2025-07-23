@@ -1,508 +1,514 @@
 {
-  "general": {
-    "meshtastic": "Meshtastic",
-    "networkManagement": "Network Management",
-    "client": "Client",
-    "notApplicable": "N/A",
-    "goHome": "Go home",
-    "unknown": "UNK",
-    "wip": "Unimplemented, work in progress"
-  },
-  "splashPage": {
-    "photoAttribution": "Photo by <link1>Caleb Riston</link1> on <link2>Unsplash</link2>"
-  },
-  "connectPage": {
-    "title": "Connect a radio",
-    "photoAttribution": "Photo by <link1>Jordan Steranka</link1> on <link2>Unsplash</link2>",
-    "supportedRadioBlurb": "Connect a supported Meshtastic radio to your computer via USB serial or via TCP over Ethernet or WiFi. For more detailed instructions, <linkButton>click here</linkButton>.",
-    "tabs": {
-      "serial": {
-        "title": "Serial",
-        "tooltip": "Connect to your radio via a USB serial cable",
-        "portOption": "Serial port on {{portName}}",
-        "empty": "No ports detected.",
-        "refresh": "Refresh ports",
-        "advancedTitle": "Advanced connection options",
-        "baudTitle": "Baud rate",
-        "dtrTitle": "Enable DTR",
-        "rtsTitle": "Enable RTS"
-      },
-      "tcp": {
-        "title": "TCP",
-        "tooltip": "Connect to your radio via Ethernet or WiFi",
-        "ip": "IP address or host name",
-        "port": "Port",
-        "connect": "Connect",
-        "connecting": "Connecting..."
-      }
-    }
-  },
-  "sidebar": {
-    "overviewGroup": "Overview",
-    "viewMap": "View Map",
-    "networkGroup": "Network",
-    "messaging": "Messaging",
-    "manageNodes": "Manage Nodes",
-    "manageWaypoints": "Manage Waypoints",
-    "configurationGroup": "Configuration",
-    "configureRadio": "Configure Radio",
-    "configureModules": "Configure Modules",
-    "configureChannels": "Configure Channels",
-    "settingsGroup": "Settings",
-    "applicationState": "Application State",
-    "applicationSettings": "Application Settings",
-    "graphDebugger": "Graph Debugger",
-    "expand": "Expand Sidebar",
-    "collapse": "Collapse Sidebar"
-  },
-  "map": {
-    "panes": {
-      "search": {
-        "placeholder": "Filter nodes",
-        "noResults": "No nodes found",
-        "collapseList": "Collapse node list",
-        "expandList": "Expand node list",
-        "selectNode": "Show node on map",
-        "deselectNode": "Deselect node",
-        "noGpsLock": "No GPS lock, hidden from map"
-      },
-      "nodeInfo": {
-        "generalInfo": "General Information",
-        "unknownValue": "Unknown",
-        "copyToClipboard": "Copy value to clipboard",
-        "battery": {
-          "unknown": "Unknown",
-          "powered": "Powered",
-          "discharging": "{{batteryLevel}}%, discharging"
-        },
-        "lastHeard": "Last heard from <timeAgo />"
-      },
-      "waypointInfo": {
-        "description": "Description",
-        "noDescription": "No description set",
-        "details": "Details",
-        "locked": {
-          "onlyYouEdit": "Only you can edit",
-          "onlyNodeEdit": "Only node {{nodeName}} can edit",
-          "anyoneEdit": "Anyone can edit"
-        },
-        "noLocationSet": "No location set",
-        "expires": "Expires {{fromNow}}",
-        "doesNotExpire": "Does not expire",
-        "editWaypoint": "Edit Waypoint",
-        "deleteWaypoint": "Delete Waypoint"
-      },
-      "algos": {}
-    },
-    "contextMenu": {
-      "dropWaypoint": "Drop a waypoint here",
-      "close": "Close menu"
-    },
-    "waypoints": {
-      "createWaypointTitle": "Create Waypoint",
-      "editWaypointTitle": "Edit Waypoint",
-      "centerWaypointTooltip": "Center waypoint on map",
-      "nameLabel": "Name",
-      "namePlaceholder": "Enter a name",
-      "nameTooLong": "Entered name too long ({{currentLength}}/{{maxLength}})",
-      "descriptionLabel": "Description",
-      "descriptionPlaceholder": "Enter a description",
-      "descriptionTooLong": "Entered description too long ({{currentLength}}/{{maxLength}})",
-      "blockWaypointEditing": "Block Waypoint Editing",
-      "waypointExpires": "Waypoint Expires",
-      "expireTime": "Expire Time",
-      "deviceChannel": "Device Channel",
-      "channelAriaLabel": "Device channel to send waypoint on",
-      "channelPlaceholder": "Select a channel",
-      "pinEmoji": "Pin Emoji",
-      "createWaypoint": "Create Waypoint",
-      "saveChanges": "Save Changes",
-      "cancel": "Cancel",
-      "closeAriaLabel": "Close waypoint dialog"
-    }
-  },
-  "messaging": {
-    "title": "Messaging",
-    "configureChannels": "Configure Channels",
-    "noChannelsSelected": "No channels selected",
-    "unnamedChannel": "Unnamed channel",
-    "noMessages": "No messages received on this channel",
-    "oneMessage": "1 message",
-    "manyMessages": "{{numMessages}} messages",
-    "channelNumber": "(Ch. {{channelNum}})",
-    "unnamedWaypoint": "[Unnamed waypoint]",
-    "waypointInfo": "Waypoint \"{{title}}\" ({{latitude}}, {{longitude}})",
-    "transmitting": "Transmitting...",
-    "acknowledged": "Acknowledged"
-  },
-  "manageNodes": {
-    "title": "Manage Nodes",
-    "id": "ID",
-    "longName": "Long Name",
-    "shortName": "Short Name",
-    "noUserInfo": "No user info",
-    "lastHeard": "Last Heard",
-    "latitude": "Latitude",
-    "noGpsLock": "No GPS Lock",
-    "longitude": "Longitude",
-    "battery": "Battery",
-    "noBatteryInfo": "No battery info"
-  },
-  "manageWaypoints": {
-    "title": "Manage Waypoints",
-    "id": "ID",
-    "name": "Name",
-    "noName": "No name provided",
-    "description": "Description",
-    "noDescription": "No description provided",
-    "expires": "Expires",
-    "doesNotExpire": "Does not expire",
-    "latitude": "Latitude",
-    "longitude": "Longitude",
-    "ownedBy": "Owned by",
-    "notLocked": "Not locked",
-    "unknownOwner": "Unknown owner"
-  },
-  "config": {
-    "discardChanges": "Discard pending changes",
-    "uploadChanges": "Upload configuration to device",
-    "numPendingChanges": "{{numChanges}} pending changes",
-    "unknownOption": "Unknown option selected",
-    "radio": {
-      "title": "Radio Config",
-      "options": {
-        "bluetooth": "Bluetooth",
-        "device": "Device",
-        "display": "Display",
-        "lora": "LoRa",
-        "network": "Network",
-        "position": "Position",
-        "power": "Power"
-      },
-      "bluetooth": {
-        "title": "Bluetooth Configuration",
-        "description": "Configure device bluetooth connection",
-        "bluetoothEnabled": "Bluetooth Enabled",
-        "pairingMode": {
-          "title": "Pairing Mode",
-          "randomPin": "Random Pin",
-          "fixedPin": "Fixed Pin",
-          "noPin": "No Pin"
-        },
-        "fixedPin": "Fixed Pin (if enabled)"
-      },
-      "device": {
-        "title": "Device Configuration",
-        "description": "Configure hardware device",
-        "deviceRole": {
-          "title": "Device Role",
-          "client": "Client",
-          "clientMute": "Client Mute",
-          "router": "Router",
-          "routerClient": "Router + Client",
-          "repeater": "Repeater",
-          "tracker": "Tracker",
-          "sensor": "Sensor",
-          "tak": "Tak",
-          "clientHidden": "Client Hidden",
-          "lostFound": "Lost and Found",
-          "takTracker": "Tak Tracker",
-          "routerLate": "Router Late"
-        },
-        "serialEnabled": "Serial Enabled",
-        "serialDebugEnabled": "Serial Debug Enabled",
-        "rebroadcastMode": {
-          "title": "Rebroadcast Mode",
-          "all": "All",
-          "allSkipDecoding": "All, skip decoding (repeater only)",
-          "localOnly": "Local only (ignores foreign messages)"
-        },
-        "nodeInfoBroadcastInterval": "Node Info Broadcast Interval (seconds)",
-        "doubleTapButtonPress": "Double Tap as Button Press"
-      },
-      "display": {
-        "title": "Display Configuration",
-        "description": "Configure device display",
-        "autoScrollInterval": "Screen Auto Scroll (seconds, 0 = disabled)",
-        "forceNorthToTop": "Force North to Screen Top",
-        "displayMode": {
-          "title": "Display Mode",
-          "default": "Default",
-          "twoColor": "Two Color",
-          "inverted": "Inverted",
-          "color": "Color"
-        },
-        "flipScreen": "Flip Screen",
-        "gpsFormat": {
-          "title": "GPS Format",
-          "decimal": "Decimal",
-          "dms": "DMS",
-          "utm": "UTM",
-          "mgrs": "MGRS",
-          "olc": "OLC",
-          "osgr": "OSGR"
-        },
-        "boldHeading": "Bold Heading",
-        "oledConfig": {
-          "title": "OLED Type",
-          "autoDetect": "Auto Detect",
-          "ssd1306": "OLED SSD1306",
-          "sh1106": "OLED SH1106",
-          "sh1107": "OLED SH1107"
-        },
-        "screenOnDuration": "Screen On Duration (seconds)",
-        "units": {
-          "title": "Device Units",
-          "metric": "Metric",
-          "imperial": "Imperial"
-        },
-        "wakeOnMotion": "Wake on Tap or Motion"
-      },
-      "lora": {
-        "title": "LoRa Configuration",
-        "description": "Configure device LoRa hardware",
-        "region": {
-          "title": "Region",
-          "unset": "Unset",
-          "us": "US",
-          "eu433": "EU (433 MHz)",
-          "eu868": "EU (868 MHz)",
-          "china": "China",
-          "japan": "Japan",
-          "auNz": "Australia + New Zealand",
-          "korea": "Korea (ROK)",
-          "taiwan": "Taiwan",
-          "russia": "Russia",
-          "india": "India",
-          "nz865": "New Zealand (865 MHz)",
-          "ukraine": "Ukraine (433 MHz)",
-          "thailand": "Thailand",
-          "24ghz": "2.4 GHz (global)"
-        },
-        "useModemPreset": "Use Modem Preset",
-        "modemPreset": {
-          "title": "Modem Preset",
-          "longFast": "Long Fast",
-          "longSlow": "Long Slow",
-          "medFast": "Medium Fast",
-          "medSlow": "Medium Slow",
-          "shortSlow": "Short Slow",
-          "shortFast": "Short Fast",
-          "longModerate": "Long Moderate",
-          "shortTurbo": "Short Turbo"
-        },
-        "bandwidth": "Bandwidth (kHz)",
-        "spreadFactor": "Spread Factor (1 << spread_factor)",
-        "codingRate": "Coding Rate (4 / coding_rate)",
-        "freqOffset": "Frequency Offset (Hz)",
-        "hopLimit": "Hop Limit",
-        "txEnabled": "Transmit Enabled",
-        "txPower": "Transmit Power",
-        "loraChannel": "LoRa Channel Number",
-        "euOverride": "Override EU Duty Cycle"
-      },
-      "network": {
-        "title": "Network Configuration",
-        "description": "Configure device network connection",
-        "wifiEnabled": "WiFi Enabled",
-        "wifiSsid": "WiFi SSID",
-        "wifiPsk": "WiFi PSK",
-        "ethEnabled": "Ethernet Enabled",
-        "addressMode": {
-          "title": "Address Mode",
-          "dhcp": "DHCP",
-          "static": "Static IP (not implemented)"
-        },
-        "ntpServerAddress": "NTP Server Address"
-      },
-      "position": {
-        "title": "Position Configuration",
-        "description": "Configure device position settings",
-        "gpsEnabled": "GPS Enabled",
-        "posBroadcastInterval": "Position Broadcast Interval (seconds, 0 = 15 min)",
-        "fixedPosition": "Fixed Position",
-        "gpsUpdateInterval": "GPS Update Interval (seconds, 0 = 30 sec)",
-        "gpsAttemptTime": "GPS Attempt Time (seconds, 0 = 30 sec)",
-        "enableSmartPosBroadcast": "Enable Smart Position Broadcast"
-      },
-      "power": {
-        "title": "Power Configuration",
-        "description": "Configure device power settings",
-        "enablePowerSaving": "Enable Power Saving",
-        "shutdownPowerLoss": "Shotdown After Power Loss (seconds, 0 = disabled)",
-        "adcMultOverride": "ADC Multiplier Override",
-        "bluetoothTimeout": "Bloetooth Timeout (seconds, 0 = 1 min)",
-        "sdsTimeout": "Super Deep Sleep Timeout (seconds, 0 = 2 hrs, MAX_UINT = disabled)",
-        "sdsInterval": "Super Deep Sleep Interval (seconds, 0 = 1 year, MAX_UINT = disabled)",
-        "lsInterval": "Light Sleep Interval (seconds, 0 = 5 min, ESP32 only)",
-        "minWakeInterval": "Minimum Wake Interval (seconds, 0 = 10 sec)"
-      }
-    },
-    "module": {
-      "title": "Module Config",
-      "options": {
-        "audio": "Audio",
-        "cannedMessage": "Canned Messages",
-        "externalNotification": "External Notification",
-        "mqtt": "MQTT",
-        "rangeTest": "Range Test",
-        "remoteHardware": "Remote Hardware",
-        "serial": "Serial Module",
-        "storeAndForward": "Store and Forward",
-        "telemetry": "Telemetry"
-      },
-      "audio": {},
-      "cannedMessages": {
-        "title": "Canned Messages Configuration",
-        "cannedMessagesEnabled": "Canned Messages Enabled",
-        "allowInputSource": {
-          "title": "Allow Input Source",
-          "noSelect": "None Selected",
-          "any": "Any Peripheral",
-          "3200bps": "3200 BPS",
-          "encoder": "Up / Down Encoder (RAK14006)",
-          "cardKb": "M5 Stack CardKB"
-        },
-        "sendBell": "Send Bell Character",
-        "enableRotaryEncoder": "Rotary Encoder Enabled",
-        "enableUpDownEncoder": "Up / Down Encoder Enabled",
-        "brokerA": "Input Broker Pin A",
-        "brokerB": "Input Broker Pin B",
-        "brokerPress": "Input Broker Press Pin",
-        "brokerEventCw": "Input Broker Event CW",
-        "brokerEventCcw": "Input Broker Event CCW",
-        "brokerEventPress": "Input Broker Event Press"
-      },
-      "externalNotification": {
-        "title": "External Notification Configuration",
-        "description": "Configure external notifications",
-        "extNotEnabled": "External Notifications Enabled",
-        "activeHighLed": "Active High LED",
-        "enableBellAlerts": "Enable Bell Alerts",
-        "enableBellVibrateAlert": "Enable Bell Vibrate Alert",
-        "enableBellBuzzerAlert": "Enable Bell Buzzer Alert",
-        "enableMessageAlerts": "Enable Message Alerts",
-        "enableMessageVibrateAlert": "Enable Message Vibrate Alert",
-        "enableMessageBuzzerAlert": "Enable Message Buzzer Alert",
-        "alertLedPin": "Alert LED Pin",
-        "alertVibratePin": "Alert Vibrate Pin",
-        "alertBuzzerPin": "Alert Buzzer Pin",
-        "enableBuzzerPwm": "Enable Buzzer PWM",
-        "alertDuration": "Alert Duration (ms, 0 = 1000 ms)",
-        "alertNagDuration": "Alert Nag Duration (0 = off)"
-      },
-      "mqtt": {
-        "title": "MQTT Configuration",
-        "description": "Configure MQTT",
-        "enableMqtt": "MQTT Enabled",
-        "serverAddress": "Server Address",
-        "username": "Username",
-        "password": "Password",
-        "encryptionEnabled": "Encryption Enabled",
-        "jsonEnabled": "JSON Enabled",
-        "tlsEnabled": "TLS Enabled"
-      },
-      "rangeTest": {
-        "title": "Range Test Configuration",
-        "description": "Configure range test module",
-        "rangeTestEnabled": "Range Test Enabled",
-        "senderTransmitInterval": "Sender Transmit Interval (seconds, 0 = disabled)",
-        "saveToFs": "Save to File System (ESP32 Only)"
-      },
-      "remoteHardware": {
-        "title": "Remote Hardware Configuration",
-        "description": "Configure remote network hardware",
-        "remoteHardwareEnabled": "Remote Hardware Enabled"
-      },
-      "serial": {
-        "title": "Serial Module Configuration",
-        "description": "Configure serial module",
-        "serialModuleEnabled": "Serial Module Enabled",
-        "echoSentPackets": "Echo Sent Packets",
-        "operatingMode": {
-          "title": "Operating Mode",
-          "default": "Default",
-          "simple": "Simple (UART tunnel)",
-          "protobuf": "Protobuf Client API",
-          "text": "Text Messages",
-          "nmea": "NMEA Stream"
-        },
-        "rxPin": "RX Pin (0 = unset)",
-        "txPin": "TX Pin (0 = unset)",
-        "baudRate": {
-          "title": "Baud Rate",
-          "default": "Default"
-        },
-        "serialTimeout": "Serial timeout (ms, 0 = 250 ms)"
-      },
-      "storeAndForward": {
-        "title": "Store and Forward Configuration (unstable)",
-        "description": "Configure packet storage and forwarding",
-        "sfEnabled": "Store and ForwardEnabled",
-        "heartbeatBroadcastEnabled": "Heartbeat Broadcast Enabled",
-        "storedRecords": "Stored Records",
-        "maxRecordsReturn": "Max Records to Return",
-        "returnWindow": "History Return Window (seconds)"
-      },
-      "telemetry": {
-        "title": "Telemetry Configuration",
-        "description": "Configure device telemetry",
-        "deviceMetricsInterval": "Device Metrics Interval (seconds, 0 = disabled)",
-        "enableAirQualityMetrics": "Enable Air Quality Metrics",
-        "airQualityUpdateInterval": "Air Quality Update Interval (seconds, 0 = disabled)",
-        "enableEnvironmentMetrics": "Enable Environment Metrics",
-        "environmentUpdateInterval": "Environment Update Interval (seconds, 0 = disabled)",
-        "useFahrenheitForEnvMetrics": "Use Fahrenheit for Environment Metrics",
-        "showEnvMetricsOnDeviceScreen": "Show Environment Metrics on Device Screen"
-      }
-    },
-    "channel": {
-      "title": "Channel Config",
-      "unknownChannel": "Unknown channel selected",
-      "option": {
-        "title": "Channel {{channelIndex}}"
-      },
-      "detail": {
-        "title": "Channel Configuration",
-        "description": "Configure channel \"{{channelName}}\"",
-        "channelRole": {
-          "title": "Channel Role",
-          "disabled": "Channel Disabled",
-          "primary": "Primary Channel",
-          "secondary": "Secondary Channel"
-        },
-        "channelName": "Channel Name",
-        "psk": "Pre-Shared Key",
-        "uplinkEnabled": "Uplink Enabled (MQTT)",
-        "downlinkEnabled": "Downlink Enabled (MQTT`)"
-      }
-    }
-  },
-  "applicationState": {
-    "title": "Application State"
-  },
-  "applicationSettings": {
-    "title": "Settings",
-    "saveChanges": "Save Changes",
-    "unknownOption": "Unknown option selected",
-    "options": {
-      "general": "General Settings",
-      "map": "Map Settings"
-    },
     "general": {
-      "title": "General Settings",
-      "description": "Edit general application settings",
-      "colorMode": {
-        "title": "Application Color Mode",
-        "light": "Light Mode",
-        "dark": "Dark Mode",
-        "system": "Follow System"
-      }
+        "meshtastic": "Meshtastic",
+        "networkManagement": "Network Management",
+        "client": "Client",
+        "notApplicable": "N/A",
+        "goHome": "Go home",
+        "unknown": "UNK",
+        "wip": "Unimplemented, work in progress"
+    },
+    "splashPage": {
+        "photoAttribution": "Photo by <link1>Caleb Riston</link1> on <link2>Unsplash</link2>"
+    },
+    "connectPage": {
+        "title": "Connect a radio",
+        "photoAttribution": "Photo by <link1>Jordan Steranka</link1> on <link2>Unsplash</link2>",
+        "supportedRadioBlurb": "Connect a supported Meshtastic radio to your computer via USB serial or via TCP over Ethernet or WiFi. For more detailed instructions, <linkButton>click here</linkButton>.",
+        "tabs": {
+            "serial": {
+                "title": "Serial",
+                "tooltip": "Connect to your radio via a USB serial cable",
+                "portOption": "Serial port on {{portName}}",
+                "empty": "No ports detected.",
+                "refresh": "Refresh ports",
+                "advancedTitle": "Advanced connection options",
+                "baudTitle": "Baud rate",
+                "dtrTitle": "Enable DTR",
+                "rtsTitle": "Enable RTS"
+            },
+            "tcp": {
+                "title": "TCP",
+                "tooltip": "Connect to your radio via Ethernet or WiFi",
+                "ip": "IP address or host name",
+                "port": "Port",
+                "connect": "Connect",
+                "connecting": "Connecting..."
+            }
+        }
+    },
+    "sidebar": {
+        "overviewGroup": "Overview",
+        "viewMap": "View Map",
+        "networkGroup": "Network",
+        "messaging": "Messaging",
+        "manageNodes": "Manage Nodes",
+        "manageWaypoints": "Manage Waypoints",
+        "configurationGroup": "Configuration",
+        "configureRadio": "Configure Radio",
+        "configureModules": "Configure Modules",
+        "configureChannels": "Configure Channels",
+        "settingsGroup": "Settings",
+        "applicationState": "Application State",
+        "applicationSettings": "Application Settings",
+        "graphDebugger": "Graph Debugger",
+        "expand": "Expand Sidebar",
+        "collapse": "Collapse Sidebar"
     },
     "map": {
-      "title": "Map Settings",
-      "description": "Edit application map settings",
-      "mapboxStyle": "Mapbox Map Style"
+        "panes": {
+            "search": {
+                "placeholder": "Filter nodes",
+                "noResults": "No nodes found",
+                "collapseList": "Collapse node list",
+                "expandList": "Expand node list",
+                "selectNode": "Show node on map",
+                "deselectNode": "Deselect node",
+                "noGpsLock": "No GPS lock, hidden from map"
+            },
+            "nodeInfo": {
+                "generalInfo": "General Information",
+                "unknownValue": "Unknown",
+                "copyToClipboard": "Copy value to clipboard",
+                "battery": {
+                    "unknown": "Unknown",
+                    "powered": "Powered",
+                    "discharging": "{{batteryLevel}}%, discharging"
+                },
+                "lastHeard": "Last heard from <timeAgo />"
+            },
+            "waypointInfo": {
+                "description": "Description",
+                "noDescription": "No description set",
+                "details": "Details",
+                "locked": {
+                    "onlyYouEdit": "Only you can edit",
+                    "onlyNodeEdit": "Only node {{nodeName}} can edit",
+                    "anyoneEdit": "Anyone can edit"
+                },
+                "noLocationSet": "No location set",
+                "expires": "Expires {{fromNow}}",
+                "doesNotExpire": "Does not expire",
+                "editWaypoint": "Edit Waypoint",
+                "deleteWaypoint": "Delete Waypoint"
+            },
+            "algos": {}
+        },
+        "contextMenu": {
+            "dropWaypoint": "Drop a waypoint here",
+            "close": "Close menu"
+        },
+        "waypoints": {
+            "createWaypointTitle": "Create Waypoint",
+            "editWaypointTitle": "Edit Waypoint",
+            "centerWaypointTooltip": "Center waypoint on map",
+            "nameLabel": "Name",
+            "namePlaceholder": "Enter a name",
+            "nameTooLong": "Entered name too long ({{currentLength}}/{{maxLength}})",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter a description",
+            "descriptionTooLong": "Entered description too long ({{currentLength}}/{{maxLength}})",
+            "blockWaypointEditing": "Block Waypoint Editing",
+            "waypointExpires": "Waypoint Expires",
+            "expireTime": "Expire Time",
+            "deviceChannel": "Device Channel",
+            "channelAriaLabel": "Device channel to send waypoint on",
+            "channelPlaceholder": "Select a channel",
+            "pinEmoji": "Pin Emoji",
+            "createWaypoint": "Create Waypoint",
+            "saveChanges": "Save Changes",
+            "cancel": "Cancel",
+            "closeAriaLabel": "Close waypoint dialog"
+        }
+    },
+    "messaging": {
+        "title": "Messaging",
+        "configureChannels": "Configure Channels",
+        "noChannelsSelected": "No channels selected",
+        "unnamedChannel": "Unnamed channel",
+        "noMessages": "No messages received on this channel",
+        "oneMessage": "1 message",
+        "manyMessages": "{{numMessages}} messages",
+        "channelNumber": "(Ch. {{channelNum}})",
+        "unnamedWaypoint": "[Unnamed waypoint]",
+        "waypointInfo": "Waypoint \"{{title}}\" ({{latitude}}, {{longitude}})",
+        "transmitting": "Transmitting...",
+        "acknowledged": "Acknowledged"
+    },
+    "manageNodes": {
+        "title": "Manage Nodes",
+        "id": "ID",
+        "longName": "Long Name",
+        "shortName": "Short Name",
+        "noUserInfo": "No user info",
+        "lastHeard": "Last Heard",
+        "latitude": "Latitude",
+        "noGpsLock": "No GPS Lock",
+        "longitude": "Longitude",
+        "battery": "Battery",
+        "noBatteryInfo": "No battery info"
+    },
+    "manageWaypoints": {
+        "title": "Manage Waypoints",
+        "id": "ID",
+        "name": "Name",
+        "noName": "No name provided",
+        "description": "Description",
+        "noDescription": "No description provided",
+        "expires": "Expires",
+        "doesNotExpire": "Does not expire",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "ownedBy": "Owned by",
+        "notLocked": "Not locked",
+        "unknownOwner": "Unknown owner"
+    },
+    "config": {
+        "discardChanges": "Discard pending changes",
+        "uploadChanges": "Upload configuration to device",
+        "numPendingChanges": "{{numChanges}} pending changes",
+        "unknownOption": "Unknown option selected",
+        "radio": {
+            "title": "Radio Config",
+            "options": {
+                "bluetooth": "Bluetooth",
+                "device": "Device",
+                "display": "Display",
+                "lora": "LoRa",
+                "network": "Network",
+                "position": "Position",
+                "power": "Power"
+            },
+            "bluetooth": {
+                "title": "Bluetooth Configuration",
+                "description": "Configure device bluetooth connection",
+                "bluetoothEnabled": "Bluetooth Enabled",
+                "pairingMode": {
+                    "title": "Pairing Mode",
+                    "randomPin": "Random Pin",
+                    "fixedPin": "Fixed Pin",
+                    "noPin": "No Pin"
+                },
+                "fixedPin": "Fixed Pin (if enabled)"
+            },
+            "device": {
+                "title": "Device Configuration",
+                "description": "Configure hardware device",
+                "deviceRole": {
+                    "title": "Device Role",
+                    "client": "Client",
+                    "clientMute": "Client Mute",
+                    "router": "Router",
+                    "routerClient": "Router + Client",
+                    "repeater": "Repeater",
+                    "tracker": "Tracker",
+                    "sensor": "Sensor",
+                    "tak": "Tak",
+                    "clientHidden": "Client Hidden",
+                    "lostFound": "Lost and Found",
+                    "takTracker": "Tak Tracker",
+                    "routerLate": "Router Late"
+                },
+                "serialEnabled": "Serial Enabled",
+                "serialDebugEnabled": "Serial Debug Enabled",
+                "rebroadcastMode": {
+                    "title": "Rebroadcast Mode",
+                    "all": "All",
+                    "allSkipDecoding": "All, skip decoding (repeater only)",
+                    "localOnly": "Local only (ignores foreign messages)"
+                },
+                "nodeInfoBroadcastInterval": "Node Info Broadcast Interval (seconds)",
+                "doubleTapButtonPress": "Double Tap as Button Press"
+            },
+            "display": {
+                "title": "Display Configuration",
+                "description": "Configure device display",
+                "autoScrollInterval": "Screen Auto Scroll (seconds, 0 = disabled)",
+                "forceNorthToTop": "Force North to Screen Top",
+                "displayMode": {
+                    "title": "Display Mode",
+                    "default": "Default",
+                    "twoColor": "Two Color",
+                    "inverted": "Inverted",
+                    "color": "Color"
+                },
+                "flipScreen": "Flip Screen",
+                "gpsFormat": {
+                    "title": "GPS Format",
+                    "decimal": "Decimal",
+                    "dms": "DMS",
+                    "utm": "UTM",
+                    "mgrs": "MGRS",
+                    "olc": "OLC",
+                    "osgr": "OSGR"
+                },
+                "boldHeading": "Bold Heading",
+                "oledConfig": {
+                    "title": "OLED Type",
+                    "autoDetect": "Auto Detect",
+                    "ssd1306": "OLED SSD1306",
+                    "sh1106": "OLED SH1106",
+                    "sh1107": "OLED SH1107"
+                },
+                "screenOnDuration": "Screen On Duration (seconds)",
+                "units": {
+                    "title": "Device Units",
+                    "metric": "Metric",
+                    "imperial": "Imperial"
+                },
+                "wakeOnMotion": "Wake on Tap or Motion"
+            },
+            "lora": {
+                "title": "LoRa Configuration",
+                "description": "Configure device LoRa hardware",
+                "region": {
+                    "title": "Region",
+                    "unset": "Unset",
+                    "us": "US",
+                    "eu433": "EU (433 MHz)",
+                    "eu868": "EU (868 MHz)",
+                    "china": "China",
+                    "japan": "Japan",
+                    "auNz": "Australia + New Zealand",
+                    "korea": "Korea (ROK)",
+                    "taiwan": "Taiwan",
+                    "russia": "Russia",
+                    "india": "India",
+                    "nz865": "New Zealand (865 MHz)",
+                    "ukraine": "Ukraine (433 MHz)",
+                    "thailand": "Thailand",
+                    "24ghz": "2.4 GHz (global)"
+                },
+                "useModemPreset": "Use Modem Preset",
+                "modemPreset": {
+                    "title": "Modem Preset",
+                    "longFast": "Long Fast",
+                    "longSlow": "Long Slow",
+                    "medFast": "Medium Fast",
+                    "medSlow": "Medium Slow",
+                    "shortSlow": "Short Slow",
+                    "shortFast": "Short Fast",
+                    "longModerate": "Long Moderate",
+                    "shortTurbo": "Short Turbo"
+                },
+                "bandwidth": "Bandwidth (kHz)",
+                "spreadFactor": "Spread Factor (1 << spread_factor)",
+                "codingRate": "Coding Rate (4 / coding_rate)",
+                "freqOffset": "Frequency Offset (Hz)",
+                "hopLimit": "Hop Limit",
+                "txEnabled": "Transmit Enabled",
+                "txPower": "Transmit Power",
+                "loraChannel": "LoRa Channel Number",
+                "euOverride": "Override EU Duty Cycle"
+            },
+            "network": {
+                "title": "Network Configuration",
+                "description": "Configure device network connection",
+                "wifiEnabled": "WiFi Enabled",
+                "wifiSsid": "WiFi SSID",
+                "wifiPsk": "WiFi PSK",
+                "ethEnabled": "Ethernet Enabled",
+                "addressMode": {
+                    "title": "Address Mode",
+                    "dhcp": "DHCP",
+                    "static": "Static IP (not implemented)"
+                },
+                "ntpServerAddress": "NTP Server Address"
+            },
+            "position": {
+                "title": "Position Configuration",
+                "description": "Configure device position settings",
+                "gpsEnabled": "GPS Enabled",
+                "posBroadcastInterval": "Position Broadcast Interval (seconds, 0 = 15 min)",
+                "fixedPosition": "Fixed Position",
+                "gpsUpdateInterval": "GPS Update Interval (seconds, 0 = 30 sec)",
+                "gpsAttemptTime": "GPS Attempt Time (seconds, 0 = 30 sec)",
+                "enableSmartPosBroadcast": "Enable Smart Position Broadcast"
+            },
+            "power": {
+                "title": "Power Configuration",
+                "description": "Configure device power settings",
+                "enablePowerSaving": "Enable Power Saving",
+                "shutdownPowerLoss": "Shotdown After Power Loss (seconds, 0 = disabled)",
+                "adcMultOverride": "ADC Multiplier Override",
+                "bluetoothTimeout": "Bloetooth Timeout (seconds, 0 = 1 min)",
+                "sdsTimeout": "Super Deep Sleep Timeout (seconds, 0 = 2 hrs, MAX_UINT = disabled)",
+                "sdsInterval": "Super Deep Sleep Interval (seconds, 0 = 1 year, MAX_UINT = disabled)",
+                "lsInterval": "Light Sleep Interval (seconds, 0 = 5 min, ESP32 only)",
+                "minWakeInterval": "Minimum Wake Interval (seconds, 0 = 10 sec)"
+            }
+        },
+        "module": {
+            "title": "Module Config",
+            "options": {
+                "audio": "Audio",
+                "cannedMessage": "Canned Messages",
+                "externalNotification": "External Notification",
+                "mqtt": "MQTT",
+                "rangeTest": "Range Test",
+                "remoteHardware": "Remote Hardware",
+                "serial": "Serial Module",
+                "storeAndForward": "Store and Forward",
+                "telemetry": "Telemetry"
+            },
+            "audio": {},
+            "cannedMessages": {
+                "title": "Canned Messages Configuration",
+                "cannedMessagesEnabled": "Canned Messages Enabled",
+                "allowInputSource": {
+                    "title": "Allow Input Source",
+                    "noSelect": "None Selected",
+                    "any": "Any Peripheral",
+                    "3200bps": "3200 BPS",
+                    "encoder": "Up / Down Encoder (RAK14006)",
+                    "cardKb": "M5 Stack CardKB"
+                },
+                "sendBell": "Send Bell Character",
+                "enableRotaryEncoder": "Rotary Encoder Enabled",
+                "enableUpDownEncoder": "Up / Down Encoder Enabled",
+                "brokerA": "Input Broker Pin A",
+                "brokerB": "Input Broker Pin B",
+                "brokerPress": "Input Broker Press Pin",
+                "brokerEventCw": "Input Broker Event CW",
+                "brokerEventCcw": "Input Broker Event CCW",
+                "brokerEventPress": "Input Broker Event Press"
+            },
+            "externalNotification": {
+                "title": "External Notification Configuration",
+                "description": "Configure external notifications",
+                "extNotEnabled": "External Notifications Enabled",
+                "activeHighLed": "Active High LED",
+                "enableBellAlerts": "Enable Bell Alerts",
+                "enableBellVibrateAlert": "Enable Bell Vibrate Alert",
+                "enableBellBuzzerAlert": "Enable Bell Buzzer Alert",
+                "enableMessageAlerts": "Enable Message Alerts",
+                "enableMessageVibrateAlert": "Enable Message Vibrate Alert",
+                "enableMessageBuzzerAlert": "Enable Message Buzzer Alert",
+                "alertLedPin": "Alert LED Pin",
+                "alertVibratePin": "Alert Vibrate Pin",
+                "alertBuzzerPin": "Alert Buzzer Pin",
+                "enableBuzzerPwm": "Enable Buzzer PWM",
+                "alertDuration": "Alert Duration (ms, 0 = 1000 ms)",
+                "alertNagDuration": "Alert Nag Duration (0 = off)"
+            },
+            "mqtt": {
+                "title": "MQTT Configuration",
+                "description": "Configure MQTT",
+                "enableMqtt": "MQTT Enabled",
+                "serverAddress": "Server Address",
+                "username": "Username",
+                "password": "Password",
+                "encryptionEnabled": "Encryption Enabled",
+                "jsonEnabled": "JSON Enabled",
+                "tlsEnabled": "TLS Enabled"
+            },
+            "rangeTest": {
+                "title": "Range Test Configuration",
+                "description": "Configure range test module",
+                "rangeTestEnabled": "Range Test Enabled",
+                "senderTransmitInterval": "Sender Transmit Interval (seconds, 0 = disabled)",
+                "saveToFs": "Save to File System (ESP32 Only)"
+            },
+            "remoteHardware": {
+                "title": "Remote Hardware Configuration",
+                "description": "Configure remote network hardware",
+                "remoteHardwareEnabled": "Remote Hardware Enabled"
+            },
+            "serial": {
+                "title": "Serial Module Configuration",
+                "description": "Configure serial module",
+                "serialModuleEnabled": "Serial Module Enabled",
+                "echoSentPackets": "Echo Sent Packets",
+                "operatingMode": {
+                    "title": "Operating Mode",
+                    "default": "Default",
+                    "simple": "Simple (UART tunnel)",
+                    "protobuf": "Protobuf Client API",
+                    "text": "Text Messages",
+                    "nmea": "NMEA Stream"
+                },
+                "rxPin": "RX Pin (0 = unset)",
+                "txPin": "TX Pin (0 = unset)",
+                "baudRate": {
+                    "title": "Baud Rate",
+                    "default": "Default"
+                },
+                "serialTimeout": "Serial timeout (ms, 0 = 250 ms)"
+            },
+            "storeAndForward": {
+                "title": "Store and Forward Configuration (unstable)",
+                "description": "Configure packet storage and forwarding",
+                "sfEnabled": "Store and ForwardEnabled",
+                "heartbeatBroadcastEnabled": "Heartbeat Broadcast Enabled",
+                "storedRecords": "Stored Records",
+                "maxRecordsReturn": "Max Records to Return",
+                "returnWindow": "History Return Window (seconds)"
+            },
+            "telemetry": {
+                "title": "Telemetry Configuration",
+                "description": "Configure device telemetry",
+                "deviceMetricsInterval": "Device Metrics Interval (seconds, 0 = disabled)",
+                "enableAirQualityMetrics": "Enable Air Quality Metrics",
+                "airQualityUpdateInterval": "Air Quality Update Interval (seconds, 0 = disabled)",
+                "enableEnvironmentMetrics": "Enable Environment Metrics",
+                "environmentUpdateInterval": "Environment Update Interval (seconds, 0 = disabled)",
+                "useFahrenheitForEnvMetrics": "Use Fahrenheit for Environment Metrics",
+                "showEnvMetricsOnDeviceScreen": "Show Environment Metrics on Device Screen"
+            }
+        },
+        "channel": {
+            "title": "Channel Config",
+            "unknownChannel": "Unknown channel selected",
+            "option": {
+                "title": "Channel {{channelIndex}}"
+            },
+            "detail": {
+                "title": "Channel Configuration",
+                "description": "Configure channel \"{{channelName}}\"",
+                "channelRole": {
+                    "title": "Channel Role",
+                    "disabled": "Channel Disabled",
+                    "primary": "Primary Channel",
+                    "secondary": "Secondary Channel"
+                },
+                "channelName": "Channel Name",
+                "psk": "Pre-Shared Key",
+                "uplinkEnabled": "Uplink Enabled (MQTT)",
+                "downlinkEnabled": "Downlink Enabled (MQTT`)"
+            }
+        }
+    },
+    "applicationState": {
+        "title": "Application State"
+    },
+    "applicationSettings": {
+        "title": "Settings",
+        "saveChanges": "Save Changes",
+        "unknownOption": "Unknown option selected",
+        "options": {
+            "general": "General Settings",
+            "map": "Map Settings",
+            "about": "About"
+        },
+        "general": {
+            "title": "General Settings",
+            "description": "Edit general application settings",
+            "colorMode": {
+                "title": "Application Color Mode",
+                "light": "Light Mode",
+                "dark": "Dark Mode",
+                "system": "Follow System"
+            }
+        },
+        "map": {
+            "title": "Map Settings",
+            "description": "Edit application map settings",
+            "mapboxStyle": "Mapbox Map Style"
+        },
+        "about": {
+            "title": "About",
+            "description": "View information about this app",
+            "versionNumber": "App Version"
+        }
     }
-  }
 }
