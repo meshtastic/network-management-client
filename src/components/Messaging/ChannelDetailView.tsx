@@ -1,5 +1,5 @@
 import { Edit3 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { warn } from "tauri-plugin-log-api";
 
@@ -24,7 +24,6 @@ export const ChannelDetailView = ({
   channel,
   className = "",
 }: IChannelDetailViewProps) => {
-  const dispatch = useDispatch();
   const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
 
   const deviceApi = useDeviceApi();

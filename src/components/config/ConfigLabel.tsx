@@ -15,6 +15,7 @@ export const ConfigLabel = ({
 }: IConfigLabelProps) => {
   return (
     <div className={className}>
+      {/** biome-ignore lint/a11y/noLabelWithoutControl: Control should be included in children */}
       <label className="">
         <p className="m-0 mb-1 text-xs font-semibold text-gray-500 dark:text-gray-400">
           {text}

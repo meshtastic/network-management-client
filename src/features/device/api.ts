@@ -4,7 +4,7 @@ import * as backendRadioApi from "@api/radio";
 import * as backendMeshApi from "@api/mesh";
 import * as backendConnectionApi from "@api/connection";
 
-import {
+import type {
   app_device_NormalizedWaypoint,
   meshtastic_protobufs_User,
 } from "@bindings/index";
@@ -15,8 +15,8 @@ import { uiSliceActions } from "@features/ui/slice";
 import { deviceSliceActions } from "./slice";
 
 import { trackRequestOperation } from "@utils/api";
-import { ConnectionType, DeviceKey } from "@utils/connections";
-import { CommandError, throwError } from "@utils/errors";
+import { ConnectionType, type DeviceKey } from "@utils/connections";
+import { type CommandError, throwError } from "@utils/errors";
 
 export enum DeviceApiActions {
   GetAutoConnectPort = "device/getAutoConnectPort",

@@ -1,38 +1,47 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
-  "formatter": {
-    "enabled": true,
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "ignore": ["src/bindings/index.ts"]
-  },
-  "organizeImports": {
-    "enabled": false
-  },
-  "linter": {
-    "include": ["src/**/*.ts", "src/**/*.tsx"],
-    "ignore": ["src/bindings/index.ts", "src/locales/**/*"],
-    "enabled": true,
-    "rules": {
-      "all": true,
-      "complexity": {
-        "useSimplifiedLogicExpression": "off"
-      },
-      "correctness": {
-        "useExhaustiveDependencies": "off"
-      },
-      "performance": {
-        "noAccumulatingSpread": "off"
-      },
-      "suspicious": {
-        "noDoubleEquals": "warn"
-      },
-      "style": {
-        "noImplicitBoolean": "off"
-      }
+    "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 2,
+        "includes": ["**", "!**/src/bindings/index.ts"]
+    },
+    "assist": { "actions": { "source": { "organizeImports": "off" } } },
+    "linter": {
+        "includes": [
+            "**/src/**/*.ts",
+            "**/src/**/*.tsx",
+            "!**/src/bindings/index.ts",
+            "!**/src/locales/**/*"
+        ],
+        "enabled": true,
+        "rules": {
+            "complexity": {
+                "useSimplifiedLogicExpression": "off"
+            },
+            "correctness": {
+                "useExhaustiveDependencies": "off"
+            },
+            "performance": {
+                "noAccumulatingSpread": "off"
+            },
+            "suspicious": {
+                "noDoubleEquals": "warn"
+            },
+            "style": {
+                "noImplicitBoolean": "off"
+            },
+            "a11y": {
+                "noLabelWithoutControl": "off"
+            }
+        }
+    },
+    "files": {
+        "includes": [
+            "**",
+            "!**/src-tauri/gen/**/*",
+            "!**/src-tauri/target/**/*",
+            "!**/dist/**/*"
+        ]
     }
-  },
-  "files": {
-    "ignore": ["src-tauri/gen/*", "src-tauri/target/*", "dist/*"]
-  }
 }

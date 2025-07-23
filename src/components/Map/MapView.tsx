@@ -1,7 +1,7 @@
-import { MapboxOverlay, MapboxOverlayProps } from "@deck.gl/mapbox/typed";
+import { MapboxOverlay, type MapboxOverlayProps } from "@deck.gl/mapbox/typed";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Separator from "@radix-ui/react-separator";
-import { PickingInfo } from "deck.gl/typed";
+import type { PickingInfo } from "deck.gl/typed";
 import { MapPin, X } from "lucide-react";
 import maplibregl, { LngLat } from "maplibre-gl";
 import { useCallback, useState } from "react";
@@ -9,12 +9,12 @@ import { useTranslation } from "react-i18next";
 import {
   // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
-  MapLayerMouseEvent,
+  type MapLayerMouseEvent,
   Marker,
   NavigationControl,
   ScaleControl,
-  ViewState,
-  ViewStateChangeEvent,
+  type ViewState,
+  type ViewStateChangeEvent,
   useControl,
 } from "react-map-gl/maplibre";
 import { useDispatch, useSelector } from "react-redux";
@@ -156,6 +156,7 @@ export const MapView = () => {
         open={isWaypointDialogOpen}
         onOpenChange={handleDialogIsOpenChange}
       >
+        {/** biome-ignore lint/a11y/noStaticElementInteractions: <explanation> */}
         <div
           className="relative w-full h-full z-0"
           onContextMenu={(e) => e.preventDefault()}

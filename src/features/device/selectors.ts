@@ -41,23 +41,20 @@ export const selectAllNodes =
 export const selectNodeById =
   (id: number | null) =>
   (state: RootState): app_device_MeshNode | null =>
-    id ? selectAllNodes()(state).find((n) => n.nodeNum === id) ?? null : null;
+    id ? (selectAllNodes()(state).find((n) => n.nodeNum === id) ?? null) : null;
 
 export const selectAllUsersByNodeIds =
   () =>
   (state: RootState): Record<number, meshtastic_protobufs_User | null> =>
-    selectAllNodes()(state).reduce(
-      (accum, n) => {
-        const { user } = n;
+    selectAllNodes()(state).reduce((accum, n) => {
+      const { user } = n;
 
-        if (user) {
-          accum[n.nodeNum] = user;
-        }
+      if (user) {
+        accum[n.nodeNum] = user;
+      }
 
-        return accum;
-      },
-      [] as meshtastic_protobufs_User[],
-    );
+      return accum;
+    }, [] as meshtastic_protobufs_User[]);
 
 export const selectUserByNodeId =
   (nodeId: number) =>

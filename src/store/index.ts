@@ -1,4 +1,4 @@
-import { configureStore, MiddlewareArray } from "@reduxjs/toolkit";
+import { configureStore, type MiddlewareArray } from "@reduxjs/toolkit";
 import { logger } from "redux-logger";
 
 import { appConfigReducer } from "@features/appConfig/slice";

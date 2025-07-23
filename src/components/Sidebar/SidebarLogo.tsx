@@ -2,8 +2,6 @@ import { useTranslation } from "react-i18next";
 
 import { MeshtasticLogo } from "@app/assets/Meshtastic";
 
-import { useIsDarkMode } from "@utils/hooks";
-
 import "@components/Sidebar/Sidebar.css";
 
 export interface IMeshLogoProps {
@@ -12,8 +10,6 @@ export interface IMeshLogoProps {
 
 export const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
   const { t } = useTranslation();
-
-  const { isDarkMode } = useIsDarkMode();
 
   return (
     <div className="flex flex-row justify-start align-middle h-20 p-4 border-b border-gray-100 dark:border-gray-700">

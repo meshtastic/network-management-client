@@ -52,7 +52,7 @@ const getNumberOfPendingChanges = (
 export const ChannelConfigPage = () => {
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
+  useDispatch();
   const meshChannels = useSelector(selectDeviceChannels());
 
   const configApi = useConfigApi();

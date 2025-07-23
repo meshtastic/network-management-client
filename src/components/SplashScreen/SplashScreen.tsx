@@ -24,7 +24,6 @@ export const SplashScreen = ({ unmountSelf }: ISplashScreenProps) => {
     await loadFull(engine);
   }, []);
 
-  // biome-ignore lint/nursery/useAwait: Need an async callback for particlesLoaded
   const particlesLoaded = useCallback(async () => {
     setParticlesLoaded(true);
   }, []);

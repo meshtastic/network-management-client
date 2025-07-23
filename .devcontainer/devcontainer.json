@@ -1,74 +1,68 @@
 {
-	"name": "Meshtastic Network-Management-Client Dev",
-	"build": {
-		"dockerfile": "Dockerfile"
-	},
-	"features": {
-		"ghcr.io/devcontainers/features/rust:1": {
-			"version": "latest"
-		},
-		"ghcr.io/devcontainers/features/node:1": {
-			"version": "lts",
-			"pnpmVersion": "latest"
-		},
-		"ghcr.io/devcontainers/features/python:1": {
-			"installTools": "false"
-		}
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				// "Trunk.io",
-				"biomejs.biome",
-				"rust-lang.rust-analyzer",
-				"tauri-apps.tauri-vscode"
-			],
-			"unwantedRecommendations": [
-				"ms-azuretools.vscode-docker"
-			],
-			"settings": {
-				"extensions.ignoreRecommendations": true,
-				"files.eol": "\n",
-				"editor.tabSize": 2,
-				"editor.formatOnSave": true,
-				"[javascript]": {
-					"editor.defaultFormatter": "biomejs.biome"
-				},
-				"[typescript]": {
-					"editor.defaultFormatter": "biomejs.biome"
-				},
-				"[typescriptreact]": {
-					"editor.defaultFormatter": "biomejs.biome"
-				},
-				"typescript.preferences.importModuleSpecifier": "non-relative",
-				"rust-analyzer.showUnlinkedFileNotification": false
-			}
-		}
-	},
-	"forwardPorts": [
-		5173,
-		443,
-		4403
-	],
-	"portsAttributes": {
-		"443": {
-			"label": "Meshtasticd Web Client",
-			"onAutoForward": "silent",
-			"protocol": "https"
-		},
-		"4403": {
-			"label": "Meshtasticd",
-			"onAutoForward": "silent"
-		},
-		"5173": {
-			"label": "Meshtastic Network Management Client",
-			"onAutoForward": "silent"
-		}
-	},
-	"runArgs": [
-		// Use "--device=" to make a local device available inside the container.
-		// "--device=/dev/ttyACM0",
-	],
-	"postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
-	"postStartCommand": "bash .devcontainer/postStartCommand.sh"
+  "name": "Meshtastic Network-Management-Client Dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts",
+      "pnpmVersion": "latest"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "installTools": "false"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // "Trunk.io",
+        "biomejs.biome",
+        "rust-lang.rust-analyzer",
+        "tauri-apps.tauri-vscode"
+      ],
+      "unwantedRecommendations": ["ms-azuretools.vscode-docker"],
+      "settings": {
+        "extensions.ignoreRecommendations": true,
+        "files.eol": "\n",
+        "editor.tabSize": 2,
+        "editor.formatOnSave": true,
+        "[javascript]": {
+          "editor.defaultFormatter": "biomejs.biome"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "biomejs.biome"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "biomejs.biome"
+        },
+        "typescript.preferences.importModuleSpecifier": "non-relative",
+        "rust-analyzer.showUnlinkedFileNotification": false
+      }
+    }
+  },
+  "forwardPorts": [5173, 443, 4403],
+  "portsAttributes": {
+    "443": {
+      "label": "Meshtasticd Web Client",
+      "onAutoForward": "silent",
+      "protocol": "https"
+    },
+    "4403": {
+      "label": "Meshtasticd",
+      "onAutoForward": "silent"
+    },
+    "5173": {
+      "label": "Meshtastic Network Management Client",
+      "onAutoForward": "silent"
+    }
+  },
+  "runArgs": [
+    // Use "--device=" to make a local device available inside the container.
+    // "--device=/dev/ttyACM0",
+  ],
+  "postCreateCommand": "bash .devcontainer/postCreateCommand.sh",
+  "postStartCommand": "bash .devcontainer/postStartCommand.sh"
 }

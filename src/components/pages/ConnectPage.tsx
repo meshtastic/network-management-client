@@ -1,6 +1,6 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { open } from "@tauri-apps/plugin-shell";
-import { FormEventHandler, useCallback, useEffect, useState } from "react";
+import { type FormEventHandler, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -22,7 +22,6 @@ import {
 import { requestSliceActions } from "@features/requests/slice";
 
 import { ConnectionType } from "@utils/connections";
-import { useIsDarkMode } from "@utils/hooks";
 
 import "@components/SplashScreen/SplashScreen.css";
 import { MeshtasticLogo } from "@app/assets/Meshtastic";
@@ -39,8 +38,6 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
 
   const appConfigApi = useAppConfigApi();
   const deviceApi = useDeviceApi();
-
-  const { isDarkMode } = useIsDarkMode();
 
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
