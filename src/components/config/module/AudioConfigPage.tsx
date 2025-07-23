@@ -47,7 +47,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [codec2Disabled, setCodec2Disabled] = useState(
-    !device?.moduleConfig.audio?.codec2Enabled ?? true,
+    !(device?.moduleConfig.audio?.codec2Enabled ?? true),
   );
 
   const defaultValues = useMemo(
