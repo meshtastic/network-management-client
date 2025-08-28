@@ -21,7 +21,7 @@ impl MeshGraph {
 
         let own_node = match self.get_node(packet.from) {
             Some(node) => GraphNode {
-                last_heard: chrono::Utc::now().naive_utc(),
+                last_heard: chrono::Utc::now(),
                 ..node
             },
             None => neighbor_info.clone().into(),
@@ -64,12 +64,12 @@ impl MeshGraph {
 
         let own_node = match self.get_node(node_info.num) {
             Some(node) => GraphNode {
-                last_heard: chrono::Utc::now().naive_utc(),
+                last_heard: chrono::Utc::now(),
                 ..node
             },
             None => GraphNode {
                 node_num: node_info.num,
-                last_heard: chrono::Utc::now().naive_utc(),
+                last_heard: chrono::Utc::now(),
                 timeout_duration: DEFAULT_NODE_TIMEOUT_DURATION,
             },
         };
@@ -85,12 +85,12 @@ impl MeshGraph {
 
         let own_node = match self.get_node(packet.from) {
             Some(node) => GraphNode {
-                last_heard: chrono::Utc::now().naive_utc(),
+                last_heard: chrono::Utc::now(),
                 ..node
             },
             None => GraphNode {
                 node_num: packet.from,
-                last_heard: chrono::Utc::now().naive_utc(),
+                last_heard: chrono::Utc::now(),
                 timeout_duration: DEFAULT_NODE_TIMEOUT_DURATION,
             },
         };
