@@ -17,7 +17,7 @@ export const SidebarLogo = ({ isSidebarExpanded }: IMeshLogoProps) => {
 
   return (
     <div className="flex flex-row justify-start align-middle h-20 p-4 border-b border-gray-100 dark:border-gray-700">
-      <div className="text-white dark:text-black my-auto p-3 bg-gray-700 dark:bg-gray-200 rounded-lg h-12 w-12">
+      <div className="text-white dark:text-black my-auto p-3 bg-gray-700 dark:bg-gray-200 rounded-lg h-12 w-12 shrink-0">
         <MeshtasticLogo />
       </div>
       <div
