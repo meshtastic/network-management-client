@@ -9,10 +9,12 @@ import { GeneralConfigPage } from "@components/config/application/GeneralConfigP
 import { MapConfigPage } from "@components/config/application/MapConfigPage";
 
 import type { IAppConfigState } from "@features/appConfig/slice";
+import { AboutPage } from "@components/config/application/About";
 
 export const ApplicationSettingsOptions = {
   general: i18next.t("applicationSettings.options.general"),
   map: i18next.t("applicationSettings.options.map"),
+  about: i18next.t("applicationSettings.options.about"),
 };
 
 const _ActiveOption = ({
@@ -27,6 +29,8 @@ const _ActiveOption = ({
       return <GeneralConfigPage />;
     case "map":
       return <MapConfigPage />;
+    case "about":
+      return <AboutPage />;
     default:
       return (
         <div className="flex flex-col justify-center align-middle w-full h-full bg-gray-100">

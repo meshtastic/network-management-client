@@ -487,7 +487,8 @@
     "unknownOption": "Unknown option selected",
     "options": {
       "general": "General Settings",
-      "map": "Map Settings"
+      "map": "Map Settings",
+      "about": "About"
     },
     "general": {
       "title": "General Settings",
@@ -503,6 +504,11 @@
       "title": "Map Settings",
       "description": "Edit application map settings",
       "mapboxStyle": "Mapbox Map Style"
+    },
+    "about": {
+      "title": "About",
+      "description": "View information about this app",
+      "versionNumber": "App Version"
     }
   }
 }

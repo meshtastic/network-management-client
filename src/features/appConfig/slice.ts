@@ -19,6 +19,7 @@ export interface IAppConfigState {
   lastTcpConnection: TcpConnectionMeta | null;
   map: IMapConfigState;
   general: IGeneralConfigState;
+  about: null;
 }
 
 export const initialAppConfigState: IAppConfigState = {
@@ -32,6 +33,7 @@ export const initialAppConfigState: IAppConfigState = {
   general: {
     colorMode: "system",
   },
+  about: null,
 };
 
 export const appConfigSlice = createSlice({
