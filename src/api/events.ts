@@ -2,15 +2,15 @@ import { listen } from "@tauri-apps/api/event";
 import { useDispatch } from "react-redux";
 import { warn } from "tauri-plugin-log-api";
 
-import { MeshGraph } from "@app/types/graph";
-import { app_device_MeshDevice } from "@bindings/index";
+import type { MeshGraph } from "@app/types/graph";
+import type { app_device_MeshDevice } from "@bindings/index";
 
 import { connectionSliceActions } from "@features/connection/slice";
 import { deviceSliceActions } from "@features/device/slice";
 import { useDeviceApi } from "@features/device/api";
 import { graphSliceActions } from "@features/graph/slice";
 
-import { DeviceKey } from "@utils/connections";
+import type { DeviceKey } from "@utils/connections";
 
 export const useCreateDeviceUpdateChannel = () => {
   const dispatch = useDispatch();

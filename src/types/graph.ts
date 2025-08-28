@@ -1,4 +1,4 @@
-import {
+import type {
   app_graph_ds_edge_GraphEdge,
   app_graph_ds_node_GraphNode,
 } from "@bindings/index";

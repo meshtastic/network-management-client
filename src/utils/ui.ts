@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ColorMode } from "@features/appConfig/slice";
+import type { ColorMode } from "@features/appConfig/slice";
 
 /**
  * Check if dark mode was manually selected or if system color mode is dark
@@ -24,7 +24,6 @@ export const useAsyncUnlistenUseEffect = (
   effect: () => Promise<() => void>,
   deps: unknown[],
 ) => {
-  // biome-ignore lint/nursery/noEmptyBlockStatements: Needed for no-op unlisten
   let unlistenFn = () => {};
 
   useEffect(() => {

@@ -1,20 +1,21 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "ignore": ["src/bindings/index.ts"]
+    "includes": ["**", "!**/src/bindings/index.ts"]
   },
-  "organizeImports": {
-    "enabled": false
-  },
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "linter": {
-    "include": ["src/**/*.ts", "src/**/*.tsx"],
-    "ignore": ["src/bindings/index.ts", "src/locales/**/*"],
+    "includes": [
+      "**/src/**/*.ts",
+      "**/src/**/*.tsx",
+      "!**/src/bindings/index.ts",
+      "!**/src/locales/**/*"
+    ],
     "enabled": true,
     "rules": {
-      "all": true,
       "complexity": {
         "useSimplifiedLogicExpression": "off"
       },
@@ -29,10 +30,18 @@
       },
       "style": {
         "noImplicitBoolean": "off"
+      },
+      "a11y": {
+        "noLabelWithoutControl": "off"
       }
     }
   },
   "files": {
-    "ignore": ["src-tauri/gen/*", "src-tauri/target/*", "dist/*"]
+    "includes": [
+      "**",
+      "!**/src-tauri/gen/**/*",
+      "!**/src-tauri/target/**/*",
+      "!**/dist/**/*"
+    ]
   }
 }

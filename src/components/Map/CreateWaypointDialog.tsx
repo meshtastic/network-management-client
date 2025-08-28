@@ -12,12 +12,12 @@ import * as Select from "@radix-ui/react-select";
 import debounce from "lodash.debounce";
 import { Locate, Plus, X } from "lucide-react";
 import moment from "moment";
-import { ChangeEventHandler, useMemo, useRef, useState } from "react";
+import { type ChangeEventHandler, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   // biome-ignore lint/suspicious/noShadowRestrictedNames: Need named export
   Map,
-  MarkerDragEvent,
+  type MarkerDragEvent,
   NavigationControl,
   ScaleControl,
   useMap,
@@ -218,7 +218,7 @@ export const CreateWaypointDialog = ({
       name: name.value,
       description: desc.value,
       expire: waypointExpires ? moment(expireTime).valueOf() / 1000 : 0, // secs since epoch
-      lockedTo: waypointLocked ? device?.myNodeInfo.myNodeNum ?? 0 : 0,
+      lockedTo: waypointLocked ? (device?.myNodeInfo.myNodeNum ?? 0) : 0,
       icon: encodedEmoji,
     };
 
@@ -271,7 +271,7 @@ export const CreateWaypointDialog = ({
                   latitude: waypointPosition.lat,
                   longitude: waypointPosition.lng,
                   lockedTo: waypointLocked
-                    ? device?.myNodeInfo.myNodeNum ?? 0
+                    ? (device?.myNodeInfo.myNodeNum ?? 0)
                     : 0,
                 }}
                 isSelected
@@ -392,6 +392,7 @@ export const CreateWaypointDialog = ({
               </fieldset>
 
               <fieldset className="">
+                {/** biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
                 <label className="">
                   <p className="text-gray-600 dark:text-gray-400">
                     {t("map.waypoints.expireTime")}

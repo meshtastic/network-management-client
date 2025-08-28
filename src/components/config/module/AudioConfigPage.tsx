@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 
 import debounce from "lodash.debounce";
@@ -47,7 +47,7 @@ const AudioConfigPage = ({ className = "" }: IAudioConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [codec2Disabled, setCodec2Disabled] = useState(
-    !device?.moduleConfig.audio?.codec2Enabled ?? true,
+    !(device?.moduleConfig.audio?.codec2Enabled ?? true),
   );
 
   const defaultValues = useMemo(

@@ -105,7 +105,7 @@ const getNumberOfPendingChanges = (
 export const RadioConfigPage = () => {
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
+  useDispatch();
 
   const currentRadioConfig = useSelector(selectCurrentRadioConfig());
   const editedRadioConfig = useSelector(selectEditedRadioConfig());

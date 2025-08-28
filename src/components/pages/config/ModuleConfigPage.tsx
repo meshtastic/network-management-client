@@ -113,7 +113,7 @@ const getNumberOfPendingChanges = (
 export const ModuleConfigPage = () => {
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
+  useDispatch();
 
   const currentModuleConfig = useSelector(selectCurrentModuleConfig());
   const editedModuleConfig = useSelector(selectEditedModuleConfig());

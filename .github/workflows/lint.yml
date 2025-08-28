@@ -23,7 +23,7 @@ jobs:
         run: pnpm install
 
       - name: Run Biome (Formatting, Linting)
-        run: pnpm biome ci src --config-path=.
+        run: pnpm biome ci src
 
       - name: Run TypeScript
         run: pnpm tsc --noEmit

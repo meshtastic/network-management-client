@@ -8,9 +8,9 @@ import {
   getValueFromPersistedStore,
 } from "@utils/persistence";
 import {
-  IGeneralConfigState,
-  IMapConfigState,
-  TcpConnectionMeta,
+  type IGeneralConfigState,
+  type IMapConfigState,
+  type TcpConnectionMeta,
   appConfigSliceActions,
 } from "./slice";
 import { setColorModeClass } from "@utils/ui";

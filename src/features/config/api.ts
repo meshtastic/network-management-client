@@ -5,7 +5,7 @@ import mergeWith from "lodash.mergewith";
 
 import * as backendRadioApi from "@api/radio";
 
-import { IConfigState, configSliceActions } from "./slice";
+import { type IConfigState, configSliceActions } from "./slice";
 import {
   selectCurrentAllChannelConfig,
   selectCurrentModuleConfig,
@@ -15,7 +15,7 @@ import {
   selectEditedRadioConfig,
 } from "./selectors";
 
-import {
+import type {
   app_device_MeshChannel,
   app_ipc_DeviceBulkConfig,
 } from "@bindings/index";
@@ -31,6 +31,17 @@ export enum ConfigApiActions {
 export const useConfigApi = () => {
   const dispatch = useDispatch();
 
+  const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
+
+  // Get current and edited config
+
+  const currentRadioConfig = useSelector(selectCurrentRadioConfig());
+  const editedRadioConfig = useSelector(selectEditedRadioConfig());
+  const currentModuleConfig = useSelector(selectCurrentModuleConfig());
+  const editedModuleConfig = useSelector(selectEditedModuleConfig());
+  const currentChannelConfig = useSelector(selectCurrentAllChannelConfig());
+  const editedChannelConfig = useSelector(selectEditedAllChannelConfig());
+
   const commitConfig = async (config: (keyof IConfigState)[]) => {
     const TYPE = ConfigApiActions.CommitConfig;
 
@@ -41,20 +52,9 @@ export const useConfigApi = () => {
       const includeModuleConfig = fieldFlags.includes("module");
       const includeChannelConfig = fieldFlags.includes("channel");
 
-      const primaryDeviceKey = useSelector(selectPrimaryDeviceKey());
-
       if (!primaryDeviceKey) {
         throw new Error("No active connection");
       }
-
-      // Get current and edited config
-
-      const currentRadioConfig = useSelector(selectCurrentRadioConfig());
-      const editedRadioConfig = useSelector(selectEditedRadioConfig());
-      const currentModuleConfig = useSelector(selectCurrentModuleConfig());
-      const editedModuleConfig = useSelector(selectEditedModuleConfig());
-      const currentChannelConfig = useSelector(selectCurrentAllChannelConfig());
-      const editedChannelConfig = useSelector(selectEditedAllChannelConfig());
 
       if (!(currentRadioConfig && currentModuleConfig)) {
         throw new Error("Current radio or module config not defined");

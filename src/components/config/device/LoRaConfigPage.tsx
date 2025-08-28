@@ -1,6 +1,6 @@
 import { RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { DeepPartial, useForm } from "react-hook-form";
+import { type DeepPartial, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,7 +14,10 @@ import {
   selectCurrentRadioConfig,
   selectEditedRadioConfig,
 } from "@features/config/selectors";
-import { LoRaConfigInput, configSliceActions } from "@features/config/slice";
+import {
+  type LoRaConfigInput,
+  configSliceActions,
+} from "@features/config/slice";
 
 import { selectDevice } from "@features/device/selectors";
 import { getDefaultConfigInput } from "@utils/form";
@@ -49,7 +52,7 @@ export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [useModemPreset, setUseModemPreset] = useState(
-    !device?.config.lora?.modemPreset ?? false,
+    !(device?.config.lora?.modemPreset ?? false),
   );
 
   const [txEnabled, setTxEnabled] = useState(
