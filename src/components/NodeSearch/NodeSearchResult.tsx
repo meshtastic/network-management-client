@@ -38,7 +38,9 @@ export const NodeSearchResult = ({
     <div className="flex flex-row gap-4">
       <div className={`flex-grow ${colorClasses.text}`}>
         <p className="flex flex-grow items-center text-lg whitespace-nowrap overflow-hidden">
-          <span className="w-full max-w-[176px] font-semibold truncate">{node.user?.longName ?? node.nodeNum}</span>
+          <span className="w-full max-w-[176px] font-semibold truncate">
+            {node.user?.longName ?? node.nodeNum}
+          </span>
           <span className="pl-4 flex-1 text-xs font-normal">
             {lastPacketTime ? (
               <TimeAgo
