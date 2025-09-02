@@ -83,7 +83,7 @@ export const MapSelectedNodeMenu = () => {
   return (
     <div className="absolute top-24 right-9 bg-white dark:bg-gray-800 p-5 pl-4 rounded-lg drop-shadow-lg w-80 z-[inherit]">
       <div className="flex justify-between">
-        <h1 className="text-gray-600 dark:text-gray-400 text-2xl leading-5 font-semibold">
+        <h1 className="text-gray-600 dark:text-gray-400 text-2xl leading-6 font-semibold break-all">
           {deviceName}
         </h1>
         <button type="button" onClick={clearActiveNode}>
