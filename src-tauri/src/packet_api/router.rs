@@ -79,6 +79,15 @@ impl<R: tauri::Runtime> PacketRouter<(), DeviceUpdateError> for MeshPacketApi<R>
                     "mqtt client proxy message".into(),
                 ));
             }
+            protobufs::from_radio::PayloadVariant::FileInfo(_) => {
+                return Err(DeviceUpdateError::RadioMessageNotSupported("file info".into()));
+            }
+            protobufs::from_radio::PayloadVariant::ClientNotification(_) => {
+                return Err(DeviceUpdateError::RadioMessageNotSupported("client notification".into()));
+            }
+            protobufs::from_radio::PayloadVariant::DeviceuiConfig(_) => {
+                return Err(DeviceUpdateError::RadioMessageNotSupported("device ui config".into()));
+            }
         };
 
         Ok(())
@@ -190,6 +199,12 @@ impl<R: tauri::Runtime> PacketRouter<(), DeviceUpdateError> for MeshPacketApi<R>
                 }
                 protobufs::PortNum::MapReportApp => {
                     return Err(DeviceUpdateError::PacketNotSupported("mapreport".into()));
+                }
+                protobufs::PortNum::AlertApp => {
+                    return Err(DeviceUpdateError::PacketNotSupported("alert".into()));
+                }
+                protobufs::PortNum::PowerstressApp => {
+                    return Err(DeviceUpdateError::PacketNotSupported("powerstress".into()));
                 }
             },
             protobufs::mesh_packet::PayloadVariant::Encrypted(_e) => {
