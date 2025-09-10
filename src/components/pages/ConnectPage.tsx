@@ -11,7 +11,16 @@ import { SerialConnectPane } from "@components/connection/SerialConnectPane";
 import { TcpConnectPane } from "@components/connection/TcpConnectPane";
 
 import { useAppConfigApi } from "@features/appConfig/api";
-import { selectPersistedTCPConnectionMeta } from "@features/appConfig/selectors";
+import {
+  selectPersistedTCPConnectionMeta,
+  selectRecentConnections,
+  selectGeneralConfigState,
+} from "@features/appConfig/selectors";
+import {
+  appConfigSliceActions,
+  type RecentConnection,
+} from "@features/appConfig/slice";
+import { useRecentConnectionTracker } from "@app/hooks/useRecentConnectionTracker";
 import { selectConnectionStatus } from "@features/connection/selectors";
 import { connectionSliceActions } from "@features/connection/slice";
 import { DeviceApiActions, useDeviceApi } from "@features/device/api";
@@ -39,9 +48,13 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const appConfigApi = useAppConfigApi();
   const deviceApi = useDeviceApi();
 
+  useRecentConnectionTracker();
+
   const dispatch = useDispatch();
   const availableSerialPorts = useSelector(selectAvailablePorts());
   const autoConnectPort = useSelector(selectAutoConnectPort());
+  const recentConnections = useSelector(selectRecentConnections());
+  const generalConfig = useSelector(selectGeneralConfigState());
 
   // UI state
   const [isScreenActive, setScreenActive] = useState(true);
@@ -73,6 +86,9 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
   const persistedTCPConnectionMeta = useSelector(
     selectPersistedTCPConnectionMeta(),
   );
+
+  const defaultTabValue =
+    generalConfig?.selectedConnectionTab || ConnectionType.SERIAL;
 
   const requestPorts = useCallback(() => {
     deviceApi.getAvailableSerialPorts();
@@ -113,14 +129,69 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
     });
   };
 
+  const handleRecentConnectionSelect = (connection: RecentConnection) => {
+    const [address, portStr] = connection.address.split(":");
+    setSocketAddress(address);
+    setSocketPort(portStr);
+
+    appConfigApi.persistLastTcpConnectionMeta({
+      address,
+      port: parseInt(portStr),
+    });
+
+    deviceApi.connectToDevice({
+      params: {
+        type: ConnectionType.TCP,
+        socketAddress: connection.address,
+      },
+      setPrimary: true,
+    });
+  };
+
+  const handleRecentConnectionRemove = async (connection: RecentConnection) => {
+    dispatch(appConfigSliceActions.removeRecentConnection(connection.id));
+
+    const updatedConnections = recentConnections.filter(
+      (conn) => conn.id !== connection.id,
+    );
+
+    await appConfigApi.persistRecentConnections(updatedConnections);
+  };
+
+  const handleTabChange = (value: string) => {
+    const selectedTab = value as "SERIAL" | "TCP";
+    appConfigApi.persistGeneralConfig({
+      ...(generalConfig || {}),
+      selectedConnectionTab: selectedTab,
+    });
+  };
+
+  const handleCancelConnection = async () => {
+    await deviceApi.disconnectFromAllDevices();
+
+    // Clear both request state and connection state to hide the connecting overlay
+    dispatch(
+      requestSliceActions.clearRequestState({
+        name: DeviceApiActions.ConnectToDevice,
+      }),
+    );
+    dispatch(connectionSliceActions.clearAllConnectionState());
+  };
+
   const openExternalLink = (url: string) => () => {
     open(url);
   };
 
   useEffect(() => {
-    deviceApi.disconnectFromAllDevices();
-    deviceApi.getAutoConnectPort();
+    setScreenActive(true);
+    dispatch(
+      requestSliceActions.clearRequestState({
+        name: DeviceApiActions.ConnectToDevice,
+      }),
+    );
+    dispatch(connectionSliceActions.clearAllConnectionState());
 
+    deviceApi.disconnectFromAllDevices();
     appConfigApi.fetchLastTcpConnectionMeta();
 
     requestPorts();
@@ -205,7 +276,11 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
         </div>
 
         <div className="flex justify-center mt-5">
-          <Tabs.Root className="w-3/5" defaultValue={ConnectionType.SERIAL}>
+          <Tabs.Root
+            className="w-3/5"
+            defaultValue={defaultTabValue}
+            onValueChange={handleTabChange}
+          >
             <Tabs.List
               className="flex flex-row"
               aria-label="Choose a connection type"
@@ -248,6 +323,9 @@ export const ConnectPage = ({ unmountSelf }: IOnboardPageProps) => {
                 setSocketPort={setSocketPort}
                 activeSocketState={activeSocketState}
                 handleSocketConnect={handleSocketConnect}
+                onRecentConnectionSelect={handleRecentConnectionSelect}
+                onRecentConnectionRemove={handleRecentConnectionRemove}
+                onCancelConnection={handleCancelConnection}
               />
             </Tabs.Content>
           </Tabs.Root>

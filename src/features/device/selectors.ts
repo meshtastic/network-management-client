@@ -7,6 +7,7 @@ import type {
   app_device_NormalizedWaypoint,
   meshtastic_protobufs_User,
 } from "@bindings/index";
+import type { ConnectionType } from "@utils/connections";
 
 export const selectAvailablePorts =
   () =>
@@ -17,6 +18,11 @@ export const selectPrimaryDeviceKey =
   () =>
   (state: RootState): string | null =>
     state.devices.primaryDeviceKey;
+
+export const selectPrimaryConnectionType =
+  () =>
+  (state: RootState): ConnectionType | null =>
+    state.devices.primaryConnectionType;
 
 export const selectDevice =
   () =>

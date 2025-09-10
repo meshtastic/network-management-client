@@ -6,7 +6,9 @@
     "notApplicable": "N/A",
     "goHome": "Go home",
     "unknown": "UNK",
-    "wip": "Unimplemented, work in progress"
+    "wip": "Unimplemented, work in progress",
+    "connected": "Connected",
+    "disconnect": "Disconnect"
   },
   "splashPage": {
     "photoAttribution": "Photo by <link1>Caleb Riston</link1> on <link2>Unsplash</link2>"
@@ -36,6 +38,18 @@
         "connecting": "Connecting..."
       }
     }
+  },
+  "recentConnections": {
+    "title": "Recent Connections",
+    "subtitle": "Select from your recently used connections",
+    "noRecent": "No recent connections found",
+    "justNow": "Just now",
+    "minutesAgo_one": "{{count}} minute ago",
+    "minutesAgo_other": "{{count}} minutes ago",
+    "hoursAgo_one": "{{count}} hour ago",
+    "hoursAgo_other": "{{count}} hours ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago"
   },
   "sidebar": {
     "overviewGroup": "Overview",
