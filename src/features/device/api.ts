@@ -21,6 +21,7 @@ import { type CommandError, throwError } from "@utils/errors";
 export enum DeviceApiActions {
   GetAutoConnectPort = "device/getAutoConnectPort",
   SubscribeAll = "device/subscribeAll",
+  GetAvailableBluetoothDevices = "device/getAvailableBluetoothDevices",
   GetAvailableSerialPorts = "device/getAvailableSerialPorts",
   InitializeApplication = "device/initializeApplication",
   ConnectToDevice = "device/connectToDevice",
@@ -58,6 +59,18 @@ export const useDeviceApi = () => {
     });
   };
 
+  const getAvailableBluetoothDevices = async () => {
+    const TYPE = DeviceApiActions.GetAvailableBluetoothDevices;
+
+    await trackRequestOperation(TYPE, dispatch, async () => {
+      const bluetoothDevices = await backendConnectionApi.getAllBluetooth();
+
+      dispatch(
+        deviceSliceActions.setAvailableBluetoothDevices(bluetoothDevices),
+      );
+    });
+  };
+
   const getAvailableSerialPorts = async () => {
     const TYPE = DeviceApiActions.GetAvailableSerialPorts;
 
@@ -71,6 +84,10 @@ export const useDeviceApi = () => {
   const connectToDevice = async (payload: {
     params:
       | {
+          type: ConnectionType.BLUETOOTH;
+          bluetoothName: string;
+        }
+      | {
           type: ConnectionType.SERIAL;
           portName: string;
           dtr: boolean;
@@ -81,12 +98,22 @@ export const useDeviceApi = () => {
   }) => {
     const TYPE = DeviceApiActions.ConnectToDevice;
 
-    const deviceKey: DeviceKey =
-      payload.params.type === ConnectionType.SERIAL
-        ? payload.params.portName
-        : payload.params.type === ConnectionType.TCP
-          ? payload.params.socketAddress
-          : throwError("Neither portName nor socketAddress were set");
+    let deviceKey: DeviceKey;
+    switch (payload.params.type) {
+      case ConnectionType.BLUETOOTH:
+        deviceKey = payload.params.bluetoothName;
+        break;
+      case ConnectionType.SERIAL:
+        deviceKey = payload.params.portName;
+        break;
+      case ConnectionType.TCP:
+        deviceKey = payload.params.socketAddress;
+        break;
+      default:
+        throwError(
+          "Neither bluetoothName, portName nor socketAddress were set",
+        );
+    }
 
     await trackRequestOperation(
       TYPE,
@@ -100,6 +127,15 @@ export const useDeviceApi = () => {
             },
           }),
         );
+
+        if (payload.params.type === ConnectionType.BLUETOOTH) {
+          await backendConnectionApi.connectToBluetooth(
+            payload.params.bluetoothName,
+          );
+          // await backendConnectionApi.connectToBluetooth(
+          //   payload.params.bluetoothName,
+          // );
+        }
 
         if (payload.params.type === ConnectionType.SERIAL) {
           await backendConnectionApi.connectToSerialPort(
@@ -117,6 +153,14 @@ export const useDeviceApi = () => {
         }
 
         if (payload.setPrimary) {
+          if (payload.params.type === ConnectionType.BLUETOOTH) {
+            dispatch(
+              deviceSliceActions.setPrimaryDeviceConnectionKey(
+                payload.params.bluetoothName,
+              ),
+            );
+          }
+
           if (payload.params.type === ConnectionType.SERIAL) {
             dispatch(
               deviceSliceActions.setPrimaryDeviceConnection({
@@ -233,6 +277,7 @@ export const useDeviceApi = () => {
 
   return {
     getAutoConnectPort,
+    getAvailableBluetoothDevices,
     getAvailableSerialPorts,
     connectToDevice,
     disconnectFromDevice,

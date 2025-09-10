@@ -20,6 +20,12 @@ export const requestAutoConnectPort = async () => {
   return response;
 };
 
+export const getAllBluetooth = async () => {
+  const response = (await invoke("get_all_bluetooth")) as string[];
+
+  return response;
+};
+
 export const getAllSerialPorts = async () => {
   const response = (await invoke("get_all_serial_ports")) as string[];
 
@@ -60,6 +66,14 @@ export const dropDeviceConnection = async (deviceKey: DeviceKey) => {
 
 export const dropAllDeviceConnections = async () => {
   const response = (await invoke("drop_all_device_connections")) as undefined;
+
+  return response;
+};
+
+export const connectToBluetooth = async (bluetoothName: string) => {
+  const response = (await invoke("connect_to_bluetooth", {
+    bluetoothName,
+  })) as undefined;
 
   return response;
 };

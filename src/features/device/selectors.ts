@@ -9,6 +9,11 @@ import type {
 } from "@bindings/index";
 import type { ConnectionType } from "@utils/connections";
 
+export const selectAvailableBluetoothDevices =
+  () =>
+  (state: RootState): string[] | null =>
+    state.devices.availableBluetoothDevices;
+
 export const selectAvailablePorts =
   () =>
   (state: RootState): string[] | null =>
@@ -103,3 +108,6 @@ export const selectWaypointByLocation =
 
 export const selectAutoConnectPort = () => (state: RootState) =>
   state.devices.autoConnectPort;
+
+export const selectAutoConnectBluetooth = () => (state: RootState) =>
+  state.devices.autoConnectBluetooth;

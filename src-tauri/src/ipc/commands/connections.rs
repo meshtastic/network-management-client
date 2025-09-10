@@ -7,14 +7,19 @@ use crate::packet_api::MeshPacketApi;
 use crate::state;
 use crate::state::DeviceKey;
 
+use btleplug::api::ScanFilter;
 use log::debug;
 use meshtastic::api::{StreamApi, StreamHandle};
+use meshtastic::utils::stream::build_ble_stream;
 use meshtastic::utils::stream::build_serial_stream;
 use meshtastic::utils::stream::build_tcp_stream;
+use meshtastic::utils::stream::BleId;
 use std::time::Duration;
-use tauri::Manager;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
+use uuid::Uuid;
+
+const MSH_SERVICE: Uuid = Uuid::from_u128(0x6ba1b218_15a8_461f_9fa8_5dcae273eafd);
 
 #[tauri::command]
 pub async fn request_autoconnect_port(
@@ -31,6 +36,62 @@ pub async fn request_autoconnect_port(
     debug!("Returning autoconnect port {:?}", autoconnect_port);
 
     Ok(autoconnect_port)
+}
+use btleplug::api::{Central, Manager as _, Peripheral as _};
+use btleplug::platform::Manager;
+use tokio::time;
+
+#[tauri::command]
+pub async fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
+    debug!("Called get_all_bluetooth command");
+
+    const SCAN_DURATION: std::time::Duration = std::time::Duration::from_secs(5);
+
+    // Initialize Bluetooth manager
+    let manager = Manager::new()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    // Get available Bluetooth adapters
+    let adapters = manager.adapters().await
+        .map_err(|e| e.to_string())?;
+
+    let adapter = adapters
+        .into_iter()
+        .next()
+        .ok_or("failed to find adapter")?;
+
+    // Start scanning for devices
+    adapter.start_scan(ScanFilter {
+                services: vec![MSH_SERVICE],
+            }).await
+        .map_err(|e| e.to_string())?;
+
+    debug!("Started Bluetooth scan");
+
+    // Allow some time for devices to be discovered
+    time::sleep(SCAN_DURATION).await;
+
+    let peripherals = adapter.peripherals().await
+        .map_err(|e| e.to_string())?;
+
+    let mut devices = Vec::new();
+
+    for peripheral in peripherals {
+        if let Ok(Some(props)) = peripheral.properties().await {
+            if let Some(name) = props.local_name {
+                devices.push(name);
+            }
+            // else skip this peripheral
+        }
+    // else skip this peripheral
+    }
+
+    devices.sort();
+
+    debug!("Discovered Bluetooth devices: {:?}", devices);
+
+    Ok(devices)
 }
 
 #[tauri::command]
@@ -117,6 +178,40 @@ where
     // Spawn decoded packet handler to route decoded packets
 
     spawn_decoded_handler(decoded_listener, mesh_devices_arc, device_key);
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn connect_to_bluetooth(
+    bluetooth_name: String,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
+) -> Result<(), CommandError> {
+    debug!(
+        "Called connect_to_bluetooth command with device name \"{}\"",
+        bluetooth_name
+    );
+
+    // Create serial connection stream
+
+    let stream =
+        build_ble_stream(&BleId::from_name(&bluetooth_name), Duration::from_secs(5)).await.unwrap();
+
+    // Create and persist new connection
+
+    create_new_connection(
+        stream,
+        bluetooth_name,
+        Duration::from_millis(15000),
+        app_handle,
+        mesh_devices,
+        radio_connections,
+        mesh_graph,
+    )
+    .await?;
 
     Ok(())
 }

@@ -36,6 +36,16 @@
         "port": "Port",
         "connect": "Connect",
         "connecting": "Connecting..."
+      },
+      "bluetooth": {
+        "title": "Bluetooth",
+        "tooltip": "Connect to your radio via Bluetooth",
+        "device": "Device Name",
+        "connect": "Connect",
+        "connecting": "Connecting...",
+        "portOption": "Bluetooth device {{deviceName}}",
+        "empty": "No devices detected.",
+        "refresh": "Refresh devices"
       }
     }
   },
