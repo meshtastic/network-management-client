@@ -268,6 +268,8 @@ export const MapView = () => {
 
         {(lastRightClickLngLat || editingWaypoint) && (
           <CreateWaypointDialog
+            // use key prop to force re-render
+            key={lastRightClickLngLat?.toString()}
             lngLat={lastRightClickLngLat ?? new LngLat(0, 0)}
             closeDialog={() => {
               setEditingWaypoint(null);
