@@ -21,12 +21,13 @@ import {
 import { SidebarIcon } from "@components/Sidebar/SidebarIcon";
 import { SidebarLogo } from "@components/Sidebar/SidebarLogo";
 import { SidebarTab } from "@components/Sidebar/SidebarTab";
+import { ConnectionStatus } from "@components/Sidebar/ConnectionStatus";
 
 import { AppRoutes } from "@utils/routing";
 
 import "@components/Sidebar/Sidebar.css";
 
-export const Sidebar = () => {
+export const Sidebar = ({ onShowConnect }: { onShowConnect?: () => void }) => {
   const { t } = useTranslation();
 
   const [isSidebarExpanded, setSidebarExpanded] = useState(true);
@@ -164,6 +165,13 @@ export const Sidebar = () => {
 
       <div className="flex flex-col mt-auto justify-between px-4 pt-4 pb-1">
         <hr className="border-gray-100 dark:border-gray-700" />
+
+        {onShowConnect && (
+          <ConnectionStatus
+            onDisconnect={onShowConnect}
+            isCollapsed={!isSidebarExpanded}
+          />
+        )}
 
         <SidebarIcon
           name={isSidebarExpanded ? t("sidebar.collapse") : t("sidebar.expand")}

@@ -3,6 +3,7 @@ import { Outlet, Route, Routes } from "react-router-dom";
 
 import { Sidebar } from "@components/Sidebar/Sidebar";
 import { SplashScreen } from "@components/SplashScreen/SplashScreen";
+import { useRecentConnectionTracker } from "@app/hooks/useRecentConnectionTracker";
 
 import { ModuleConfigPage } from "@app/components/pages/config/ModuleConfigPage";
 import { ApplicationStatePage } from "@components/pages/ApplicationStatePage";
@@ -19,9 +20,9 @@ import { GraphDebuggerPage } from "@components/pages/GraphDebuggerPage";
 
 import { AppRoutes } from "@utils/routing";
 
-const AppWrapper = () => (
+const AppWrapper = ({ onShowConnect }: { onShowConnect: () => void }) => (
   <>
-    <Sidebar />
+    <Sidebar onShowConnect={onShowConnect} />
     <Outlet />
   </>
 );
@@ -33,6 +34,8 @@ export const App = () => {
   const [isSplashMounted, setSplashMounted] = useState(splashEnabled);
   const [isOnboardMounted, setOnboardMounted] = useState(true);
 
+  useRecentConnectionTracker();
+
   const handleSplashUnmount = () => {
     setSplashMounted(false);
   };
@@ -41,13 +44,20 @@ export const App = () => {
     setOnboardMounted(false);
   };
 
+  const handleShowConnect = () => {
+    setOnboardMounted(true);
+  };
+
   return (
     <div className="flex flex-row relative">
       {isSplashMounted && <SplashScreen unmountSelf={handleSplashUnmount} />}
       {isOnboardMounted && <ConnectPage unmountSelf={handleOnboardUnmount} />}
 
       <Routes>
-        <Route path="/" element={<AppWrapper />}>
+        <Route
+          path="/"
+          element={<AppWrapper onShowConnect={handleShowConnect} />}
+        >
           <Route index element={<MapPage />} />
           <Route path={AppRoutes.MESSAGING} element={<MessagingPage />} />
 

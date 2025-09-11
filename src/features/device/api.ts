@@ -155,25 +155,28 @@ export const useDeviceApi = () => {
         if (payload.setPrimary) {
           if (payload.params.type === ConnectionType.BLUETOOTH) {
             dispatch(
-              deviceSliceActions.setPrimaryDeviceConnectionKey(
-                payload.params.bluetoothName,
-              ),
+              deviceSliceActions.setPrimaryDeviceConnection({
+                key: payload.params.bluetoothName,
+                type: ConnectionType.BLUETOOTH,
+              }),
             );
           }
 
           if (payload.params.type === ConnectionType.SERIAL) {
             dispatch(
-              deviceSliceActions.setPrimaryDeviceConnectionKey(
-                payload.params.portName,
-              ),
+              deviceSliceActions.setPrimaryDeviceConnection({
+                key: payload.params.portName,
+                type: ConnectionType.SERIAL,
+              }),
             );
           }
 
           if (payload.params.type === ConnectionType.TCP) {
             dispatch(
-              deviceSliceActions.setPrimaryDeviceConnectionKey(
-                payload.params.socketAddress,
-              ),
+              deviceSliceActions.setPrimaryDeviceConnection({
+                key: payload.params.socketAddress,
+                type: ConnectionType.TCP,
+              }),
             );
           }
         }
@@ -198,7 +201,7 @@ export const useDeviceApi = () => {
     await trackRequestOperation(TYPE, dispatch, async () => {
       await backendConnectionApi.dropDeviceConnection(payload);
 
-      dispatch(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
+      dispatch(deviceSliceActions.setPrimaryDeviceConnection(null));
       dispatch(uiSliceActions.setActiveNode(null));
       dispatch(deviceSliceActions.setDevice(null));
     });
@@ -210,7 +213,7 @@ export const useDeviceApi = () => {
     await trackRequestOperation(TYPE, dispatch, async () => {
       await backendConnectionApi.dropAllDeviceConnections();
 
-      dispatch(deviceSliceActions.setPrimaryDeviceConnectionKey(null));
+      dispatch(deviceSliceActions.setPrimaryDeviceConnection(null));
       dispatch(uiSliceActions.setActiveNode(null));
       dispatch(deviceSliceActions.setDevice(null));
     });

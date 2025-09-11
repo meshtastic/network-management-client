@@ -11,6 +11,7 @@ import {
   type IGeneralConfigState,
   type IMapConfigState,
   type TcpConnectionMeta,
+  type RecentConnection,
   appConfigSliceActions,
 } from "./slice";
 import { setColorModeClass } from "@utils/ui";
@@ -19,6 +20,9 @@ import { trackRequestOperation } from "@utils/api";
 export enum AppConfigApiActions {
   FetchLastTcpConnectionMeta = "appConfig/fetchLastTcpConnectionMeta",
   PersistLastTcpConnectionMeta = "appConfig/persistLastTcpConnectionMeta",
+  FetchRecentConnections = "appConfig/fetchRecentConnections",
+  PersistRecentConnections = "appConfig/persistRecentConnections",
+  AddRecentConnection = "appConfig/addRecentConnection",
   PersistGeneralConfig = "appConfig/persistGeneralConfig",
   PersistMapConfig = "appConfig/persistMapConfig",
   InitializeAppConfig = "appConfig/initializeAppConfig",
@@ -100,6 +104,43 @@ export const useAppConfigApi = () => {
     });
   };
 
+  const fetchRecentConnections = async () => {
+    const TYPE = AppConfigApiActions.FetchRecentConnections;
+
+    await trackRequestOperation(TYPE, dispatch, async () => {
+      const persistedValue = await getValueFromPersistedStore(
+        defaultStore,
+        PersistedStateKeys.RecentConnections,
+      );
+
+      dispatch(
+        appConfigSliceActions.setRecentConnections(persistedValue ?? []),
+      );
+    });
+  };
+
+  const persistRecentConnections = async (connections: RecentConnection[]) => {
+    const TYPE = AppConfigApiActions.PersistRecentConnections;
+
+    await trackRequestOperation(TYPE, dispatch, async () => {
+      await setAndValidateValueInPersistedStore(
+        defaultStore,
+        PersistedStateKeys.RecentConnections,
+        connections,
+        true,
+        "Failed to persist recent connections",
+      );
+    });
+  };
+
+  const addRecentConnection = async (connection: RecentConnection) => {
+    const TYPE = AppConfigApiActions.AddRecentConnection;
+
+    await trackRequestOperation(TYPE, dispatch, async () => {
+      dispatch(appConfigSliceActions.addRecentConnection(connection));
+    });
+  };
+
   const initializeAppConfig = async () => {
     const TYPE = AppConfigApiActions.InitializeAppConfig;
 
@@ -124,12 +165,17 @@ export const useAppConfigApi = () => {
       if (persistedMapConfig) {
         _updateMapConfig(persistedMapConfig);
       }
+
+      await fetchRecentConnections();
     });
   };
 
   return {
     fetchLastTcpConnectionMeta,
     persistLastTcpConnectionMeta,
+    fetchRecentConnections,
+    persistRecentConnections,
+    addRecentConnection,
     persistGeneralConfig,
     persistMapConfig,
     initializeAppConfig,

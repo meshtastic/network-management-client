@@ -2,6 +2,7 @@ import type {
   IGeneralConfigState,
   IMapConfigState,
   TcpConnectionMeta,
+  RecentConnection,
 } from "@features/appConfig/slice";
 import type { Store } from "@tauri-apps/plugin-store";
 
@@ -9,12 +10,14 @@ export const DEFAULT_STORE_FILE_NAME = "config.bin";
 
 export enum PersistedStateKeys {
   LastTcpConnection = "lastTcpConnection",
+  RecentConnections = "recentConnections",
   GeneralConfig = "generalConfig",
   MapConfig = "mapConfig",
 }
 
 export interface IPersistedState {
   [PersistedStateKeys.LastTcpConnection]?: TcpConnectionMeta;
+  [PersistedStateKeys.RecentConnections]?: RecentConnection[];
   [PersistedStateKeys.GeneralConfig]?: IGeneralConfigState;
   [PersistedStateKeys.MapConfig]?: IMapConfigState;
 }
