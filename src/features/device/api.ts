@@ -155,9 +155,10 @@ export const useDeviceApi = () => {
         if (payload.setPrimary) {
           if (payload.params.type === ConnectionType.BLUETOOTH) {
             dispatch(
-              deviceSliceActions.setPrimaryDeviceConnectionKey(
-                payload.params.bluetoothName,
-              ),
+              deviceSliceActions.setPrimaryDeviceConnection({
+                key: payload.params.bluetoothName,
+                type: ConnectionType.BLUETOOTH,
+              }),
             );
           }
 

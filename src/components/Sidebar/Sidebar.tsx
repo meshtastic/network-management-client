@@ -45,10 +45,6 @@ export const Sidebar = ({ onShowConnect }: { onShowConnect?: () => void }) => {
     >
       <SidebarLogo isSidebarExpanded={isSidebarExpanded} />
 
-      {isSidebarExpanded && onShowConnect && (
-        <ConnectionStatus onDisconnect={onShowConnect} />
-      )}
-
       <div className="flex flex-col flex-1 justify-between px-4 pt-4 pb-1 overflow-y-auto hide-scrollbar">
         <div className="flex flex-col gap-6 mb-6">
           <SidebarTab
@@ -169,6 +165,13 @@ export const Sidebar = ({ onShowConnect }: { onShowConnect?: () => void }) => {
 
       <div className="flex flex-col mt-auto justify-between px-4 pt-4 pb-1">
         <hr className="border-gray-100 dark:border-gray-700" />
+
+        {onShowConnect && (
+          <ConnectionStatus
+            onDisconnect={onShowConnect}
+            isCollapsed={!isSidebarExpanded}
+          />
+        )}
 
         <SidebarIcon
           name={isSidebarExpanded ? t("sidebar.collapse") : t("sidebar.expand")}
