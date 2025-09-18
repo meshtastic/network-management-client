@@ -3,6 +3,7 @@ import type {
   IGeneralConfigState,
   IMapConfigState,
   TcpConnectionMeta,
+  RecentConnection,
 } from "@features/appConfig/slice";
 
 export const selectPersistedTCPConnectionMeta =
@@ -19,3 +20,8 @@ export const selectMapConfigState =
   () =>
   (state: RootState): IMapConfigState =>
     state.appConfig.map;
+
+export const selectRecentConnections =
+  () =>
+  (state: RootState): RecentConnection[] =>
+    state.appConfig.recentConnections;
