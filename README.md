@@ -2,7 +2,8 @@
 
 <div align="center">
   <h1 align="center">Meshtastic Network Management Client</h1>
-  <p align="center">A desktop client for analyzing and managing large-scale, low-bandwidth mesh networks</p>
+  <p align="center">A desktop client for using and managing Meshtastic devices</p>
+  <p align="center">Connect your radio via USB, IP, and Bluetooth to Windows, MacOS, and Linux</p>
 </div>
 
 <p align="center">
@@ -35,13 +36,10 @@ This application is a desktop client for the [Meshtastic Project](https://meshta
 
 We're looking for developers willing to contribute towards or take lead on the following major initiatives:
 
--   Bluetooth device connection
--   Full offline map support, including region-based downloading and loading of custom maps (will require Meshtastic mirror of the [OSM tile DB](https://tile.openstreetmap.org/))
 -   Offline firmware flashing
--   Rust backend testing (unit, integration, e2e, smoke)
--   TS frontend testing (unit, integration, e2e, smoke)
--   Adding support for remote node configuration
--   Integrating UI components into the [Storybook](https://storybook.js.org/) framework
+-   Full offline map support, including region-based downloading and loading of custom maps (will require Meshtastic mirror of the [OSM tile DB](https://tile.openstreetmap.org/))
+-   Testing (Rust backend, React TS frontend)
+-   Remote node configuration
 
 ## :rocket: Functionality
 
