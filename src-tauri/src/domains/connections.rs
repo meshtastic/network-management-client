@@ -107,7 +107,7 @@ pub fn handle_get_all_serial_ports(
     _request: GetAllSerialPortsRequest,
 ) -> Result<GetAllSerialPortsResponse, CommandError> {
     let ports: Vec<SerialPortConnectionCandidate> = tokio_serial::available_ports()
-        .map_err(|e| format!("Error getting availabled serial ports: {:?}", e))?
+        .map_err(|e| format!("Error getting available serial ports: {:?}", e))?
         .iter()
         .map(|port| SerialPortConnectionCandidate(port.port_name.clone()))
         .collect();
