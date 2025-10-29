@@ -12,7 +12,6 @@ use super::{
 pub type InternalGraph = GraphMap<node::GraphNode, edge::GraphEdge, petgraph::Directed>;
 
 #[derive(Serialize, Deserialize)]
-
 pub struct MeshGraph {
     graph: InternalGraph,
     pub nodes_lookup: HashMap<u32, GraphNode>, // TODO use NodeId -- need to implement serialize and deserialize
