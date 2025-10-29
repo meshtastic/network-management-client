@@ -8,9 +8,7 @@ export const sendText = async (
   text: string,
 ) => {
   const response = (await invoke("send_text", {
-    deviceKey: deviceKey,
-    channel: deviceChannel,
-    text: text,
+    request: { deviceKey: deviceKey, channel: deviceChannel, text: text },
   })) as undefined;
 
   return response;
@@ -22,9 +20,11 @@ export const sendWaypoint = async (
   waypoint: app_device_NormalizedWaypoint,
 ) => {
   const response = (await invoke("send_waypoint", {
-    deviceKey: deviceKey,
-    channel: deviceChannel,
-    waypoint: waypoint,
+    request: {
+      deviceKey: deviceKey,
+      channel: deviceChannel,
+      waypoint: waypoint,
+    },
   })) as undefined;
 
   return response;
@@ -35,8 +35,7 @@ export const deleteWaypoint = async (
   waypointId: number,
 ) => {
   const response = (await invoke("delete_waypoint", {
-    deviceKey: deviceKey,
-    waypointId: waypointId,
+    request: { deviceKey: deviceKey, waypointId: waypointId },
   })) as undefined;
 
   return response;
