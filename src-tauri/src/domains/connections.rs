@@ -174,7 +174,7 @@ where
         connections_guard.insert(device_key.clone(), stream_api);
     }
 
-    // Spawn timeout handler to catch invlaid device connections
+    // Spawn timeout handler to catch invalid device connections
     // Needs the device struct and port name to be loaded into Tauri state before running
 
     spawn_configuration_timeout_handler(
