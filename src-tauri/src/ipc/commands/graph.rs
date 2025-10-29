@@ -37,7 +37,6 @@ pub async fn stop_timeout_handler(
     mesh_graph: tauri::State<'_, state::graph::GraphState>,
 ) -> Result<StopTimeoutHandlerResponse, CommandError> {
     debug!("Called stop_timeout_handler command");
-    let request = StopTimeoutHandlerRequest {};
     let response = handle_stop_timeout_handler(request, mesh_graph).await?;
     Ok(response)
 }
