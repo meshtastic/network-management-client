@@ -57,9 +57,7 @@ pub async fn handle_update_device_user(
     connection
         .update_user(packet_api, user)
         .await
-        .map_err(|e| e.to_string())
         .map_err(|e| e.to_string())?;
-
     let response = UpdateDeviceUserResponse {};
     Ok(response)
 }
