@@ -1,0 +1,379 @@
+use crate::api::contracts::connections::{
+    ConnectToBluetoothRequest, ConnectToBluetoothResponse, ConnectToSerialPortRequest,
+    ConnectToSerialPortResponse, ConnectToTcpPortRequest, ConnectToTcpPortResponse,
+    DropAllDeviceConnectionsRequest, DropAllDeviceConnectionsResponse, DropDeviceConnectionRequest,
+    DropDeviceConnectionResponse, GetAllBluetoothRequest, GetAllBluetoothResponse,
+    GetAllSerialPortsRequest, GetAllSerialPortsResponse, RequestAutoconnectPortRequest,
+    RequestAutoconnectPortResponse,
+};
+use crate::api::primitives::connections::BluetoothConnectionCandidate;
+use crate::api::primitives::connections::SerialPortConnectionCandidate;
+use crate::device;
+use crate::device::SerialDeviceStatus;
+use crate::ipc::helpers::spawn_configuration_timeout_handler;
+use crate::ipc::helpers::spawn_decoded_handler;
+use crate::ipc::CommandError;
+use crate::packet_api::MeshPacketApi;
+use crate::state;
+use crate::state::DeviceKey;
+
+use btleplug::api::ScanFilter;
+use btleplug::api::{Central, Manager as _, Peripheral as _};
+use btleplug::platform::Manager;
+use log::debug;
+use meshtastic::api::{StreamApi, StreamHandle};
+use meshtastic::utils::stream::build_ble_stream;
+use meshtastic::utils::stream::build_serial_stream;
+use meshtastic::utils::stream::build_tcp_stream;
+use meshtastic::utils::stream::BleId;
+use std::time::Duration;
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWriteExt;
+use tokio::time;
+use uuid::Uuid;
+
+const MSH_SERVICE: Uuid = Uuid::from_u128(0x6ba1b218_15a8_461f_9fa8_5dcae273eafd);
+
+pub async fn handle_request_autoconnect_port(
+    _request: RequestAutoconnectPortRequest,
+    autoconnect_state: tauri::State<'_, state::autoconnect::AutoConnectState>,
+) -> Result<RequestAutoconnectPortResponse, CommandError> {
+    let autoconnect_port_guard = autoconnect_state.inner.lock().await;
+    let autoconnect_port = autoconnect_port_guard
+        .as_ref()
+        .ok_or("Autoconnect port state not initialized")?
+        .clone();
+
+    let response = RequestAutoconnectPortResponse {
+        port: autoconnect_port,
+    };
+    Ok(response)
+}
+
+pub async fn handle_get_all_bluetooth(
+    _request: GetAllBluetoothRequest,
+) -> Result<GetAllBluetoothResponse, CommandError> {
+    const SCAN_DURATION: std::time::Duration = std::time::Duration::from_secs(5);
+
+    // Initialize Bluetooth manager
+    let manager = Manager::new().await.map_err(|e| e.to_string())?;
+
+    // Get available Bluetooth adapters
+    let adapters = manager.adapters().await.map_err(|e| e.to_string())?;
+
+    let adapter = adapters
+        .into_iter()
+        .next()
+        .ok_or("failed to find adapter")?;
+
+    // Start scanning for devices
+    adapter
+        .start_scan(ScanFilter {
+            services: vec![MSH_SERVICE],
+        })
+        .await
+        .map_err(|e| e.to_string())?;
+
+    debug!("Started Bluetooth scan");
+
+    // Allow some time for devices to be discovered
+    time::sleep(SCAN_DURATION).await;
+
+    let peripherals = adapter.peripherals().await.map_err(|e| e.to_string())?;
+
+    let mut devices = Vec::new();
+
+    for peripheral in peripherals {
+        if let Ok(Some(props)) = peripheral.properties().await {
+            if let Some(name) = props.local_name {
+                devices.push(BluetoothConnectionCandidate(name));
+            }
+            // else skip this peripheral
+        }
+        // else skip this peripheral
+    }
+
+    devices.sort();
+
+    debug!("Discovered Bluetooth devices: {:?}", devices);
+
+    let response = GetAllBluetoothResponse {
+        candidates: devices,
+    };
+    Ok(response)
+}
+
+pub fn handle_get_all_serial_ports(
+    _request: GetAllSerialPortsRequest,
+) -> Result<GetAllSerialPortsResponse, CommandError> {
+    let ports: Vec<SerialPortConnectionCandidate> = tokio_serial::available_ports()
+        .map_err(|e| format!("Error getting availabled serial ports: {:?}", e))?
+        .iter()
+        .map(|port| SerialPortConnectionCandidate(port.port_name.clone()))
+        .collect();
+
+    let response = GetAllSerialPortsResponse { ports };
+    Ok(response)
+}
+
+async fn create_new_connection<S>(
+    stream: StreamHandle<S>,
+    device_key: DeviceKey,
+    timeout_duration: Duration,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
+) -> Result<(), CommandError>
+where
+    S: AsyncReadExt + AsyncWriteExt + Send + 'static,
+{
+    // Initialize device and StreamApi instances
+
+    let device = device::MeshDevice::new();
+    let mut packet_api = MeshPacketApi::new(
+        app_handle.clone(),
+        device_key.clone(),
+        device,
+        mesh_graph.inner.clone(),
+    );
+
+    let stream_api = StreamApi::new();
+
+    // Connect to device via stream API
+
+    packet_api.device.set_status(SerialDeviceStatus::Connecting);
+    let (decoded_listener, stream_api) = stream_api.connect(stream).await;
+
+    // Configure device via stream API
+
+    packet_api
+        .device
+        .set_status(SerialDeviceStatus::Configuring);
+
+    let stream_api = stream_api
+        .configure(packet_api.device.config_id)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    // Persist connection in Tauri state
+
+    let handle = app_handle.clone();
+    let mesh_devices_arc = mesh_devices.inner.clone();
+    let radio_connections_arc = radio_connections.inner.clone();
+
+    // Persist device struct in Tauri state
+    {
+        let mut devices_guard = mesh_devices_arc.lock().await;
+        devices_guard.insert(device_key.clone(), packet_api);
+    }
+
+    // Persist StreamApi instance Tauri state
+    {
+        let mut connections_guard = radio_connections_arc.lock().await;
+        connections_guard.insert(device_key.clone(), stream_api);
+    }
+
+    // Spawn timeout handler to catch invlaid device connections
+    // Needs the device struct and port name to be loaded into Tauri state before running
+
+    spawn_configuration_timeout_handler(
+        handle.clone(),
+        mesh_devices_arc.clone(),
+        device_key.clone(),
+        timeout_duration,
+    );
+
+    // Spawn decoded packet handler to route decoded packets
+
+    spawn_decoded_handler(decoded_listener, mesh_devices_arc, device_key);
+
+    Ok(())
+}
+
+pub async fn handle_connect_to_bluetooth(
+    request: ConnectToBluetoothRequest,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
+) -> Result<ConnectToBluetoothResponse, CommandError> {
+    let ConnectToBluetoothRequest { bluetooth_name } = request;
+
+    debug!(
+        "Called connect_to_bluetooth command with device name \"{}\"",
+        bluetooth_name
+    );
+
+    // Create serial connection stream
+
+    let stream = build_ble_stream(&BleId::from_name(&bluetooth_name), Duration::from_secs(5))
+        .await
+        .unwrap();
+
+    // Create and persist new connection
+
+    create_new_connection(
+        stream,
+        bluetooth_name,
+        Duration::from_millis(15000),
+        app_handle,
+        mesh_devices,
+        radio_connections,
+        mesh_graph,
+    )
+    .await?;
+
+    let response = ConnectToBluetoothResponse {};
+    Ok(response)
+}
+
+pub async fn handle_connect_to_serial_port(
+    request: ConnectToSerialPortRequest,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
+) -> Result<ConnectToSerialPortResponse, CommandError> {
+    let ConnectToSerialPortRequest {
+        port_name,
+        baud_rate,
+        dtr,
+        rts,
+    } = request;
+
+    debug!(
+        "Called connect_to_serial_port command with port \"{}\"",
+        port_name
+    );
+
+    // Create serial connection stream
+
+    let stream =
+        build_serial_stream(port_name.clone(), baud_rate, dtr, rts).map_err(|e| e.to_string())?;
+
+    // Create and persist new connection
+
+    create_new_connection(
+        stream,
+        port_name,
+        Duration::from_millis(15000),
+        app_handle,
+        mesh_devices,
+        radio_connections,
+        mesh_graph,
+    )
+    .await?;
+
+    let response = ConnectToSerialPortResponse {};
+    Ok(response)
+}
+
+pub async fn handle_connect_to_tcp_port(
+    request: ConnectToTcpPortRequest,
+    app_handle: tauri::AppHandle,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+    mesh_graph: tauri::State<'_, state::graph::GraphState>,
+) -> Result<ConnectToTcpPortResponse, CommandError> {
+    let ConnectToTcpPortRequest { address } = request;
+
+    debug!(
+        "Called connect_to_tcp_port command with address \"{}\"",
+        address
+    );
+
+    // Create TCP connection stream
+
+    let stream = build_tcp_stream(address.clone())
+        .await
+        .map_err(|e| e.to_string())?;
+
+    // Create and persist new connection
+
+    create_new_connection(
+        stream,
+        address,
+        Duration::from_millis(15000),
+        app_handle,
+        mesh_devices,
+        radio_connections,
+        mesh_graph,
+    )
+    .await?;
+
+    let response = ConnectToTcpPortResponse {};
+    Ok(response)
+}
+
+pub async fn handle_drop_device_connection(
+    request: DropDeviceConnectionRequest,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+) -> Result<DropDeviceConnectionResponse, CommandError> {
+    let DropDeviceConnectionRequest { device_key } = request;
+
+    {
+        let mut state_devices = mesh_devices.inner.lock().await;
+        let mut connections_guard = radio_connections.inner.lock().await;
+
+        // Disconnect from open connection
+        // TODO abstract this clearing into a helper function
+
+        if let Some(stream_api) = connections_guard.remove(&device_key) {
+            match stream_api.disconnect().await {
+                Ok(_) => (),
+                Err(e) => {
+                    debug!("Failed to disconnect from device: {:?}", e);
+                }
+            };
+        }
+
+        // Clear corresponding state device
+
+        if let Some(packet_api) = state_devices.get_mut(&device_key) {
+            packet_api
+                .device
+                .set_status(SerialDeviceStatus::Disconnected);
+        }
+
+        state_devices.remove(&device_key);
+    }
+
+    let response = DropDeviceConnectionResponse {};
+    Ok(response)
+}
+
+pub async fn handle_drop_all_device_connections(
+    _request: DropAllDeviceConnectionsRequest,
+    mesh_devices: tauri::State<'_, state::mesh_devices::MeshDevicesState>,
+    radio_connections: tauri::State<'_, state::radio_connections::RadioConnectionsState>,
+) -> Result<DropAllDeviceConnectionsResponse, CommandError> {
+    debug!("Called drop_all_device_connections command");
+
+    {
+        let mut connections_guard = radio_connections.inner.lock().await;
+
+        // Disconnect from all open connections and empty HashMap
+
+        for (_, connection) in connections_guard.drain() {
+            connection.disconnect().await.map_err(|e| e.to_string())?;
+        }
+
+        // Set all state devices as disconnected and empty HashMap
+
+        let mut state_devices = mesh_devices.inner.lock().await;
+
+        for (_port_name, packet_api) in state_devices.iter_mut() {
+            packet_api
+                .device
+                .set_status(SerialDeviceStatus::Disconnected);
+        }
+
+        // This could be removed in the future to maintain state on previous devices
+        state_devices.clear();
+    }
+
+    let response = DropAllDeviceConnectionsResponse {};
+    Ok(response)
+}
