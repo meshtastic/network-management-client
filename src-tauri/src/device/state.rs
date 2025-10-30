@@ -184,6 +184,10 @@ impl MeshDevice {
                         debug!("Received health metrics, not handling");
                         trace!("{:?}", health_metrics);
                     }
+                    protobufs::telemetry::Variant::HostMetrics(host_metrics) => {
+                        debug!("Received host metrics, not handling");
+                        trace!("{:?}", host_metrics);
+                    }
                 }
             }
         } else {

@@ -47,49 +47,16 @@ pub async fn get_all_bluetooth() -> Result<Vec<String>, CommandError> {
 
     const SCAN_DURATION: std::time::Duration = std::time::Duration::from_secs(5);
 
-    // Initialize Bluetooth manager
-    let manager = Manager::new()
+    let devices = meshtastic::utils::stream::available_ble_devices(SCAN_DURATION)
         .await
-        .map_err(|e| e.to_string())?;
-
-    // Get available Bluetooth adapters
-    let adapters = manager.adapters().await
-        .map_err(|e| e.to_string())?;
-
-    let adapter = adapters
-        .into_iter()
-        .next()
-        .ok_or("failed to find adapter")?;
-
-    // Start scanning for devices
-    adapter.start_scan(ScanFilter {
-                services: vec![MSH_SERVICE],
-            }).await
-        .map_err(|e| e.to_string())?;
-
-    debug!("Started Bluetooth scan");
-
-    // Allow some time for devices to be discovered
-    time::sleep(SCAN_DURATION).await;
-
-    let peripherals = adapter.peripherals().await
-        .map_err(|e| e.to_string())?;
-
-    let mut devices = Vec::new();
-
-    for peripheral in peripherals {
-        if let Ok(Some(props)) = peripheral.properties().await {
-            if let Some(name) = props.local_name {
-                devices.push(name);
-            }
-            // else skip this peripheral
-        }
-    // else skip this peripheral
-    }
-
-    devices.sort();
-
-    debug!("Discovered Bluetooth devices: {:?}", devices);
+        .map_err(|e| format!("Error getting availabled BLE devices: {:?}", e))?
+        .iter()
+        .map(|port| match port {
+            BleId::Name(name) => name.to_string(),
+            BleId::MacAddress(_) => "".to_string(),
+            BleId::NameAndMac(name, _) => name.to_string(),
+        })
+        .collect();
 
     Ok(devices)
 }
@@ -197,8 +164,9 @@ pub async fn connect_to_bluetooth(
 
     // Create serial connection stream
 
-    let stream =
-        build_ble_stream(&BleId::from_name(&bluetooth_name), Duration::from_secs(5)).await.unwrap();
+    let stream = build_ble_stream(&BleId::from_name(&bluetooth_name), Duration::from_secs(5))
+        .await
+        .unwrap();
 
     // Create and persist new connection
 
