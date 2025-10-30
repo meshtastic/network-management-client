@@ -15,21 +15,27 @@ export const updateDeviceConfigBulk = async (
 };
 
 export const requestAutoConnectPort = async () => {
-  const response = (await invoke("request_autoconnect_port")) as string;
+  const response = (await invoke("request_autoconnect_port", {
+    request: {},
+  })) as { port: string };
 
-  return response;
+  return response.port;
 };
 
 export const getAllBluetooth = async () => {
-  const response = (await invoke("get_all_bluetooth")) as string[];
+  const response = (await invoke("get_all_bluetooth", {
+    request: {},
+  })) as { candidates: string[] };
 
-  return response;
+  return response.candidates;
 };
 
 export const getAllSerialPorts = async () => {
-  const response = (await invoke("get_all_serial_ports")) as string[];
+  const response = (await invoke("get_all_serial_ports", {
+    request: {},
+  })) as { ports: string[] };
 
-  return response;
+  return response.ports;
 };
 
 export const connectToSerialPort = async (
@@ -39,10 +45,12 @@ export const connectToSerialPort = async (
   rts?: boolean,
 ) => {
   const response = (await invoke("connect_to_serial_port", {
-    portName,
-    baudRate,
-    dtr,
-    rts,
+    request: {
+      portName,
+      baudRate,
+      dtr,
+      rts,
+    },
   })) as undefined;
 
   return response;
@@ -50,7 +58,7 @@ export const connectToSerialPort = async (
 
 export const connectToTcpPort = async (socketAddress: string) => {
   const response = (await invoke("connect_to_tcp_port", {
-    address: socketAddress,
+    request: { address: socketAddress },
   })) as undefined;
 
   return response;
@@ -58,21 +66,23 @@ export const connectToTcpPort = async (socketAddress: string) => {
 
 export const dropDeviceConnection = async (deviceKey: DeviceKey) => {
   const response = (await invoke("drop_device_connection", {
-    deviceKey,
+    request: { deviceKey },
   })) as undefined;
 
   return response;
 };
 
 export const dropAllDeviceConnections = async () => {
-  const response = (await invoke("drop_all_device_connections")) as undefined;
+  const response = (await invoke("drop_all_device_connections", {
+    request: {},
+  })) as undefined;
 
   return response;
 };
 
 export const connectToBluetooth = async (bluetoothName: string) => {
   const response = (await invoke("connect_to_bluetooth", {
-    bluetoothName,
+    request: { bluetoothName },
   })) as undefined;
 
   return response;

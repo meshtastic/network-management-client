@@ -3,8 +3,10 @@
     windows_subsystem = "windows"
 )]
 
+mod api;
 mod cli;
 mod device;
+mod domains;
 mod graph;
 mod ipc;
 mod packet_api;
