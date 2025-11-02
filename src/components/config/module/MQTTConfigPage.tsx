@@ -43,7 +43,7 @@ export const MQTTConfigPage = ({ className = "" }: IMQTTConfigPageProps) => {
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.mqtt?.enabled ?? true,
+    device?.moduleConfig.mqtt?.enabled ?? true,
   );
 
   const defaultValues = useMemo(

@@ -46,7 +46,7 @@ export const RangeTestConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.rangeTest?.enabled ?? true,
+    device?.moduleConfig.rangeTest?.enabled ?? true,
   );
 
   const defaultValues = useMemo(

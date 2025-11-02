@@ -47,11 +47,11 @@ export const BluetoothConfigPage = ({
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [bluetoothDisabled, setBluetoothDisabled] = useState(
-    !device?.config.bluetooth?.enabled ?? true,
+    device?.config.bluetooth?.enabled ?? true,
   );
 
   const [fixedPinDisabled, setFixedPinDisabled] = useState(
-    device?.config.bluetooth?.mode !== 1 ?? true,
+    device?.config.bluetooth?.mode !== 1,
   );
 
   const defaultValues = useMemo(

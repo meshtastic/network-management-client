@@ -48,7 +48,7 @@ export const StoreAndForwardConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.serial?.enabled ?? true,
+    device?.moduleConfig.serial?.enabled ?? true,
   );
 
   const defaultValues = useMemo(
