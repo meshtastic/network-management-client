@@ -52,7 +52,7 @@ export const LoRaConfigPage = ({ className = "" }: ILoRaConfigPageProps) => {
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [useModemPreset, setUseModemPreset] = useState(
-    device?.config.lora?.modemPreset ?? false,
+    !!device?.config.lora?.modemPreset,
   );
 
   const [txEnabled, setTxEnabled] = useState(
