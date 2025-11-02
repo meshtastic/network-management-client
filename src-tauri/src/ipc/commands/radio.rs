@@ -8,12 +8,10 @@ use crate::domains::radio::{
     handle_commit_configuration_transaction, handle_start_configuration_transaction,
     handle_update_device_config, handle_update_device_config_bulk, handle_update_device_user,
 };
-use crate::ipc::events;
 use crate::ipc::CommandError;
 use crate::state;
 
 use log::debug;
-use log::trace;
 
 #[tauri::command]
 pub async fn update_device_config(

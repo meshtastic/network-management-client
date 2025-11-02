@@ -45,7 +45,7 @@ export const RemoteHardwareConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   // const [moduleDisabled, setModuleDisabled] = useState(
-  //   !device?.moduleConfig.remoteHardware?.enabled ?? true
+  //   device?.moduleConfig.remoteHardware?.enabled ?? true
   // );
 
   const defaultValues = useMemo(

@@ -29,7 +29,7 @@ impl<R: tauri::Runtime> MeshPacketApi<R> {
         }
     }
 
-    pub fn get_locked_graph(&self) -> LockResult<std::sync::MutexGuard<MeshGraph>> {
+    pub fn get_locked_graph<'a>(&'a self) -> LockResult<std::sync::MutexGuard<'a, MeshGraph>> {
         self.graph_arc.lock()
     }
 }

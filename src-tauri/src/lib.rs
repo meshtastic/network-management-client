@@ -12,21 +12,9 @@ mod ipc;
 mod packet_api;
 mod state;
 
-use log::{info, LevelFilter};
-use specta::{
-    export::ts_with_cfg,
-    ts::{BigIntExportBehavior, ExportConfiguration, ModuleExportBehavior, TsExportError},
-};
+use log::LevelFilter;
 use tauri::Manager;
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
-
-fn export_ts_types(file_path: &str) -> Result<(), TsExportError> {
-    let ts_export_config = ExportConfiguration::default()
-        .bigint(BigIntExportBehavior::String)
-        .modules(ModuleExportBehavior::Enabled);
-
-    ts_with_cfg(file_path, &ts_export_config)
-}
 
 const LOG_LEVEL: LevelFilter = LevelFilter::Debug;
 

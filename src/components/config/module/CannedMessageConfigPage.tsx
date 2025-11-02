@@ -51,7 +51,7 @@ export const CannedMessageConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.cannedMessage?.enabled ?? true,
+    device?.moduleConfig.cannedMessage?.enabled ?? true,
   );
 
   const defaultValues = useMemo(

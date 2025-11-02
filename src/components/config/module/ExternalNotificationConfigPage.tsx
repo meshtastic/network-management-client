@@ -50,15 +50,15 @@ export const ExternalNotificationConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [moduleDisabled, setModuleDisabled] = useState(
-    !device?.moduleConfig.externalNotification?.enabled ?? true,
+    device?.moduleConfig.externalNotification?.enabled ?? true,
   );
 
   const [bellAlertsDisabled, setBellAlertsDisabled] = useState(
-    !device?.moduleConfig.externalNotification?.alertBell ?? true,
+    device?.moduleConfig.externalNotification?.alertBell ?? true,
   );
 
   const [messageAlertsDisabled, setMessageAlertsDisabled] = useState(
-    !device?.moduleConfig.externalNotification?.alertMessage ?? true,
+    device?.moduleConfig.externalNotification?.alertMessage ?? true,
   );
 
   const defaultValues = useMemo(

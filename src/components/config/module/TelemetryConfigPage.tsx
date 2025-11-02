@@ -50,11 +50,11 @@ export const TelemetryConfigPage = ({
   const editedConfig = useSelector(selectEditedModuleConfig());
 
   const [airQualityDisabled, setAirQualityDisabled] = useState(
-    !device?.moduleConfig.telemetry?.airQualityEnabled ?? true,
+    device?.moduleConfig.telemetry?.airQualityEnabled ?? true,
   );
 
   const [envMeasurementDisabled, setEnvMeasurementDisabled] = useState(
-    !device?.moduleConfig.telemetry?.environmentMeasurementEnabled ?? true,
+    device?.moduleConfig.telemetry?.environmentMeasurementEnabled ?? true,
   );
 
   const defaultValues = useMemo(

@@ -57,11 +57,11 @@ export const PositionConfigPage = ({
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [gpsDisabled, setGpsDisabled] = useState(
-    !device?.config.position?.gpsEnabled ?? true,
+    device?.config.position?.gpsEnabled ?? true,
   );
 
   const [fixedPositionDisabled, setFixedPositionDisabled] = useState(
-    !device?.config.position?.fixedPosition ?? true,
+    device?.config.position?.fixedPosition ?? true,
   );
 
   const defaultValues = useMemo(

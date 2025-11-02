@@ -46,11 +46,11 @@ export const NetworkConfigPage = ({
   const editedConfig = useSelector(selectEditedRadioConfig());
 
   const [wifiDisabled, setWifiDisabled] = useState(
-    !(device?.config.network?.wifiEnabled ?? true),
+    device?.config.network?.wifiEnabled ?? true,
   );
 
   const [ethDisabled, setEthDisabled] = useState(
-    !(device?.config.network?.ethEnabled ?? true),
+    device?.config.network?.ethEnabled ?? true,
   );
 
   const defaultValues = useMemo(

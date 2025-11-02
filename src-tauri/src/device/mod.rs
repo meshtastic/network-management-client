@@ -184,9 +184,9 @@ impl From<protobufs::Position> for NormalizedPosition {
             longitude: normalize_location_field(position.longitude_i.unwrap_or_default()),
             altitude: position.altitude.unwrap_or_default(),
             time: position.time,
-            location_source: protobufs::position::LocSource::from_i32(position.location_source)
+            location_source: protobufs::position::LocSource::try_from(position.location_source)
                 .expect("Could not convert i32 to LocSource"),
-            altitude_source: protobufs::position::AltSource::from_i32(position.altitude_source)
+            altitude_source: protobufs::position::AltSource::try_from(position.altitude_source)
                 .expect("Could not convert i32 to AltSource"),
             timestamp: position.timestamp,
             timestamp_millis_adjust: position.timestamp_millis_adjust,
