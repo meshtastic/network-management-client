@@ -165,7 +165,7 @@ dependencies = [
  "reqwest 0.11.27",
  "serde",
  "serde_json",
- "specta 1.0.3 (git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d168376e28e163dd9cd328055b11d1af82)",
+ "specta 1.0.3",
  "tauri",
  "tauri-build",
  "tauri-plugin-cli",
@@ -2869,8 +2869,9 @@ dependencies = [
 
 [[package]]
 name = "meshtastic"
-version = "0.1.6"
-source = "git+https://github.com/meshtastic/rust.git?rev=6057294aa6cfa979033299f7f02cfe6ceafddeda#6057294aa6cfa979033299f7f02cfe6ceafddeda"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "89f474b7f41f74f2b5d46aec08735d1e426efd3ddb927b0cec9fea77367d02e0"
 dependencies = [
  "bluez-async",
  "btleplug",
@@ -2883,7 +2884,8 @@ dependencies = [
  "rand 0.9.1",
  "serde",
  "serde_json",
- "specta 1.0.3 (git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d)",
+ "specta 2.0.0-rc.22",
+ "specta-typescript",
  "thiserror 2.0.12",
  "tokio",
  "tokio-serial",
@@ -2962,9 +2964,9 @@ dependencies = [
 
 [[package]]
 name = "multimap"
-version = "0.8.3"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5ce46fe64a9d73be07dcbe690a38ce1b293be448fd8ce1e6c1b8062c9f72c6a"
+checksum = "1d87ecb2933e8aeadb3e3a02b828fed80a7528047e68b4f424523a0981a3a084"
 
 [[package]]
 name = "nalgebra"
@@ -3923,8 +3925,8 @@ version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac6c3320f9abac597dcbc668774ef006702672474aad53c6d596b62e487b40b1"
 dependencies = [
- "heck 0.5.0",
- "itertools 0.13.0",
+ "heck 0.4.1",
+ "itertools 0.10.5",
  "log",
  "multimap",
  "once_cell",
@@ -3961,12 +3963,13 @@ dependencies = [
 
 [[package]]
 name = "protoc-bin-vendored"
-version = "3.1.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd89a830d0eab2502c81a9b8226d446a52998bb78e5e33cb2637c0cdd6068d99"
+checksum = "d1c381df33c98266b5f08186583660090a4ffa0889e76c7e9a5e175f645a67fa"
 dependencies = [
  "protoc-bin-vendored-linux-aarch_64",
  "protoc-bin-vendored-linux-ppcle_64",
+ "protoc-bin-vendored-linux-s390_64",
  "protoc-bin-vendored-linux-x86_32",
  "protoc-bin-vendored-linux-x86_64",
  "protoc-bin-vendored-macos-aarch_64",
@@ -3976,45 +3979,51 @@ dependencies = [
 
 [[package]]
 name = "protoc-bin-vendored-linux-aarch_64"
-version = "3.1.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f563627339f1653ea1453dfbcb4398a7369b768925eb14499457aeaa45afe22c"
+checksum = "c350df4d49b5b9e3ca79f7e646fde2377b199e13cfa87320308397e1f37e1a4c"
 
 [[package]]
 name = "protoc-bin-vendored-linux-ppcle_64"
-version = "3.1.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5025c949a02cd3b60c02501dd0f348c16e8fff464f2a7f27db8a9732c608b746"
+checksum = "a55a63e6c7244f19b5c6393f025017eb5d793fd5467823a099740a7a4222440c"
+
+[[package]]
+name = "protoc-bin-vendored-linux-s390_64"
+version = "3.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1dba5565db4288e935d5330a07c264a4ee8e4a5b4a4e6f4e83fad824cc32f3b0"
 
 [[package]]
 name = "protoc-bin-vendored-linux-x86_32"
-version = "3.1.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c9500ce67d132c2f3b572504088712db715755eb9adf69d55641caa2cb68a07"
+checksum = "8854774b24ee28b7868cd71dccaae8e02a2365e67a4a87a6cd11ee6cdbdf9cf5"
 
 [[package]]
 name = "protoc-bin-vendored-linux-x86_64"
-version = "3.1.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5462592380cefdc9f1f14635bcce70ba9c91c1c2464c7feb2ce564726614cc41"
+checksum = "b38b07546580df720fa464ce124c4b03630a6fb83e05c336fea2a241df7e5d78"
 
 [[package]]
 name = "protoc-bin-vendored-macos-aarch_64"
-version = "3.1.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c637745681b68b4435484543667a37606c95ddacf15e917710801a0877506030"
+checksum = "89278a9926ce312e51f1d999fee8825d324d603213344a9a706daa009f1d8092"
 
 [[package]]
 name = "protoc-bin-vendored-macos-x86_64"
-version = "3.1.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38943f3c90319d522f94a6dfd4a134ba5e36148b9506d2d9723a82ebc57c8b55"
+checksum = "81745feda7ccfb9471d7a4de888f0652e806d5795b61480605d4943176299756"
 
 [[package]]
 name = "protoc-bin-vendored-win32"
-version = "3.1.0"
+version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7dc55d7dec32ecaf61e0bd90b3d2392d721a28b95cfd23c3e176eccefbeab2f2"
+checksum = "95067976aca6421a523e491fce939a3e65249bac4b977adee0ee9771568e8aa3"
 
 [[package]]
 name = "psl-types"
@@ -5066,7 +5075,7 @@ dependencies = [
 [[package]]
 name = "specta"
 version = "1.0.3"
-source = "git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d#6a8731d168376e28e163dd9cd328055b11d1af82"
+source = "git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d168376e28e163dd9cd328055b11d1af82#6a8731d168376e28e163dd9cd328055b11d1af82"
 dependencies = [
  "chrono",
  "ctor 0.1.26",
@@ -5076,31 +5085,26 @@ dependencies = [
  "paste",
  "serde",
  "serde_json",
- "specta-macros 1.0.3 (git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d)",
+ "specta-macros 1.0.3",
  "thiserror 1.0.69",
 ]
 
 [[package]]
 name = "specta"
-version = "1.0.3"
-source = "git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d168376e28e163dd9cd328055b11d1af82#6a8731d168376e28e163dd9cd328055b11d1af82"
+version = "2.0.0-rc.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ab7f01e9310a820edd31c80fde3cae445295adde21a3f9416517d7d65015b971"
 dependencies = [
  "chrono",
- "ctor 0.1.26",
- "document-features",
- "indoc",
- "once_cell",
- "paste",
- "serde",
- "serde_json",
- "specta-macros 1.0.3 (git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d168376e28e163dd9cd328055b11d1af82)",
+ "ctor 0.2.9",
+ "specta-macros 2.0.0-rc.18",
  "thiserror 1.0.69",
 ]
 
 [[package]]
 name = "specta-macros"
 version = "1.0.3"
-source = "git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d#6a8731d168376e28e163dd9cd328055b11d1af82"
+source = "git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d168376e28e163dd9cd328055b11d1af82#6a8731d168376e28e163dd9cd328055b11d1af82"
 dependencies = [
  "Inflector",
  "itertools 0.10.5",
@@ -5112,15 +5116,35 @@ dependencies = [
 
 [[package]]
 name = "specta-macros"
-version = "1.0.3"
-source = "git+https://github.com/ajmcquilkin/specta.git?rev=6a8731d168376e28e163dd9cd328055b11d1af82#6a8731d168376e28e163dd9cd328055b11d1af82"
+version = "2.0.0-rc.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0074b9e30ed84c6924eb63ad8d2fe71cdc82628525d84b1fcb1f2fd40676517"
 dependencies = [
  "Inflector",
- "itertools 0.10.5",
  "proc-macro2",
  "quote",
- "syn 1.0.109",
- "termcolor",
+ "syn 2.0.101",
+]
+
+[[package]]
+name = "specta-serde"
+version = "0.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77216504061374659e7245eac53d30c7b3e5fe64b88da97c753e7184b0781e63"
+dependencies = [
+ "specta 2.0.0-rc.22",
+ "thiserror 1.0.69",
+]
+
+[[package]]
+name = "specta-typescript"
+version = "0.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3220a0c365e51e248ac98eab5a6a32f544ff6f961906f09d3ee10903a4f52b2d"
+dependencies = [
+ "specta 2.0.0-rc.22",
+ "specta-serde",
+ "thiserror 1.0.69",
 ]
 
 [[package]]

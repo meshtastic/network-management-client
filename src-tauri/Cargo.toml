@@ -38,7 +38,6 @@ tauri-plugin-store = "2"
 tokio-serial = "5.4.4"
 tauri-plugin-log = { features = ["colored"] , version = "2" }
 chrono = { version = "0.4.34", features = ["serde"] }
-meshtastic = { git = "https://github.com/meshtastic/rust.git", rev = "6057294aa6cfa979033299f7f02cfe6ceafddeda", features = ["ts-gen", "bluetooth-le"] }
 specta = { git = "https://github.com/ajmcquilkin/specta.git", rev = "6a8731d168376e28e163dd9cd328055b11d1af82", version = "1.0.3", features = ["chrono"] }
 tauri-plugin-dialog = "2"
 tauri-plugin-shell = "2"
@@ -48,6 +47,7 @@ tauri-plugin-http = "2"
 tauri-plugin-cli = "2"
 btleplug = "0.11.8"
 uuid = "1.17.0"
+meshtastic = { version = "0.1.7", features = ["bluetooth-le", "gen", "ts-gen"] }
 
 [features]
 # by default Tauri runs in production mode
