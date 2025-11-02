@@ -10,7 +10,6 @@ pub enum DeviceUpdateError {
     DecodeFailure(String),
     GeneralFailure(String),
     EventDispatchFailure(String),
-    NotificationDispatchFailure(String),
 }
 
 impl fmt::Display for DeviceUpdateError {
@@ -43,12 +42,6 @@ impl fmt::Display for DeviceUpdateError {
                 f.write_fmt(format_args!(
                     "Failed to dispatch device to client:\n{}",
                     dispatch_error
-                ))?;
-            }
-            DeviceUpdateError::NotificationDispatchFailure(ref notification_error) => {
-                f.write_fmt(format_args!(
-                    "Failed to send system-level notification:\n{}",
-                    notification_error
                 ))?;
             }
         }

@@ -5,12 +5,11 @@ use crate::api::contracts::mesh::SendTextResponse;
 use crate::api::contracts::mesh::SendWaypointRequest;
 use crate::api::contracts::mesh::SendWaypointResponse;
 use crate::device::helpers::convert_location_field_to_protos;
-use crate::device::NormalizedWaypoint;
 use crate::ipc::events;
 use crate::ipc::CommandError;
-use crate::state::{self, DeviceKey};
+use crate::state;
 
-use log::{debug, trace};
+use log::trace;
 use meshtastic::packet::PacketDestination;
 use meshtastic::protobufs;
 use meshtastic::types::MeshChannel;

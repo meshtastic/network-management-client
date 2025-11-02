@@ -1,10 +1,8 @@
 use log::debug;
 use meshtastic::protobufs;
-use tauri_plugin_notification::Notification;
 
 use crate::{
     device::{
-        helpers::{get_channel_name, get_node_user_name},
         ChannelMessageState, NeighborInfoPacket, NormalizedWaypoint, PositionPacket,
         TelemetryPacket, TextPacket, UserPacket, WaypointPacket,
     },
@@ -39,7 +37,7 @@ pub fn handle_position_mesh_packet<R: tauri::Runtime>(
 
     packet_api.device.add_position(PositionPacket {
         packet: packet.clone(),
-        data: data.clone(),
+        data, // Implements `Copy`
     });
 
     let mut graph = packet_api
@@ -68,7 +66,7 @@ pub fn handle_routing_mesh_packet<R: tauri::Runtime>(
     if let Some(variant) = routing_data.variant {
         match variant {
             protobufs::routing::Variant::ErrorReason(e) => {
-                if let Some(r) = protobufs::routing::Error::from_i32(e) {
+                if let Ok(r) = protobufs::routing::Error::try_from(e) {
                     match r {
                         protobufs::routing::Error::None => {
                             packet_api.device.set_message_state(
@@ -161,12 +159,6 @@ pub fn handle_text_message_mesh_packet<R: tauri::Runtime>(
         data: data.clone(),
     });
 
-    let from_user_name = get_node_user_name(&mut packet_api.device, &packet.from)
-        .unwrap_or_else(|| packet.from.to_string());
-
-    let channel_name = get_channel_name(&mut packet_api.device, &packet.channel)
-        .unwrap_or_else(|| "Unknown channel".into());
-
     // Always keep updates at bottom in case of failure during functions
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
         .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
@@ -206,12 +198,6 @@ pub fn handle_waypoint_mesh_packet<R: tauri::Runtime>(
         packet: packet.clone(),
         data: converted_data.clone(),
     });
-
-    let from_user_name = get_node_user_name(&mut packet_api.device, &packet.from)
-        .unwrap_or_else(|| packet.from.to_string());
-
-    let channel_name = get_channel_name(&mut packet_api.device, &packet.channel)
-        .unwrap_or_else(|| "Unknown channel".into());
 
     events::dispatch_updated_device(&packet_api.app_handle, &packet_api.device)
         .map_err(|e| DeviceUpdateError::EventDispatchFailure(e.to_string()))?;
