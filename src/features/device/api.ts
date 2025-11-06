@@ -63,11 +63,17 @@ export const useDeviceApi = () => {
     const TYPE = DeviceApiActions.GetAvailableBluetoothDevices;
 
     await trackRequestOperation(TYPE, dispatch, async () => {
-      const bluetoothDevices = await backendConnectionApi.getAllBluetooth();
+      try {
+        const bluetoothDevices = await backendConnectionApi.getAllBluetooth();
 
-      dispatch(
-        deviceSliceActions.setAvailableBluetoothDevices(bluetoothDevices),
-      );
+        dispatch(
+          deviceSliceActions.setAvailableBluetoothDevices(bluetoothDevices),
+        );
+      } catch (e) {
+        // Handle BLE scanning errors gracefully
+        console.error("Failed to scan for Bluetooth devices:", e);
+        dispatch(deviceSliceActions.setAvailableBluetoothDevices([]));
+      }
     });
   };
 
