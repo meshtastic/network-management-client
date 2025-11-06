@@ -25,9 +25,14 @@ export const requestAutoConnectPort = async () => {
 export const getAllBluetooth = async () => {
   const response = (await invoke("get_all_bluetooth", {
     request: {},
-  })) as { candidates: string[] };
+  })) as { candidates: Array<{ 0: string }> | string[] };
 
-  return response.candidates;
+  // Handle both formats: newtype struct { 0: string } and plain strings
+  return Array.isArray(response.candidates)
+    ? response.candidates.map((candidate: any) =>
+        typeof candidate === "string" ? candidate : candidate[0],
+      )
+    : [];
 };
 
 export const getAllSerialPorts = async () => {

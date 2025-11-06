@@ -63,6 +63,10 @@ export const deviceSlice = createSlice({
     setAutoConnectPort: (state, action: PayloadAction<string | null>) => {
       state.autoConnectPort = action.payload;
     },
+
+    setAutoConnectBluetooth: (state, action: PayloadAction<string | null>) => {
+      state.autoConnectBluetooth = action.payload;
+    },
   },
 });
 
