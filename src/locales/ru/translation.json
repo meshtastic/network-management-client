@@ -1,0 +1,538 @@
+{
+  "general": {
+    "meshtastic": "Meshtastic",
+    "networkManagement": "Network Management",
+    "client": "Клиент",
+    "notApplicable": "Н/А",
+    "goHome": "Домой",
+    "unknown": "НЕИЗВ",
+    "wip": "Unimplemented, work in progress",
+    "connected": "Подключить",
+    "disconnect": "Отключить"
+  },
+  "splashPage": {
+    "photoAttribution": "Фото <link1>Caleb Riston</link1> с <link2>Unsplash</link2>"
+  },
+  "connectPage": {
+    "title": "Подключение радиоприемника",
+    "photoAttribution": "ФОто <link1>Jordan Steranka</link1> с <link2>Unsplash</link2>",
+    "supportedRadioBlurb": "Подключите поддерживаемый радиоприёмник Meshtastic к своему компьютеру через последовательный USB-порт или TCP через Ethernet или WiFi. Для получения подробных инструкций, <linkButton>нажмите здесь</linkButton>.",
+    "tabs": {
+      "serial": {
+        "title": "Последовательный",
+        "tooltip": "Подключите ваш радиоприемник через USB-кабель",
+        "portOption": "Последовательный порт {{portName}}",
+        "empty": "Нет подключенных портов.",
+        "refresh": "Обновить порты",
+        "advancedTitle": "Расширенные возможности подключения",
+        "baudTitle": "Скорость передачи в бодах",
+        "dtrTitle": "Включить DTR",
+        "rtsTitle": "Включить RTS"
+      },
+      "tcp": {
+        "title": "TCP",
+        "tooltip": "Подключите ваш радиоприемник через Ethernet или WiFi",
+        "ip": "IP-адрес или хостнейм",
+        "port": "Порт",
+        "connect": "Подключить",
+        "connecting": "Подключение..."
+      },
+      "bluetooth": {
+        "title": "Bluetooth",
+        "tooltip": "Подключите ваш радиоприемник через Bluetooth",
+        "device": "Имя устройства",
+        "connect": "Подключить",
+        "connecting": "Подключение...",
+        "portOption": "Устройство Bluetooth {{deviceName}}",
+        "empty": "Устройств не обнаружено.",
+        "refresh": "Обновить устройства"
+      }
+    }
+  },
+  "recentConnections": {
+    "title": "Последние подключения",
+    "subtitle": "Выберите одно из ваших недавно использованных подключений",
+    "noRecent": "Последних подключений не обнаружено",
+    "justNow": "Прямо сейчас",
+    "minutesAgo_one": "{{count}} минуту назад",
+    "minutesAgo_other": "{{count}} минут назад",
+    "hoursAgo_one": "{{count}} час назад",
+    "hoursAgo_other": "{{count}} часов назад",
+    "daysAgo_one": "{{count}} день назад",
+    "daysAgo_other": "{{count}} дней назад"
+  },
+  "sidebar": {
+    "overviewGroup": "Обзор",
+    "viewMap": "Посмотр карты",
+    "networkGroup": "Сеть",
+    "messaging": "Обмен сообщениями",
+    "manageNodes": "Управление нодами",
+    "manageWaypoints": "Управление маршрутную точками",
+    "configurationGroup": "Конфигурация",
+    "configureRadio": "Конфигурация радиоприемника",
+    "configureModules": "Конфигурация модулей",
+    "configureChannels": "Конфигурация каналов",
+    "settingsGroup": "Настройки",
+    "applicationState": "Состояние приложения",
+    "applicationSettings": "Настройки приложения",
+    "graphDebugger": "Графический отладчик",
+    "expand": "Развернуть боковую панель",
+    "collapse": "Свернуть боковую панель"
+  },
+  "map": {
+    "panes": {
+      "search": {
+        "placeholder": "Фильтр нод",
+        "noResults": "Нод не найдено",
+        "collapseList": "Свернуть список узлов",
+        "expandList": "Развернуть список узлов",
+        "selectNode": "Показать ноду на карте",
+        "deselectNode": "Отменить выбор ноды",
+        "noGpsLock": "Нет GPS-блокировки, скрытой от карты"
+      },
+      "nodeInfo": {
+        "generalInfo": "Основная информация",
+        "unknownValue": "Неизвестно",
+        "copyToClipboard": "Копировать значение в буфер обмена",
+        "battery": {
+          "unknown": "Неизвестно",
+          "powered": "Питание",
+          "discharging": "{{batteryLevel}}%, заряда"
+        },
+        "lastHeard": "Последняя весточка от <timeAgo />"
+      },
+      "waypointInfo": {
+        "description": "Описание",
+        "noDescription": "Описание не задано",
+        "details": "Детали",
+        "locked": {
+          "onlyYouEdit": "Только вы можете редактировать",
+          "onlyNodeEdit": "Только нода {{nodeName}} может редактировать",
+          "anyoneEdit": "Любой желающий может редактировать"
+        },
+        "noLocationSet": "Местоположение не установлено",
+        "expires": "Истекает {{fromNow}}",
+        "doesNotExpire": "Срок действия не истекает",
+        "editWaypoint": "Редактировать маршрутную точку",
+        "deleteWaypoint": "Удалить маршрутную точку"
+      },
+      "algos": {}
+    },
+    "contextMenu": {
+      "dropWaypoint": "Укажите маршрутную точку здесь",
+      "close": "Закрыть меню"
+    },
+    "waypoints": {
+      "createWaypointTitle": "Создать маршрутную точку",
+      "editWaypointTitle": "Редактировать маршрутную точку",
+      "centerWaypointTooltip": "Центральная маршрутная точка на карте",
+      "nameLabel": "Название",
+      "namePlaceholder": "Введите название",
+      "nameTooLong": "Введенное название слишком длинное ({{currentLength}}/{{maxLength}})",
+      "descriptionLabel": "Описание",
+      "descriptionPlaceholder": "Ввведите описание",
+      "descriptionTooLong": "Введенное описание слишком длинное ({{currentLength}}/{{maxLength}})",
+      "blockWaypointEditing": "Блокировать редактирование маршрутных точек",
+      "waypointExpires": "Срок действия путевой точки истекает",
+      "expireTime": "Срок действия",
+      "deviceChannel": "Канал устройства",
+      "channelAriaLabel": "Канал устройства для отправки маршрутной точки на",
+      "channelPlaceholder": "Выберите канал",
+      "pinEmoji": "Закрепить эмодзи",
+      "createWaypoint": "Создание маршрутной точки",
+      "saveChanges": "Сохранить изменения",
+      "cancel": "Отменить",
+      "closeAriaLabel": "Закрыть диалоговое окно маршрутной точки"
+    }
+  },
+  "messaging": {
+    "title": "Обмен сообщениями",
+    "configureChannels": "Настройка каналов",
+    "noChannelsSelected": "Нет выбранных каналов",
+    "unnamedChannel": "Безымянный канал",
+    "noMessages": "Нет сообщений, принятых на этом канале",
+    "oneMessage": "1 сообщение",
+    "manyMessages": "{{numMessages}} сообщений",
+    "channelNumber": "(Ch. {{channelNum}})",
+    "unnamedWaypoint": "[Unnamed waypoint]",
+    "waypointInfo": "Маршрутная точка \"{{title}}\" ({{latitude}}, {{longitude}})",
+    "transmitting": "Передача...",
+    "acknowledged": "Подтвержденная"
+  },
+  "manageNodes": {
+    "title": "Управление нодами",
+    "id": "ID",
+    "longName": "Полное имя",
+    "shortName": "Краткое имя",
+    "noUserInfo": "Нет инфы пользователя",
+    "lastHeard": "Последний раз слышали",
+    "latitude": "Широта",
+    "noGpsLock": "Нет GPS-блокировки",
+    "longitude": "Долгота",
+    "battery": "Батарея",
+    "noBatteryInfo": "Нет инфы о батарее"
+  },
+  "manageWaypoints": {
+    "title": "Управление маршрутную точками",
+    "id": "ID",
+    "name": "Название",
+    "noName": "Название не указано",
+    "description": "Описание",
+    "noDescription": "Описание не указано",
+    "expires": "Истекает",
+    "doesNotExpire": "Срок действия не истекает",
+    "latitude": "Широта",
+    "longitude": "Долгота",
+    "ownedBy": "Владелец",
+    "notLocked": "Не заблокировано",
+    "unknownOwner": "Неизвестный владелец"
+  },
+  "config": {
+    "discardChanges": "Отменить ожидающие изменения",
+    "uploadChanges": "Загрузить конфигурацию на устройство",
+    "numPendingChanges": "{{numChanges}} ожидающих изменений",
+    "unknownOption": "Выбран неизвестный параметр",
+    "radio": {
+      "title": "Конфигурация радиостанции",
+      "options": {
+        "bluetooth": "Bluetooth",
+        "device": "Устройство",
+        "display": "Отображение",
+        "lora": "LoRa",
+        "network": "Сеть",
+        "position": "Позиционирование",
+        "power": "Мощность"
+      },
+      "bluetooth": {
+        "title": "Конфигурация Bluetooth",
+        "description": "Настройка Bluetooth-соединения устройства",
+        "bluetoothEnabled": "Включение Bluetooth",
+        "pairingMode": {
+          "title": "Режим сопряжения",
+          "randomPin": "Случайный Pin",
+          "fixedPin": "Фиксированный Pin",
+          "noPin": "Без Pin"
+        },
+        "fixedPin": "Фиксированный Pin (если включено)"
+      },
+      "device": {
+        "title": "Конфигурация устройства",
+        "description": "Configure hardware device",
+        "deviceRole": {
+          "title": "Роль устройства",
+          "client": "Client",
+          "clientMute": "Client Mute",
+          "router": "Router",
+          "routerClient": "Router + Client",
+          "repeater": "Repeater",
+          "tracker": "Tracker",
+          "sensor": "Sensor",
+          "tak": "Tak",
+          "clientHidden": "Client Hidden",
+          "lostFound": "Lost and Found",
+          "takTracker": "Tak Tracker",
+          "routerLate": "Router Late"
+        },
+        "serialEnabled": "Последовательный порт включен",
+        "serialDebugEnabled": "Отладка последовательного порта включена",
+        "rebroadcastMode": {
+          "title": "Режим ретрансляции",
+          "all": "Все",
+          "allSkipDecoding": "Все, пропуская декодирование (только для ретранслятора)",
+          "localOnly": "Только локальные (игнорировать внешние сообщения)"
+        },
+        "nodeInfoBroadcastInterval": "Интервал трансляции информации об узле (секунды)",
+        "doubleTapButtonPress": "Двойной тап как нажатие кнопки"
+      },
+      "display": {
+        "title": "Конфигурация отображения",
+        "description": "Настройка отображения устройства",
+        "autoScrollInterval": "Автопрокрутка экрана (в секундах, 0 = отключена)",
+        "forceNorthToTop": "Переместите направление на север для отображения верхней части экрана",
+        "displayMode": {
+          "title": "Режим отображения",
+          "default": "По-умолчанию",
+          "twoColor": "Два цвета",
+          "inverted": "Инвертированный",
+          "color": "Цветной"
+        },
+        "flipScreen": "Откидной экран",
+        "gpsFormat": {
+          "title": "Формат GPS",
+          "decimal": "Десятичный",
+          "dms": "DMS",
+          "utm": "UTM",
+          "mgrs": "MGRS",
+          "olc": "OLC",
+          "osgr": "OSGR"
+        },
+        "boldHeading": "Полужирный заголовок",
+        "oledConfig": {
+          "title": "Тип OLED",
+          "autoDetect": "Автоопределение",
+          "ssd1306": "OLED SSD1306",
+          "sh1106": "OLED SH1106",
+          "sh1107": "OLED SH1107"
+        },
+        "screenOnDuration": "Продолжительность включения экрана (секунды)",
+        "units": {
+          "title": "Единицы измерения устройства",
+          "metric": "Метрическая",
+          "imperial": "Британская"
+        },
+        "wakeOnMotion": "Пробуждение при нажатии или движении"
+      },
+      "lora": {
+        "title": "Конфигурация LoRa",
+        "description": "Настройка аппаратного обеспечения устройства LoRa",
+        "region": {
+          "title": "Регион",
+          "unset": "Не задан",
+          "us": "США",
+          "eu433": "EU (433 MHz)",
+          "eu868": "EU (868 MHz)",
+          "china": "Китай",
+          "japan": "Япония",
+          "auNz": "Австралия и Новая Зеландия",
+          "korea": "Корея (ROK)",
+          "taiwan": "Тайвань",
+          "russia": "Россия",
+          "india": "Индия",
+          "nz865": "Новая Зеландия (865 MHz)",
+          "ukraine": "Украина (433 MHz)",
+          "thailand": "Тайланд",
+          "24ghz": "2.4 GHz (global)"
+        },
+        "useModemPreset": "Use Modem Preset",
+        "modemPreset": {
+          "title": "Предустановка модема",
+          "longFast": "Long Fast",
+          "longSlow": "Long Slow",
+          "medFast": "Medium Fast",
+          "medSlow": "Medium Slow",
+          "shortSlow": "Short Slow",
+          "shortFast": "Short Fast",
+          "longModerate": "Long Moderate",
+          "shortTurbo": "Short Turbo"
+        },
+        "bandwidth": "Пропускная способность (kHz)",
+        "spreadFactor": "Spread Factor (1 << spread_factor)",
+        "codingRate": "Скорость кодирования (4 / coding_rate)",
+        "freqOffset": "Смещение частоты (Hz)",
+        "hopLimit": "Лимит хопов",
+        "txEnabled": "Передача включена",
+        "txPower": "Мощность передачи Power",
+        "loraChannel": "Номер канала LoRa",
+        "euOverride": "Переопределить рабочий цикл ЕС"
+      },
+      "network": {
+        "title": "Конфигурация сети",
+        "description": "Настройка сетевого подключения устройства",
+        "wifiEnabled": "WiFi включен",
+        "wifiSsid": "WiFi SSID",
+        "wifiPsk": "WiFi PSK",
+        "ethEnabled": "Ethernet включен",
+        "addressMode": {
+          "title": "Режим адресации",
+          "dhcp": "DHCP",
+          "static": "Статический IP (не реализовано)"
+        },
+        "ntpServerAddress": "Адрес сервера NTP"
+      },
+      "position": {
+        "title": "Конфигурация позиционирования",
+        "description": "Настройка параметров позиционирования устройства",
+        "gpsEnabled": "GPS включен",
+        "posBroadcastInterval": "Интервал широковещательной передачи местоположения (в секундах, 0 = 15 мин)",
+        "fixedPosition": "Фиксированное положение",
+        "gpsUpdateInterval": "Интервал обновления GPS (в секундах, 0 = 30 сек)",
+        "gpsAttemptTime": "Время попытки GPS (в секундах, 0 = 30 сек)",
+        "enableSmartPosBroadcast": "Включить интеллектуальную трансляцию местоположения"
+      },
+      "power": {
+        "title": "Конфигурация питания",
+        "description": "Настройка параметров питания устройства",
+        "enablePowerSaving": "Включение режима энергосбережения",
+        "shutdownPowerLoss": "Выключение после потери питания (секунды, 0 = отключено)",
+        "adcMultOverride": "Переопределение множителя АЦП",
+        "bluetoothTimeout": "Тайм-аут Bloetooth (секунды, 0 = 1 мин)",
+        "sdsTimeout": "Тайм-аут сверхглубокого сна (секунды, 0 = 2 часа, MAX_UINT = откл)",
+        "sdsInterval": "Интервал сверхглубокого сна (секунды, 0 = 1 год, MAX_UINT = откл)",
+        "lsInterval": "Интервал легкого сна (секунды, 0 = 5 min, ESP32 only)",
+        "minWakeInterval": "Минимальный интервал пробуждения (секунды, 0 = 10 сек)"
+      }
+    },
+    "module": {
+      "title": "Конфигурация модуля",
+      "options": {
+        "audio": "Аудио",
+        "cannedMessage": "Хранение сообщений",
+        "externalNotification": "Внешнее уведомление",
+        "mqtt": "MQTT",
+        "rangeTest": "Тест на дальность действия",
+        "remoteHardware": "Удаленное оборудование",
+        "serial": "Последовательный модуль",
+        "storeAndForward": "Хранение и пересылка",
+        "telemetry": "Телеметрия"
+      },
+      "audio": {},
+      "cannedMessages": {
+        "title": "Конфигурация хранения сообщений",
+        "cannedMessagesEnabled": "Хранение сообщений включено",
+        "allowInputSource": {
+          "title": "Разрешить источник входного сигнала",
+          "noSelect": "Не выбран ни один",
+          "any": "Любое периферийное устройство",
+          "3200bps": "3200 BPS",
+          "encoder": "Up / Down Encoder (RAK14006)",
+          "cardKb": "M5 Stack CardKB"
+        },
+        "sendBell": "Отправить символ колокольчика",
+        "enableRotaryEncoder": "Rotary Encoder Enabled",
+        "enableUpDownEncoder": "Up / Down Encoder Enabled",
+        "brokerA": "Input Broker Pin A",
+        "brokerB": "Input Broker Pin B",
+        "brokerPress": "Input Broker Press Pin",
+        "brokerEventCw": "Input Broker Event CW",
+        "brokerEventCcw": "Input Broker Event CCW",
+        "brokerEventPress": "Input Broker Event Press"
+      },
+      "externalNotification": {
+        "title": "Настройка внешнего уведомления",
+        "description": "Настройка внешних уведомлений",
+        "extNotEnabled": "Внешние уведомления включены",
+        "activeHighLed": "Active High LED",
+        "enableBellAlerts": "Включить сигнал оповещения",
+        "enableBellVibrateAlert": "Enable Bell Vibrate Alert",
+        "enableBellBuzzerAlert": "Enable Bell Buzzer Alert",
+        "enableMessageAlerts": "Включить оповещения о сообщениях",
+        "enableMessageVibrateAlert": "Enable Message Vibrate Alert",
+        "enableMessageBuzzerAlert": "Enable Message Buzzer Alert",
+        "alertLedPin": "Alert LED Pin",
+        "alertVibratePin": "Alert Vibrate Pin",
+        "alertBuzzerPin": "Alert Buzzer Pin",
+        "enableBuzzerPwm": "Включить зуммер PWM",
+        "alertDuration": "Длительность оповещения (мс, 0 = 1000 мс)",
+        "alertNagDuration": "Длительность оповещения Nag (0 = откл)"
+      },
+      "mqtt": {
+        "title": "Конфигурация MQTT",
+        "description": "Настройка MQTT",
+        "enableMqtt": "MQTT включен",
+        "serverAddress": "Адрес сервера",
+        "username": "Имя пользователя",
+        "password": "Пароль",
+        "encryptionEnabled": "Включить шифрование",
+        "jsonEnabled": "Включить JSON",
+        "tlsEnabled": "Включить TLS"
+      },
+      "rangeTest": {
+        "title": "Конфигурация для теста диапазона",
+        "description": "Настройка модуля тестирования диапазона",
+        "rangeTestEnabled": "Тест диапазона включен",
+        "senderTransmitInterval": "Интервал пересылки отправленного (секунды, 0 = отключено)",
+        "saveToFs": "Сохранить в файловой системе (только ESP32)"
+      },
+      "remoteHardware": {
+        "title": "Настройка удаленного оборудования",
+        "description": "Настройка удаленного сетевого оборудования",
+        "remoteHardwareEnabled": "Удаленное оборудование включено"
+      },
+      "serial": {
+        "title": "Настройка последовательного модуля",
+        "description": "Конфигурация последовательного модуля",
+        "serialModuleEnabled": "Последовательный модуль включен",
+        "echoSentPackets": "Пакеты эхо",
+        "operatingMode": {
+          "title": "Режим работы",
+          "default": "По-умолчанию",
+          "simple": "Простой (UART туннель)",
+          "protobuf": "Клиентский API Protobuf",
+          "text": "Текстовые сообщения",
+          "nmea": "Поток NMEA"
+        },
+        "rxPin": "RX Pin (0 = unset)",
+        "txPin": "TX Pin (0 = unset)",
+        "baudRate": {
+          "title": "Скорость передачи в бодах",
+          "default": "По-умолчанию"
+        },
+        "serialTimeout": "Serial timeout (ms, 0 = 250 ms)"
+      },
+      "storeAndForward": {
+        "title": "Настройка хранения и пересылки (нестабильно)",
+        "description": "Настройка хранения и пересылки пакетов",
+        "sfEnabled": "Хранение и пересылка включены",
+        "heartbeatBroadcastEnabled": "Широковещательная передача пульса включена",
+        "storedRecords": "Сохраненные записи",
+        "maxRecordsReturn": "Максимальное количество записей для возврата",
+        "returnWindow": "Окно возврата истории (секунды)"
+      },
+      "telemetry": {
+        "title": "Настройки телеметрии",
+        "description": "Настройка телеметрии устройства",
+        "deviceMetricsInterval": "Интервал между показателями устройства (секунды, 0 = отключено)",
+        "enableAirQualityMetrics": "Включить показатели качества атмосферы",
+        "airQualityUpdateInterval": "Интервал обновления данных о качестве атмосферы (секунды, 0 = отключено)",
+        "enableEnvironmentMetrics": "Включить показатели среды",
+        "environmentUpdateInterval": "Интервал обновления показателей среды (секунды, 0 = отключено)",
+        "useFahrenheitForEnvMetrics": "Использовать градусы Фаренгейта для параметров окружающей среды",
+        "showEnvMetricsOnDeviceScreen": "Отображение показателей среды на экране устройства"
+      }
+    },
+    "channel": {
+      "title": "Конфигурация канала",
+      "unknownChannel": "Выбран неизвестный канал",
+      "option": {
+        "title": "Канал {{channelIndex}}"
+      },
+      "detail": {
+        "title": "Конфигурация канала",
+        "description": "Конфигурация канала \"{{channelName}}\"",
+        "channelRole": {
+          "title": "Роль канала",
+          "disabled": "Канал отключен",
+          "primary": "Первичный канал",
+          "secondary": "Вторичный канал"
+        },
+        "channelName": "Имя канала",
+        "psk": "Предварительно общий ключ",
+        "uplinkEnabled": "Восходящая связь включена (MQTT)",
+        "downlinkEnabled": "Входящая связь включена (MQTT`)"
+      }
+    }
+  },
+  "applicationState": {
+    "title": "Состояние приложения"
+  },
+  "applicationSettings": {
+    "title": "Настройки",
+    "saveChanges": "Сохранить изменения",
+    "unknownOption": "Выбран неизвестный параметр",
+    "options": {
+      "general": "Общие настройки",
+      "map": "Настройки карты",
+      "about": "О нас"
+    },
+    "general": {
+      "title": "Основные настройки",
+      "description": "Редактировать общие настройки приложения",
+      "colorMode": {
+        "title": "Цветовой режим приложения",
+        "light": "Светлный режим",
+        "dark": "Темный режим",
+        "system": "Следовать режиму системы"
+      }
+    },
+    "map": {
+      "title": "Настройки карты",
+      "description": "Редактирование настроек карты приложения",
+      "mapboxStyle": "Стиль карты Mapbox"
+    },
+    "about": {
+      "title": "О нас",
+      "description": "Просмотреть информацию об этом приложении",
+      "versionNumber": "Версия приложения"
+    }
+  }
+}
